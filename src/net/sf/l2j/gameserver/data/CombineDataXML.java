@@ -25,7 +25,7 @@ public class CombineDataXML implements IXmlReader {
 
     public void load() {
         parseFile("./data/xml/combineItems.xml");
-        LOGGER.info(getClass().getSimpleName() + ": Loaded " + getClass().getSimpleName() + " combine item(s).");
+        LOGGER.info("Loaded " + this._recipes.size() + " combine item(s).");
     }
 
     public void parseDocument(Document doc, Path path) {
@@ -78,7 +78,7 @@ public class CombineDataXML implements IXmlReader {
         }
         try {
             CombineRecipe recipe = new CombineRecipe(values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7], values[8]);
-            this._recipes.put(this._recipes.size(), recipe);
+            this._recipes.put(this._recipes.size() + 1, recipe);
         } catch (Exception e) {
             LOGGER.error("Error creating recipe in CombineDataXML: ", e);
         }

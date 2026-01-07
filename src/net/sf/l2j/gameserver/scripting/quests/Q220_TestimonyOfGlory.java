@@ -176,7 +176,7 @@ public class Q220_TestimonyOfGlory extends Quest {
             st.giveItems(3204, 1);
             if (!player.getMemos().getBool("secondClassChange37", false)) {
                 htmltext = "30514-05a.htm";
-                st.giveItems(7562, DF_REWARD_37.get(Integer.valueOf(player.getRace().ordinal())));
+                st.giveItems(7562, DF_REWARD_37.get(player.getRace().ordinal()));
                 player.getMemos().set("secondClassChange37", true);
             }
         } else if (event.equalsIgnoreCase("30642-03.htm")) {

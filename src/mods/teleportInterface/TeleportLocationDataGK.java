@@ -21,7 +21,7 @@ public class TeleportLocationDataGK extends XMLDocument {
 
     public void load() {
         loadDocument("./data/xml/gkinterface/teleportLocations.xml");
-        LOG.info(String.format("Loaded teleport locations: %d", Integer.valueOf(this._teleports.size())));
+        LOG.info(String.format("Loaded teleport locations: %d", this._teleports.size()));
     }
 
     protected void parseDocument(Document doc, File file) {
@@ -30,7 +30,7 @@ public class TeleportLocationDataGK extends XMLDocument {
         for (Node o = n.getFirstChild(); o != null; o = o.getNextSibling()) {
             if ("teleport".equalsIgnoreCase(o.getNodeName())) {
                 parseAndFeed(o.getAttributes(), set);
-                this._teleports.put(Integer.valueOf(set.getInteger("id")), new TeleLocation(set));
+                this._teleports.put(set.getInteger("id"), new TeleLocation(set));
                 set.clear();
             }
         }
@@ -42,7 +42,7 @@ public class TeleportLocationDataGK extends XMLDocument {
     }
 
     public TeleLocation getTeleportLocation(int id) {
-        return this._teleports.get(Integer.valueOf(id));
+        return this._teleports.get(id);
     }
 
     private static class SingletonHolder {

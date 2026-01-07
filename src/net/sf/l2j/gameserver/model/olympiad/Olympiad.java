@@ -56,9 +56,9 @@ public class Olympiad {
         GET_EACH_CLASS_LEADER = "SELECT characters.char_name from olympiad_nobles_eom, characters WHERE characters.obj_Id = olympiad_nobles_eom.char_id AND olympiad_nobles_eom.class_id = ? AND olympiad_nobles_eom.competitions_done >= " + Config.ALT_OLY_MIN_MATCHES + " ORDER BY olympiad_nobles_eom.olympiad_points DESC, olympiad_nobles_eom.competitions_done DESC, olympiad_nobles_eom.competitions_won DESC LIMIT 10";
     }
 
-    private final Map<Integer, StatSet> _nobles = new HashMap();
-    private final Map<Integer, Integer> _noblesRank = new HashMap();
-    private final List<StatSet> _heroesToBe = new ArrayList();
+    private final Map<Integer, StatSet> _nobles = new HashMap<>();
+    private final Map<Integer, Integer> _noblesRank = new HashMap<>();
+    private final List<StatSet> _heroesToBe = new ArrayList<>();
     protected long _olympiadEnd;
     protected long _validationEnd;
     protected OlympiadState _period;
@@ -120,9 +120,7 @@ public class Olympiad {
                         throw var18;
                     }
 
-                    if (rset != null) {
-                        rset.close();
-                    }
+                    rset.close();
                 } catch (Throwable var19) {
                     if (ps != null) {
                         try {
@@ -135,9 +133,7 @@ public class Olympiad {
                     throw var19;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var20) {
                 if (con != null) {
                     try {
@@ -150,9 +146,7 @@ public class Olympiad {
                 throw var20;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var21) {
             LOGGER.error("Couldn't load Olympiad data.", var21);
         }
@@ -211,9 +205,7 @@ public class Olympiad {
                         throw var14;
                     }
 
-                    if (rset != null) {
-                        rset.close();
-                    }
+                    rset.close();
                 } catch (Throwable var15) {
                     if (ps != null) {
                         try {
@@ -226,9 +218,7 @@ public class Olympiad {
                     throw var15;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var16) {
                 if (con != null) {
                     try {
@@ -241,9 +231,7 @@ public class Olympiad {
                 throw var16;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var17) {
             LOGGER.error("Couldn't load noblesse data.", var17);
         }
@@ -271,7 +259,7 @@ public class Olympiad {
 
     public void loadNoblesRank() {
         this._noblesRank.clear();
-        HashMap tmpPlace = new HashMap();
+        HashMap<Integer, Integer> tmpPlace = new HashMap<>();
 
         int rank4;
         try {
@@ -301,9 +289,7 @@ public class Olympiad {
                         throw var11;
                     }
 
-                    if (rs != null) {
-                        rs.close();
-                    }
+                    rs.close();
                 } catch (Throwable var12) {
                     if (ps != null) {
                         try {
@@ -316,9 +302,7 @@ public class Olympiad {
                     throw var12;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var13) {
                 if (con != null) {
                     try {
@@ -331,9 +315,7 @@ public class Olympiad {
                 throw var13;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var14) {
             LOGGER.error("Couldn't load Olympiad ranks.", var14);
         }
@@ -349,17 +331,14 @@ public class Olympiad {
             ++rank4;
         }
 
-        Iterator var6 = tmpPlace.keySet().iterator();
-
-        while (var6.hasNext()) {
-            int charId = (Integer) var6.next();
-            if ((Integer) tmpPlace.get(charId) <= rank1) {
+        for (Integer charId : tmpPlace.keySet()) {
+            if (tmpPlace.get(charId) <= rank1) {
                 this._noblesRank.put(charId, 1);
-            } else if ((Integer) tmpPlace.get(charId) <= rank2) {
+            } else if (tmpPlace.get(charId) <= rank2) {
                 this._noblesRank.put(charId, 2);
-            } else if ((Integer) tmpPlace.get(charId) <= rank3) {
+            } else if (tmpPlace.get(charId) <= rank3) {
                 this._noblesRank.put(charId, 3);
-            } else if ((Integer) tmpPlace.get(charId) <= rank4) {
+            } else if (tmpPlace.get(charId) <= rank4) {
                 this._noblesRank.put(charId, 4);
             } else {
                 this._noblesRank.put(charId, 5);
@@ -371,9 +350,9 @@ public class Olympiad {
     protected void init() {
         if (this._period != OlympiadState.VALIDATION) {
             this._compStart = Calendar.getInstance();
-            this._compStart.set(11, Config.ALT_OLY_START_TIME);
-            this._compStart.set(12, Config.ALT_OLY_MIN);
-            this._compStart.set(13, 0);
+            this._compStart.set(Calendar.HOUR_OF_DAY, Config.ALT_OLY_START_TIME);
+            this._compStart.set(Calendar.MINUTE, Config.ALT_OLY_MIN);
+            this._compStart.set(Calendar.SECOND, 0);
             this._compEnd = this._compStart.getTimeInMillis() + Config.ALT_OLY_CPERIOD;
             if (this._scheduledOlympiadEnd != null) {
                 this._scheduledOlympiadEnd.cancel(true);
@@ -392,6 +371,7 @@ public class Olympiad {
         return this._nobles.get(playerId);
     }
 
+    @SuppressWarnings("BusyWait")
     private void updateCompStatus() {
         synchronized (this) {
             long milliToStart = this.getMillisToCompBegin();
@@ -412,7 +392,7 @@ public class Olympiad {
                 LOGGER.info("Olympiad game started.");
                 this._gameManager = ThreadPool.scheduleAtFixedRate(OlympiadGameManager.getInstance(), 30000L, 30000L);
                 if (Config.ALT_OLY_ANNOUNCE_GAMES) {
-                    this._gameAnnouncer = ThreadPool.scheduleAtFixedRate(new OlympiadAnnouncer(this), 30000L, 500L);
+                    this._gameAnnouncer = ThreadPool.scheduleAtFixedRate(new OlympiadAnnouncer(), 30000L, 500L);
                 }
 
                 long regEnd = this.getMillisToCompEnd() - 600000L;
@@ -431,7 +411,7 @@ public class Olympiad {
                         while (OlympiadGameManager.getInstance().isBattleStarted()) {
                             try {
                                 Thread.sleep(60000L);
-                            } catch (InterruptedException var2) {
+                            } catch (InterruptedException ignored) {
                             }
                         }
 
@@ -479,27 +459,27 @@ public class Olympiad {
         Calendar nextChange;
         if (!Config.OLY_USE_CUSTOM_PERIOD_SETTINGS) {
             currentTime = Calendar.getInstance();
-            currentTime.add(2, 1);
-            currentTime.set(5, 1);
-            currentTime.set(9, 0);
-            currentTime.set(10, 12);
-            currentTime.set(12, 0);
-            currentTime.set(13, 0);
+            currentTime.add(Calendar.MONTH, 1);
+            currentTime.set(Calendar.DATE, 1);
+            currentTime.set(Calendar.AM_PM, 0);
+            currentTime.set(Calendar.HOUR, 12);
+            currentTime.set(Calendar.MINUTE, 0);
+            currentTime.set(Calendar.SECOND, 0);
             this._olympiadEnd = currentTime.getTimeInMillis();
             nextChange = Calendar.getInstance();
             this._nextWeeklyChange = nextChange.getTimeInMillis() + Config.ALT_OLY_WPERIOD;
             this.scheduleWeeklyChange();
         } else {
             currentTime = Calendar.getInstance();
-            currentTime.set(9, 0);
-            currentTime.set(10, 12);
-            currentTime.set(12, 0);
-            currentTime.set(13, 0);
+            currentTime.set(Calendar.AM_PM, 0);
+            currentTime.set(Calendar.HOUR, 12);
+            currentTime.set(Calendar.MINUTE, 0);
+            currentTime.set(Calendar.SECOND, 0);
             nextChange = Calendar.getInstance();
             switch (Config.OLY_PERIOD) {
                 case DAY:
-                    currentTime.add(5, Config.OLY_PERIOD_MULTIPLIER);
-                    currentTime.add(5, -1);
+                    currentTime.add(Calendar.DATE, Config.OLY_PERIOD_MULTIPLIER);
+                    currentTime.add(Calendar.DATE, -1);
                     if (Config.OLY_PERIOD_MULTIPLIER >= 14) {
                         this._nextWeeklyChange = nextChange.getTimeInMillis() + Config.ALT_OLY_WPERIOD;
                     } else if (Config.OLY_PERIOD_MULTIPLIER >= 7) {
@@ -507,8 +487,8 @@ public class Olympiad {
                     }
                     break;
                 case WEEK:
-                    currentTime.add(4, Config.OLY_PERIOD_MULTIPLIER);
-                    currentTime.add(5, -1);
+                    currentTime.add(Calendar.WEEK_OF_MONTH, Config.OLY_PERIOD_MULTIPLIER);
+                    currentTime.add(Calendar.DATE, -1);
                     if (Config.OLY_PERIOD_MULTIPLIER > 1) {
                         this._nextWeeklyChange = nextChange.getTimeInMillis() + Config.ALT_OLY_WPERIOD;
                     } else {
@@ -516,8 +496,8 @@ public class Olympiad {
                     }
                     break;
                 case MONTH:
-                    currentTime.add(2, Config.OLY_PERIOD_MULTIPLIER);
-                    currentTime.add(5, -1);
+                    currentTime.add(Calendar.MONTH, Config.OLY_PERIOD_MULTIPLIER);
+                    currentTime.add(Calendar.DATE, -1);
                     this._nextWeeklyChange = nextChange.getTimeInMillis() + Config.ALT_OLY_WPERIOD;
             }
 
@@ -541,10 +521,10 @@ public class Olympiad {
 
     private long setNewCompBegin() {
         this._compStart = Calendar.getInstance();
-        this._compStart.set(11, Config.ALT_OLY_START_TIME);
-        this._compStart.set(12, Config.ALT_OLY_MIN);
-        this._compStart.set(13, 0);
-        this._compStart.add(11, 24);
+        this._compStart.set(Calendar.HOUR_OF_DAY, Config.ALT_OLY_START_TIME);
+        this._compStart.set(Calendar.MINUTE, Config.ALT_OLY_MIN);
+        this._compStart.set(Calendar.SECOND, 0);
+        this._compStart.add(Calendar.HOUR_OF_DAY, 24);
         this._compEnd = this._compStart.getTimeInMillis() + Config.ALT_OLY_CPERIOD;
         LOGGER.info("New Olympiad schedule @ {}.", this._compStart.getTime());
         return this._compStart.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
@@ -569,10 +549,8 @@ public class Olympiad {
 
     protected synchronized void addWeeklyPoints() {
         if (this._period != OlympiadState.VALIDATION) {
-            Iterator var2 = this._nobles.values().iterator();
 
-            while (var2.hasNext()) {
-                StatSet nobleInfo = (StatSet) var2.next();
+            for (StatSet nobleInfo : this._nobles.values()) {
                 int currentPoints = nobleInfo.getInteger("olympiad_points");
                 currentPoints += Config.ALT_OLY_WEEKLY_POINTS;
                 nobleInfo.set("olympiad_points", currentPoints);
@@ -590,15 +568,13 @@ public class Olympiad {
     }
 
     protected synchronized void saveNobleData() {
-        if (this._nobles != null && !this._nobles.isEmpty()) {
+        if (!this._nobles.isEmpty()) {
             try {
                 Connection con = ConnectionPool.getConnection();
 
                 try {
-                    Iterator var3 = this._nobles.entrySet().iterator();
 
-                    while (var3.hasNext()) {
-                        Entry<Integer, StatSet> noble = (Entry) var3.next();
+                    for (Entry<Integer, StatSet> noble : this._nobles.entrySet()) {
                         StatSet set = noble.getValue();
                         if (set != null) {
                             int charId = noble.getKey();
@@ -689,9 +665,7 @@ public class Olympiad {
                     throw var7;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var8) {
                 if (con != null) {
                     try {
@@ -704,9 +678,7 @@ public class Olympiad {
                 throw var8;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var9) {
             LOGGER.error("Couldn't save Olympiad status.", var9);
         }
@@ -738,9 +710,7 @@ public class Olympiad {
                         throw var9;
                     }
 
-                    if (ps2 != null) {
-                        ps2.close();
-                    }
+                    ps2.close();
                 } catch (Throwable var10) {
                     if (ps != null) {
                         try {
@@ -753,9 +723,7 @@ public class Olympiad {
                     throw var10;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var11) {
                 if (con != null) {
                     try {
@@ -768,9 +736,7 @@ public class Olympiad {
                 throw var11;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var12) {
             LOGGER.error("Couldn't update monthly Olympiad nobles.", var12);
         }
@@ -787,11 +753,7 @@ public class Olympiad {
                 PreparedStatement ps = con.prepareStatement(OLYMPIAD_GET_HEROS);
 
                 try {
-                    ClassId[] var3 = ClassId.VALUES;
-                    int var4 = var3.length;
-
-                    for (int var5 = 0; var5 < var4; ++var5) {
-                        ClassId id = var3[var5];
+                    for (ClassId id : ClassId.VALUES) {
                         if (id.level() == 3) {
                             ps.setInt(1, id.getId());
                             ResultSet rs = ps.executeQuery();
@@ -818,9 +780,7 @@ public class Olympiad {
                                 throw var13;
                             }
 
-                            if (rs != null) {
-                                rs.close();
-                            }
+                            rs.close();
                         }
                     }
                 } catch (Throwable var14) {
@@ -850,9 +810,7 @@ public class Olympiad {
                 throw var15;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var16) {
             LOGGER.error("Couldn't load future Olympiad heroes.", var16);
         }
@@ -860,7 +818,7 @@ public class Olympiad {
     }
 
     public List<String> getClassLeaderBoard(int classId) {
-        ArrayList names = new ArrayList();
+        ArrayList<String> names = new ArrayList<>();
 
         try {
             Connection con = ConnectionPool.getConnection();
@@ -888,9 +846,7 @@ public class Olympiad {
                         throw var11;
                     }
 
-                    if (rs != null) {
-                        rs.close();
-                    }
+                    rs.close();
                 } catch (Throwable var12) {
                     if (ps != null) {
                         try {
@@ -903,9 +859,7 @@ public class Olympiad {
                     throw var12;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var13) {
                 if (con != null) {
                     try {
@@ -918,9 +872,7 @@ public class Olympiad {
                 throw var13;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var14) {
             LOGGER.error("Couldn't load Olympiad leaders.", var14);
         }
@@ -971,7 +923,7 @@ public class Olympiad {
     }
 
     public int getNoblePoints(int objId) {
-        return this._nobles != null && this._nobles.containsKey(objId) ? this._nobles.get(objId).getInteger("olympiad_points") : 0;
+        return this._nobles.containsKey(objId) ? this._nobles.get(objId).getInteger("olympiad_points") : 0;
     }
 
     public int getLastNobleOlympiadPoints(int objId) {
@@ -1003,9 +955,7 @@ public class Olympiad {
                         throw var11;
                     }
 
-                    if (rs != null) {
-                        rs.close();
-                    }
+                    rs.close();
                 } catch (Throwable var12) {
                     if (ps != null) {
                         try {
@@ -1018,9 +968,7 @@ public class Olympiad {
                     throw var12;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var13) {
                 if (con != null) {
                     try {
@@ -1033,9 +981,7 @@ public class Olympiad {
                 throw var13;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var14) {
             LOGGER.error("Couldn't load last Olympiad points.", var14);
         }
@@ -1044,15 +990,15 @@ public class Olympiad {
     }
 
     public int getCompetitionDone(int objId) {
-        return this._nobles != null && this._nobles.containsKey(objId) ? this._nobles.get(objId).getInteger("competitions_done") : 0;
+        return this._nobles.containsKey(objId) ? this._nobles.get(objId).getInteger("competitions_done") : 0;
     }
 
     public int getCompetitionWon(int objId) {
-        return this._nobles != null && this._nobles.containsKey(objId) ? this._nobles.get(objId).getInteger("competitions_won") : 0;
+        return this._nobles.containsKey(objId) ? this._nobles.get(objId).getInteger("competitions_won") : 0;
     }
 
     public int getCompetitionLost(int objId) {
-        return this._nobles != null && this._nobles.containsKey(objId) ? this._nobles.get(objId).getInteger("competitions_lost") : 0;
+        return this._nobles.containsKey(objId) ? this._nobles.get(objId).getInteger("competitions_lost") : 0;
     }
 
     protected void deleteNobles() {
@@ -1076,9 +1022,7 @@ public class Olympiad {
                     throw var7;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var8) {
                 if (con != null) {
                     try {
@@ -1091,9 +1035,7 @@ public class Olympiad {
                 throw var8;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var9) {
             LOGGER.error("Couldn't delete Olympiad nobles.", var9);
         }
@@ -1101,8 +1043,8 @@ public class Olympiad {
         this._nobles.clear();
     }
 
-    protected StatSet addNobleStats(int charId, StatSet data) {
-        return this._nobles.put(charId, data);
+    protected void addNobleStats(int charId, StatSet data) {
+        this._nobles.put(charId, data);
     }
 
     private static class SingletonHolder {
@@ -1112,32 +1054,25 @@ public class Olympiad {
     private static final class OlympiadAnnouncer implements Runnable {
         private final OlympiadGameTask[] _tasks = OlympiadGameManager.getInstance().getOlympiadTasks();
 
-        public OlympiadAnnouncer(final Olympiad param1) {
+        public OlympiadAnnouncer() {
         }
 
         public void run() {
-            OlympiadGameTask[] var1 = this._tasks;
-            int var2 = var1.length;
-
-            for (int var3 = 0; var3 < var2; ++var3) {
-                OlympiadGameTask task = var1[var3];
+            for (OlympiadGameTask task : this._tasks) {
                 if (task.needAnnounce()) {
                     AbstractOlympiadGame game = task.getGame();
                     if (game != null) {
-                        int var10000;
+                        int stadium;
                         String announcement;
                         if (game.getType() == OlympiadType.NON_CLASSED) {
-                            var10000 = game.getStadiumId();
-                            announcement = "Olympiad class-free individual match is going to begin in Arena " + (var10000 + 1) + " in a moment.";
+                            stadium = game.getStadiumId();
+                            announcement = "Olympiad class-free individual match is going to begin in Arena " + (stadium + 1) + " in a moment.";
                         } else {
-                            var10000 = game.getStadiumId();
-                            announcement = "Olympiad class individual match is going to begin in Arena " + (var10000 + 1) + " in a moment.";
+                            stadium = game.getStadiumId();
+                            announcement = "Olympiad class individual match is going to begin in Arena " + (stadium + 1) + " in a moment.";
                         }
 
-                        Iterator var7 = OlympiadManagerNpc.getInstances().iterator();
-
-                        while (var7.hasNext()) {
-                            OlympiadManagerNpc manager = (OlympiadManagerNpc) var7.next();
+                        for (OlympiadManagerNpc manager : OlympiadManagerNpc.getInstances()) {
                             manager.broadcastPacket(new NpcSay(manager.getObjectId(), 1, manager.getNpcId(), announcement));
                         }
                     }

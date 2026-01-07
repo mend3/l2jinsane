@@ -38,7 +38,7 @@ public class SpreeKills extends AbstractMods {
     }
 
     public void onDeath(Creature player) {
-        players.remove(Integer.valueOf(player.getObjectId()));
+        players.remove(player.getObjectId());
     }
 
     public void onKill(Creature killer, Creature victim, boolean isPet) {
@@ -46,11 +46,11 @@ public class SpreeKills extends AbstractMods {
             return;
         Player activeChar = killer.getActingPlayer();
         int count = 1;
-        if (players.containsKey(Integer.valueOf(activeChar.getObjectId()))) {
-            count = players.get(Integer.valueOf(activeChar.getObjectId()));
+        if (players.containsKey(activeChar.getObjectId())) {
+            count = players.get(activeChar.getObjectId());
             count++;
         }
-        players.put(Integer.valueOf(activeChar.getObjectId()), Integer.valueOf(count));
+        players.put(activeChar.getObjectId(), count);
         if (ConfigData.ENABLE_KILL_EFFECT)
             activeChar.broadcastPacket(new MagicSkillUse(activeChar, victim, ConfigData.KILL_SKILL_EFFECT, 1, 500, 500));
         announcements(activeChar, count);

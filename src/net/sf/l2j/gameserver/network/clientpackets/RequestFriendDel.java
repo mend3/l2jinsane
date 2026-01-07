@@ -25,7 +25,7 @@ public final class RequestFriendDel extends L2GameClientPacket {
         if (player == null)
             return;
         int friendId = PlayerInfoTable.getInstance().getPlayerObjectId(this._name);
-        if (friendId == -1 || !player.getFriendList().contains(Integer.valueOf(friendId))) {
+        if (friendId == -1 || !player.getFriendList().contains(friendId)) {
             player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_NOT_ON_YOUR_FRIENDS_LIST).addString(this._name));
             return;
         }
@@ -70,7 +70,7 @@ public final class RequestFriendDel extends L2GameClientPacket {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't delete friendId {} for {}.", e, Integer.valueOf(friendId), player.toString());
+            LOGGER.error("Couldn't delete friendId {} for {}.", e, friendId, player.toString());
         }
     }
 }

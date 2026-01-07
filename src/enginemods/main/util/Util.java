@@ -30,7 +30,7 @@ public class Util {
     public static List<Integer> parseInt(String line, String split) {
         List<Integer> list = new ArrayList<>();
         for (String s : line.split(split))
-            list.add(Integer.valueOf(Integer.parseInt(s)));
+            list.add(Integer.parseInt(s));
         return list;
     }
 

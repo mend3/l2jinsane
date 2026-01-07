@@ -1,5 +1,6 @@
 package net.sf.l2j.commons.time;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -55,21 +56,21 @@ public class AddPattern implements NextTime {
         GregorianCalendar gc = new GregorianCalendar(TimeZone.getDefault());
         gc.setTimeInMillis(millis);
         if (this.monthInc >= 0)
-            gc.add(2, this.monthInc);
+            gc.add(Calendar.MONTH, this.monthInc);
         if (this.monthSet >= 0)
-            gc.set(2, this.monthSet);
+            gc.set(Calendar.MONTH, this.monthSet);
         if (this.dayOfMonthInc >= 0)
-            gc.add(5, this.dayOfMonthInc);
+            gc.add(Calendar.DATE, this.dayOfMonthInc);
         if (this.dayOfMonthSet >= 0)
-            gc.set(5, this.dayOfMonthSet);
+            gc.set(Calendar.DATE, this.dayOfMonthSet);
         if (this.hourOfDayInc >= 0)
-            gc.add(11, this.hourOfDayInc);
+            gc.add(Calendar.HOUR_OF_DAY, this.hourOfDayInc);
         if (this.hourOfDaySet >= 0)
-            gc.set(11, this.hourOfDaySet);
+            gc.set(Calendar.HOUR_OF_DAY, this.hourOfDaySet);
         if (this.minuteInc >= 0)
-            gc.add(12, this.minuteInc);
+            gc.add(Calendar.MINUTE, this.minuteInc);
         if (this.minuteSet >= 0)
-            gc.set(12, this.minuteSet);
+            gc.set(Calendar.MINUTE, this.minuteSet);
         return gc.getTimeInMillis();
     }
 }

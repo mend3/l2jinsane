@@ -98,7 +98,7 @@ public class SepulcherNpc extends Folk {
             case 31485:
             case 31486:
             case 31487:
-                if (Calendar.getInstance().get(12) >= 50) {
+                if (Calendar.getInstance().get(Calendar.MINUTE) >= 50) {
                     broadcastNpcSay("You can start at the scheduled time.");
                     return;
                 }
@@ -180,7 +180,7 @@ public class SepulcherNpc extends Folk {
     }
 
     public void openNextDoor(int npcId) {
-        int doorId = FourSepulchersManager.getInstance().getHallGateKeepers().get(Integer.valueOf(npcId));
+        int doorId = FourSepulchersManager.getInstance().getHallGateKeepers().get(npcId);
         Door door = DoorData.getInstance().getDoor(doorId);
         door.openMe();
         ThreadPool.schedule(() -> door.closeMe(), 10000L);

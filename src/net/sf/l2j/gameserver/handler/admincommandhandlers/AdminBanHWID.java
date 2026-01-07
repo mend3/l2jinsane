@@ -14,8 +14,8 @@ import java.util.logging.Logger;
 
 public class AdminBanHWID implements IAdminCommandHandler {
     protected static final Logger _log = Logger.getLogger(AdminBanHWID.class.getName());
-    static String INSERT_DATA = "REPLACE INTO banned_hwid (char_name, hwid) VALUES (?,?)";
     private static final String[] _adminCommands = new String[]{"admin_ban_ip"};
+    static String INSERT_DATA = "REPLACE INTO banned_hwid (char_name, hwid) VALUES (?,?)";
 
     public static void updateDatabase(Player player) {
         if (player == null)

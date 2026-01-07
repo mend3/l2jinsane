@@ -5,19 +5,13 @@ import net.sf.l2j.commons.random.Rnd;
 import net.sf.l2j.gameserver.model.World;
 import net.sf.l2j.gameserver.model.actor.Player;
 
-import java.util.logging.Logger;
-
 public class PcBang implements Runnable {
-    private static PcBang _instance;
-    Logger _log = Logger.getLogger(PcBang.class.getName());
+    private static final PcBang _instance = new PcBang();
 
     private PcBang() {
-        this._log.info("PcBang point event started.");
     }
 
     public static PcBang getInstance() {
-        if (_instance == null)
-            _instance = new PcBang();
         return _instance;
     }
 
@@ -37,7 +31,6 @@ public class PcBang implements Runnable {
                     activeChar.updatePcBangWnd(score, true, false);
                 }
             }
-            activeChar = null;
         }
     }
 }

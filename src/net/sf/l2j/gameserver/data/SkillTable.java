@@ -74,7 +74,7 @@ public class SkillTable {
             }
         }
 
-        _log.info("SkillTable: Loaded " + _skills.size() + " skills.");
+        _log.info("Loaded " + _skills.size() + " skills.");
         Iterator var9 = _skills.values().iterator();
 
         while (var9.hasNext()) {

@@ -24,7 +24,7 @@ public class DungeonManagerNpc extends Folk {
                 int hours = (int) (total / 1000L / 60L / 60L);
                 int minutes = (int) (total / 1000L / 60L - (hours * 60));
                 int seconds = (int) (total / 1000L - (hours * 60 * 60 + minutes * 60));
-                s = String.format("%02d:%02d:%02d", Integer.valueOf(hours), Integer.valueOf(minutes), Integer.valueOf(seconds));
+                s = String.format("%02d:%02d:%02d", hours, minutes, seconds);
             }
         }
         return s;

@@ -58,8 +58,8 @@ public class Petition {
             }
         if (this._petitioner != null && this._petitioner.isOnline())
             this._petitioner.sendPacket(SystemMessageId.THIS_END_THE_PETITION_PLEASE_PROVIDE_FEEDBACK);
-        PetitionManager.getInstance().getCompletedPetitions().put(Integer.valueOf(getId()), this);
-        return (PetitionManager.getInstance().getPendingPetitions().remove(Integer.valueOf(getId())) != null);
+        PetitionManager.getInstance().getCompletedPetitions().put(getId(), this);
+        return (PetitionManager.getInstance().getPendingPetitions().remove(getId()) != null);
     }
 
     public String getContent() {

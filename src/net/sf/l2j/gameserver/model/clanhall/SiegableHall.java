@@ -27,7 +27,7 @@ public final class SiegableHall extends ClanHall {
     private Calendar _nextSiege;
 
     private SiegeStatus _status = SiegeStatus.REGISTRATION_OPENED;
-    private SiegeZone _siegeZone;
+    private final SiegeZone _siegeZone;
 
     private Siege _siege;
 
@@ -41,7 +41,7 @@ public final class SiegableHall extends ClanHall {
     }
 
     @Override
-    public final void updateDb() {
+    public void updateDb() {
         try (Connection con = ConnectionPool.getConnection();
              PreparedStatement ps = con.prepareStatement(UPDATE_CLANHALL)) {
             ps.setInt(1, getOwnerId());
@@ -53,35 +53,35 @@ public final class SiegableHall extends ClanHall {
         }
     }
 
-    public final Siege getSiege() {
+    public Siege getSiege() {
         return _siege;
     }
 
-    public final void setSiege(final Siege siegable) {
+    public void setSiege(final Siege siegable) {
         _siege = siegable;
     }
 
-    public final Calendar getSiegeDate() {
+    public Calendar getSiegeDate() {
         return _nextSiege;
     }
 
-    public final long getSiegeLength() {
+    public long getSiegeLength() {
         return _siegeLength;
     }
 
-    public final long getNextSiegeTime() {
+    public long getNextSiegeTime() {
         return _nextSiege.getTimeInMillis();
     }
 
-    public final void setNextSiegeDate(long date) {
+    public void setNextSiegeDate(long date) {
         _nextSiege.setTimeInMillis(date);
     }
 
-    public final void setNextSiegeDate(final Calendar c) {
+    public void setNextSiegeDate(final Calendar c) {
         _nextSiege = c;
     }
 
-    public final void updateNextSiege() {
+    public void updateNextSiege() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_YEAR, _scheduleConfig[0]);
         c.add(Calendar.MONTH, _scheduleConfig[1]);
@@ -95,45 +95,45 @@ public final class SiegableHall extends ClanHall {
         updateDb();
     }
 
-    public final void addAttacker(final Clan clan) {
+    public void addAttacker(final Clan clan) {
         if (getSiege() != null)
             getSiege().getAttackerClans().add(clan);
     }
 
-    public final void removeAttacker(final Clan clan) {
+    public void removeAttacker(final Clan clan) {
         if (getSiege() != null)
             getSiege().getAttackerClans().remove(clan);
     }
 
-    public final boolean isRegistered(Clan clan) {
+    public boolean isRegistered(Clan clan) {
         return getSiege() != null && getSiege().getAttackerClans().contains(clan);
     }
 
-    public final SiegeStatus getSiegeStatus() {
+    public SiegeStatus getSiegeStatus() {
         return _status;
     }
 
-    public final boolean isRegistering() {
+    public boolean isRegistering() {
         return _status == SiegeStatus.REGISTRATION_OPENED;
     }
 
-    public final boolean isInSiege() {
+    public boolean isInSiege() {
         return _status == SiegeStatus.IN_PROGRESS;
     }
 
-    public final boolean isWaitingBattle() {
+    public boolean isWaitingBattle() {
         return _status == SiegeStatus.REGISTRATION_OVER;
     }
 
-    public final void updateSiegeStatus(SiegeStatus status) {
+    public void updateSiegeStatus(SiegeStatus status) {
         _status = status;
     }
 
-    public final SiegeZone getSiegeZone() {
+    public SiegeZone getSiegeZone() {
         return _siegeZone;
     }
 
-    public final void spawnDoor() {
+    public void spawnDoor() {
         spawnDoor(false);
     }
 
@@ -142,7 +142,7 @@ public final class SiegableHall extends ClanHall {
      *
      * @param isDoorWeak if true, spawn doors with 50% max HPs.
      */
-    public final void spawnDoor(boolean isDoorWeak) {
+    public void spawnDoor(boolean isDoorWeak) {
         for (Door door : getDoors()) {
             if (door.isDead())
                 door.doRevive();
@@ -157,7 +157,7 @@ public final class SiegableHall extends ClanHall {
      * @param clan   : The {@link Clan} to test.
      * @param player : The {@link Player} to test.
      */
-    public final void registerClan(Clan clan, Player player) {
+    public void registerClan(Clan clan, Player player) {
         if (clan == null || clan.getLevel() < Config.MINIMUM_CLAN_LEVEL)
             player.sendPacket(SystemMessageId.ONLY_CLAN_LEVEL_4_ABOVE_MAY_SIEGE);
         else if (isWaitingBattle())
@@ -183,7 +183,7 @@ public final class SiegableHall extends ClanHall {
      *
      * @param clan : The {@link Clan} to test.
      */
-    public final void unregisterClan(Clan clan) {
+    public void unregisterClan(Clan clan) {
         if (!isRegistering())
             return;
 

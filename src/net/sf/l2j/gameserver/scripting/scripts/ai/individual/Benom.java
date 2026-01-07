@@ -25,15 +25,15 @@ public class Benom extends L2AttackableAIScript {
     private static final SpawnLocation[] TARGET_TELEPORTS = new SpawnLocation[]{new SpawnLocation(12860, -49158, -976, 650), new SpawnLocation(14878, -51339, 1024, 100), new SpawnLocation(15674, -49970, 864, 100), new SpawnLocation(15696, -48326, 864, 100), new SpawnLocation(14873, -46956, 1024, 100), new SpawnLocation(12157, -49135, -1088, 650), new SpawnLocation(12875, -46392, -288, 200), new SpawnLocation(14087, -46706, -288, 200), new SpawnLocation(14086, -51593, -288, 200), new SpawnLocation(12864, -51898, -288, 200), new SpawnLocation(15538, -49153, -1056, 200), new SpawnLocation(17001, -49149, -1064, 650)};
     private static final SpawnLocation THRONE_LOC = new SpawnLocation(11025, -49152, -537, 0);
     private static final SpawnLocation PRISON_LOC = new SpawnLocation(11882, -49216, -3008, 0);
-    private Siege _siege = this.addSiegeNotify(8);
+    private final Siege _siege = this.addSiegeNotify(8);
     private Npc _benom;
     private boolean _isPrisonOpened;
-    private List<Player> _targets = new ArrayList();
+    private final List<Player> _targets = new ArrayList();
 
     public Benom() {
         super("ai/individual");
-        this.addStartNpc(new int[]{35506, 29055});
-        this.addTalkId(new int[]{35506, 29055});
+        this.addStartNpc(35506, 29055);
+        this.addTalkId(35506, 29055);
     }
 
     private static void teleportTarget(Player player) {
@@ -45,7 +45,7 @@ public class Benom extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addEventIds(29054, new ScriptEventType[]{ScriptEventType.ON_AGGRO, ScriptEventType.ON_SPELL_FINISHED, ScriptEventType.ON_ATTACK, ScriptEventType.ON_KILL});
+        this.addEventIds(29054, ScriptEventType.ON_AGGRO, ScriptEventType.ON_SPELL_FINISHED, ScriptEventType.ON_ATTACK, ScriptEventType.ON_KILL);
     }
 
     public String onTalk(Npc npc, Player talker) {

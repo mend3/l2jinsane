@@ -13,11 +13,11 @@ public class PolymorphingAngel extends L2AttackableAIScript {
     private static final Map<Integer, Integer> ANGELSPAWNS = new HashMap<>();
 
     static {
-        ANGELSPAWNS.put(Integer.valueOf(20830), Integer.valueOf(20859));
-        ANGELSPAWNS.put(Integer.valueOf(21067), Integer.valueOf(21068));
-        ANGELSPAWNS.put(Integer.valueOf(21062), Integer.valueOf(21063));
-        ANGELSPAWNS.put(Integer.valueOf(20831), Integer.valueOf(20860));
-        ANGELSPAWNS.put(Integer.valueOf(21070), Integer.valueOf(21071));
+        ANGELSPAWNS.put(20830, 20859);
+        ANGELSPAWNS.put(21067, 21068);
+        ANGELSPAWNS.put(21062, 21063);
+        ANGELSPAWNS.put(20831, 20860);
+        ANGELSPAWNS.put(21070, 21071);
     }
 
     public PolymorphingAngel() {
@@ -29,7 +29,7 @@ public class PolymorphingAngel extends L2AttackableAIScript {
     }
 
     public String onKill(Npc npc, Creature killer) {
-        Attackable newNpc = (Attackable) addSpawn(ANGELSPAWNS.get(Integer.valueOf(npc.getNpcId())), npc, false, 0L, false);
+        Attackable newNpc = (Attackable) addSpawn(ANGELSPAWNS.get(npc.getNpcId()), npc, false, 0L, false);
         attack(newNpc, killer);
         return super.onKill(npc, killer);
     }

@@ -38,15 +38,15 @@ public class NpcTemplate extends CreatureTemplate {
     private final Map<ScriptEventType, List<Quest>> _questEvents;
     private final boolean _usingServerSideName;
     private final boolean _usingServerSideTitle;
-    private int _corpseTime;
     private final int _dropHerbGroup;
-    private NpcTemplate.Race _race;
     private final NpcTemplate.AIType _aiType;
+    private final List<DropCategory> _categories;
+    private final List<MinionData> _minions;
+    private int _corpseTime;
+    private NpcTemplate.Race _race;
     private String[] _clans;
     private int _clanRange;
     private int[] _ignoredIds;
-    private final List<DropCategory> _categories;
-    private final List<MinionData> _minions;
     private List<ClassId> _teachInfo;
     private Castle _castle;
 

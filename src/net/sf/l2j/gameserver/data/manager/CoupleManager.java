@@ -37,7 +37,7 @@ public class CoupleManager {
                     ResultSet rs = ps.executeQuery();
                     try {
                         while (rs.next())
-                            this._couples.put(Integer.valueOf(rs.getInt("id")), new IntIntHolder(rs.getInt("requesterId"), rs.getInt("partnerId")));
+                            this._couples.put(rs.getInt("id"), new IntIntHolder(rs.getInt("requesterId"), rs.getInt("partnerId")));
                         if (rs != null)
                             rs.close();
                     } catch (Throwable throwable) {
@@ -74,7 +74,7 @@ public class CoupleManager {
         } catch (Exception e) {
             LOGGER.error("Couldn't load couples.", e);
         }
-        LOGGER.info("Loaded {} couples.", Integer.valueOf(this._couples.size()));
+        LOGGER.info("Loaded {} couples.", this._couples.size());
     }
 
     public final Map<Integer, IntIntHolder> getCouples() {
@@ -82,20 +82,20 @@ public class CoupleManager {
     }
 
     public final IntIntHolder getCouple(int coupleId) {
-        return this._couples.get(Integer.valueOf(coupleId));
+        return this._couples.get(coupleId);
     }
 
     public void addCouple(Player requester, Player partner) {
         if (requester == null || partner == null)
             return;
         int coupleId = IdFactory.getInstance().getNextId();
-        this._couples.put(Integer.valueOf(coupleId), new IntIntHolder(requester.getObjectId(), partner.getObjectId()));
+        this._couples.put(coupleId, new IntIntHolder(requester.getObjectId(), partner.getObjectId()));
         requester.setCoupleId(coupleId);
         partner.setCoupleId(coupleId);
     }
 
     public void deleteCouple(int coupleId) {
-        IntIntHolder couple = this._couples.remove(Integer.valueOf(coupleId));
+        IntIntHolder couple = this._couples.remove(coupleId);
         if (couple == null)
             return;
         Player requester = World.getInstance().getPlayer(couple.getId());
@@ -167,7 +167,7 @@ public class CoupleManager {
     }
 
     public final int getPartnerId(int coupleId, int objectId) {
-        IntIntHolder couple = this._couples.get(Integer.valueOf(coupleId));
+        IntIntHolder couple = this._couples.get(coupleId);
         if (couple == null)
             return 0;
         return (couple.getId() == objectId) ? couple.getValue() : couple.getId();

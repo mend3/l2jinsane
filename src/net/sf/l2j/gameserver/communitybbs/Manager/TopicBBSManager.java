@@ -128,11 +128,11 @@ public class TopicBBSManager extends BaseBBSManager {
     }
 
     public void setMaxID(int id, Forum forum) {
-        this._maxId.put(forum, Integer.valueOf(id));
+        this._maxId.put(forum, id);
     }
 
     public int getMaxID(Forum forum) {
-        return this._maxId.getOrDefault(forum, Integer.valueOf(0));
+        return this._maxId.getOrDefault(forum, 0);
     }
 
     public Topic getTopicById(int forumId) {
@@ -161,30 +161,30 @@ public class TopicBBSManager extends BaseBBSManager {
             Topic topic = forum.getTopic(j);
             if (topic != null)
                 if (i++ >= 12 * (index - 1))
-                    StringUtil.append(sb, "<table border=0 cellspacing=0 cellpadding=5 WIDTH=610><tr><td FIXWIDTH=5></td><td FIXWIDTH=415><a action=\"bypass _bbsposts;read;", Integer.valueOf(forum.getId()), ";", Integer.valueOf(topic.getID()), "\">", topic.getName(), "</a></td><td FIXWIDTH=120 align=center></td><td FIXWIDTH=70 align=center>", dateFormat.format(new Date(topic.getDate())), "</td></tr></table><img src=\"L2UI.Squaregray\" width=\"610\" height=\"1\">");
+                    StringUtil.append(sb, "<table border=0 cellspacing=0 cellpadding=5 WIDTH=610><tr><td FIXWIDTH=5></td><td FIXWIDTH=415><a action=\"bypass _bbsposts;read;", forum.getId(), ";", topic.getID(), "\">", topic.getName(), "</a></td><td FIXWIDTH=120 align=center></td><td FIXWIDTH=70 align=center>", dateFormat.format(new Date(topic.getDate())), "</td></tr></table><img src=\"L2UI.Squaregray\" width=\"610\" height=\"1\">");
         }
         sb.append("<br><table width=610 cellspace=0 cellpadding=0><tr><td width=50><button value=\"&$422;\" action=\"bypass _bbsmemo\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\"></td><td width=510 align=center><table border=0><tr>");
         if (index == 1) {
             sb.append("<td><button action=\"\" back=\"l2ui_ch3.prev1_down\" fore=\"l2ui_ch3.prev1\" width=16 height=16 ></td>");
         } else {
-            StringUtil.append(sb, "<td><button action=\"bypass _bbstopics;read;", Integer.valueOf(forum.getId()), ";", Integer.valueOf(index - 1), "\" back=\"l2ui_ch3.prev1_down\" fore=\"l2ui_ch3.prev1\" width=16 height=16 ></td>");
+            StringUtil.append(sb, "<td><button action=\"bypass _bbstopics;read;", forum.getId(), ";", index - 1, "\" back=\"l2ui_ch3.prev1_down\" fore=\"l2ui_ch3.prev1\" width=16 height=16 ></td>");
         }
         int pageNumber = forum.getTopicSize() / 8;
         if (pageNumber * 8 != ClanTable.getInstance().getClans().size())
             pageNumber++;
         for (int k = 1; k <= pageNumber; k++) {
             if (k == index) {
-                StringUtil.append(sb, "<td> ", Integer.valueOf(k), " </td>");
+                StringUtil.append(sb, "<td> ", k, " </td>");
             } else {
-                StringUtil.append(sb, "<td><a action=\"bypass _bbstopics;read;", Integer.valueOf(forum.getId()), ";", Integer.valueOf(k), "\"> ", Integer.valueOf(k), " </a></td>");
+                StringUtil.append(sb, "<td><a action=\"bypass _bbstopics;read;", forum.getId(), ";", k, "\"> ", k, " </a></td>");
             }
         }
         if (index == pageNumber) {
             sb.append("<td><button action=\"\" back=\"l2ui_ch3.next1_down\" fore=\"l2ui_ch3.next1\" width=16 height=16 ></td>");
         } else {
-            StringUtil.append(sb, "<td><button action=\"bypass _bbstopics;read;", Integer.valueOf(forum.getId()), ";", Integer.valueOf(index + 1), "\" back=\"l2ui_ch3.next1_down\" fore=\"l2ui_ch3.next1\" width=16 height=16 ></td>");
+            StringUtil.append(sb, "<td><button action=\"bypass _bbstopics;read;", forum.getId(), ";", index + 1, "\" back=\"l2ui_ch3.next1_down\" fore=\"l2ui_ch3.next1\" width=16 height=16 ></td>");
         }
-        StringUtil.append(sb, "</tr></table></td><td align=right><button value = \"&$421;\" action=\"bypass _bbstopics;crea;", Integer.valueOf(forum.getId()), "\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\" ></td></tr><tr><td><img src=\"l2ui.mini_logo\" width=5 height=10></td></tr><tr><td></td><td align=center><table border=0><tr><td></td><td><edit var = \"Search\" width=130 height=11></td><td><button value=\"&$420;\" action=\"Write 5 -2 0 Search _ _\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\"></td></tr></table></td></tr></table><br><br><br></center></body></html>");
+        StringUtil.append(sb, "</tr></table></td><td align=right><button value = \"&$421;\" action=\"bypass _bbstopics;crea;", forum.getId(), "\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\" ></td></tr><tr><td><img src=\"l2ui.mini_logo\" width=5 height=10></td></tr><tr><td></td><td align=center><table border=0><tr><td></td><td><edit var = \"Search\" width=130 height=11></td><td><button value=\"&$420;\" action=\"Write 5 -2 0 Search _ _\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\"></td></tr></table></td></tr></table><br><br><br></center></body></html>");
         separateAndSend(sb.toString(), player);
     }
 

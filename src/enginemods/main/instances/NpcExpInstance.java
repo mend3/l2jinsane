@@ -24,8 +24,8 @@ public class NpcExpInstance {
     private final Map<ExpSpType, Double> _expSettings = new HashMap<>();
 
     public NpcExpInstance() {
-        this._expSettings.put(ExpSpType.EXP, Double.valueOf(1.0D));
-        this._expSettings.put(ExpSpType.SP, Double.valueOf(1.0D));
+        this._expSettings.put(ExpSpType.EXP, 1.0D);
+        this._expSettings.put(ExpSpType.SP, 1.0D);
     }
 
     private static int[] calculateExpAndSp(Attackable npc, int diff, int damage, long totalDamage) {
@@ -55,7 +55,7 @@ public class NpcExpInstance {
 
     public void increaseRate(ExpSpType type, double bonus) {
         double oldValue = this._expSettings.get(type);
-        this._expSettings.put(type, Double.valueOf(oldValue + bonus - 1.0D));
+        this._expSettings.put(type, oldValue + bonus - 1.0D);
     }
 
     public boolean hasSettings() {

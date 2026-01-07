@@ -23,16 +23,16 @@ public class Q629_CleanUpTheSwampOfScreams extends Quest {
 
     public Q629_CleanUpTheSwampOfScreams() {
         super(629, "Clean up the Swamp of Screams");
-        CHANCES.put(Integer.valueOf(21508), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21509), Integer.valueOf(431000));
-        CHANCES.put(Integer.valueOf(21510), Integer.valueOf(521000));
-        CHANCES.put(Integer.valueOf(21511), Integer.valueOf(576000));
-        CHANCES.put(Integer.valueOf(21512), Integer.valueOf(746000));
-        CHANCES.put(Integer.valueOf(21513), Integer.valueOf(530000));
-        CHANCES.put(Integer.valueOf(21514), Integer.valueOf(538000));
-        CHANCES.put(Integer.valueOf(21515), Integer.valueOf(545000));
-        CHANCES.put(Integer.valueOf(21516), Integer.valueOf(553000));
-        CHANCES.put(Integer.valueOf(21517), Integer.valueOf(560000));
+        CHANCES.put(21508, 500000);
+        CHANCES.put(21509, 431000);
+        CHANCES.put(21510, 521000);
+        CHANCES.put(21511, 576000);
+        CHANCES.put(21512, 746000);
+        CHANCES.put(21513, 530000);
+        CHANCES.put(21514, 538000);
+        CHANCES.put(21515, 545000);
+        CHANCES.put(21516, 553000);
+        CHANCES.put(21517, 560000);
         setItemsIds(7250, 7251);
         addStartNpc(31553);
         addTalkId(31553);
@@ -93,7 +93,7 @@ public class Q629_CleanUpTheSwampOfScreams extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropItems(7250, 1, 100, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(7250, 1, 100, CHANCES.get(npc.getNpcId()));
         return null;
     }
 }

@@ -32,7 +32,7 @@ public class CursedWeaponManager implements IXmlReader {
             return;
         }
         parseFile("./data/xml/cursedWeapons.xml");
-        LOGGER.info("Loaded {} cursed weapons.", Integer.valueOf(this._cursedWeapons.size()));
+        LOGGER.info("Loaded {} cursed weapons.", this._cursedWeapons.size());
     }
 
     public void parseDocument(Document doc, Path path) {
@@ -51,7 +51,7 @@ public class CursedWeaponManager implements IXmlReader {
     }
 
     public boolean isCursed(int itemId) {
-        return this._cursedWeapons.containsKey(Integer.valueOf(itemId));
+        return this._cursedWeapons.containsKey(itemId);
     }
 
     public Collection<CursedWeapon> getCursedWeapons() {
@@ -63,7 +63,7 @@ public class CursedWeaponManager implements IXmlReader {
     }
 
     public CursedWeapon getCursedWeapon(int itemId) {
-        return this._cursedWeapons.get(Integer.valueOf(itemId));
+        return this._cursedWeapons.get(itemId);
     }
 
     public synchronized void checkDrop(Attackable attackable, Player player) {
@@ -78,11 +78,11 @@ public class CursedWeaponManager implements IXmlReader {
     }
 
     public void activate(Player player, ItemInstance item) {
-        CursedWeapon cw = this._cursedWeapons.get(Integer.valueOf(item.getItemId()));
+        CursedWeapon cw = this._cursedWeapons.get(item.getItemId());
         if (cw == null)
             return;
         if (player.isCursedWeaponEquipped()) {
-            this._cursedWeapons.get(Integer.valueOf(player.getCursedWeaponEquippedId())).rankUp();
+            this._cursedWeapons.get(player.getCursedWeaponEquippedId()).rankUp();
             cw.setPlayer(player);
             cw.endOfLife();
         } else {
@@ -91,21 +91,21 @@ public class CursedWeaponManager implements IXmlReader {
     }
 
     public void drop(int itemId, Creature killer) {
-        CursedWeapon cw = this._cursedWeapons.get(Integer.valueOf(itemId));
+        CursedWeapon cw = this._cursedWeapons.get(itemId);
         if (cw == null)
             return;
         cw.dropIt(killer);
     }
 
     public void increaseKills(int itemId) {
-        CursedWeapon cw = this._cursedWeapons.get(Integer.valueOf(itemId));
+        CursedWeapon cw = this._cursedWeapons.get(itemId);
         if (cw == null)
             return;
         cw.increaseKills();
     }
 
     public int getCurrentStage(int itemId) {
-        CursedWeapon cw = this._cursedWeapons.get(Integer.valueOf(itemId));
+        CursedWeapon cw = this._cursedWeapons.get(itemId);
         return (cw == null) ? 0 : cw.getCurrentStage();
     }
 

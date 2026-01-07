@@ -54,7 +54,7 @@ public class L2RandomZone extends SpawnZoneType {
             this._time = Integer.parseInt(value);
         } else if (name.equals("locs")) {
             for (String locs : value.split(";"))
-                this._locations.add(new Location(Integer.valueOf(locs.split(",")[0]), Integer.valueOf(locs.split(",")[1]), Integer.valueOf(locs.split(",")[2])));
+                this._locations.add(new Location(Integer.parseInt(locs.split(",")[0]), Integer.parseInt(locs.split(",")[1]), Integer.parseInt(locs.split(",")[2])));
         } else if (name.equals("disabledClasses")) {
             Collections.addAll(_classes, value.split(","));
         } else if (name.equals("disabledItems")) {
@@ -123,7 +123,7 @@ public class L2RandomZone extends SpawnZoneType {
 
     protected void onExit(Creature character) {
         if (character instanceof Player player) {
-            ((Player) character).sendPacket(SystemMessageId.LEFT_COMBAT_ZONE);
+            player.sendPacket(SystemMessageId.LEFT_COMBAT_ZONE);
             if (player.getClan() != null) {
                 String zergClan1 = player.getClan().getName();
                 if (this._zergMap.get(zergClan1) != null)

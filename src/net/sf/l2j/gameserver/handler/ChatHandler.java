@@ -29,11 +29,11 @@ public class ChatHandler {
 
     private void registerHandler(IChatHandler handler) {
         for (int id : handler.getChatTypeList())
-            this._entries.put(Integer.valueOf(id), handler);
+            this._entries.put(id, handler);
     }
 
     public IChatHandler getHandler(int chatType) {
-        return this._entries.get(Integer.valueOf(chatType));
+        return this._entries.get(chatType);
     }
 
     public int size() {

@@ -58,7 +58,7 @@ public class DM extends AbstractEvent {
         super.increaseScore(player, count);
         for (Iterator<Integer> iterator = Config.DM_ON_KILL_REWARDS.keySet().iterator(); iterator.hasNext(); ) {
             int itemId = iterator.next();
-            player.addItem("Event reward.", itemId, Config.DM_ON_KILL_REWARDS.get(Integer.valueOf(itemId)), null, true);
+            player.addItem("Event reward.", itemId, Config.DM_ON_KILL_REWARDS.get(itemId), null, true);
         }
         player.setTitle("Kills: " + getScore(player));
         player.broadcastUserInfo();

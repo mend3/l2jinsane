@@ -155,26 +155,26 @@ public class Servitor extends Summon {
     private record SummonLifetime(Player _player, Servitor _summon) implements Runnable {
 
         public void run() {
-                double oldTimeRemaining = this._summon.getTimeRemaining();
-                int maxTime = this._summon.getTotalLifeTime();
-                if (this._summon.isAttackingNow()) {
-                    this._summon.decTimeRemaining(this._summon.getTimeLostActive());
-                } else {
-                    this._summon.decTimeRemaining(this._summon.getTimeLostIdle());
-                }
-                double newTimeRemaining = this._summon.getTimeRemaining();
-                if (newTimeRemaining < 0.0D) {
+            double oldTimeRemaining = this._summon.getTimeRemaining();
+            int maxTime = this._summon.getTotalLifeTime();
+            if (this._summon.isAttackingNow()) {
+                this._summon.decTimeRemaining(this._summon.getTimeLostActive());
+            } else {
+                this._summon.decTimeRemaining(this._summon.getTimeLostIdle());
+            }
+            double newTimeRemaining = this._summon.getTimeRemaining();
+            if (newTimeRemaining < 0.0D) {
+                this._summon.unSummon(this._player);
+            } else if (newTimeRemaining <= this._summon.getNextItemConsumeTime() && oldTimeRemaining > this._summon.getNextItemConsumeTime()) {
+                this._summon.decNextItemConsumeTime(maxTime / (this._summon.getItemConsumeSteps() + 1));
+                if (this._summon.getItemConsumeCount() > 0 && this._summon.getItemConsumeId() != 0 && !this._summon.isDead() && !this._summon.destroyItemByItemId("Consume", this._summon.getItemConsumeId(), this._summon.getItemConsumeCount(), this._player, true))
                     this._summon.unSummon(this._player);
-                } else if (newTimeRemaining <= this._summon.getNextItemConsumeTime() && oldTimeRemaining > this._summon.getNextItemConsumeTime()) {
-                    this._summon.decNextItemConsumeTime(maxTime / (this._summon.getItemConsumeSteps() + 1));
-                    if (this._summon.getItemConsumeCount() > 0 && this._summon.getItemConsumeId() != 0 && !this._summon.isDead() && !this._summon.destroyItemByItemId("Consume", this._summon.getItemConsumeId(), this._summon.getItemConsumeCount(), this._player, true))
-                        this._summon.unSummon(this._player);
-                }
-                if (this._summon.lastShowntimeRemaining - newTimeRemaining > (maxTime / 352)) {
-                    this._player.sendPacket(new SetSummonRemainTime(maxTime, (int) newTimeRemaining));
-                    this._summon.lastShowntimeRemaining = (int) newTimeRemaining;
-                    this._summon.updateEffectIcons();
-                }
+            }
+            if (this._summon.lastShowntimeRemaining - newTimeRemaining > (maxTime / 352)) {
+                this._player.sendPacket(new SetSummonRemainTime(maxTime, (int) newTimeRemaining));
+                this._summon.lastShowntimeRemaining = (int) newTimeRemaining;
+                this._summon.updateEffectIcons();
             }
         }
+    }
 }

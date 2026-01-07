@@ -60,7 +60,7 @@ public abstract class ClientBasePacket {
     public final byte[] readB(int length) {
         byte[] result = new byte[length];
 
-        System.arraycopy(this._decrypt, this._off + 0, result, 0, length);
+        System.arraycopy(this._decrypt, this._off, result, 0, length);
 
         this._off += length;
         return result;

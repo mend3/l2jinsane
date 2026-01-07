@@ -20,27 +20,27 @@ public class ClanPenalty implements IUserCommandHandler {
         StringBuilder sb = new StringBuilder();
         long currentTime = System.currentTimeMillis();
         if (activeChar.getClanJoinExpiryTime() > currentTime)
-            StringUtil.append(sb, "<tr><td width=170>Unable to join a clan.</td><td width=100 align=center>", sdf.format(Long.valueOf(activeChar.getClanJoinExpiryTime())), "</td></tr>");
+            StringUtil.append(sb, "<tr><td width=170>Unable to join a clan.</td><td width=100 align=center>", sdf.format(activeChar.getClanJoinExpiryTime()), "</td></tr>");
         if (activeChar.getClanCreateExpiryTime() > currentTime)
-            StringUtil.append(sb, "<tr><td width=170>Unable to create a clan.</td><td width=100 align=center>", sdf.format(Long.valueOf(activeChar.getClanCreateExpiryTime())), "</td></tr>");
+            StringUtil.append(sb, "<tr><td width=170>Unable to create a clan.</td><td width=100 align=center>", sdf.format(activeChar.getClanCreateExpiryTime()), "</td></tr>");
         Clan clan = activeChar.getClan();
         if (clan != null) {
             if (clan.getCharPenaltyExpiryTime() > currentTime)
-                StringUtil.append(sb, "<tr><td width=170>Unable to invite a clan member.</td><td width=100 align=center>", sdf.format(Long.valueOf(clan.getCharPenaltyExpiryTime())), "</td></tr>");
+                StringUtil.append(sb, "<tr><td width=170>Unable to invite a clan member.</td><td width=100 align=center>", sdf.format(clan.getCharPenaltyExpiryTime()), "</td></tr>");
             int penaltyType = clan.getAllyPenaltyType();
             if (penaltyType != 0) {
                 long expiryTime = clan.getAllyPenaltyExpiryTime();
                 if (expiryTime > currentTime)
                     if (penaltyType == 1 || penaltyType == 2) {
-                        StringUtil.append(sb, "<tr><td width=170>Unable to join an alliance.</td><td width=100 align=center>", sdf.format(Long.valueOf(expiryTime)), "</td></tr>");
+                        StringUtil.append(sb, "<tr><td width=170>Unable to join an alliance.</td><td width=100 align=center>", sdf.format(expiryTime), "</td></tr>");
                     } else if (penaltyType == 3) {
-                        StringUtil.append(sb, "<tr><td width=170>Unable to invite a new alliance member.</td><td width=100 align=center>", sdf.format(Long.valueOf(expiryTime)), "</td></tr>");
+                        StringUtil.append(sb, "<tr><td width=170>Unable to invite a new alliance member.</td><td width=100 align=center>", sdf.format(expiryTime), "</td></tr>");
                     } else if (penaltyType == 4) {
-                        StringUtil.append(sb, "<tr><td width=170>Unable to create an alliance.</td><td width=100 align=center>", sdf.format(Long.valueOf(expiryTime)), "</td></tr>");
+                        StringUtil.append(sb, "<tr><td width=170>Unable to create an alliance.</td><td width=100 align=center>", sdf.format(expiryTime), "</td></tr>");
                     }
             }
             if (clan.getDissolvingExpiryTime() > currentTime)
-                StringUtil.append(sb, "<tr><td width=170>The request to dissolve the clan is currently being processed.  (Restrictions are now going to be imposed on the use of clan functions.)</td><td width=100 align=center>", sdf.format(Long.valueOf(clan.getDissolvingExpiryTime())), "</td></tr>");
+                StringUtil.append(sb, "<tr><td width=170>The request to dissolve the clan is currently being processed.  (Restrictions are now going to be imposed on the use of clan functions.)</td><td width=100 align=center>", sdf.format(clan.getDissolvingExpiryTime()), "</td></tr>");
             boolean registeredOnAnySiege = false;
             for (Castle castle : CastleManager.getInstance().getCastles()) {
                 if (castle.getSiege().checkSides(clan)) {

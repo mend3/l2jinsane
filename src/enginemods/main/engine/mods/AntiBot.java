@@ -1,15 +1,16 @@
 package enginemods.main.engine.mods;
 
 import enginemods.main.data.ConfigData;
-import enginemods.main.data.IconData;
 import enginemods.main.data.PlayerData;
 import enginemods.main.engine.AbstractMods;
+import enginemods.main.enums.EngineStateType;
 import enginemods.main.enums.ItemIconType;
 import enginemods.main.util.Util;
 import enginemods.main.util.builders.html.Html;
 import enginemods.main.util.builders.html.HtmlBuilder;
 import mods.autofarm.AutofarmPlayerRoutine;
 import net.sf.l2j.commons.random.Rnd;
+import net.sf.l2j.gameserver.data.xml.IconsTable;
 import net.sf.l2j.gameserver.enums.PunishmentType;
 import net.sf.l2j.gameserver.enums.skills.AbnormalEffect;
 import net.sf.l2j.gameserver.model.actor.Creature;
@@ -31,8 +32,8 @@ public class AntiBot extends AbstractMods {
         hb.append("<br>");
         hb.append(Html.headHtml("ANTI BOT"));
         hb.append("<br>");
-        hb.append("has ", Integer.valueOf(PlayerData.get(activeChar).getAttempts()), " attemps!<br>");
-        List<Integer> aux = Arrays.asList(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(3), Integer.valueOf(4), Integer.valueOf(5));
+        hb.append("has ", PlayerData.get(activeChar).getAttempts(), " attemps!<br>");
+        List<Integer> aux = Arrays.asList(0, 1, 3, 4, 5);
         ItemIconType itemIconType1 = ItemIconType.values()[aux.get(Rnd.get(aux.size()))];
         ItemIconType itemIconType2 = ItemIconType.values()[aux.get(Rnd.get(aux.size()))];
         while (itemIconType1 == itemIconType2)
@@ -45,12 +46,12 @@ public class AntiBot extends AbstractMods {
         for (int i = 0; i <= 3; i++) {
             String icon = "";
             if (i == rnd) {
-                icon = IconData.getRandomItemType(itemIconType1, 40);
+                icon = IconsTable.getRandomItemType(itemIconType1, 40);
             } else {
-                icon = IconData.getRandomItemType(itemIconType2, 40);
+                icon = IconsTable.getRandomItemType(itemIconType2, 40);
             }
             hb.append("<td align=\"center\" fixwidth=\"32\">");
-            hb.append("<button value=\"\" action=\"bypass -h Engine AntiBot ", Integer.valueOf(i), "\" width=\"32\" height=\"32\" back=\"", icon, "\" fore=\"", icon, "\">");
+            hb.append("<button value=\"\" action=\"bypass -h Engine AntiBot ", i, "\" width=\"32\" height=\"32\" back=\"", icon, "\" fore=\"", icon, "\">");
             hb.append("</td>");
         }
         hb.append("</tr>");
@@ -73,10 +74,8 @@ public class AntiBot extends AbstractMods {
     }
 
     public void onModState() {
-        switch (getState()) {
-            case END:
-                cancelTimers("sendJail");
-                break;
+        if (EngineStateType.END == getState()) {
+            cancelTimers("sendJail");
         }
     }
 
@@ -108,16 +107,14 @@ public class AntiBot extends AbstractMods {
     }
 
     public void onTimer(String timerName, Npc npc, Player player) {
-        switch (timerName) {
-            case "sendJail":
-                if (PlayerData.get(player).getAttempts() <= 0) {
-                    sendPlayerJail(player);
-                    break;
-                }
-                startTimer("sendJail", (ConfigData.TIME_CHECK_ANTIBOT * 1000L), null, player, false);
-                PlayerData.get(player).decreaseAttempts();
-                generateHtmlIndex(player);
-                break;
+        if (timerName.equalsIgnoreCase("sendJail")) {
+            if (PlayerData.get(player).getAttempts() <= 0) {
+                sendPlayerJail(player);
+                return;
+            }
+            startTimer("sendJail", (ConfigData.TIME_CHECK_ANTIBOT * 1000L), null, player, false);
+            PlayerData.get(player).decreaseAttempts();
+            generateHtmlIndex(player);
         }
     }
 

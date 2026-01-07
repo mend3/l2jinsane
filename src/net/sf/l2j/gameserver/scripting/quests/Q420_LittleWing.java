@@ -106,7 +106,8 @@ public class Q420_LittleWing extends Quest {
             return false;
         if (isDeluxe) {
             return st.getQuestItemsCount(2131) >= 1 && st.getQuestItemsCount(1873) >= 5 && st.getQuestItemsCount(1875) >= 1 && st.getQuestItemsCount(3820) >= 20;
-        } else return st.getQuestItemsCount(2130) >= 1 && st.getQuestItemsCount(1873) >= 3 && st.getQuestItemsCount(3820) >= 10;
+        } else
+            return st.getQuestItemsCount(2130) >= 1 && st.getQuestItemsCount(1873) >= 3 && st.getQuestItemsCount(3820) >= 10;
     }
 
     private static void giveRandomPet(QuestState st, boolean hasFairyDust) {

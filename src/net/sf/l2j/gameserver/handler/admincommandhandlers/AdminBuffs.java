@@ -34,18 +34,18 @@ public class AdminBuffs implements IAdminCommandHandler {
         for (int i = start; i < end; i++) {
             L2Effect e = effects[i];
             if (e != null)
-                StringUtil.append(sb, "<tr><td>", e.getSkill().getName(), "</td><td>", e.getSkill().isToggle() ? "toggle" : ((e.getPeriod() - e.getTime()) + "s"), "</td><td><a action=\"bypass -h admin_stopbuff ", Integer.valueOf(target.getObjectId()), " ", Integer.valueOf(e.getSkill().getId()), "\">Remove</a></td></tr>");
+                StringUtil.append(sb, "<tr><td>", e.getSkill().getName(), "</td><td>", e.getSkill().isToggle() ? "toggle" : ((e.getPeriod() - e.getTime()) + "s"), "</td><td><a action=\"bypass -h admin_stopbuff ", target.getObjectId(), " ", e.getSkill().getId(), "\">Remove</a></td></tr>");
         }
         sb.append("</table><br><table width=\"100%\" bgcolor=444444><tr>");
         for (int x = 0; x < max; x++) {
             int pagenr = x + 1;
             if (page == pagenr) {
-                StringUtil.append(sb, "<td>Page ", Integer.valueOf(pagenr), "</td>");
+                StringUtil.append(sb, "<td>Page ", pagenr, "</td>");
             } else {
-                StringUtil.append(sb, "<td><a action=\"bypass -h admin_getbuffs ", target.getName(), " ", Integer.valueOf(x + 1), "\"> Page ", Integer.valueOf(pagenr), "</a></td>");
+                StringUtil.append(sb, "<td><a action=\"bypass -h admin_getbuffs ", target.getName(), " ", x + 1, "\"> Page ", pagenr, "</a></td>");
             }
         }
-        StringUtil.append(sb, "</tr></table><br><center><button value=\"Remove All\" action=\"bypass -h admin_stopallbuffs ", Integer.valueOf(target.getObjectId()), "\" width=75 height=21 back=\"L2UI_ch3.Btn1_normalOn\" fore=\"L2UI_ch3.Btn1_normal\"></html>");
+        StringUtil.append(sb, "</tr></table><br><center><button value=\"Remove All\" action=\"bypass -h admin_stopallbuffs ", target.getObjectId(), "\" width=75 height=21 back=\"L2UI_ch3.Btn1_normalOn\" fore=\"L2UI_ch3.Btn1_normal\"></html>");
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setHtml(sb.toString());
         activeChar.sendPacket(html);

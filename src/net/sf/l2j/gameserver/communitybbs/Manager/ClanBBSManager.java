@@ -63,7 +63,7 @@ public class ClanBBSManager extends BaseBBSManager {
         StringBuilder sb = new StringBuilder();
         Clan clan = player.getClan();
         if (clan != null)
-            StringUtil.append(sb, "<table width=610 bgcolor=A7A19A><tr><td width=5></td><td width=605><a action=\"bypass _bbsclan;home;", Integer.valueOf(clan.getClanId()), "\">[GO TO MY CLAN]</a></td></tr></table>");
+            StringUtil.append(sb, "<table width=610 bgcolor=A7A19A><tr><td width=5></td><td width=605><a action=\"bypass _bbsclan;home;", clan.getClanId(), "\">[GO TO MY CLAN]</a></td></tr></table>");
         content = content.replace("%homebar%", sb.toString());
         if (index < 1)
             index = 1;
@@ -73,14 +73,14 @@ public class ClanBBSManager extends BaseBBSManager {
             if (i > (index + 1) * 7)
                 break;
             if (i++ >= (index - 1) * 7)
-                StringUtil.append(sb, "<table width=610><tr><td width=5></td><td width=150 align=center><a action=\"bypass _bbsclan;home;", Integer.valueOf(cl.getClanId()), "\">", cl.getName(), "</a></td><td width=150 align=center>", cl.getLeaderName(), "</td><td width=100 align=center>", Integer.valueOf(cl.getLevel()), "</td><td width=200 align=center>", Integer.valueOf(cl.getMembersCount()),
+                StringUtil.append(sb, "<table width=610><tr><td width=5></td><td width=150 align=center><a action=\"bypass _bbsclan;home;", cl.getClanId(), "\">", cl.getName(), "</a></td><td width=150 align=center>", cl.getLeaderName(), "</td><td width=100 align=center>", cl.getLevel(), "</td><td width=200 align=center>", cl.getMembersCount(),
                         "</td><td width=5></td></tr></table><br1><img src=\"L2UI.Squaregray\" width=605 height=1><br1>");
         }
         sb.append("<table><tr>");
         if (index == 1) {
             sb.append("<td><button action=\"\" back=\"l2ui_ch3.prev1_down\" fore=\"l2ui_ch3.prev1\" width=16 height=16></td>");
         } else {
-            StringUtil.append(sb, "<td><button action=\"_bbsclan;clan;", Integer.valueOf(index - 1), "\" back=\"l2ui_ch3.prev1_down\" fore=\"l2ui_ch3.prev1\" width=16 height=16 ></td>");
+            StringUtil.append(sb, "<td><button action=\"_bbsclan;clan;", index - 1, "\" back=\"l2ui_ch3.prev1_down\" fore=\"l2ui_ch3.prev1\" width=16 height=16 ></td>");
         }
         i = 0;
         int pageNumber = ClanTable.getInstance().getClans().size() / 8;
@@ -88,15 +88,15 @@ public class ClanBBSManager extends BaseBBSManager {
             pageNumber++;
         for (i = 1; i <= pageNumber; i++) {
             if (i == index) {
-                StringUtil.append(sb, "<td> ", Integer.valueOf(i), " </td>");
+                StringUtil.append(sb, "<td> ", i, " </td>");
             } else {
-                StringUtil.append(sb, "<td><a action=\"bypass _bbsclan;clan;", Integer.valueOf(i), "\"> ", Integer.valueOf(i), " </a></td>");
+                StringUtil.append(sb, "<td><a action=\"bypass _bbsclan;clan;", i, "\"> ", i, " </a></td>");
             }
         }
         if (index == pageNumber) {
             sb.append("<td><button action=\"\" back=\"l2ui_ch3.next1_down\" fore=\"l2ui_ch3.next1\" width=16 height=16></td>");
         } else {
-            StringUtil.append(sb, "<td><button action=\"bypass _bbsclan;clan;", Integer.valueOf(index + 1), "\" back=\"l2ui_ch3.next1_down\" fore=\"l2ui_ch3.next1\" width=16 height=16 ></td>");
+            StringUtil.append(sb, "<td><button action=\"bypass _bbsclan;clan;", index + 1, "\" back=\"l2ui_ch3.next1_down\" fore=\"l2ui_ch3.next1\" width=16 height=16 ></td>");
         }
         sb.append("</tr></table>");
         content = content.replace("%clanlist%", sb.toString());
@@ -168,13 +168,13 @@ public class ClanBBSManager extends BaseBBSManager {
 
     public void parseWrite(String ar1, String ar2, String ar3, String ar4, String ar5, Player player) {
         if (ar1.equalsIgnoreCase("intro")) {
-            if (Integer.valueOf(ar2) != player.getClanId())
+            if (Integer.parseInt(ar2) != player.getClanId())
                 return;
             Clan clan = ClanTable.getInstance().getClan(player.getClanId());
             if (clan == null)
                 return;
             clan.setIntroduction(ar3, true);
-            sendClanManagement(player, Integer.valueOf(ar2));
+            sendClanManagement(player, Integer.parseInt(ar2));
         } else if (ar1.equals("notice")) {
             Clan clan = player.getClan();
             if (clan != null) {
@@ -182,7 +182,7 @@ public class ClanBBSManager extends BaseBBSManager {
                 sendClanNotice(player, player.getClanId());
             }
         } else if (ar1.equalsIgnoreCase("mail")) {
-            if (Integer.valueOf(ar2) != player.getClanId())
+            if (Integer.parseInt(ar2) != player.getClanId())
                 return;
             Clan clan = ClanTable.getInstance().getClan(player.getClanId());
             if (clan == null)

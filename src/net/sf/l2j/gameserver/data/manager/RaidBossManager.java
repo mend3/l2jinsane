@@ -46,7 +46,7 @@ public class RaidBossManager {
                         while (rs.next()) {
                             NpcTemplate template = NpcData.getInstance().getTemplate(rs.getInt("boss_id"));
                             if (template == null || !template.isType("RaidBoss")) {
-                                LOGGER.warn("Couldn't load raidboss #{}.", Integer.valueOf(rs.getInt("boss_id")));
+                                LOGGER.warn("Couldn't load raidboss #{}.", rs.getInt("boss_id"));
                                 continue;
                             }
                             L2Spawn spawn = new L2Spawn(template);
@@ -91,7 +91,7 @@ public class RaidBossManager {
         } catch (Exception e) {
             LOGGER.error("Error restoring raid bosses.", e);
         }
-        LOGGER.info("Loaded {} raid bosses.", Integer.valueOf(this._spawns.size()));
+        LOGGER.info("Loaded {} raid bosses.", this._spawns.size());
     }
 
     public void reload() {
@@ -100,16 +100,16 @@ public class RaidBossManager {
     }
 
     public BossSpawn getBossSpawn(int id) {
-        return this._spawns.get(Integer.valueOf(id));
+        return this._spawns.get(id);
     }
 
     public BossStatus getStatus(int id) {
-        BossSpawn bs = this._spawns.get(Integer.valueOf(id));
+        BossSpawn bs = this._spawns.get(id);
         return (bs == null) ? BossStatus.UNDEFINED : bs.getStatus();
     }
 
     public void onDeath(RaidBoss boss) {
-        BossSpawn bs = this._spawns.get(Integer.valueOf(boss.getNpcId()));
+        BossSpawn bs = this._spawns.get(boss.getNpcId());
         if (bs != null)
             bs.onDeath();
     }
@@ -118,7 +118,7 @@ public class RaidBossManager {
         if (spawn == null)
             return;
         int id = spawn.getNpcId();
-        if (this._spawns.containsKey(Integer.valueOf(id)))
+        if (this._spawns.containsKey(id))
             return;
         long time = System.currentTimeMillis();
         SpawnTable.getInstance().addSpawn(spawn, false);
@@ -171,7 +171,7 @@ public class RaidBossManager {
                         throw throwable;
                     }
                 } catch (Exception e) {
-                    LOGGER.error("Couldn't store raid boss #{}.", e, Integer.valueOf(id));
+                    LOGGER.error("Couldn't store raid boss #{}.", e, id);
                 }
         } else {
             long spawnTime = respawnTime - time;
@@ -181,14 +181,14 @@ public class RaidBossManager {
             bs.setCurrentMp(0.0D);
             bs.setRespawnTime(respawnTime);
         }
-        this._spawns.put(Integer.valueOf(id), bs);
+        this._spawns.put(id, bs);
     }
 
     public void deleteSpawn(L2Spawn spawn) {
         if (spawn == null)
             return;
         int id = spawn.getNpcId();
-        BossSpawn bs = this._spawns.remove(Integer.valueOf(id));
+        BossSpawn bs = this._spawns.remove(id);
         if (bs == null)
             return;
         bs.onDespawn();

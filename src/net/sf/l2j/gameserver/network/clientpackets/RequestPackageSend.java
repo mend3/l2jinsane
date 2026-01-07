@@ -39,7 +39,7 @@ public final class RequestPackageSend extends L2GameClientPacket {
         Player player = getClient().getPlayer();
         if (player == null)
             return;
-        if (!player.getAccountChars().containsKey(Integer.valueOf(this._objectID)))
+        if (!player.getAccountChars().containsKey(this._objectID))
             return;
         PcFreight freight = player.getDepositedFreight(this._objectID);
         player.setActiveWarehouse(freight);

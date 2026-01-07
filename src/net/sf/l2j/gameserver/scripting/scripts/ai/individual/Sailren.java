@@ -70,8 +70,8 @@ public class Sailren extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addAttackId(new int[]{22223, 22199, 22217, 29065});
-        this.addKillId(new int[]{22223, 22199, 22217, 29065});
+        this.addAttackId(22223, 22199, 22217, 29065);
+        this.addKillId(22223, 22199, 22217, 29065);
     }
 
     public String onAdvEvent(String event, Npc npc, Player player) {

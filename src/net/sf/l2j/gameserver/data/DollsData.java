@@ -69,8 +69,8 @@ public class DollsData extends XMLDocument {
         for (ItemInstance dollItem : collect) {
             int skillId = getInstance().getDollById(dollItem.getItemId()).getSkillId();
             int skillLvl = getInstance().getDollById(dollItem.getItemId()).getSkillLvl();
-            if (!highestSkillLevels.containsKey(Integer.valueOf(skillId)) || skillLvl > highestSkillLevels.get(Integer.valueOf(skillId)))
-                highestSkillLevels.put(Integer.valueOf(skillId), Integer.valueOf(skillLvl));
+            if (!highestSkillLevels.containsKey(skillId) || skillLvl > highestSkillLevels.get(skillId))
+                highestSkillLevels.put(skillId, skillLvl);
         }
         for (Map.Entry<Integer, Integer> entry : highestSkillLevels.entrySet()) {
             L2Skill skill = SkillTable.getInstance().getInfo(entry.getKey(), entry.getValue());
@@ -108,7 +108,7 @@ public class DollsData extends XMLDocument {
                     int skillId = Integer.parseInt(attrs.getNamedItem("SkillId").getNodeValue());
                     int skillLvl = Integer.parseInt(attrs.getNamedItem("SkillLvl").getNodeValue());
                     Doll doll = new Doll(id, skillId, skillLvl);
-                    this.dolls.put(Integer.valueOf(id), doll);
+                    this.dolls.put(id, doll);
                 }
             }
         } catch (Exception e) {
@@ -121,11 +121,11 @@ public class DollsData extends XMLDocument {
     }
 
     public Doll getDollById(int id) {
-        return this.dolls.get(Integer.valueOf(id));
+        return this.dolls.get(id);
     }
 
     public boolean isDollById(int id) {
-        return this.dolls.containsKey(Integer.valueOf(id));
+        return this.dolls.containsKey(id);
     }
 
     private static class SingletonHolder {

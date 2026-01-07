@@ -66,7 +66,7 @@ public final class SystemMessage extends L2GameServerPacket {
         if (this._paramIndex >= this._params.length) {
             this._params = Arrays.copyOf(this._params, this._paramIndex + 1);
             this._smId.setParamCount(this._paramIndex + 1);
-            LOGGER.warn("Wrong parameter count '{}' for {}.", Integer.valueOf(this._paramIndex + 1), this._smId);
+            LOGGER.warn("Wrong parameter count '{}' for {}.", this._paramIndex + 1, this._smId);
         }
         this._params[this._paramIndex++] = param;
     }
@@ -77,17 +77,17 @@ public final class SystemMessage extends L2GameServerPacket {
     }
 
     public SystemMessage addFortId(int number) {
-        append(new SMParam((byte) 5, Integer.valueOf(number)));
+        append(new SMParam((byte) 5, number));
         return this;
     }
 
     public SystemMessage addNumber(int number) {
-        append(new SMParam((byte) 1, Integer.valueOf(number)));
+        append(new SMParam((byte) 1, number));
         return this;
     }
 
     public SystemMessage addItemNumber(int number) {
-        append(new SMParam((byte) 6, Integer.valueOf(number)));
+        append(new SMParam((byte) 6, number));
         return this;
     }
 
@@ -104,7 +104,7 @@ public final class SystemMessage extends L2GameServerPacket {
     }
 
     public SystemMessage addItemName(int id) {
-        append(new SMParam((byte) 3, Integer.valueOf(id)));
+        append(new SMParam((byte) 3, id));
         return this;
     }
 
@@ -168,11 +168,11 @@ public final class SystemMessage extends L2GameServerPacket {
     private record SMParam(byte _type, Object _value) {
 
         public int getType() {
-                return this._type;
-            }
-
-            public Object getObject() {
-                return this._value;
-            }
+            return this._type;
         }
+
+        public Object getObject() {
+            return this._value;
+        }
+    }
 }

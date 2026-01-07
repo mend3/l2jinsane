@@ -37,16 +37,16 @@ public class Q344_1000YearsTheEndOfLamentation extends Quest {
 
     public Q344_1000YearsTheEndOfLamentation() {
         super(344, "1000 Years, the End of Lamentation");
-        CHANCES.put(Integer.valueOf(20236), Integer.valueOf(380000));
-        CHANCES.put(Integer.valueOf(20237), Integer.valueOf(490000));
-        CHANCES.put(Integer.valueOf(20238), Integer.valueOf(460000));
-        CHANCES.put(Integer.valueOf(20239), Integer.valueOf(490000));
-        CHANCES.put(Integer.valueOf(20240), Integer.valueOf(530000));
-        CHANCES.put(Integer.valueOf(20272), Integer.valueOf(380000));
-        CHANCES.put(Integer.valueOf(20273), Integer.valueOf(490000));
-        CHANCES.put(Integer.valueOf(20274), Integer.valueOf(460000));
-        CHANCES.put(Integer.valueOf(20275), Integer.valueOf(490000));
-        CHANCES.put(Integer.valueOf(20276), Integer.valueOf(530000));
+        CHANCES.put(20236, 380000);
+        CHANCES.put(20237, 490000);
+        CHANCES.put(20238, 460000);
+        CHANCES.put(20239, 490000);
+        CHANCES.put(20240, 530000);
+        CHANCES.put(20272, 380000);
+        CHANCES.put(20273, 490000);
+        CHANCES.put(20274, 460000);
+        CHANCES.put(20275, 490000);
+        CHANCES.put(20276, 530000);
         setItemsIds(4269, 4270, 4271, 4272, 4273);
         addStartNpc(30754);
         addTalkId(30754, 30756, 30857, 30704, 30623);
@@ -214,7 +214,7 @@ public class Q344_1000YearsTheEndOfLamentation extends Quest {
         QuestState st = checkPlayerCondition(player, npc, "cond", "1");
         if (st == null)
             return null;
-        st.dropItems(4269, 1, 0, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(4269, 1, 0, CHANCES.get(npc.getNpcId()));
         return null;
     }
 }

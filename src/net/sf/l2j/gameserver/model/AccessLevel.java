@@ -9,28 +9,17 @@ public class AccessLevel {
     private final String _name;
 
     private final int _childLevel;
-
-    private AccessLevel _childAccess;
-
     private final int _nameColor;
-
     private final int _titleColor;
-
     private final boolean _isGm;
-
     private final boolean _allowPeaceAttack;
-
     private final boolean _allowFixedRes;
-
     private final boolean _allowTransaction;
-
     private final boolean _allowAltG;
-
     private final boolean _giveDamage;
-
     private final boolean _takeAggro;
-
     private final boolean _gainExp;
+    private AccessLevel _childAccess;
 
     public AccessLevel(StatSet set) {
         this._accessLevel = set.getInteger("level");

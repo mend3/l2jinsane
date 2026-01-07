@@ -785,7 +785,7 @@ public abstract class L2Skill implements IChanceSkillTrigger {
     }
 
     public final boolean isHeroSkill() {
-        return SkillTable.getInstance().isHeroSkill(this._id);
+        return SkillTable.isHeroSkill(this._id);
     }
 
     public final int getNumCharges() {
@@ -1811,7 +1811,7 @@ public abstract class L2Skill implements IChanceSkillTrigger {
     public enum SkillOpType {
         OP_PASSIVE,
         OP_ACTIVE,
-        OP_TOGGLE;
+        OP_TOGGLE
 
     }
 
@@ -1845,7 +1845,7 @@ public abstract class L2Skill implements IChanceSkillTrigger {
         TARGET_AREA_SUMMON,
         TARGET_ENEMY_SUMMON,
         TARGET_OWNER_PET,
-        TARGET_GROUND;
+        TARGET_GROUND
 
     }
 }

@@ -22,6 +22,10 @@ public class CtfEventManager {
     protected AbstractEvent activeEvent = null;
     private CTF ctf;
 
+    public static CtfEventManager getInstance() {
+        return SingletonHolder.instance;
+    }
+
     public void load() {
         if (!Config.ENABLE_EVENT_ENGINE) {
             System.out.println("Event Manager: Event Engine is disabled");
@@ -37,10 +41,6 @@ public class CtfEventManager {
         }
     }
 
-    public static CtfEventManager getInstance() {
-        return SingletonHolder.instance;
-    }
-
     public void scheduleNextEvent() {
         try {
             Calendar currentTime = Calendar.getInstance();
@@ -50,12 +50,12 @@ public class CtfEventManager {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
                 String[] splitTimeOfDay = timeOfDay.split(":");
-                testStartTime.set(11, Integer.parseInt(splitTimeOfDay[0]));
-                testStartTime.set(12, Integer.parseInt(splitTimeOfDay[1]));
-                testStartTime.set(13, 0);
-                testStartTime.set(14, 0);
+                testStartTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitTimeOfDay[0]));
+                testStartTime.set(Calendar.MINUTE, Integer.parseInt(splitTimeOfDay[1]));
+                testStartTime.set(Calendar.SECOND, 0);
+                testStartTime.set(Calendar.MILLISECOND, 0);
                 if (testStartTime.getTimeInMillis() <= currentTime.getTimeInMillis())
-                    testStartTime.add(5, 1);
+                    testStartTime.add(Calendar.DATE, 1);
                 if (nextStartTime == null || testStartTime.getTimeInMillis() < nextStartTime.getTimeInMillis())
                     nextStartTime = testStartTime;
             }

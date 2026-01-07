@@ -35,12 +35,12 @@ public class Q162_CurseOfTheUndergroundFortress extends Quest {
 
     public Q162_CurseOfTheUndergroundFortress() {
         super(162, "Curse of the Underground Fortress");
-        CHANCES.put(Integer.valueOf(20033), Integer.valueOf(250000));
-        CHANCES.put(Integer.valueOf(20345), Integer.valueOf(260000));
-        CHANCES.put(Integer.valueOf(20371), Integer.valueOf(230000));
-        CHANCES.put(Integer.valueOf(20463), Integer.valueOf(250000));
-        CHANCES.put(Integer.valueOf(20464), Integer.valueOf(230000));
-        CHANCES.put(Integer.valueOf(20504), Integer.valueOf(260000));
+        CHANCES.put(20033, 250000);
+        CHANCES.put(20345, 260000);
+        CHANCES.put(20371, 230000);
+        CHANCES.put(20463, 250000);
+        CHANCES.put(20464, 230000);
+        CHANCES.put(20504, 260000);
         setItemsIds(1158, 1159);
         addStartNpc(30147);
         addTalkId(30147);
@@ -111,13 +111,13 @@ public class Q162_CurseOfTheUndergroundFortress extends Quest {
             case 20463:
             case 20464:
             case 20504:
-                if (st.dropItems(1158, 1, 10, CHANCES.get(Integer.valueOf(npcId))) && st.getQuestItemsCount(1159) >= 3)
+                if (st.dropItems(1158, 1, 10, CHANCES.get(npcId)) && st.getQuestItemsCount(1159) >= 3)
                     st.set("cond", "2");
                 break;
             case 20033:
             case 20345:
             case 20371:
-                if (st.dropItems(1159, 1, 3, CHANCES.get(Integer.valueOf(npcId))) && st.getQuestItemsCount(1158) >= 10)
+                if (st.dropItems(1159, 1, 3, CHANCES.get(npcId)) && st.getQuestItemsCount(1158) >= 10)
                     st.set("cond", "2");
                 break;
         }

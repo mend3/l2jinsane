@@ -108,7 +108,7 @@ public class Q223_TestOfTheChampion extends Quest {
             st.giveItems(3277, 1);
             if (!player.getMemos().getBool("secondClassChange39", false)) {
                 htmltext = "30624-06a.htm";
-                st.giveItems(7562, DF_REWARD_39.get(Integer.valueOf(player.getClassId().getId())));
+                st.giveItems(7562, DF_REWARD_39.get(player.getClassId().getId()));
                 player.getMemos().set("secondClassChange39", true);
             }
         } else if (event.equals("30624-10.htm")) {

@@ -51,10 +51,10 @@ public class Q171_ActsOfEvil extends Quest {
 
     public Q171_ActsOfEvil() {
         super(171, "Acts of Evil");
-        CHANCES.put(Integer.valueOf(20496), Integer.valueOf(530000));
-        CHANCES.put(Integer.valueOf(20497), Integer.valueOf(550000));
-        CHANCES.put(Integer.valueOf(20498), Integer.valueOf(510000));
-        CHANCES.put(Integer.valueOf(20499), Integer.valueOf(500000));
+        CHANCES.put(20496, 530000);
+        CHANCES.put(20497, 550000);
+        CHANCES.put(20498, 510000);
+        CHANCES.put(20499, 500000);
         setItemsIds(4239, 4240, 4241, 4242, 4243, 4244, 4245, 4246, 4247, 4248,
                 4249);
         addStartNpc(30381);
@@ -249,7 +249,7 @@ public class Q171_ActsOfEvil extends Quest {
             case 20497:
             case 20498:
             case 20499:
-                if (st.getInt("cond") == 2 && !st.dropItems(4239, 1, 20, CHANCES.get(Integer.valueOf(npcId)))) {
+                if (st.getInt("cond") == 2 && !st.dropItems(4239, 1, 20, CHANCES.get(npcId))) {
                     int count = st.getQuestItemsCount(4239);
                     if (count == 5 || (count >= 10 && Rnd.get(100) < 25))
                         addSpawn(27190, player, false, 0L, true);

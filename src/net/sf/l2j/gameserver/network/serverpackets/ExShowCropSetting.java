@@ -24,10 +24,10 @@ public class ExShowCropSetting extends L2GameServerPacket {
         for (Seed s : this._seeds) {
             CropProcure cp = manor.getCropProcure(manorId, s.getCropId(), false);
             if (cp != null)
-                this._current.put(Integer.valueOf(s.getCropId()), cp);
+                this._current.put(s.getCropId(), cp);
             cp = manor.getCropProcure(manorId, s.getCropId(), true);
             if (cp != null)
-                this._next.put(Integer.valueOf(s.getCropId()), cp);
+                this._next.put(s.getCropId(), cp);
         }
     }
 
@@ -47,8 +47,8 @@ public class ExShowCropSetting extends L2GameServerPacket {
             writeD(0);
             writeD(s.getCropMinPrice());
             writeD(s.getCropMaxPrice());
-            if (this._current.containsKey(Integer.valueOf(s.getCropId()))) {
-                CropProcure cp = this._current.get(Integer.valueOf(s.getCropId()));
+            if (this._current.containsKey(s.getCropId())) {
+                CropProcure cp = this._current.get(s.getCropId());
                 writeD(cp.getStartAmount());
                 writeD(cp.getPrice());
                 writeC(cp.getReward());
@@ -57,8 +57,8 @@ public class ExShowCropSetting extends L2GameServerPacket {
                 writeD(0);
                 writeC(0);
             }
-            if (this._next.containsKey(Integer.valueOf(s.getCropId()))) {
-                CropProcure cp = this._next.get(Integer.valueOf(s.getCropId()));
+            if (this._next.containsKey(s.getCropId())) {
+                CropProcure cp = this._next.get(s.getCropId());
                 writeD(cp.getStartAmount());
                 writeD(cp.getPrice());
                 writeC(cp.getReward());

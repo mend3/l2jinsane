@@ -2,6 +2,7 @@ package net.sf.l2j.gameserver.events.tournament;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.commons.pool.ThreadPool;
+import net.sf.l2j.gameserver.Announcements;
 import net.sf.l2j.gameserver.data.ItemTable;
 import net.sf.l2j.gameserver.data.sql.SpawnTable;
 import net.sf.l2j.gameserver.data.xml.NpcData;
@@ -41,6 +42,8 @@ public abstract class ArenaTask {
         World.announceToOnlinePlayers("[Tournament]: Duration: " + Config.TOURNAMENT_TIME + " minute(s)!");
         _aborted = false;
         _started = true;
+
+        Announcements.ArenaAnnounce(Config.ARENA_MESSAGE_TEXT);
         waiter(((long) Config.TOURNAMENT_TIME * 60 * 1000));
         if (!_aborted)
             finishEvent();

@@ -29,7 +29,7 @@ public final class RandomZoneManager implements Runnable {
 
     private static String timeToLeft(int timer) {
         long time = timer;
-        return String.format("%d mins, %d sec", Long.valueOf(TimeUnit.SECONDS.toMinutes(time)), Long.valueOf(TimeUnit.SECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(time))));
+        return String.format("%d mins, %d sec", TimeUnit.SECONDS.toMinutes(time), TimeUnit.SECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(time)));
     }
 
     public static int getTotalZones() {
@@ -98,15 +98,15 @@ public final class RandomZoneManager implements Runnable {
     }
 
     public static void addKillsInZone(Player activeChar) {
-        if (!_player.containsKey(Integer.valueOf(activeChar.getObjectId()))) {
-            _player.put(Integer.valueOf(activeChar.getObjectId()), new TheHourHolder(activeChar.getName(), 1, activeChar.getObjectId()));
+        if (!_player.containsKey(activeChar.getObjectId())) {
+            _player.put(activeChar.getObjectId(), new TheHourHolder(activeChar.getName(), 1, activeChar.getObjectId()));
         } else {
-            _player.get(Integer.valueOf(activeChar.getObjectId())).setPvpKills();
+            _player.get(activeChar.getObjectId()).setPvpKills();
         }
         if (_topPlayer == null) {
             _topPlayer = new TheHourHolder(activeChar.getName(), 1, activeChar.getObjectId());
-        } else if (_player.get(Integer.valueOf(activeChar.getObjectId())).getKills() > _topPlayer.getKills()) {
-            _topPlayer = _player.get(Integer.valueOf(activeChar.getObjectId()));
+        } else if (_player.get(activeChar.getObjectId()).getKills() > _topPlayer.getKills()) {
+            _topPlayer = _player.get(activeChar.getObjectId());
         }
     }
 

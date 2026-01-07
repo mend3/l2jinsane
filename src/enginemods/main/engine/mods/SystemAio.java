@@ -62,7 +62,7 @@ public class SystemAio extends AbstractMods {
         int currentPage = 1;
         for (int i = 0; i < ConfigData.AIO_LIST_SKILLS.size(); i++) {
             if (i % MAX_PER_PAGE == 0) {
-                hb.append("<td width=18 align=center><a action=\"bypass -h Engine SystemAio aioInfo ", Integer.valueOf(currentPage), "\">" + currentPage, "</a></td>");
+                hb.append("<td width=18 align=center><a action=\"bypass -h Engine SystemAio aioInfo ", currentPage, "\">" + currentPage, "</a></td>");
                 currentPage++;
             }
         }
@@ -165,7 +165,7 @@ public class SystemAio extends AbstractMods {
                 }
                 aio = (Player) player.getTarget();
                 time = new GregorianCalendar();
-                time.add(6, Integer.parseInt(days));
+                time.add(Calendar.DAY_OF_YEAR, Integer.parseInt(days));
                 setValueDB(aio, "aio", "" + time.getTimeInMillis());
                 PlayerData.get(aio).setAio(true);
                 PlayerData.get(aio).setAioExpireDate(time.getTimeInMillis());
@@ -270,7 +270,7 @@ public class SystemAio extends AbstractMods {
         int currentPage = 1;
         for (int i = 0; i < countAio; i++) {
             if (i % MAX_PER_PAGE == 0) {
-                hb.append("<td width=18 align=center><a action=\"bypass -h Engine SystemAio allAio ", Integer.valueOf(currentPage), "\">", Integer.valueOf(currentPage), "</a></td>");
+                hb.append("<td width=18 align=center><a action=\"bypass -h Engine SystemAio allAio ", currentPage, "\">", currentPage, "</a></td>");
                 currentPage++;
             }
         }

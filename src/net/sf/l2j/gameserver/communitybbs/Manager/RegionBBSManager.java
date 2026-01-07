@@ -20,7 +20,7 @@ public class RegionBBSManager extends BaseBBSManager {
         StringBuilder sb = new StringBuilder(500);
         for (Castle castle : CastleManager.getInstance().getCastles()) {
             Clan owner = ClanTable.getInstance().getClan(castle.getOwnerId());
-            StringUtil.append(sb, "<table><tr><td width=5></td><td width=160><a action=\"bypass _bbsloc;", Integer.valueOf(castle.getCastleId()), "\">", castle.getName(), "</a></td><td width=160>", (owner != null) ? ("<a action=\"bypass _bbsclan;home;" + owner.getClanId() + "\">" + owner.getName() + "</a>") : "None", "</td><td width=160>", (owner != null && owner.getAllyId() > 0) ? owner.getAllyName() : "None", "</td><td width=120>", (owner != null) ? Integer.valueOf(castle.getTaxPercent()) : "0",
+            StringUtil.append(sb, "<table><tr><td width=5></td><td width=160><a action=\"bypass _bbsloc;", castle.getCastleId(), "\">", castle.getName(), "</a></td><td width=160>", (owner != null) ? ("<a action=\"bypass _bbsclan;home;" + owner.getClanId() + "\">" + owner.getName() + "</a>") : "None", "</td><td width=160>", (owner != null && owner.getAllyId() > 0) ? owner.getAllyName() : "None", "</td><td width=120>", (owner != null) ? Integer.valueOf(castle.getTaxPercent()) : "0",
                     "</td><td width=5></td></tr></table><br1><img src=\"L2UI.Squaregray\" width=605 height=1><br1>");
         }
         separateAndSend(content.replace("%castleList%", sb.toString()), player);
@@ -35,7 +35,7 @@ public class RegionBBSManager extends BaseBBSManager {
         content = content.replace("%lord%", (owner != null) ? owner.getLeaderName() : "None");
         content = content.replace("%clanName%", (owner != null) ? ("<a action=\"bypass _bbsclan;home;" + owner.getClanId() + "\">" + owner.getName() + "</a>") : "None");
         content = content.replace("%allyName%", (owner != null && owner.getAllyId() > 0) ? owner.getAllyName() : "None");
-        content = content.replace("%siegeDate%", (new SimpleDateFormat("yyyy-MM-dd HH:mm")).format(Long.valueOf(castle.getSiegeDate().getTimeInMillis())));
+        content = content.replace("%siegeDate%", (new SimpleDateFormat("yyyy-MM-dd HH:mm")).format(castle.getSiegeDate().getTimeInMillis()));
         StringBuilder sb = new StringBuilder(200);
         List<ClanHall> clanHalls = ClanHallManager.getInstance().getClanHallsByLocation(castle.getName());
         if (clanHalls != null && !clanHalls.isEmpty()) {

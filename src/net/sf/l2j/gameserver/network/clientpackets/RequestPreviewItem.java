@@ -74,11 +74,11 @@ public final class RequestPreviewItem extends L2GameClientPacket {
             if (template != null) {
                 int slot = Inventory.getPaperdollIndex(template.getBodyPart());
                 if (slot >= 0) {
-                    if (this._itemList.containsKey(Integer.valueOf(slot))) {
+                    if (this._itemList.containsKey(slot)) {
                         activeChar.sendPacket(SystemMessageId.YOU_CAN_NOT_TRY_THOSE_ITEMS_ON_AT_THE_SAME_TIME);
                         return;
                     }
-                    this._itemList.put(Integer.valueOf(slot), Integer.valueOf(itemId));
+                    this._itemList.put(slot, itemId);
                     totalPrice += Config.WEAR_PRICE;
                     if (totalPrice > Integer.MAX_VALUE)
                         return;

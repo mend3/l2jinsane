@@ -43,8 +43,8 @@ public class Baium extends L2AttackableAIScript {
 
     public Baium() {
         super("ai/individual");
-        this.addStartNpc(new int[]{29025});
-        this.addTalkId(new int[]{29025});
+        this.addStartNpc(29025);
+        this.addTalkId(29025);
         StatSet info = GrandBossManager.getInstance().getStatsSet(29020);
         int status = GrandBossManager.getInstance().getBossStatus(29020);
         if (status == 2) {
@@ -204,7 +204,7 @@ public class Baium extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addEventIds(29020, new ScriptEventType[]{ScriptEventType.ON_ATTACK, ScriptEventType.ON_KILL, ScriptEventType.ON_SPAWN});
+        this.addEventIds(29020, ScriptEventType.ON_ATTACK, ScriptEventType.ON_KILL, ScriptEventType.ON_SPAWN);
     }
 
     public String onAdvEvent(String event, Npc npc, Player player) {

@@ -45,14 +45,14 @@ public class SystemVip extends AbstractMods {
         hb.append("<table fixwidth=264>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>EXP:</font></td>");
-        hb.append("<td fixwidth=164 align=center><font color=LEVEL>", Double.valueOf(ConfigData.VIP_BONUS_XP * 100.0D), "%</font></td>");
+        hb.append("<td fixwidth=164 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_XP * 100.0D, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
         hb.append("<table fixwidth=264>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>SP:</font></td>");
-        hb.append("<td fixwidth=164 align=center><font color=LEVEL>", Double.valueOf(ConfigData.VIP_BONUS_SP * 100.0D), "%</font></td>");
+        hb.append("<td fixwidth=164 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_SP * 100.0D, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
@@ -69,32 +69,32 @@ public class SystemVip extends AbstractMods {
         hb.append("<table fixwidth=264 border=0 cellspacing=0 cellpadding=0>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>Normal:</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", Double.valueOf(ConfigData.VIP_BONUS_DROP_NORMAL_AMOUNT * 100.0D), "%</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", Double.valueOf(ConfigData.VIP_BONUS_DROP_NORMAL_AMOUNT * 100.0D), "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_NORMAL_AMOUNT * 100.0D, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_NORMAL_AMOUNT * 100.0D, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
         hb.append("<table fixwidth=264 border=0 cellspacing=0 cellpadding=0>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>Spoil:</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", Double.valueOf(ConfigData.VIP_BONUS_DROP_SPOIL_AMOUNT * 100.0D), "%</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", Double.valueOf(ConfigData.VIP_BONUS_DROP_SPOIL_CHANCE * 100.0D), "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SPOIL_AMOUNT * 100.0D, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SPOIL_CHANCE * 100.0D, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
         hb.append("<table fixwidth=264 border=0 cellspacing=0 cellpadding=0>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>Seed:</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", Double.valueOf(ConfigData.VIP_BONUS_DROP_SEED_AMOUNT * 100.0D), "%</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", Double.valueOf(ConfigData.VIP_BONUS_DROP_SEED_AMOUNT * 100.0D), "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SEED_AMOUNT * 100.0D, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SEED_AMOUNT * 100.0D, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
         hb.append("<table fixwidth=264 border=0 cellspacing=0 cellpadding=0>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>Herb:</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", Double.valueOf(ConfigData.VIP_BONUS_DROP_HERB_AMOUNT * 100.0D), "%</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", Double.valueOf(ConfigData.VIP_BONUS_DROP_HERB_AMOUNT * 100.0D), "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_HERB_AMOUNT * 100.0D, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_HERB_AMOUNT * 100.0D, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
@@ -102,8 +102,8 @@ public class SystemVip extends AbstractMods {
         hb.append("<table fixwidth=264 border=0 cellspacing=0 cellpadding=0>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>Events: </font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL> x", Integer.valueOf(ConfigData.VIP_DROP_EVENTS_MULTIPLIER), "</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL> x", Integer.valueOf(ConfigData.VIP_DROP_EVENTS_MULTIPLIER), "</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL> x", ConfigData.VIP_DROP_EVENTS_MULTIPLIER, "</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL> x", ConfigData.VIP_DROP_EVENTS_MULTIPLIER, "</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
@@ -203,7 +203,7 @@ public class SystemVip extends AbstractMods {
                 }
                 vip = (Player) player.getTarget();
                 time = new GregorianCalendar();
-                time.add(6, Integer.parseInt(days));
+                time.add(Calendar.DAY_OF_YEAR, Integer.parseInt(days));
                 setValueDB(vip, "vip", "" + time.getTimeInMillis());
                 PlayerData.get(vip).setVip(true);
                 PlayerData.get(vip).setVipExpireDate(time.getTimeInMillis());
@@ -292,7 +292,7 @@ public class SystemVip extends AbstractMods {
         int currentPage = 1;
         for (int i = 0; i < countVip; i++) {
             if (i % MAX_PER_PAGE == 0) {
-                hb.append("<td width=18><center><a action=\"bypass -h Engine SystemVip allVip ", Integer.valueOf(currentPage), "\">" + currentPage, "</center></a></td>");
+                hb.append("<td width=18><center><a action=\"bypass -h Engine SystemVip allVip ", currentPage, "\">" + currentPage, "</center></a></td>");
                 currentPage++;
             }
         }

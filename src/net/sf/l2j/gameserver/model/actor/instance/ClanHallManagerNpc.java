@@ -109,7 +109,7 @@ public class ClanHallManagerNpc extends Merchant {
                 if ((player.getClanPrivileges() & 0x8) == 8) {
                     html.setFile("data/html/clanHallManager/vault.htm");
                     html.replace("%rent%", this._clanHall.getLease());
-                    html.replace("%date%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(this._clanHall.getPaidUntil())));
+                    html.replace("%date%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(this._clanHall.getPaidUntil()));
                 } else {
                     html.setFile("data/html/clanHallManager/not_authorized.htm");
                 }
@@ -496,7 +496,7 @@ public class ClanHallManagerNpc extends Merchant {
                             ClanHallFunction chfHp = this._clanHall.getFunction(3);
                             if (chfHp != null) {
                                 html.replace("%hp_recovery%", chfHp.getLvl() + "%</font> (<font color=\"FFAABB\">" + chfHp.getLvl() + "</font> adenas / " + chfHp.getLease() + " day)");
-                                html.replace("%hp_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(chfHp.getEndTime())));
+                                html.replace("%hp_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(chfHp.getEndTime()));
                                 switch (grade) {
                                     case 0:
                                         html.replace("%change_hp%", "[<a action=\"bypass -h npc_%objectId%_manage recovery hp_cancel\">Remove</a>][<a action=\"bypass -h npc_%objectId%_manage recovery edit_hp 20\">20%</a>][<a action=\"bypass -h npc_%objectId%_manage recovery edit_hp 40\">40%</a>][<a action=\"bypass -h npc_%objectId%_manage recovery edit_hp 220\">220%</a>]");
@@ -532,7 +532,7 @@ public class ClanHallManagerNpc extends Merchant {
                             ClanHallFunction chfExp = this._clanHall.getFunction(5);
                             if (chfExp != null) {
                                 html.replace("%exp_recovery%", chfExp.getLvl() + "%</font> (<font color=\"FFAABB\">" + chfExp.getLvl() + "</font> adenas / " + chfExp.getLease() + " day)");
-                                html.replace("%exp_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(chfExp.getEndTime())));
+                                html.replace("%exp_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(chfExp.getEndTime()));
                                 switch (grade) {
                                     case 0:
                                         html.replace("%change_exp%", "[<a action=\"bypass -h npc_%objectId%_manage recovery exp_cancel\">Remove</a>][<a action=\"bypass -h npc_%objectId%_manage recovery edit_exp 5\">5%</a>][<a action=\"bypass -h npc_%objectId%_manage recovery edit_exp 10\">10%</a>][<a action=\"bypass -h npc_%objectId%_manage recovery edit_exp 25\">25%</a>]");
@@ -568,7 +568,7 @@ public class ClanHallManagerNpc extends Merchant {
                             ClanHallFunction chfMp = this._clanHall.getFunction(4);
                             if (chfMp != null) {
                                 html.replace("%mp_recovery%", chfMp.getLvl() + "%</font> (<font color=\"FFAABB\">" + chfMp.getLvl() + "</font> adenas / " + chfMp.getLease() + " day)");
-                                html.replace("%mp_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(chfMp.getEndTime())));
+                                html.replace("%mp_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(chfMp.getEndTime()));
                                 switch (grade) {
                                     case 0:
                                         html.replace("%change_mp%", "[<a action=\"bypass -h npc_%objectId%_manage recovery mp_cancel\">Remove</a>][<a action=\"bypass -h npc_%objectId%_manage recovery edit_mp 5\">5%</a>][<a action=\"bypass -h npc_%objectId%_manage recovery edit_mp 10\">10%</a>][<a action=\"bypass -h npc_%objectId%_manage recovery edit_mp 25\">25%</a>]");
@@ -834,7 +834,7 @@ public class ClanHallManagerNpc extends Merchant {
                             ClanHallFunction chfTel = this._clanHall.getFunction(1);
                             if (chfTel != null) {
                                 html.replace("%tele%", "- Stage " + chfTel.getLvl() + "</font> (<font color=\"FFAABB\">" + chfTel.getLease() + "</font> adenas / " + Config.CH_TELE_FEE_RATIO / 86400000L + " day)");
-                                html.replace("%tele_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(chfTel.getEndTime())));
+                                html.replace("%tele_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(chfTel.getEndTime()));
                                 html.replace("%change_tele%", "[<a action=\"bypass -h npc_%objectId%_manage other tele_cancel\">Remove</a>][<a action=\"bypass -h npc_%objectId%_manage other edit_tele 1\">Level 1</a>][<a action=\"bypass -h npc_%objectId%_manage other edit_tele 2\">Level 2</a>]");
                             } else {
                                 html.replace("%tele%", "none");
@@ -845,7 +845,7 @@ public class ClanHallManagerNpc extends Merchant {
                             ClanHallFunction chfSup = this._clanHall.getFunction(6);
                             if (chfSup != null) {
                                 html.replace("%support%", "- Stage " + chfSup.getLvl() + "</font> (<font color=\"FFAABB\">" + chfSup.getLease() + "</font> adenas / " + Config.CH_SUPPORT_FEE_RATIO / 86400000L + " day)");
-                                html.replace("%support_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(chfSup.getEndTime())));
+                                html.replace("%support_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(chfSup.getEndTime()));
                                 switch (grade) {
                                     case 0:
                                         html.replace("%change_support%", "[<a action=\"bypass -h npc_%objectId%_manage other support_cancel\">Remove</a>][<a action=\"bypass -h npc_%objectId%_manage other edit_support 1\">Level 1</a>][<a action=\"bypass -h npc_%objectId%_manage other edit_support 2\">Level 2</a>]");
@@ -881,7 +881,7 @@ public class ClanHallManagerNpc extends Merchant {
                             ClanHallFunction chfCreate = this._clanHall.getFunction(2);
                             if (chfCreate != null) {
                                 html.replace("%item%", "- Stage " + chfCreate.getLvl() + "</font> (<font color=\"FFAABB\">" + chfCreate.getLease() + "</font> adenas / " + Config.CH_ITEM_FEE_RATIO / 86400000L + " day)");
-                                html.replace("%item_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(chfCreate.getEndTime())));
+                                html.replace("%item_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(chfCreate.getEndTime()));
                                 html.replace("%change_item%", "[<a action=\"bypass -h npc_%objectId%_manage other item_cancel\">Remove</a>][<a action=\"bypass -h npc_%objectId%_manage other edit_item 1\">Level 1</a>][<a action=\"bypass -h npc_%objectId%_manage other edit_item 2\">Level 2</a>][<a action=\"bypass -h npc_%objectId%_manage other edit_item 3\">Level 3</a>]");
                             } else {
                                 html.replace("%item%", "none");
@@ -1019,7 +1019,7 @@ public class ClanHallManagerNpc extends Merchant {
                             ClanHallFunction chfCurtains = this._clanHall.getFunction(8);
                             if (chfCurtains != null) {
                                 html.replace("%curtain%", "- Stage " + chfCurtains.getLvl() + "</font> (<font color=\"FFAABB\">" + chfCurtains.getLease() + "</font> adenas / " + Config.CH_CURTAIN_FEE_RATIO / 86400000L + " day)");
-                                html.replace("%curtain_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(chfCurtains.getEndTime())));
+                                html.replace("%curtain_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(chfCurtains.getEndTime()));
                                 html.replace("%change_curtain%", "[<a action=\"bypass -h npc_%objectId%_manage deco curtains_cancel\">Remove</a>][<a action=\"bypass -h npc_%objectId%_manage deco edit_curtains 1\">Level 1</a>][<a action=\"bypass -h npc_%objectId%_manage deco edit_curtains 2\">Level 2</a>]");
                             } else {
                                 html.replace("%curtain%", "none");
@@ -1029,7 +1029,7 @@ public class ClanHallManagerNpc extends Merchant {
                             ClanHallFunction chfPlateform = this._clanHall.getFunction(7);
                             if (chfPlateform != null) {
                                 html.replace("%fixture%", "- Stage " + chfPlateform.getLvl() + "</font> (<font color=\"FFAABB\">" + chfPlateform.getLease() + "</font> adenas / " + Config.CH_FRONT_FEE_RATIO / 86400000L + " day)");
-                                html.replace("%fixture_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(chfPlateform.getEndTime())));
+                                html.replace("%fixture_period%", "Next fee at " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(chfPlateform.getEndTime()));
                                 html.replace("%change_fixture%", "[<a action=\"bypass -h npc_%objectId%_manage deco fixtures_cancel\">Remove</a>][<a action=\"bypass -h npc_%objectId%_manage deco edit_fixtures 1\">Level 1</a>][<a action=\"bypass -h npc_%objectId%_manage deco edit_fixtures 2\">Level 2</a>]");
                             } else {
                                 html.replace("%fixture%", "none");

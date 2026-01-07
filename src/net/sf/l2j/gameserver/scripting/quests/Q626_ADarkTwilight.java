@@ -21,20 +21,20 @@ public class Q626_ADarkTwilight extends Quest {
 
     public Q626_ADarkTwilight() {
         super(626, "A Dark Twilight");
-        CHANCES.put(Integer.valueOf(21520), Integer.valueOf(533000));
-        CHANCES.put(Integer.valueOf(21523), Integer.valueOf(566000));
-        CHANCES.put(Integer.valueOf(21524), Integer.valueOf(603000));
-        CHANCES.put(Integer.valueOf(21525), Integer.valueOf(603000));
-        CHANCES.put(Integer.valueOf(21526), Integer.valueOf(587000));
-        CHANCES.put(Integer.valueOf(21529), Integer.valueOf(606000));
-        CHANCES.put(Integer.valueOf(21530), Integer.valueOf(560000));
-        CHANCES.put(Integer.valueOf(21531), Integer.valueOf(669000));
-        CHANCES.put(Integer.valueOf(21532), Integer.valueOf(651000));
-        CHANCES.put(Integer.valueOf(21535), Integer.valueOf(672000));
-        CHANCES.put(Integer.valueOf(21536), Integer.valueOf(597000));
-        CHANCES.put(Integer.valueOf(21539), Integer.valueOf(739000));
-        CHANCES.put(Integer.valueOf(21540), Integer.valueOf(739000));
-        CHANCES.put(Integer.valueOf(21658), Integer.valueOf(669000));
+        CHANCES.put(21520, 533000);
+        CHANCES.put(21523, 566000);
+        CHANCES.put(21524, 603000);
+        CHANCES.put(21525, 603000);
+        CHANCES.put(21526, 587000);
+        CHANCES.put(21529, 606000);
+        CHANCES.put(21530, 560000);
+        CHANCES.put(21531, 669000);
+        CHANCES.put(21532, 651000);
+        CHANCES.put(21535, 672000);
+        CHANCES.put(21536, 597000);
+        CHANCES.put(21539, 739000);
+        CHANCES.put(21540, 739000);
+        CHANCES.put(21658, 669000);
         setItemsIds(7169);
         addStartNpc(31517);
         addTalkId(31517);
@@ -107,7 +107,7 @@ public class Q626_ADarkTwilight extends Quest {
         QuestState st = checkPlayerCondition(player, npc, "cond", "1");
         if (st == null)
             return null;
-        if (st.dropItems(7169, 1, 300, CHANCES.get(Integer.valueOf(npc.getNpcId()))))
+        if (st.dropItems(7169, 1, 300, CHANCES.get(npc.getNpcId())))
             st.set("cond", "2");
         return null;
     }

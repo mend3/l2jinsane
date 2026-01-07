@@ -99,19 +99,6 @@ public class Npc extends Creature {
         this._castle = template.getCastle();
     }
 
-    /**
-     * @return The {@link Residence} this {@link Npc} belongs to.
-     */
-    public final Residence getResidence()
-    {
-        return _residence;
-    }
-
-    public final void setResidence(Residence residence)
-    {
-        _residence = residence;
-    }
-
     public static void sendNpcDrop(Player player, int npcId, int page) {
         int ITEMS_PER_LIST = 7;
         NpcTemplate npc = NpcData.getInstance().getTemplate(npcId);
@@ -267,6 +254,17 @@ public class Npc extends Creature {
         html.replace("%objectId%", npc.getObjectId());
         player.sendPacket(html);
         player.sendPacket(ActionFailed.STATIC_PACKET);
+    }
+
+    /**
+     * @return The {@link Residence} this {@link Npc} belongs to.
+     */
+    public final Residence getResidence() {
+        return _residence;
+    }
+
+    public final void setResidence(Residence residence) {
+        _residence = residence;
     }
 
     public void initCharStat() {
@@ -865,7 +863,7 @@ public class Npc extends Creature {
             }
         } else if (command.startsWith("EnterRift")) {
             try {
-                Byte b1 = Byte.valueOf(Byte.parseByte(command.substring(10)));
+                Byte b1 = Byte.parseByte(command.substring(10));
                 DimensionalRiftManager.getInstance().start(player, b1, this);
             } catch (Exception exception) {
             }
@@ -980,10 +978,10 @@ public class Npc extends Creature {
                 if (item == null)
                     continue;
                 if (item.getItemId() == 4442 && item.getCustomType1() < lotoNumber) {
-                    StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Loto ", Integer.valueOf(item.getObjectId()), "\">", Integer.valueOf(item.getCustomType1()), " Event Number ");
+                    StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Loto ", item.getObjectId(), "\">", item.getCustomType1(), " Event Number ");
                     int[] numbers = LotteryManager.decodeNumbers(item.getEnchantLevel(), item.getCustomType2());
                     for (int i = 0; i < 5; i++) {
-                        StringUtil.append(sb, Integer.valueOf(numbers[i]), " ");
+                        StringUtil.append(sb, numbers[i], " ");
                     }
                     int[] check = LotteryManager.checkTicket(item);
                     if (check[0] > 0) {
@@ -1001,7 +999,7 @@ public class Npc extends Creature {
                                 sb.append("- 4th Prize");
                                 break;
                         }
-                        StringUtil.append(sb, " ", Integer.valueOf(check[1]), "a.");
+                        StringUtil.append(sb, " ", check[1], "a.");
                     }
                     sb.append("</a><br>");
                 }
@@ -1031,7 +1029,7 @@ public class Npc extends Creature {
         html.replace("%race%", LotteryManager.getInstance().getId());
         html.replace("%adena%", LotteryManager.getInstance().getPrize());
         html.replace("%ticket_price%", Config.ALT_LOTTERY_TICKET_PRICE);
-        html.replace("%enddate%", DateFormat.getDateInstance().format(Long.valueOf(LotteryManager.getInstance().getEndDate())));
+        html.replace("%enddate%", DateFormat.getDateInstance().format(LotteryManager.getInstance().getEndDate()));
         player.sendPacket(html);
         player.sendPacket(ActionFailed.STATIC_PACKET);
     }

@@ -17,19 +17,19 @@ public final class DuelManager {
     }
 
     public Duel getDuel(int duelId) {
-        return this._duels.get(Integer.valueOf(duelId));
+        return this._duels.get(duelId);
     }
 
     public void addDuel(Player playerA, Player playerB, boolean isPartyDuel) {
         if (playerA == null || playerB == null)
             return;
         int duelId = IdFactory.getInstance().getNextId();
-        this._duels.put(Integer.valueOf(duelId), new Duel(playerA, playerB, isPartyDuel, duelId));
+        this._duels.put(duelId, new Duel(playerA, playerB, isPartyDuel, duelId));
     }
 
     public void removeDuel(int duelId) {
         IdFactory.getInstance().releaseId(duelId);
-        this._duels.remove(Integer.valueOf(duelId));
+        this._duels.remove(duelId);
     }
 
     public void doSurrender(Player player) {

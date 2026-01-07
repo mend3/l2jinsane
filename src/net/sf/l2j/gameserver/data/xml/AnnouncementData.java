@@ -12,17 +12,15 @@ import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AnnouncementData implements IXmlReader {
     private static final String HEADER = "<?xml version='1.0' encoding='utf-8'?> \n<!-- \n@param String message - the message to be announced \n@param Boolean critical - type of announcement (true = critical,false = normal) \n@param Boolean auto - when the announcement will be displayed (true = auto,false = on player login) \n@param Integer initial_delay - time delay for the first announce (used only if auto=true;value in seconds) \n@param Integer delay - time delay for the announces following the first announce (used only if auto=true;value in seconds) \n@param Integer limit - limit of announces (used only if auto=true, 0 = unlimited) \n--> \n";
-    private final Map<Integer, Announcement> _announcements = new ConcurrentHashMap();
+    private final Map<Integer, Announcement> _announcements = new ConcurrentHashMap<>();
 
     protected AnnouncementData() {
     }
@@ -61,10 +59,8 @@ public class AnnouncementData implements IXmlReader {
     }
 
     public void reload() {
-        Iterator var1 = this._announcements.values().iterator();
 
-        while (var1.hasNext()) {
-            Announcement announce = (Announcement) var1.next();
+        for (Announcement announce : this._announcements.values()) {
             announce.stopTask();
         }
 
@@ -72,10 +68,8 @@ public class AnnouncementData implements IXmlReader {
     }
 
     public void showAnnouncements(Player player, boolean autoOrNot) {
-        Iterator var3 = this._announcements.values().iterator();
 
-        while (var3.hasNext()) {
-            Announcement announce = (Announcement) var3.next();
+        for (Announcement announce : this._announcements.values()) {
             if (autoOrNot) {
                 announce.reloadTask();
             } else if (!announce.isAuto()) {
@@ -88,7 +82,7 @@ public class AnnouncementData implements IXmlReader {
     public void handleAnnounce(String command, int lengthToTrim, boolean critical) {
         try {
             World.announceToOnlinePlayers(command.substring(lengthToTrim), critical);
-        } catch (StringIndexOutOfBoundsException var5) {
+        } catch (StringIndexOutOfBoundsException ignored) {
         }
 
     }
@@ -98,10 +92,8 @@ public class AnnouncementData implements IXmlReader {
         if (this._announcements.isEmpty()) {
             sb.append("<tr><td>The XML file doesn't contain any content.</td></tr>");
         } else {
-            Iterator var3 = this._announcements.entrySet().iterator();
 
-            while (var3.hasNext()) {
-                Entry<Integer, Announcement> entry = (Entry) var3.next();
+            for (Entry<Integer, Announcement> entry : this._announcements.entrySet()) {
                 int index = entry.getKey();
                 Announcement announce = entry.getValue();
                 StringUtil.append(sb, "<tr><td width=240>#", index, " - ", announce.getMessage(), "</td><td></td></tr><tr><td>Critical: ", announce.isCritical(), " | Auto: ", announce.isAuto(), "</td><td><button value=\"Delete\" action=\"bypass -h admin_announce del ", index, "\" width=65 height=19 back=\"L2UI_ch3.smallbutton2_over\" fore=\"L2UI_ch3.smallbutton2\"></td></tr>");
@@ -137,17 +129,15 @@ public class AnnouncementData implements IXmlReader {
     private void regenerateXML() {
         StringBuilder sb = new StringBuilder("<?xml version='1.0' encoding='utf-8'?> \n<!-- \n@param String message - the message to be announced \n@param Boolean critical - type of announcement (true = critical,false = normal) \n@param Boolean auto - when the announcement will be displayed (true = auto,false = on player login) \n@param Integer initial_delay - time delay for the first announce (used only if auto=true;value in seconds) \n@param Integer delay - time delay for the announces following the first announce (used only if auto=true;value in seconds) \n@param Integer limit - limit of announces (used only if auto=true, 0 = unlimited) \n--> \n");
         sb.append("<list> \n");
-        Iterator var2 = this._announcements.values().iterator();
 
-        while (var2.hasNext()) {
-            Announcement announce = (Announcement) var2.next();
+        for (Announcement announce : this._announcements.values()) {
             StringUtil.append(sb, "<announcement message=\"", announce.getMessage(), "\" critical=\"", announce.isCritical(), "\" auto=\"", announce.isAuto(), "\" initial_delay=\"", announce.getInitialDelay(), "\" delay=\"", announce.getDelay(), "\" limit=\"", announce.getLimit(), "\" /> \n");
         }
 
         sb.append("</list>");
 
         try {
-            FileWriter fw = new FileWriter(new File("./data/xml/announcements.xml"));
+            FileWriter fw = new FileWriter("./data/xml/announcements.xml");
 
             try {
                 fw.write(sb.toString());

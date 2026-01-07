@@ -16,11 +16,7 @@ import net.sf.l2j.gameserver.skills.basefuncs.Func;
 import net.sf.l2j.gameserver.skills.basefuncs.FuncTemplate;
 import net.sf.l2j.gameserver.skills.conditions.Condition;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public abstract class Item {
@@ -97,32 +93,8 @@ public abstract class Item {
     public static final int SLOT_BABYPET = -103;
 
     public static final int SLOT_ALLWEAPON = 16512;
-    protected static final Logger _log = Logger.getLogger(Item.class.getName());
-    private final int _itemId;
-    private final String _name;
-    private final int _weight;
-    private final boolean _stackable;
-    private final MaterialType _materialType;
-    private final CrystalType _crystalType;
-    private final int _duration;
-    private final int _bodyPart;
-    private final int _referencePrice;
-    private final int _crystalCount;
-    private final boolean _sellable;
-    private final boolean _dropable;
-    private final boolean _destroyable;
-    private final boolean _tradable;
-    private final boolean _depositable;
-    private final boolean _heroItem;
-    private final boolean _isOlyRestricted;
-    private final ActionType _defaultAction;
-    protected int _type1;
-    protected int _type2;
-    protected List<FuncTemplate> _funcTemplates;
-    protected List<Condition> _preConditions;
-    private IntIntHolder[] _skillHolder;
-    private List<Quest> _questEvents = Collections.emptyList();
     public static final Map<String, Integer> _slots = new HashMap<>();
+    protected static final Logger _log = Logger.getLogger(Item.class.getName());
 
     static {
         _slots.put("chest", 1024);
@@ -150,6 +122,31 @@ public abstract class Item {
         _slots.put("strider", -102);
         _slots.put("babypet", -103);
     }
+
+    private final int _itemId;
+    private final String _name;
+    private final int _weight;
+    private final boolean _stackable;
+    private final MaterialType _materialType;
+    private final CrystalType _crystalType;
+    private final int _duration;
+    private final int _bodyPart;
+    private final int _referencePrice;
+    private final int _crystalCount;
+    private final boolean _sellable;
+    private final boolean _dropable;
+    private final boolean _destroyable;
+    private final boolean _tradable;
+    private final boolean _depositable;
+    private final boolean _heroItem;
+    private final boolean _isOlyRestricted;
+    private final ActionType _defaultAction;
+    protected int _type1;
+    protected int _type2;
+    protected List<FuncTemplate> _funcTemplates;
+    protected List<Condition> _preConditions;
+    private IntIntHolder[] _skillHolder;
+    private List<Quest> _questEvents = Collections.emptyList();
 
     protected Item(StatSet set) {
         this._itemId = set.getInteger("item_id");

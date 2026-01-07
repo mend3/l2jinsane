@@ -17,58 +17,58 @@ public class PolymorphingOnAttack extends L2AttackableAIScript {
     private static final String[][] MOBTEXTS = new String[][]{{"Enough fooling around. Get ready to die!", "You idiot! I've just been toying with you!", "Now the fun starts!"}, {"I must admit, no one makes my blood boil quite like you do!", "Now the battle begins!", "Witness my true power!"}, {"Prepare to die!", "I'll double my strength!", "You have more skill than I thought"}};
 
     static {
-        MOBSPAWNS.put(Integer.valueOf(21258), new Integer[]{Integer.valueOf(21259),
-                Integer.valueOf(100),
-                Integer.valueOf(100),
-                Integer.valueOf(-1)});
-        MOBSPAWNS.put(Integer.valueOf(21261), new Integer[]{Integer.valueOf(21262),
-                Integer.valueOf(100),
-                Integer.valueOf(20),
-                Integer.valueOf(0)});
-        MOBSPAWNS.put(Integer.valueOf(21262), new Integer[]{Integer.valueOf(21263),
-                Integer.valueOf(100),
-                Integer.valueOf(10),
-                Integer.valueOf(1)});
-        MOBSPAWNS.put(Integer.valueOf(21263), new Integer[]{Integer.valueOf(21264),
-                Integer.valueOf(100),
-                Integer.valueOf(5),
-                Integer.valueOf(2)});
-        MOBSPAWNS.put(Integer.valueOf(21265), new Integer[]{Integer.valueOf(21271),
-                Integer.valueOf(100),
-                Integer.valueOf(33),
-                Integer.valueOf(0)});
-        MOBSPAWNS.put(Integer.valueOf(21266), new Integer[]{Integer.valueOf(21269),
-                Integer.valueOf(100),
-                Integer.valueOf(100),
-                Integer.valueOf(-1)});
-        MOBSPAWNS.put(Integer.valueOf(21267), new Integer[]{Integer.valueOf(21270),
-                Integer.valueOf(100),
-                Integer.valueOf(100),
-                Integer.valueOf(-1)});
-        MOBSPAWNS.put(Integer.valueOf(21271), new Integer[]{Integer.valueOf(21272),
-                Integer.valueOf(66),
-                Integer.valueOf(10),
-                Integer.valueOf(1)});
-        MOBSPAWNS.put(Integer.valueOf(21272), new Integer[]{Integer.valueOf(21273),
-                Integer.valueOf(33),
-                Integer.valueOf(5),
-                Integer.valueOf(2)});
-        MOBSPAWNS.put(Integer.valueOf(21521), new Integer[]{Integer.valueOf(21522),
-                Integer.valueOf(100),
-                Integer.valueOf(30),
-                Integer.valueOf(-1)});
-        MOBSPAWNS.put(Integer.valueOf(21527), new Integer[]{Integer.valueOf(21528),
-                Integer.valueOf(100),
-                Integer.valueOf(30),
-                Integer.valueOf(-1)});
-        MOBSPAWNS.put(Integer.valueOf(21533), new Integer[]{Integer.valueOf(21534),
-                Integer.valueOf(100),
-                Integer.valueOf(30),
-                Integer.valueOf(-1)});
-        MOBSPAWNS.put(Integer.valueOf(21537), new Integer[]{Integer.valueOf(21538),
-                Integer.valueOf(100),
-                Integer.valueOf(30),
-                Integer.valueOf(-1)});
+        MOBSPAWNS.put(21258, new Integer[]{21259,
+                100,
+                100,
+                -1});
+        MOBSPAWNS.put(21261, new Integer[]{21262,
+                100,
+                20,
+                0});
+        MOBSPAWNS.put(21262, new Integer[]{21263,
+                100,
+                10,
+                1});
+        MOBSPAWNS.put(21263, new Integer[]{21264,
+                100,
+                5,
+                2});
+        MOBSPAWNS.put(21265, new Integer[]{21271,
+                100,
+                33,
+                0});
+        MOBSPAWNS.put(21266, new Integer[]{21269,
+                100,
+                100,
+                -1});
+        MOBSPAWNS.put(21267, new Integer[]{21270,
+                100,
+                100,
+                -1});
+        MOBSPAWNS.put(21271, new Integer[]{21272,
+                66,
+                10,
+                1});
+        MOBSPAWNS.put(21272, new Integer[]{21273,
+                33,
+                5,
+                2});
+        MOBSPAWNS.put(21521, new Integer[]{21522,
+                100,
+                30,
+                -1});
+        MOBSPAWNS.put(21527, new Integer[]{21528,
+                100,
+                30,
+                -1});
+        MOBSPAWNS.put(21533, new Integer[]{21534,
+                100,
+                30,
+                -1});
+        MOBSPAWNS.put(21537, new Integer[]{21538,
+                100,
+                30,
+                -1});
     }
 
     public PolymorphingOnAttack() {
@@ -81,7 +81,7 @@ public class PolymorphingOnAttack extends L2AttackableAIScript {
 
     public String onAttack(Npc npc, Creature attacker, int damage, L2Skill skill) {
         if (npc.isVisible() && !npc.isDead()) {
-            Integer[] tmp = MOBSPAWNS.get(Integer.valueOf(npc.getNpcId()));
+            Integer[] tmp = MOBSPAWNS.get(npc.getNpcId());
             if (tmp != null)
                 if (npc.getCurrentHp() <= (npc.getMaxHp() * tmp[1]) / 100.0D && Rnd.get(100) < tmp[2]) {
                     if (tmp[3] >= 0) {

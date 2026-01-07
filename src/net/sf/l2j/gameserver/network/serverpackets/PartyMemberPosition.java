@@ -17,7 +17,7 @@ public class PartyMemberPosition extends L2GameServerPacket {
     public void reuse(Party party) {
         this._locations.clear();
         for (Player member : party.getMembers())
-            this._locations.put(Integer.valueOf(member.getObjectId()), new Location(member.getX(), member.getY(), member.getZ()));
+            this._locations.put(member.getObjectId(), new Location(member.getX(), member.getY(), member.getZ()));
     }
 
     protected void writeImpl() {

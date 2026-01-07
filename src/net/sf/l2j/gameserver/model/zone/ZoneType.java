@@ -79,12 +79,12 @@ public abstract class ZoneType {
         if (!isAffected(character))
             return;
         if (isInsideZone(character)) {
-            if (!this._characters.containsKey(Integer.valueOf(character.getObjectId()))) {
+            if (!this._characters.containsKey(character.getObjectId())) {
                 List<Quest> quests = getQuestByEvent(ScriptEventType.ON_ENTER_ZONE);
                 if (quests != null)
                     for (Quest quest : quests)
                         quest.notifyEnterZone(character, this);
-                this._characters.put(Integer.valueOf(character.getObjectId()), character);
+                this._characters.put(character.getObjectId(), character);
                 onEnter(character);
                 EngineModsManager.onEnterZone(character, this);
             }
@@ -94,7 +94,7 @@ public abstract class ZoneType {
     }
 
     public void removeCharacter(Creature character) {
-        if (this._characters.remove(Integer.valueOf(character.getObjectId())) != null) {
+        if (this._characters.remove(character.getObjectId()) != null) {
             List<Quest> quests = getQuestByEvent(ScriptEventType.ON_EXIT_ZONE);
             if (quests != null)
                 for (Quest quest : quests)
@@ -105,7 +105,7 @@ public abstract class ZoneType {
     }
 
     public boolean isCharacterInZone(Creature character) {
-        return this._characters.containsKey(Integer.valueOf(character.getObjectId()));
+        return this._characters.containsKey(character.getObjectId());
     }
 
     public Collection<Creature> getCharacters() {

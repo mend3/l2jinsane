@@ -54,7 +54,7 @@ public class LoginServerThread extends Thread {
 
     private byte[] _hexId;
 
-    private int _requestId;
+    private final int _requestId;
     private int _maxPlayers;
     private StatusType _type = StatusType.AUTO;
 
@@ -86,7 +86,7 @@ public class LoginServerThread extends Thread {
         while (!isInterrupted()) {
             try {
                 // Connection
-                LOGGER.info("Connecting to login on {}:{}.", Config.GAME_SERVER_LOGIN_HOST, Integer.valueOf(Config.GAME_SERVER_LOGIN_PORT));
+                LOGGER.info("Connecting to login on {}:{}.", Config.GAME_SERVER_LOGIN_HOST, Config.GAME_SERVER_LOGIN_PORT);
                 this._loginSocket = new Socket(Config.GAME_SERVER_LOGIN_HOST, Config.GAME_SERVER_LOGIN_PORT);
                 _in = _loginSocket.getInputStream();
                 _out = new BufferedOutputStream(_loginSocket.getOutputStream());

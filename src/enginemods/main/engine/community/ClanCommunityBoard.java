@@ -92,7 +92,7 @@ public class ClanCommunityBoard extends AbstractMods {
             hb.append("<td fixwidth=114 align=center>", member.getName(), "</td>");
             hb.append("<td fixwidth=30 align=center>", getColorLevel(member.getLevel()), "</td>");
             hb.append("<td fixwidth=50 align=center>", member.isOnline() ? Html.newFontColor("3CFF00", "online") : Html.newFontColor("FF0000", "offline"), "</td>");
-            hb.append("<td fixwidth=50 align=center>", Integer.valueOf(PlayerData.get(member.getObjectId()).getRebirth()), "</td>");
+            hb.append("<td fixwidth=50 align=center>", PlayerData.get(member.getObjectId()).getRebirth(), "</td>");
             hb.append("<td fixwidth=25 align=center>", getIconStatus(PlayerData.get(member.getObjectId()).isAio()), "</td>");
             hb.append("<td fixwidth=25 align=center>", getIconStatus(PlayerData.get(member.getObjectId()).isVip()), "</td>");
             hb.append("<td fixwidth=100 align=center>", ClassId.values()[member.getClassId()], "</td>");
@@ -112,7 +112,7 @@ public class ClanCommunityBoard extends AbstractMods {
                 if (currentPage == page) {
                     hb.append("<td width=20>", Html.newFontColor("LEVEL", currentPage), "</td>");
                 } else {
-                    hb.append("<td width=20><a action=\"bypass _bbsclan membersPage ", Integer.valueOf(currentPage), "\">", Integer.valueOf(currentPage), "</a></td>");
+                    hb.append("<td width=20><a action=\"bypass _bbsclan membersPage ", currentPage, "\">", currentPage, "</a></td>");
                 }
                 currentPage++;
             }
@@ -147,7 +147,7 @@ public class ClanCommunityBoard extends AbstractMods {
         hb.append("<td fixwidth=84 height=22 align=center>", Html.newFontColor("FF8000", clan.getName()), "</td>");
         hb.append("<td fixwidth=30 align=center>", getClanColorLevel(clan.getLevel()), "</td>");
         hb.append("<td fixwidth=90 align=center>", clan.getLeader().getName(), "</td>");
-        hb.append("<td fixwidth=40 align=center>", Integer.valueOf(clan.getMembersCount()), "</td>");
+        hb.append("<td fixwidth=40 align=center>", clan.getMembersCount(), "</td>");
         hb.append("<td fixwidth=100 align=center>", (clan.getAllyId() > 0) ? clan.getAllyName() : "No Ally", "</td>");
         hb.append("<td fixwidth=100 align=center>", clan.hasCastle() ? CastleManager.getInstance().getCastleById(clan.getClanId()).getName() : "No Castle", "</td>");
         hb.append("</tr>");
@@ -180,7 +180,7 @@ public class ClanCommunityBoard extends AbstractMods {
         List<Clan> clansList = new ArrayList<>();
         for (Clan clan : ClanTable.getInstance().getClans())
             clansList.add(clan);
-        Collections.sort(clansList, (p1, p2) -> (Integer.valueOf(p1.getReputationScore())).compareTo(Integer.valueOf(p2.getReputationScore())));
+        Collections.sort(clansList, (p1, p2) -> (Integer.valueOf(p1.getReputationScore())).compareTo(p2.getReputationScore()));
         for (Clan clan : ClanTable.getInstance().getClans()) {
             if (clan == null)
                 continue;
@@ -205,7 +205,7 @@ public class ClanCommunityBoard extends AbstractMods {
                 if (currentPage == page) {
                     hb.append("<td width=20>", Html.newFontColor("LEVEL", currentPage), "</td>");
                 } else {
-                    hb.append("<td width=20><a action=\"bypass _bbsclan listClans ", Integer.valueOf(currentPage), "\">", Integer.valueOf(currentPage), "</a></td>");
+                    hb.append("<td width=20><a action=\"bypass _bbsclan listClans ", currentPage, "\">", currentPage, "</a></td>");
                 }
                 currentPage++;
             }
@@ -416,7 +416,7 @@ public class ClanCommunityBoard extends AbstractMods {
         } else if (lvl >= 76) {
             hb.append(Html.newFontColor("FF0000", lvl));
         } else {
-            hb.append(Integer.valueOf(lvl));
+            hb.append(lvl);
         }
         return hb.toString();
     }
@@ -430,7 +430,7 @@ public class ClanCommunityBoard extends AbstractMods {
         } else if (lvl >= 7) {
             hb.append(Html.newFontColor("FF0000", lvl));
         } else {
-            hb.append(Integer.valueOf(lvl));
+            hb.append(lvl);
         }
         return hb.toString();
     }

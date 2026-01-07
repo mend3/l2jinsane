@@ -34,17 +34,17 @@ public class AdminBookmark implements IAdminCommandHandler {
             int x = bk.getX();
             int y = bk.getY();
             int z = bk.getZ();
-            StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_move_to ", Integer.valueOf(x), " ", Integer.valueOf(y), " ", Integer.valueOf(z), "\">", name, " (", Integer.valueOf(x),
-                    " ", Integer.valueOf(y), " ", Integer.valueOf(z), ")", "</a></td><td><a action=\"bypass -h admin_delbk ", name, "\">Remove</a></td></tr>");
+            StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_move_to ", x, " ", y, " ", z, "\">", name, " (", x,
+                    " ", y, " ", z, ")", "</a></td><td><a action=\"bypass -h admin_delbk ", name, "\">Remove</a></td></tr>");
         }
         html.replace("%locs%", sb.toString());
         sb.setLength(0);
         for (int i = 0; i < max; i++) {
             int pagenr = i + 1;
             if (page == pagenr) {
-                StringUtil.append(sb, Integer.valueOf(pagenr), "&nbsp;");
+                StringUtil.append(sb, pagenr, "&nbsp;");
             } else {
-                StringUtil.append(sb, "<a action=\"bypass -h admin_bkpage ", Integer.valueOf(pagenr), "\">", Integer.valueOf(pagenr), "</a>&nbsp;");
+                StringUtil.append(sb, "<a action=\"bypass -h admin_bkpage ", pagenr, "\">", pagenr, "</a>&nbsp;");
             }
         }
         html.replace("%pages%", sb.toString());

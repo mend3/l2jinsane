@@ -75,7 +75,7 @@ public class TeleportBBSManager extends BaseBBSManager {
                 Calendar cal = Calendar.getInstance();
                 int price = list.getPrice();
                 if (!list.isNoble() &&
-                        cal.get(11) >= 20 && cal.get(11) <= 23 && (cal.get(7) == 1 || cal.get(7) == 7))
+                        cal.get(Calendar.HOUR_OF_DAY) >= 20 && cal.get(Calendar.HOUR_OF_DAY) <= 23 && (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY))
                     price /= 2;
                 if (player.destroyItemByItemId("Teleport ", list.isNoble() ? 6651 : 57, price, player, true))
                     player.teleportTo(list, 100);
@@ -97,7 +97,7 @@ public class TeleportBBSManager extends BaseBBSManager {
                     player.teleportTo(RandomZoneManager.getInstance().getCurrentZone().getLoc(), 200);
             } else if (actualCommand.startsWith("chat")) {
                 String html;
-                int page = Integer.valueOf(st.nextToken());
+                int page = Integer.parseInt(st.nextToken());
                 if (page == 0) {
                     html = HtmCache.getInstance().getHtm("data/html/CommunityBoard/" + getFolder() + "index.htm");
                 } else {

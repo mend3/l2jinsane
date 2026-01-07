@@ -19,7 +19,7 @@ public class SellListProcure extends L2GameServerPacket {
         for (CropProcure c : CastleManorManager.getInstance().getCropProcure(castleId, false)) {
             ItemInstance item = player.getInventory().getItemByItemId(c.getId());
             if (item != null && c.getAmount() > 0)
-                this._sellList.put(item, Integer.valueOf(c.getAmount()));
+                this._sellList.put(item, c.getAmount());
         }
     }
 

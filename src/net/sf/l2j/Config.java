@@ -1568,21 +1568,18 @@ public final class Config {
         ENABLE_MODIFY_SKILL_DURATION = Boolean.parseBoolean(customfile.getProperty("EnableModifySkillDuration", "false"));
         if (ENABLE_MODIFY_SKILL_DURATION) {
             SKILL_DURATION_LIST = new HashMap<>();
-            String[] propert = customfile.getProperty("SkillDurationList", "").split(";");
-            String[] infos = propert;
-            int str1 = infos.length;
-            for (int id = 0; id < str1; id++) {
-                String skill = infos[id];
+            String[] infos = customfile.getProperty("SkillDurationList", "").split(";");
+            for (String skill : infos) {
                 String[] skillSplit = skill.split(",");
                 if (skillSplit.length != 2) {
                     LOGGER.warn("[SkillDurationList]: invalid config property -> SkillDurationList \"" + skill + "\"");
                 } else {
                     try {
-                        SKILL_DURATION_LIST.put(Integer.valueOf(Integer.parseInt(skillSplit[0])), Integer.valueOf(Integer.parseInt(skillSplit[1])));
+                        SKILL_DURATION_LIST.put(Integer.parseInt(skillSplit[0]), Integer.parseInt(skillSplit[1]));
                     } catch (NumberFormatException nfe) {
                         if (DEVELOPER)
                             nfe.printStackTrace();
-                        if (!skill.equals(""))
+                        if (!skill.isEmpty())
                             LOGGER.warn("[SkillDurationList]: invalid config property -> SkillList \"" + skillSplit[0] + "\"" + skillSplit[1]);
                     }
                 }
@@ -1615,7 +1612,7 @@ public final class Config {
         LIST_RAID_BOSS_IDS = new ArrayList<>();
         for (String val : RAID_BOSS_IDS.split(",")) {
             int npcId = Integer.parseInt(val);
-            LIST_RAID_BOSS_IDS.add(Integer.valueOf(npcId));
+            LIST_RAID_BOSS_IDS.add(npcId);
         }
         ALLOW_DIRECT_TP_TO_BOSS_ROOM = customfile.getProperty("AllowDirectTeleportToBossRoom", false);
         ENABLE_AUTO_PVP_ZONE = Boolean.parseBoolean(customfile.getProperty("EnableAutoPvpZone", "false"));
@@ -1676,11 +1673,9 @@ public final class Config {
         LEVEL_REWARDS_ENABLE = customfile.getProperty("EnableRewardPerLevel", false);
         if (LEVEL_REWARDS_ENABLE) {
             LEVEL_REWARDS = new HashMap<>();
-            String[] propert = customfile.getProperty("RewardsPerLevel", "81,9554-1;").split(";");
-            String[] infos = propert;
-            int size = infos.length;
+            int size = customfile.getProperty("RewardsPerLevel", "81,9554-1;").split(";").length;
             for (int id = 0; id < size; id++) {
-                String rewards = infos[id];
+                String rewards = customfile.getProperty("RewardsPerLevel", "81,9554-1;").split(";")[id];
                 String[] inforReward = rewards.split(",");
                 if (inforReward.length != 2) {
                     LOGGER.warn("[RewardsPerLevel]: invalid config property -> RewardsPerLevel.");
@@ -1689,7 +1684,7 @@ public final class Config {
                         String[] rewardSplit = inforReward[1].split("-");
                         if (rewardSplit.length != 2)
                             LOGGER.warn("[RewardsPerLevel]: Invalid reward format 57-100 (item-count).");
-                        LEVEL_REWARDS.put(Integer.valueOf(Integer.parseInt(inforReward[0])), new IntIntHolder(Integer.parseInt(rewardSplit[0]), Integer.parseInt(rewardSplit[1])));
+                        LEVEL_REWARDS.put(Integer.parseInt(inforReward[0]), new IntIntHolder(Integer.parseInt(rewardSplit[0]), Integer.parseInt(rewardSplit[1])));
                     } catch (NumberFormatException nfe) {
                         if (DEVELOPER) {
                             nfe.printStackTrace();
@@ -1731,7 +1726,7 @@ public final class Config {
         propertySplit = multifunctionzone.getProperty("Rewards", "57,100000").split(";");
         for (String s : propertySplit) {
             String[] ss = s.split(",");
-            REWARDS.put(Integer.valueOf(Integer.parseInt(ss[0])), Integer.valueOf(Integer.parseInt(ss[1])));
+            REWARDS.put(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
         }
     }
 
@@ -1835,6 +1830,7 @@ public final class Config {
         saveHexid(serverId, hexId, "./config/hexid.txt");
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void saveHexid(int serverId, String hexId, String filename) {
         try {
             File file = new File(filename);
@@ -2094,7 +2090,7 @@ public final class Config {
         if (data != null)
             for (String itemData : data) {
                 String[] item = itemData.split("-");
-                SPECIAL_ITEM_DESTROY_TIME.put(Integer.valueOf(Integer.parseInt(item[0])), Integer.valueOf(Integer.parseInt(item[1]) * 1000));
+                SPECIAL_ITEM_DESTROY_TIME.put(Integer.parseInt(item[0]), Integer.parseInt(item[1]) * 1000);
             }
         PLAYER_DROPPED_ITEM_MULTIPLIER = server.getProperty("PlayerDroppedItemMultiplier", 1);
         RATE_XP = server.getProperty("RateXp", 1.0D);
@@ -2186,12 +2182,12 @@ public final class Config {
         String[] dm_on_kill_split = eventengine.getProperty("DMOnKillRewards", "").split(";");
         for (String s : dm_on_kill_split) {
             String[] ss = s.split(",");
-            DM_ON_KILL_REWARDS.put(Integer.valueOf(Integer.parseInt(ss[0])), Integer.valueOf(Integer.parseInt(ss[1])));
+            DM_ON_KILL_REWARDS.put(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
         }
         String[] dm_win_split = eventengine.getProperty("DMWinnerRewards", "57,1").split(";");
         for (String s : dm_win_split) {
             String[] ss = s.split(",");
-            DM_WINNER_REWARDS.put(Integer.valueOf(Integer.parseInt(ss[0])), Integer.valueOf(Integer.parseInt(ss[1])));
+            DM_WINNER_REWARDS.put(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
         }
         DM_RUNNING_TIME = eventengine.getProperty("DMRunningTime", 10);
         String dm_resp_spots = eventengine.getProperty("DMRespawnSpots", "0,0,0;0,0,0");
@@ -2207,13 +2203,13 @@ public final class Config {
         String[] tvt_win_split = tvt_win.split(";");
         for (String s : tvt_win_split) {
             String[] ss = s.split(",");
-            TVT_WINNER_REWARDS.put(Integer.valueOf(Integer.parseInt(ss[0])), Integer.valueOf(Integer.parseInt(ss[1])));
+            TVT_WINNER_REWARDS.put(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
         }
         String tvt_draw = eventengine.getProperty("TvTDrawRewards", "57,1");
         String[] tvt_draw_split = tvt_draw.split(";");
         for (String s : tvt_draw_split) {
             String[] ss = s.split(",");
-            TVT_DRAW_REWARDS.put(Integer.valueOf(Integer.parseInt(ss[0])), Integer.valueOf(Integer.parseInt(ss[1])));
+            TVT_DRAW_REWARDS.put(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
         }
         TVT_RUNNING_TIME = eventengine.getProperty("TvTRunningTime", 10);
         TVT_TEAM_1_NAME = eventengine.getProperty("TvTTeam1Name", "Orange");
@@ -2233,18 +2229,18 @@ public final class Config {
         String[] ctf_on_score_split = ctf_on_score.split(";");
         for (String s : ctf_on_score_split) {
             String[] ss = s.split(",");
-            CTF_ON_SCORE_REWARDS.put(Integer.valueOf(Integer.parseInt(ss[0])), Integer.valueOf(Integer.parseInt(ss[1])));
+            CTF_ON_SCORE_REWARDS.put(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
         }
         String ctf_win = eventengine.getProperty("CTFWinnerRewards", "57,1");
         String[] ctf_win_split = ctf_win.split(";");
         for (String s : ctf_win_split) {
             String[] ss = s.split(",");
-            CTF_WINNER_REWARDS.put(Integer.valueOf(Integer.parseInt(ss[0])), Integer.valueOf(Integer.parseInt(ss[1])));
+            CTF_WINNER_REWARDS.put(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
         }
         CTF_DRAW_REWARDS = new HashMap<>();
         for (String s : eventengine.getProperty("CTFDrawRewards", "57,1").split(";")) {
             String[] ss = s.split(",");
-            CTF_DRAW_REWARDS.put(Integer.valueOf(Integer.parseInt(ss[0])), Integer.valueOf(Integer.parseInt(ss[1])));
+            CTF_DRAW_REWARDS.put(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
         }
         CTF_RUNNING_TIME = eventengine.getProperty("CTFRunningTime", 10);
         CTF_TEAM_1_NAME = eventengine.getProperty("CTFTeam1Name", "Orange");
@@ -2307,7 +2303,7 @@ public final class Config {
         ExProperties bossEvent = initProperties("./config/events/killTheBossEvent.properties");
         BOSS_EVENT_BY_TIME_OF_DAY = bossEvent.getProperty("EventTime", "20:00").split(",");
         for (String bossList : bossEvent.getProperty("BossList", "29046;29029").split(";"))
-            BOSS_EVENT_ID.add(Integer.valueOf(Integer.parseInt(bossList)));
+            BOSS_EVENT_ID.add(Integer.parseInt(bossList));
         for (String locationsList : bossEvent.getProperty("LocationsList", "10468,-24569,-3645;174229,-88032,-5116").split(";")) {
             String[] coords = locationsList.split(",");
             int x = Integer.parseInt(coords[0]);
@@ -2326,15 +2322,15 @@ public final class Config {
         BOSS_EVENT_REWARD_MAIN_DAMAGE_DEALER = bossEvent.getProperty("RewardMainDamageDealer", true);
         for (String rewards : bossEvent.getProperty("GeneralRewards", "57,100000;3470,10").split(";")) {
             String[] reward = rewards.split(",");
-            BOSS_EVENT_GENERAL_REWARDS.put(Integer.valueOf(Integer.parseInt(reward[0])), Integer.valueOf(Integer.parseInt(reward[1])));
+            BOSS_EVENT_GENERAL_REWARDS.put(Integer.parseInt(reward[0]), Integer.parseInt(reward[1]));
         }
         for (String rewards : bossEvent.getProperty("MainDamageDealerRewards", "57,100000;3470,10").split(";")) {
             String[] reward = rewards.split(",");
-            BOSS_EVENT_MAIN_DAMAGE_DEALER_REWARDS.put(Integer.valueOf(Integer.parseInt(reward[0])), Integer.valueOf(Integer.parseInt(reward[1])));
+            BOSS_EVENT_MAIN_DAMAGE_DEALER_REWARDS.put(Integer.parseInt(reward[0]), Integer.parseInt(reward[1]));
         }
         for (String rewards : bossEvent.getProperty("LastAttackerRewards", "57,100000;3470,10").split(";")) {
             String[] reward = rewards.split(",");
-            BOSS_EVENT_LAST_ATTACKER_REWARDS.put(Integer.valueOf(Integer.parseInt(reward[0])), Integer.valueOf(Integer.parseInt(reward[1])));
+            BOSS_EVENT_LAST_ATTACKER_REWARDS.put(Integer.parseInt(reward[0]), Integer.parseInt(reward[1]));
         }
         BOSS_EVENT_REGISTRATION_NPC_ID = bossEvent.getProperty("RegisterNpcID", 10003);
         BOSS_EVENT_TIME_TO_DESPAWN_BOSS = bossEvent.getProperty("TimeToDespawnBoss", 300);
@@ -2441,16 +2437,16 @@ public final class Config {
         TOURNAMENT_ID_RESTRICT = tournament.getProperty("ItemsRestriction");
         TOURNAMENT_LISTID_RESTRICT = new ArrayList<>();
         for (String id : TOURNAMENT_ID_RESTRICT.split(","))
-            TOURNAMENT_LISTID_RESTRICT.add(Integer.valueOf(Integer.parseInt(id)));
+            TOURNAMENT_LISTID_RESTRICT.add(Integer.parseInt(id));
         ARENA_SKILL_PROTECT = Boolean.parseBoolean(tournament.getProperty("ArenaSkillProtect", "false"));
         for (String id : tournament.getProperty("ArenaDisableSkillList", "0").split(","))
-            ARENA_SKILL_LIST.add(Integer.valueOf(Integer.parseInt(id)));
+            ARENA_SKILL_LIST.add(Integer.parseInt(id));
         for (String id : tournament.getProperty("DisableSkillList", "0").split(","))
-            ARENA_DISABLE_SKILL_LIST_PERM.add(Integer.valueOf(Integer.parseInt(id)));
+            ARENA_DISABLE_SKILL_LIST_PERM.add(Integer.parseInt(id));
         for (String id : tournament.getProperty("ArenaDisableSkillList_noStart", "0").split(","))
-            ARENA_DISABLE_SKILL_LIST.add(Integer.valueOf(Integer.parseInt(id)));
+            ARENA_DISABLE_SKILL_LIST.add(Integer.parseInt(id));
         for (String id : tournament.getProperty("ArenaStopSkillList", "0").split(","))
-            ARENA_STOP_SKILL_LIST.add(Integer.valueOf(Integer.parseInt(id)));
+            ARENA_STOP_SKILL_LIST.add(Integer.parseInt(id));
     }
 
     private static void loadPartyFarm() {
@@ -2461,10 +2457,10 @@ public final class Config {
         for (String s : temp) {
             List<Integer> list = new ArrayList<>();
             String[] t = s.split(",");
-            list.add(Integer.valueOf(Integer.parseInt(t[1])));
-            list.add(Integer.valueOf(Integer.parseInt(t[2])));
-            list.add(Integer.valueOf(Integer.parseInt(t[3])));
-            PARTY_DROP_LIST.put(Integer.valueOf(Integer.parseInt(t[0])), list);
+            list.add(Integer.parseInt(t[1]));
+            list.add(Integer.parseInt(t[2]));
+            list.add(Integer.parseInt(t[3]));
+            PARTY_DROP_LIST.put(Integer.parseInt(t[0]), list);
         }
         PARTY_FARM_MONSTER_DALAY = Integer.parseInt(DungeonPartyFarm.getProperty("MonsterDelay", "10"));
         PARTY_FARM_BY_TIME_OF_DAY = Boolean.parseBoolean(DungeonPartyFarm.getProperty("PartyFarmEventEnabled", "false"));
@@ -2618,10 +2614,10 @@ public final class Config {
         String aux = propertie.getProperty(configName).trim();
         for (String randomReward : aux.split(";")) {
             String[] infos = randomReward.split(",");
-            if (infos.length > 2) {
-                auxReturn.add(new RewardHolder(Integer.valueOf(infos[0]), Integer.valueOf(infos[1]), Integer.valueOf(infos[2]), Integer.valueOf(infos[3])));
+            if (infos.length > 3) {
+                auxReturn.add(new RewardHolder(Integer.parseInt(infos[0]), Integer.parseInt(infos[1]), Integer.parseInt(infos[2]), Integer.parseInt(infos[3])));
             } else {
-                auxReturn.add(new RewardHolder(Integer.valueOf(infos[0]), Integer.valueOf(infos[1]), Integer.valueOf(infos[2])));
+                auxReturn.add(new RewardHolder(Integer.parseInt(infos[0]), Integer.parseInt(infos[1]), Integer.parseInt(infos[2])));
             }
         }
         return auxReturn;
@@ -2643,7 +2639,7 @@ public final class Config {
             StringTokenizer st = new StringTokenizer(configLine, ";");
             while (st.hasMoreTokens()) {
                 int job = Integer.parseInt(st.nextToken());
-                this._allowedClassChange.put(Integer.valueOf(job), Boolean.valueOf(true));
+                this._allowedClassChange.put(job, Boolean.TRUE);
                 List<IntIntHolder> items = new ArrayList<>();
                 if (st.hasMoreTokens()) {
                     StringTokenizer st2 = new StringTokenizer(st.nextToken(), "[],");
@@ -2652,7 +2648,7 @@ public final class Config {
                         items.add(new IntIntHolder(Integer.parseInt(st3.nextToken()), Integer.parseInt(st3.nextToken())));
                     }
                 }
-                this._claimItems.put(Integer.valueOf(job), items);
+                this._claimItems.put(job, items);
                 items = new ArrayList<>();
                 if (st.hasMoreTokens()) {
                     StringTokenizer st2 = new StringTokenizer(st.nextToken(), "[],");
@@ -2661,24 +2657,22 @@ public final class Config {
                         items.add(new IntIntHolder(Integer.parseInt(st3.nextToken()), Integer.parseInt(st3.nextToken())));
                     }
                 }
-                this._rewardItems.put(Integer.valueOf(job), items);
+                this._rewardItems.put(job, items);
             }
         }
 
         public boolean isAllowed(int job) {
-            if (this._allowedClassChange == null)
-                return false;
-            if (this._allowedClassChange.containsKey(Integer.valueOf(job)))
-                return this._allowedClassChange.get(Integer.valueOf(job));
+            if (this._allowedClassChange.containsKey(job))
+                return this._allowedClassChange.get(job);
             return false;
         }
 
         public List<IntIntHolder> getRewardItems(int job) {
-            return this._rewardItems.get(Integer.valueOf(job));
+            return this._rewardItems.get(job);
         }
 
         public List<IntIntHolder> getRequiredItems(int job) {
-            return this._claimItems.get(Integer.valueOf(job));
+            return this._claimItems.get(job);
         }
     }
 }

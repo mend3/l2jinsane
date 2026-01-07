@@ -49,12 +49,12 @@ public class PlayerHolder {
         this._maestriasPoints = new AtomicInteger(0);
         this._statsPoints = new AtomicInteger(0);
         this._statsCustom = new HashMap<>();
-        this._statsCustom.put(Stats.STAT_STR, Integer.valueOf(0));
-        this._statsCustom.put(Stats.STAT_CON, Integer.valueOf(0));
-        this._statsCustom.put(Stats.STAT_DEX, Integer.valueOf(0));
-        this._statsCustom.put(Stats.STAT_INT, Integer.valueOf(0));
-        this._statsCustom.put(Stats.STAT_WIT, Integer.valueOf(0));
-        this._statsCustom.put(Stats.STAT_MEN, Integer.valueOf(0));
+        this._statsCustom.put(Stats.STAT_STR, 0);
+        this._statsCustom.put(Stats.STAT_CON, 0);
+        this._statsCustom.put(Stats.STAT_DEX, 0);
+        this._statsCustom.put(Stats.STAT_INT, 0);
+        this._statsCustom.put(Stats.STAT_WIT, 0);
+        this._statsCustom.put(Stats.STAT_MEN, 0);
         this._auctionsSell = new LinkedHashMap<>(100);
         this._auctionsSold = new LinkedHashMap<>(100);
         this._kills = 0;
@@ -197,7 +197,7 @@ public class PlayerHolder {
 
     public void addCustomStat(Stats stat, int value) {
         int oldValue = getCustomStat(stat);
-        this._statsCustom.put(stat, Integer.valueOf(oldValue + value));
+        this._statsCustom.put(stat, oldValue + value);
     }
 
     public Map<Integer, AuctionItemHolder> getAuctionsSell() {
@@ -205,11 +205,11 @@ public class PlayerHolder {
     }
 
     public void addAuctionSell(int id, AuctionItemHolder auction) {
-        this._auctionsSell.put(Integer.valueOf(id), auction);
+        this._auctionsSell.put(id, auction);
     }
 
     public void removeAuctionSell(int key) {
-        this._auctionsSell.remove(Integer.valueOf(key));
+        this._auctionsSell.remove(key);
     }
 
     public Map<Integer, AuctionItemHolder> getAuctionsSold() {
@@ -217,11 +217,11 @@ public class PlayerHolder {
     }
 
     public void addAuctionSold(int id, AuctionItemHolder auction) {
-        this._auctionsSold.put(Integer.valueOf(id), auction);
+        this._auctionsSold.put(id, auction);
     }
 
     public void removeAuctionSold(int id) {
-        this._auctionsSold.remove(Integer.valueOf(id));
+        this._auctionsSold.remove(id);
     }
 
     public boolean isAnswerRight(String bypas) {

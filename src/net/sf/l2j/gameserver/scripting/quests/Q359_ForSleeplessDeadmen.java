@@ -27,9 +27,9 @@ public class Q359_ForSleeplessDeadmen extends Quest {
 
     public Q359_ForSleeplessDeadmen() {
         super(359, "For Sleepless Deadmen");
-        CHANCES.put(Integer.valueOf(21006), Integer.valueOf(320000));
-        CHANCES.put(Integer.valueOf(21007), Integer.valueOf(340000));
-        CHANCES.put(Integer.valueOf(21008), Integer.valueOf(420000));
+        CHANCES.put(21006, 320000);
+        CHANCES.put(21007, 340000);
+        CHANCES.put(21008, 420000);
         setItemsIds(5869);
         addStartNpc(30857);
         addTalkId(30857);
@@ -88,7 +88,7 @@ public class Q359_ForSleeplessDeadmen extends Quest {
         QuestState st = checkPlayerCondition(player, npc, "cond", "1");
         if (st == null)
             return null;
-        if (st.dropItems(5869, 1, 60, CHANCES.get(Integer.valueOf(npc.getNpcId()))))
+        if (st.dropItems(5869, 1, 60, CHANCES.get(npc.getNpcId())))
             st.set("cond", "2");
         return null;
     }

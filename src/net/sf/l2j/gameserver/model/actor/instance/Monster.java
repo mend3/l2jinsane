@@ -383,16 +383,16 @@ public class Monster extends Attackable {
     }
 
     public void addAbsorber(Player user, ItemInstance crystal) {
-        AbsorbInfo ai = this._absorbersList.get(Integer.valueOf(user.getObjectId()));
+        AbsorbInfo ai = this._absorbersList.get(user.getObjectId());
         if (ai == null) {
-            this._absorbersList.put(Integer.valueOf(user.getObjectId()), new AbsorbInfo(crystal.getObjectId()));
+            this._absorbersList.put(user.getObjectId(), new AbsorbInfo(crystal.getObjectId()));
         } else if (!ai.isRegistered()) {
             ai.setItemId(crystal.getObjectId());
         }
     }
 
     public void registerAbsorber(Player user) {
-        AbsorbInfo ai = this._absorbersList.get(Integer.valueOf(user.getObjectId()));
+        AbsorbInfo ai = this._absorbersList.get(user.getObjectId());
         if (ai == null)
             return;
         if (user.getInventory().getItemByObjectId(ai.getItemId()) == null)
@@ -404,7 +404,7 @@ public class Monster extends Attackable {
     }
 
     public AbsorbInfo getAbsorbInfo(int npcObjectId) {
-        return this._absorbersList.get(Integer.valueOf(npcObjectId));
+        return this._absorbersList.get(npcObjectId);
     }
 
     private int[] calculateExpAndSp(int diff, int damage, long totalDamage) {
@@ -746,13 +746,13 @@ public class Monster extends Attackable {
     private record CommandChannelTimer(Monster _monster) implements Runnable {
 
         public void run() {
-                if (System.currentTimeMillis() - this._monster.getCommandChannelLastAttack() > 900000L) {
-                    this._monster.setCommandChannelTimer(null);
-                    this._monster.setFirstCommandChannelAttacked(null);
-                    this._monster.setCommandChannelLastAttack(0L);
-                } else {
-                    ThreadPool.schedule(this, 10000L);
-                }
+            if (System.currentTimeMillis() - this._monster.getCommandChannelLastAttack() > 900000L) {
+                this._monster.setCommandChannelTimer(null);
+                this._monster.setFirstCommandChannelAttacked(null);
+                this._monster.setCommandChannelLastAttack(0L);
+            } else {
+                ThreadPool.schedule(this, 10000L);
             }
         }
+    }
 }

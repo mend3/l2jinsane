@@ -22,23 +22,21 @@ import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 
 public abstract class AbstractEvent implements Runnable {
+    private final String name;
+    private final int id;
+    private final Map<Player, Integer> playerScores;
+    private final List<Location> teleportLocations;
+    private final List<Npc> spawnedNpcs;
+    private final int runningMinutes;
     protected List<Player> players;
     protected List<EventTeam> teams;
     protected EventResTask eventRes = null;
     protected EventInformation eventInfo = null;
-    private final String name;
-    private final int id;
     private EventState state;
-    private final Map<Player, Integer> playerScores;
-    private final List<Location> teleportLocations;
-    private final List<Npc> spawnedNpcs;
     private ScheduledFuture<?> endTask = null;
     private ScheduledFuture<?> resTask = null;
     private ScheduledFuture<?> infoTask = null;
-
     private ScheduledFuture<?> checkSayTask = null;
-
-    private final int runningMinutes;
 
     protected AbstractEvent(String name, int id, int runningMinutes) {
         this.name = name;
@@ -75,14 +73,14 @@ public abstract class AbstractEvent implements Runnable {
         for (EventTeam et : topTeams) {
             for (Iterator<Integer> iterator = rewards.keySet().iterator(); iterator.hasNext(); ) {
                 int id = iterator.next();
-                et.reward(id, rewards.get(Integer.valueOf(id)));
+                et.reward(id, rewards.get(id));
             }
         }
     }
 
     protected void rewardTopInDraw(int id, int count) {
         Map<Integer, Integer> rewards = new HashMap<>();
-        rewards.put(Integer.valueOf(id), Integer.valueOf(count));
+        rewards.put(id, count);
         rewardTopInDraw(rewards);
     }
 
@@ -137,9 +135,9 @@ public abstract class AbstractEvent implements Runnable {
     protected void increaseScore(Player player, int count) {
         if (this.playerScores.containsKey(player)) {
             int old = this.playerScores.get(player);
-            this.playerScores.put(player, Integer.valueOf(old + count));
+            this.playerScores.put(player, old + count);
         } else {
-            this.playerScores.put(player, Integer.valueOf(count));
+            this.playerScores.put(player, count);
         }
         if (!this.teams.isEmpty())
             getTeam(player).increaseScore(1);
@@ -178,7 +176,7 @@ public abstract class AbstractEvent implements Runnable {
             temp.remove(topTeam);
             for (Iterator<Integer> iterator = rewards.keySet().iterator(); iterator.hasNext(); ) {
                 int id = iterator.next();
-                topTeam.reward(id, rewards.get(Integer.valueOf(id)));
+                topTeam.reward(id, rewards.get(id));
             }
             topTeam = null;
             score = 0;
@@ -187,7 +185,7 @@ public abstract class AbstractEvent implements Runnable {
 
     protected void rewardTopTeams(int top, int id, int count) {
         Map<Integer, Integer> rewards = new HashMap<>();
-        rewards.put(Integer.valueOf(id), Integer.valueOf(count));
+        rewards.put(id, count);
         rewardTopTeams(top, rewards);
     }
 
@@ -232,7 +230,7 @@ public abstract class AbstractEvent implements Runnable {
             temp.remove(topPlayer);
             for (Iterator<Integer> iterator = rewards.keySet().iterator(); iterator.hasNext(); ) {
                 int id = iterator.next();
-                topPlayer.addItem("Event reward.", id, rewards.get(Integer.valueOf(id)), null, true);
+                topPlayer.addItem("Event reward.", id, rewards.get(id), null, true);
             }
             topPlayer = null;
             score = 0;
@@ -241,7 +239,7 @@ public abstract class AbstractEvent implements Runnable {
 
     protected void rewardTop(int top, int id, int count) {
         Map<Integer, Integer> rewards = new HashMap<>();
-        rewards.put(Integer.valueOf(id), Integer.valueOf(count));
+        rewards.put(id, count);
         rewardTop(top, rewards);
     }
 
@@ -295,7 +293,7 @@ public abstract class AbstractEvent implements Runnable {
         if (this.eventInfo != null) {
             Map<String, Integer> temp = new HashMap<>();
             for (String key : this.eventInfo.getReplacements().keySet())
-                temp.put(key, Integer.valueOf(0));
+                temp.put(key, 0);
             this.eventInfo.setReplacements(temp);
         }
         if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.TvT) {

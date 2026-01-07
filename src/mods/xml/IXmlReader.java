@@ -153,7 +153,7 @@ public interface IXmlReader {
     }
 
     default int parseInt(Node node) {
-        return parseInt(node, Integer.valueOf(-1));
+        return parseInt(node, -1);
     }
 
     default Integer parseInteger(Node node, Integer defaultValue) {

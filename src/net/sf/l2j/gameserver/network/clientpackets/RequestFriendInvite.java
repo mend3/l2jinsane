@@ -35,7 +35,7 @@ public final class RequestFriendInvite extends L2GameClientPacket {
             activeChar.sendMessage("You are in " + this._name + "'s block list.");
             return;
         }
-        if (activeChar.getFriendList().contains(Integer.valueOf(friend.getObjectId()))) {
+        if (activeChar.getFriendList().contains(friend.getObjectId())) {
             activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_ALREADY_IN_FRIENDS_LIST).addString(this._name));
             return;
         }

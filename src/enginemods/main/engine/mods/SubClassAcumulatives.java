@@ -53,10 +53,10 @@ public class SubClassAcumulatives extends AbstractMods {
                                 if (!ConfigData.ACUMULATIVE_PASIVE_SKILLS)
                                     if (skill.isPassive())
                                         continue;
-                                if (ConfigData.DONT_ACUMULATIVE_SKILLS_ID.contains(Integer.valueOf(id)))
+                                if (ConfigData.DONT_ACUMULATIVE_SKILLS_ID.contains(id))
                                     continue;
                             }
-                            skills.put(Integer.valueOf(id), Integer.valueOf(level));
+                            skills.put(id, level);
                         }
                         if (rs != null)
                             rs.close();

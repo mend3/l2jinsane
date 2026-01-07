@@ -15,6 +15,6 @@ public class ConditionPlayerInsidePoly extends Condition {
     @Override
     boolean testImpl(Env env) {
         final boolean isInside = _zoneNPoly.isInsideZone(env.getCharacter().getX(), env.getCharacter().getY(), env.getCharacter().getZ());
-        return _checkInside ? isInside : !isInside;
+        return _checkInside == isInside;
     }
 }

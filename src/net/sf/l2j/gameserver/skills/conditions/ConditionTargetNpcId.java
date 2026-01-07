@@ -15,9 +15,9 @@ public class ConditionTargetNpcId extends Condition {
 
     public boolean testImpl(Env env) {
         if (env.getTarget() instanceof Npc)
-            return this._npcIds.contains(Integer.valueOf(((Npc) env.getTarget()).getNpcId()));
+            return this._npcIds.contains(((Npc) env.getTarget()).getNpcId());
         if (env.getTarget() instanceof Door)
-            return this._npcIds.contains(Integer.valueOf(((Door) env.getTarget()).getDoorId()));
+            return this._npcIds.contains(((Door) env.getTarget()).getDoorId());
         return false;
     }
 }

@@ -41,11 +41,11 @@ public class DressMeData implements IXmlReader {
     public void load() {
         reload();
         parseDatapackFile("./data/xml/dressme.xml");
-        LOG.info(getClass().getSimpleName() + ": Loaded " + getClass().getSimpleName() + " armor skins");
-        LOG.info(getClass().getSimpleName() + ": Loaded " + getClass().getSimpleName() + " weapon skins");
-        LOG.info(getClass().getSimpleName() + ": Loaded " + getClass().getSimpleName() + " hair skins");
-        LOG.info(getClass().getSimpleName() + ": Loaded " + getClass().getSimpleName() + " face skins");
-        LOG.info(getClass().getSimpleName() + ": Loaded " + getClass().getSimpleName() + " shield skins");
+        LOG.info(getClass().getSimpleName() + ": Loaded " + _armorSkins.size() + " armor skins");
+        LOG.info(getClass().getSimpleName() + ": Loaded " + _weaponSkins.size() + " weapon skins");
+        LOG.info(getClass().getSimpleName() + ": Loaded " + _hairSkins.size() + " hair skins");
+        LOG.info(getClass().getSimpleName() + ": Loaded " + _faceSkins.size() + " face skins");
+        LOG.info(getClass().getSimpleName() + ": Loaded " + _shieldSkins.size() + " shield skins");
     }
 
     public void parseDocument(Document doc) {

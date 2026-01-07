@@ -13,9 +13,8 @@ import net.sf.l2j.gameserver.network.serverpackets.AutoAttackStart;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
 
 public class PlayerAI extends PlayableAI {
-    private boolean _thinking;
-
     private final Desire _nextIntention = new Desire();
+    private boolean _thinking;
 
     public PlayerAI(Player player) {
         super(player);

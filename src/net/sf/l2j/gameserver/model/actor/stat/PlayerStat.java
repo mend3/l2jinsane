@@ -72,7 +72,7 @@ public class PlayerStat extends PlayableStat {
                         RewardInfo r = rewards.get(pet);
                         RewardInfo reward = rewards.get(getActiveChar());
                         if (r != null && reward != null) {
-                            double damageDoneByPet = r.getDamage() / reward.getDamage();
+                            double damageDoneByPet = (double) r.getDamage() / reward.getDamage();
                             petExp = (long) (addToExp * damageDoneByPet);
                             petSp = (int) (addToSp * damageDoneByPet);
                         }
@@ -151,13 +151,13 @@ public class PlayerStat extends PlayableStat {
 
     public final long getExp() {
         if (getActiveChar().isSubClassActive())
-            return getActiveChar().getSubClasses().get(Integer.valueOf(getActiveChar().getClassIndex())).getExp();
+            return getActiveChar().getSubClasses().get(getActiveChar().getClassIndex()).getExp();
         return super.getExp();
     }
 
     public final void setExp(long value) {
         if (getActiveChar().isSubClassActive()) {
-            getActiveChar().getSubClasses().get(Integer.valueOf(getActiveChar().getClassIndex())).setExp(value);
+            getActiveChar().getSubClasses().get(getActiveChar().getClassIndex()).setExp(value);
         } else {
             super.setExp(value);
         }
@@ -165,7 +165,7 @@ public class PlayerStat extends PlayableStat {
 
     public final byte getLevel() {
         if (getActiveChar().isSubClassActive())
-            return getActiveChar().getSubClasses().get(Integer.valueOf(getActiveChar().getClassIndex())).getLevel();
+            return getActiveChar().getSubClasses().get(getActiveChar().getClassIndex()).getLevel();
         return super.getLevel();
     }
 
@@ -173,7 +173,7 @@ public class PlayerStat extends PlayableStat {
         if (value > 80)
             value = 80;
         if (getActiveChar().isSubClassActive()) {
-            getActiveChar().getSubClasses().get(Integer.valueOf(getActiveChar().getClassIndex())).setLevel(value);
+            getActiveChar().getSubClasses().get(getActiveChar().getClassIndex()).setLevel(value);
         } else {
             super.setLevel(value);
         }
@@ -211,13 +211,13 @@ public class PlayerStat extends PlayableStat {
 
     public final int getSp() {
         if (getActiveChar().isSubClassActive())
-            return getActiveChar().getSubClasses().get(Integer.valueOf(getActiveChar().getClassIndex())).getSp();
+            return getActiveChar().getSubClasses().get(getActiveChar().getClassIndex()).getSp();
         return super.getSp();
     }
 
     public final void setSp(int value) {
         if (getActiveChar().isSubClassActive()) {
-            getActiveChar().getSubClasses().get(Integer.valueOf(getActiveChar().getClassIndex())).setSp(value);
+            getActiveChar().getSubClasses().get(getActiveChar().getClassIndex()).setSp(value);
         } else {
             super.setSp(value);
         }

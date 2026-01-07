@@ -9,8 +9,6 @@ import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.entity.Castle;
 import net.sf.l2j.gameserver.model.spawn.L2Spawn;
 
-import java.util.List;
-
 public class TowerSpawnLocation extends SpawnLocation {
 
     public static final int LT_DISPLAY_NPC_WORKING = 13002;

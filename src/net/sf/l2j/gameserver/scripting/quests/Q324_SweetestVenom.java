@@ -18,9 +18,9 @@ public class Q324_SweetestVenom extends Quest {
 
     public Q324_SweetestVenom() {
         super(324, "Sweetest Venom");
-        CHANCES.put(Integer.valueOf(20034), Integer.valueOf(220000));
-        CHANCES.put(Integer.valueOf(20038), Integer.valueOf(230000));
-        CHANCES.put(Integer.valueOf(20043), Integer.valueOf(250000));
+        CHANCES.put(20034, 220000);
+        CHANCES.put(20038, 230000);
+        CHANCES.put(20043, 250000);
         setItemsIds(1077);
         addStartNpc(30351);
         addTalkId(30351);
@@ -69,7 +69,7 @@ public class Q324_SweetestVenom extends Quest {
         QuestState st = checkPlayerCondition(player, npc, "cond", "1");
         if (st == null)
             return null;
-        if (st.dropItems(1077, 1, 10, CHANCES.get(Integer.valueOf(npc.getNpcId()))))
+        if (st.dropItems(1077, 1, 10, CHANCES.get(npc.getNpcId())))
             st.set("cond", "2");
         return null;
     }

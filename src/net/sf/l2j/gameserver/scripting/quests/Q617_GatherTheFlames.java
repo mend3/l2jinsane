@@ -29,32 +29,32 @@ public class Q617_GatherTheFlames extends Quest {
 
     public Q617_GatherTheFlames() {
         super(617, "Gather the Flames");
-        CHANCES.put(Integer.valueOf(21381), Integer.valueOf(510000));
-        CHANCES.put(Integer.valueOf(21653), Integer.valueOf(510000));
-        CHANCES.put(Integer.valueOf(21387), Integer.valueOf(530000));
-        CHANCES.put(Integer.valueOf(21655), Integer.valueOf(530000));
-        CHANCES.put(Integer.valueOf(21390), Integer.valueOf(560000));
-        CHANCES.put(Integer.valueOf(21656), Integer.valueOf(690000));
-        CHANCES.put(Integer.valueOf(21389), Integer.valueOf(550000));
-        CHANCES.put(Integer.valueOf(21388), Integer.valueOf(530000));
-        CHANCES.put(Integer.valueOf(21383), Integer.valueOf(510000));
-        CHANCES.put(Integer.valueOf(21392), Integer.valueOf(560000));
-        CHANCES.put(Integer.valueOf(21382), Integer.valueOf(600000));
-        CHANCES.put(Integer.valueOf(21654), Integer.valueOf(520000));
-        CHANCES.put(Integer.valueOf(21384), Integer.valueOf(640000));
-        CHANCES.put(Integer.valueOf(21394), Integer.valueOf(510000));
-        CHANCES.put(Integer.valueOf(21395), Integer.valueOf(560000));
-        CHANCES.put(Integer.valueOf(21385), Integer.valueOf(520000));
-        CHANCES.put(Integer.valueOf(21391), Integer.valueOf(550000));
-        CHANCES.put(Integer.valueOf(21393), Integer.valueOf(580000));
-        CHANCES.put(Integer.valueOf(21657), Integer.valueOf(570000));
-        CHANCES.put(Integer.valueOf(21386), Integer.valueOf(520000));
-        CHANCES.put(Integer.valueOf(21652), Integer.valueOf(490000));
-        CHANCES.put(Integer.valueOf(21378), Integer.valueOf(490000));
-        CHANCES.put(Integer.valueOf(21376), Integer.valueOf(480000));
-        CHANCES.put(Integer.valueOf(21377), Integer.valueOf(480000));
-        CHANCES.put(Integer.valueOf(21379), Integer.valueOf(590000));
-        CHANCES.put(Integer.valueOf(21380), Integer.valueOf(490000));
+        CHANCES.put(21381, 510000);
+        CHANCES.put(21653, 510000);
+        CHANCES.put(21387, 530000);
+        CHANCES.put(21655, 530000);
+        CHANCES.put(21390, 560000);
+        CHANCES.put(21656, 690000);
+        CHANCES.put(21389, 550000);
+        CHANCES.put(21388, 530000);
+        CHANCES.put(21383, 510000);
+        CHANCES.put(21392, 560000);
+        CHANCES.put(21382, 600000);
+        CHANCES.put(21654, 520000);
+        CHANCES.put(21384, 640000);
+        CHANCES.put(21394, 510000);
+        CHANCES.put(21395, 560000);
+        CHANCES.put(21385, 520000);
+        CHANCES.put(21391, 550000);
+        CHANCES.put(21393, 580000);
+        CHANCES.put(21657, 570000);
+        CHANCES.put(21386, 520000);
+        CHANCES.put(21652, 490000);
+        CHANCES.put(21378, 490000);
+        CHANCES.put(21376, 480000);
+        CHANCES.put(21377, 480000);
+        CHANCES.put(21379, 590000);
+        CHANCES.put(21380, 490000);
         setItemsIds(7264);
         addStartNpc(31539, 31271);
         addTalkId(31539, 31271, 32049);
@@ -86,7 +86,7 @@ public class Q617_GatherTheFlames extends Quest {
             if (st.getQuestItemsCount(7264) >= 1200) {
                 htmltext = "32049-03.htm";
                 st.takeItems(7264, 1200);
-                st.giveItems(Integer.valueOf(event), 1);
+                st.giveItems(Integer.parseInt(event), 1);
             } else {
                 htmltext = "32049-02.htm";
             }
@@ -125,7 +125,7 @@ public class Q617_GatherTheFlames extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropItems(7264, 1, 0, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(7264, 1, 0, CHANCES.get(npc.getNpcId()));
         return null;
     }
 }

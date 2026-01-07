@@ -1,7 +1,7 @@
 package net.sf.l2j.gameserver.model.actor.instance;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.data.xml.PlayerData;
+import net.sf.l2j.gameserver.data.xml.PlayerClassData;
 import net.sf.l2j.gameserver.enums.actors.ClassId;
 import net.sf.l2j.gameserver.events.tournament.arenas.Arena2x2;
 import net.sf.l2j.gameserver.events.tournament.arenas.Arena4x4;
@@ -267,8 +267,8 @@ public class Tournament extends Folk {
                 return;
             }
             Player assist = player.getParty().getMembers().get(1);
-            Object className = PlayerData.getInstance().getClassNameById(player.getClassId().getId());
-            String assist_className = PlayerData.getInstance().getClassNameById(assist.getClassId().getId());
+            Object className = PlayerClassData.getInstance().getClassNameById(player.getClassId().getId());
+            String assist_className = PlayerClassData.getInstance().getClassNameById(assist.getClassId().getId());
             if ((player.getClassId() == ClassId.GLADIATOR || player.getClassId() == ClassId.DUELIST || player.getClassId() == ClassId.GRAND_KHAVATARI || player.getClassId() == ClassId.TYRANT) && (assist.getClassId() == ClassId.GLADIATOR || assist.getClassId() == ClassId.DUELIST || assist.getClassId() == ClassId.GRAND_KHAVATARI || assist.getClassId() == ClassId.TYRANT)) {
                 player.sendMessage("Tournament: Only 1 " + className + " / " + assist_className + " allowed per party.");
                 player.sendPacket(new ExShowScreenMessage("Only 1 " + className + " / " + assist_className + " allowed per party.", 6000));

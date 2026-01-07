@@ -54,13 +54,13 @@ public final class GeoDataConverter {
         for (int rx = 16; rx <= 26; rx++) {
             for (int ry = 10; ry <= 25; ry++) {
                 if (props.containsKey(rx + "_" + rx)) {
-                    String input = String.format(_format.getFilename(), Integer.valueOf(rx), Integer.valueOf(ry));
+                    String input = String.format(_format.getFilename(), rx, ry);
                     if (!loadGeoBlocks(input)) {
                         System.out.println("GeoDataConverter: Unable to load " + input + " region file.");
                     } else if (!recalculateNswe()) {
                         System.out.println("GeoDataConverter: Unable to convert " + input + " region file.");
                     } else {
-                        String output = String.format(GeoType.L2D.getFilename(), Integer.valueOf(rx), Integer.valueOf(ry));
+                        String output = String.format(GeoType.L2D.getFilename(), rx, ry);
                         if (!saveGeoBlocks(output)) {
                             System.out.println("GeoDataConverter: Unable to save " + output + " region file.");
                         } else {

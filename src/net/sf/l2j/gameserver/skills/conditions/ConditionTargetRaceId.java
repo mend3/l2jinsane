@@ -15,6 +15,6 @@ public class ConditionTargetRaceId extends Condition {
     public boolean testImpl(Env env) {
         if (!(env.getTarget() instanceof Npc))
             return false;
-        return this._raceIds.contains(Integer.valueOf(((Npc) env.getTarget()).getTemplate().getRace().ordinal()));
+        return this._raceIds.contains(((Npc) env.getTarget()).getTemplate().getRace().ordinal());
     }
 }

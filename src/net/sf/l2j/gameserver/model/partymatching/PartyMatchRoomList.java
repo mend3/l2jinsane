@@ -20,7 +20,7 @@ public class PartyMatchRoomList {
     }
 
     public synchronized void addPartyMatchRoom(int id, PartyMatchRoom room) {
-        this._rooms.put(Integer.valueOf(id), room);
+        this._rooms.put(id, room);
         this._maxid++;
     }
 
@@ -33,11 +33,11 @@ public class PartyMatchRoomList {
             _member.setPartyRoom(0);
             _member.broadcastUserInfo();
         }
-        this._rooms.remove(Integer.valueOf(id));
+        this._rooms.remove(id);
     }
 
     public PartyMatchRoom getRoom(int id) {
-        return this._rooms.get(Integer.valueOf(id));
+        return this._rooms.get(id);
     }
 
     public PartyMatchRoom[] getRooms() {

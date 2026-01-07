@@ -53,7 +53,7 @@ public final class Auctioneer extends Folk {
                         html.replace("%AGIT_SIZE%", ch.getGrade() * 10);
                         html.replace("%AGIT_LEASE%", ch.getLease());
                         html.replace("%AGIT_LOCATION%", ch.getLocation());
-                        html.replace("%AGIT_AUCTION_END%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(auction.getEndDate())));
+                        html.replace("%AGIT_AUCTION_END%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(auction.getEndDate()));
                         html.replace("%AGIT_AUCTION_REMAIN%", remainingTime / 3600000L + " hours " + remainingTime / 3600000L + " minutes");
                         html.replace("%AGIT_AUCTION_MINBID%", auction.getMinimumBid());
                         html.replace("%AGIT_AUCTION_COUNT%", auction.getBidders().size());
@@ -157,7 +157,7 @@ public final class Auctioneer extends Folk {
                 Collection<Bidder> bidders = auction.getBidders().values();
                 StringBuilder sb = new StringBuilder(bidders.size() * 150);
                 for (Bidder bidder : bidders) {
-                    StringUtil.append(sb, "<tr><td width=90 align=center>", bidder.getClanName(), "</td><td width=90 align=center>", bidder.getName(), "</td><td width=90 align=center>", sdf.format(Long.valueOf(bidder.getTime())), "</td></tr>");
+                    StringUtil.append(sb, "<tr><td width=90 align=center>", bidder.getClanName(), "</td><td width=90 align=center>", bidder.getName(), "</td><td width=90 align=center>", sdf.format(bidder.getTime()), "</td></tr>");
                 }
                 NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
                 html.setFile("data/html/auction/AgitBidderList.htm");
@@ -178,7 +178,7 @@ public final class Auctioneer extends Folk {
                 Auction auction = ClanHallManager.getInstance().getAuction(clan.getAuctionBiddedAt());
                 if (auction == null)
                     return;
-                Bidder bidder = auction.getBidders().get(Integer.valueOf(player.getClanId()));
+                Bidder bidder = auction.getBidders().get(player.getClanId());
                 if (bidder == null)
                     return;
                 int bid = bidder.getBid();
@@ -242,14 +242,14 @@ public final class Auctioneer extends Folk {
             Auction auction = ch.getAuction();
             if (auction == null)
                 return;
-            Bidder bidder = auction.getBidders().get(Integer.valueOf(player.getClanId()));
+            Bidder bidder = auction.getBidders().get(player.getClanId());
             if (bidder == null)
                 return;
             NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
             html.setFile("data/html/auction/AgitBid2.htm");
             html.replace("%AGIT_AUCTION_BID%", bidder.getBid());
             html.replace("%AGIT_AUCTION_MINBID%", ch.getDefaultBid());
-            html.replace("%AGIT_AUCTION_END%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(auction.getEndDate())));
+            html.replace("%AGIT_AUCTION_END%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(auction.getEndDate()));
             html.replace("%AGIT_LINK_BACK%", "bypass -h npc_" + getObjectId() + "_selectedItems");
             html.replace("npc_%objectId%_bid1", "npc_" + getObjectId() + "_bid1 " + ch.getId());
             player.sendPacket(html);
@@ -277,7 +277,7 @@ public final class Auctioneer extends Folk {
                 NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
                 html.setFile("data/html/auction/AgitSale3.htm");
                 html.replace("%x%", val);
-                html.replace("%AGIT_AUCTION_END%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(auction.getEndDate())));
+                html.replace("%AGIT_AUCTION_END%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(auction.getEndDate()));
                 html.replace("%AGIT_AUCTION_MINBID%", ch.getDefaultBid());
                 html.replace("%AGIT_AUCTION_MIN%", bid);
                 html.replace("%AGIT_AUCTION_DESC%", ch.getDesc());
@@ -342,12 +342,12 @@ public final class Auctioneer extends Folk {
         sb.append("<table width=280>");
         for (ClanHall ch : chs) {
             Auction auction = ch.getAuction();
-            StringUtil.append(sb, "<tr><td><font color=\"aaaaff\">", ch.getLocation(), "</font></td><td><font color=\"ffffaa\"><a action=\"bypass -h npc_", Integer.valueOf(getObjectId()), "_bidding ", Integer.valueOf(ch.getId()), "\">", ch.getName(), " [", Integer.valueOf(auction.getBidders().size()),
-                    "]</a></font></td><td>", sdf.format(Long.valueOf(auction.getEndDate())), "</td><td><font color=\"aaffff\">", Integer.valueOf(auction.getMinimumBid()), "</font></td></tr>");
+            StringUtil.append(sb, "<tr><td><font color=\"aaaaff\">", ch.getLocation(), "</font></td><td><font color=\"ffffaa\"><a action=\"bypass -h npc_", getObjectId(), "_bidding ", ch.getId(), "\">", ch.getName(), " [", auction.getBidders().size(),
+                    "]</a></font></td><td>", sdf.format(auction.getEndDate()), "</td><td><font color=\"aaffff\">", auction.getMinimumBid(), "</font></td></tr>");
         }
         sb.append("</table><table width=280><tr>");
         for (int j = 1; j <= max; j++) {
-            StringUtil.append(sb, "<td><center><a action=\"bypass -h npc_", Integer.valueOf(getObjectId()), "_list ", Integer.valueOf(j), "\"> Page ", Integer.valueOf(j), " </a></center></td>");
+            StringUtil.append(sb, "<td><center><a action=\"bypass -h npc_", getObjectId(), "_list ", j, "\"> Page ", j, " </a></center></td>");
         }
         sb.append("</tr></table>");
         NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
@@ -375,9 +375,9 @@ public final class Auctioneer extends Folk {
             html.replace("%AGIT_SIZE%", ch.getGrade() * 10);
             html.replace("%AGIT_LEASE%", ch.getLease());
             html.replace("%AGIT_LOCATION%", ch.getLocation());
-            html.replace("%AGIT_AUCTION_END%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(auction.getEndDate())));
+            html.replace("%AGIT_AUCTION_END%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(auction.getEndDate()));
             html.replace("%AGIT_AUCTION_REMAIN%", remainingTime / 3600000L + " hours " + remainingTime / 3600000L + " minutes");
-            html.replace("%AGIT_AUCTION_MYBID%", auction.getBidders().get(Integer.valueOf(player.getClanId())).getBid());
+            html.replace("%AGIT_AUCTION_MYBID%", auction.getBidders().get(player.getClanId()).getBid());
             html.replace("%AGIT_AUCTION_DESC%", ch.getDesc());
             html.replace("%objectId%", getObjectId());
             html.replace("%AGIT_LINK_BACK%", "bypass -h npc_" + getObjectId() + "_start");
@@ -412,7 +412,7 @@ public final class Auctioneer extends Folk {
                 html.replace("%AGIT_SIZE%", ch.getGrade() * 10);
                 html.replace("%AGIT_LEASE%", ch.getLease());
                 html.replace("%AGIT_LOCATION%", ch.getLocation());
-                html.replace("%AGIT_AUCTION_END%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(auction.getEndDate())));
+                html.replace("%AGIT_AUCTION_END%", (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(auction.getEndDate()));
                 html.replace("%AGIT_AUCTION_REMAIN%", remainingTime / 3600000L + " hours " + remainingTime / 3600000L + " minutes");
                 html.replace("%AGIT_AUCTION_MINBID%", seller.getBid());
                 html.replace("%AGIT_AUCTION_BIDCOUNT%", auction.getBidders().size());

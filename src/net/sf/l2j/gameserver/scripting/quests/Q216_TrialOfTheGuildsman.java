@@ -122,7 +122,7 @@ public class Q216_TrialOfTheGuildsman extends Quest {
                 st.giveItems(3120, 1);
                 if (!player.getMemos().getBool("secondClassChange35", false)) {
                     htmltext = "30103-06d.htm";
-                    st.giveItems(7562, DF_REWARD_35.get(Integer.valueOf(player.getClassId().getId())));
+                    st.giveItems(7562, DF_REWARD_35.get(player.getClassId().getId()));
                     player.getMemos().set("secondClassChange35", true);
                 }
             } else {

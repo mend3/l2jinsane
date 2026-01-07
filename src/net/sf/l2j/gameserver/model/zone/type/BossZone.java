@@ -135,11 +135,11 @@ public class BossZone extends ZoneType {
             }
             if (this._checkplayerCond) {
                 int id = player.getObjectId();
-                if (this._allowedPlayers.contains(Integer.valueOf(id))) {
-                    long entryTime = this._allowedPlayersEntryTime.remove(Integer.valueOf(id));
+                if (this._allowedPlayers.contains(id)) {
+                    long entryTime = this._allowedPlayersEntryTime.remove(id);
                     if (entryTime > System.currentTimeMillis())
                         return;
-                    this._allowedPlayers.remove(Integer.valueOf(id));
+                    this._allowedPlayers.remove(id);
                 }
                 if (this._oustLoc[0] != 0 && this._oustLoc[1] != 0 && this._oustLoc[2] != 0) {
                     player.teleportTo(this._oustLoc[0], this._oustLoc[1], this._oustLoc[2], 0);
@@ -150,7 +150,7 @@ public class BossZone extends ZoneType {
         } else if (character instanceof Summon) {
             Player player = ((Summon) character).getOwner();
             if (player != null) {
-                if (this._allowedPlayers.contains(Integer.valueOf(player.getObjectId())) || player.isGM() || this._invadeTime == 0)
+                if (this._allowedPlayers.contains(player.getObjectId()) || player.isGM() || this._invadeTime == 0)
                     return;
                 ((Summon) character).unSummon(player);
             }
@@ -180,13 +180,13 @@ public class BossZone extends ZoneType {
                     }
                 }
                 int id = player.getObjectId();
-                if (this._allowedPlayers.contains(Integer.valueOf(id)))
+                if (this._allowedPlayers.contains(id))
                     if (!player.isOnline()) {
-                        this._allowedPlayersEntryTime.put(Integer.valueOf(id), Long.valueOf(System.currentTimeMillis() + this._invadeTime));
+                        this._allowedPlayersEntryTime.put(id, System.currentTimeMillis() + this._invadeTime);
                     } else {
-                        if (this._allowedPlayersEntryTime.containsKey(Integer.valueOf(id)))
+                        if (this._allowedPlayersEntryTime.containsKey(id))
                             return;
-                        this._allowedPlayers.remove(Integer.valueOf(id));
+                        this._allowedPlayers.remove(id);
                     }
             }
             if (!this._characters.isEmpty()) {
@@ -205,19 +205,19 @@ public class BossZone extends ZoneType {
 
     public void allowPlayerEntry(Player player, int duration) {
         int playerId = player.getObjectId();
-        this._allowedPlayers.add(Integer.valueOf(playerId));
-        this._allowedPlayersEntryTime.put(Integer.valueOf(playerId), Long.valueOf(System.currentTimeMillis() + (duration * 1000L)));
+        this._allowedPlayers.add(playerId);
+        this._allowedPlayersEntryTime.put(playerId, System.currentTimeMillis() + (duration * 1000L));
     }
 
     public void allowPlayerEntry(int playerId) {
-        this._allowedPlayers.add(Integer.valueOf(playerId));
-        this._allowedPlayersEntryTime.put(Integer.valueOf(playerId), Long.valueOf(System.currentTimeMillis() + this._invadeTime));
+        this._allowedPlayers.add(playerId);
+        this._allowedPlayersEntryTime.put(playerId, System.currentTimeMillis() + this._invadeTime);
     }
 
     public void removePlayer(Player player) {
         int id = player.getObjectId();
-        this._allowedPlayers.remove(Integer.valueOf(id));
-        this._allowedPlayersEntryTime.remove(Integer.valueOf(id));
+        this._allowedPlayers.remove(id);
+        this._allowedPlayersEntryTime.remove(id);
     }
 
     public Set<Integer> getAllowedPlayers() {

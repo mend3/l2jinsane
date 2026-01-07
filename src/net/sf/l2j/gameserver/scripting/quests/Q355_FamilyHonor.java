@@ -41,10 +41,10 @@ public class Q355_FamilyHonor extends Quest {
 
     public Q355_FamilyHonor() {
         super(355, "Family Honor");
-        CHANCES.put(Integer.valueOf(20767), new int[]{44, 54});
-        CHANCES.put(Integer.valueOf(20768), new int[]{36, 45});
-        CHANCES.put(Integer.valueOf(20769), new int[]{35, 43});
-        CHANCES.put(Integer.valueOf(20770), new int[]{32, 42});
+        CHANCES.put(20767, new int[]{44, 54});
+        CHANCES.put(20768, new int[]{36, 45});
+        CHANCES.put(20769, new int[]{35, 43});
+        CHANCES.put(20770, new int[]{32, 42});
         setItemsIds(4252);
         addStartNpc(30181);
         addTalkId(30181, 30929);
@@ -127,7 +127,7 @@ public class Q355_FamilyHonor extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        int[] chances = CHANCES.get(Integer.valueOf(npc.getNpcId()));
+        int[] chances = CHANCES.get(npc.getNpcId());
         int random = Rnd.get(100);
         if (random < chances[1])
             st.dropItemsAlways((random < chances[0]) ? 4252 : 4350, 1, 0);

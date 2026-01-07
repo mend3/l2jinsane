@@ -41,7 +41,7 @@ public final class DecayTaskManager implements Runnable {
             if (monster.getSpoilerId() != 0 || monster.isSeeded())
                 interval *= 2;
         }
-        this._creatures.put(creature, Long.valueOf(System.currentTimeMillis() + (interval * 1000L)));
+        this._creatures.put(creature, System.currentTimeMillis() + (interval * 1000L));
     }
 
     public void cancel(Creature creature) {

@@ -69,14 +69,14 @@ public class AdminCommandHandler {
 
     private void registerHandler(IAdminCommandHandler handler) {
         for (String id : handler.getAdminCommandList())
-            this._entries.put(Integer.valueOf(id.hashCode()), handler);
+            this._entries.put(id.hashCode(), handler);
     }
 
     public IAdminCommandHandler getHandler(String adminCommand) {
         String command = adminCommand;
         if (adminCommand.indexOf(" ") != -1)
             command = adminCommand.substring(0, adminCommand.indexOf(" "));
-        return this._entries.get(Integer.valueOf(command.hashCode()));
+        return this._entries.get(command.hashCode());
     }
 
     public int size() {

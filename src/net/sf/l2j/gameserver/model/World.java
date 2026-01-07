@@ -48,24 +48,6 @@ public final class World {
     private World() {
     }
 
-    public void init(){
-        for (int i = 0; i <= 176; i++) {
-            for (int j = 0; j <= 256; j++)
-                this._worldRegions[i][j] = new WorldRegion(i, j);
-        }
-        for (int x = 0; x <= 176; x++) {
-            for (int y = 0; y <= 256; y++) {
-                for (int a = -1; a <= 1; a++) {
-                    for (int b = -1; b <= 1; b++) {
-                        if (validRegion(x + a, y + b))
-                            this._worldRegions[x + a][y + b].addSurroundingRegion(this._worldRegions[x][y]);
-                    }
-                }
-            }
-        }
-        LOGGER.info("World grid ({} by {}) is now set up.", Integer.valueOf(176), Integer.valueOf(256));
-    }
-
     public static int getRegionX(int regionX) {
         return (regionX - REGION_X_OFFSET) * 2048;
     }
@@ -97,12 +79,30 @@ public final class World {
         return SingletonHolder.INSTANCE;
     }
 
+    public void init() {
+        for (int i = 0; i <= 176; i++) {
+            for (int j = 0; j <= 256; j++)
+                this._worldRegions[i][j] = new WorldRegion(i, j);
+        }
+        for (int x = 0; x <= 176; x++) {
+            for (int y = 0; y <= 256; y++) {
+                for (int a = -1; a <= 1; a++) {
+                    for (int b = -1; b <= 1; b++) {
+                        if (validRegion(x + a, y + b))
+                            this._worldRegions[x + a][y + b].addSurroundingRegion(this._worldRegions[x][y]);
+                    }
+                }
+            }
+        }
+        LOGGER.info("World grid ({} by {}) is now set up.", 176, 256);
+    }
+
     public void addObject(WorldObject object) {
-        this._objects.putIfAbsent(Integer.valueOf(object.getObjectId()), object);
+        this._objects.putIfAbsent(object.getObjectId(), object);
     }
 
     public void removeObject(WorldObject object) {
-        this._objects.remove(Integer.valueOf(object.getObjectId()));
+        this._objects.remove(object.getObjectId());
     }
 
     public Collection<WorldObject> getObjects() {
@@ -110,15 +110,15 @@ public final class World {
     }
 
     public WorldObject getObject(int objectId) {
-        return this._objects.get(Integer.valueOf(objectId));
+        return this._objects.get(objectId);
     }
 
     public void addPlayer(Player cha) {
-        this._players.putIfAbsent(Integer.valueOf(cha.getObjectId()), cha);
+        this._players.putIfAbsent(cha.getObjectId(), cha);
     }
 
     public void removePlayer(Player cha) {
-        this._players.remove(Integer.valueOf(cha.getObjectId()));
+        this._players.remove(cha.getObjectId());
     }
 
     public Collection<Player> getPlayers() {
@@ -126,23 +126,23 @@ public final class World {
     }
 
     public Player getPlayer(String name) {
-        return this._players.get(Integer.valueOf(PlayerInfoTable.getInstance().getPlayerObjectId(name)));
+        return this._players.get(PlayerInfoTable.getInstance().getPlayerObjectId(name));
     }
 
     public Player getPlayer(int objectId) {
-        return this._players.get(Integer.valueOf(objectId));
+        return this._players.get(objectId);
     }
 
     public void addPet(int ownerId, Pet pet) {
-        this._pets.putIfAbsent(Integer.valueOf(ownerId), pet);
+        this._pets.putIfAbsent(ownerId, pet);
     }
 
     public void removePet(int ownerId) {
-        this._pets.remove(Integer.valueOf(ownerId));
+        this._pets.remove(ownerId);
     }
 
     public Pet getPet(int ownerId) {
-        return this._pets.get(Integer.valueOf(ownerId));
+        return this._pets.get(ownerId);
     }
 
     public WorldRegion getRegion(Location loc) {

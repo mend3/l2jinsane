@@ -22,7 +22,7 @@ public class Cancel implements ISkillHandler {
     private static boolean calcCancelSuccess(int effectPeriod, int diffLevel, double baseRate, double vuln, int minRate, int maxRate) {
         double rate = ((2 * diffLevel) + baseRate + (effectPeriod / 120)) * vuln;
         if (Config.DEVELOPER)
-            LOGGER.info("calcCancelSuccess(): diffLevel:{}, baseRate:{}, vuln:{}, total:{}.", Integer.valueOf(diffLevel), Double.valueOf(baseRate), Double.valueOf(vuln), Double.valueOf(rate));
+            LOGGER.info("calcCancelSuccess(): diffLevel:{}, baseRate:{}, vuln:{}, total:{}.", diffLevel, baseRate, vuln, rate);
         if (rate < minRate) {
             rate = minRate;
         } else if (rate > maxRate) {

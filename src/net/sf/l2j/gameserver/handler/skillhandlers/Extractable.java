@@ -20,7 +20,7 @@ public class Extractable implements ISkillHandler {
             return;
         L2ExtractableSkill exItem = skill.getExtractableSkill();
         if (exItem == null || exItem.getProductItemsArray().isEmpty()) {
-            LOGGER.warn("Missing informations for extractable skill id: {}.", Integer.valueOf(skill.getId()));
+            LOGGER.warn("Missing informations for extractable skill id: {}.", skill.getId());
             return;
         }
         Player player = activeChar.getActingPlayer();

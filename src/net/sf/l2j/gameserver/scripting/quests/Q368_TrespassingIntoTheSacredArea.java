@@ -20,10 +20,10 @@ public class Q368_TrespassingIntoTheSacredArea extends Quest {
 
     public Q368_TrespassingIntoTheSacredArea() {
         super(368, "Trespassing into the Sacred Area");
-        CHANCES.put(Integer.valueOf(20794), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(20795), Integer.valueOf(770000));
-        CHANCES.put(Integer.valueOf(20796), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(20797), Integer.valueOf(480000));
+        CHANCES.put(20794, 500000);
+        CHANCES.put(20795, 770000);
+        CHANCES.put(20796, 500000);
+        CHANCES.put(20797, 480000);
         setItemsIds(5881);
         addStartNpc(30926);
         addTalkId(30926);
@@ -76,7 +76,7 @@ public class Q368_TrespassingIntoTheSacredArea extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropItems(5881, 1, 0, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(5881, 1, 0, CHANCES.get(npc.getNpcId()));
         return null;
     }
 }

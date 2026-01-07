@@ -17,7 +17,7 @@ public class SeedHandler implements IItemHandler {
         if (!Config.ALLOW_MANOR || !(playable instanceof net.sf.l2j.gameserver.model.actor.Player))
             return;
         WorldObject tgt = playable.getTarget();
-        if (!(tgt instanceof Monster target) || !((Monster) tgt).getTemplate().isSeedable()) {
+        if (!(tgt instanceof Monster target) || !target.getTemplate().isSeedable()) {
             playable.sendPacket(SystemMessageId.THE_TARGET_IS_UNAVAILABLE_FOR_SEEDING);
             return;
         }

@@ -1,7 +1,6 @@
 package enginemods.main.engine.community;
 
 import enginemods.main.data.ConfigData;
-import enginemods.main.data.IconData;
 import enginemods.main.data.PlayerData;
 import enginemods.main.engine.AbstractMods;
 import enginemods.main.holders.AuctionItemHolder;
@@ -9,6 +8,7 @@ import enginemods.main.holders.PlayerHolder;
 import enginemods.main.util.builders.html.Html;
 import enginemods.main.util.builders.html.HtmlBuilder;
 import net.sf.l2j.gameserver.data.ItemTable;
+import net.sf.l2j.gameserver.data.xml.IconsTable;
 import net.sf.l2j.gameserver.enums.items.CrystalType;
 import net.sf.l2j.gameserver.enums.items.EtcItemType;
 import net.sf.l2j.gameserver.model.World;
@@ -43,16 +43,16 @@ public class MemoCommunityBoard extends AbstractMods {
             ItemInstance item = ItemTable.getInstance().createDummyItem(holder.getItemId());
             hb.append("<table ", (color % 2 == 0) ? "bgcolor=000000 " : "", "cellspacing=0 cellpadding=0 width=600 height=56>");
             hb.append("<tr>");
-            hb.append("<td width=32>", Html.newImage(IconData.getIconByItemId(item.getItemId()), 32, 32), "</td>");
+            hb.append("<td width=32>", Html.newImage(IconsTable.getIconByItemId(item.getItemId()), 32, 32), "</td>");
             hb.append("<td width=489>");
             hb.append("<table cellspacing=0 cellpadding=0 width=489 height=56>");
             hb.append("<tr><td>", Html.newFontColor("FF8000", "Name: "), item.getName(), "</td></tr>");
             hb.append("<tr><td>", Html.newFontColor("FF8000", "Grade: "), item.getItem().getCrystalType().toString(), "</td></tr>");
-            hb.append("<tr><td>", Html.newFontColor("FF8000", "Enchant: "), "+", Integer.valueOf(holder.getItemEnchantLevel()), "</td></tr>");
-            hb.append("<tr><td>", Html.newFontColor("FF8000", "count: "), "+", Integer.valueOf(holder.getItemCount()), "</td></tr>");
+            hb.append("<tr><td>", Html.newFontColor("FF8000", "Enchant: "), "+", holder.getItemEnchantLevel(), "</td></tr>");
+            hb.append("<tr><td>", Html.newFontColor("FF8000", "count: "), "+", holder.getItemCount(), "</td></tr>");
             hb.append("</table");
             hb.append("</td>");
-            hb.append("<td width=75><button value=CANCEL action=\"bypass _bbsmemo cancelSell ", Integer.valueOf(id), "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
+            hb.append("<td width=75><button value=CANCEL action=\"bypass _bbsmemo cancelSell ", id, "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
             hb.append("</tr>");
             hb.append("</table>");
             hb.append(Html.newImage("L2UI.SquareGray", 600, 1));
@@ -65,19 +65,19 @@ public class MemoCommunityBoard extends AbstractMods {
         HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.COMUNITY_TYPE);
         hb.append("<table width=600 height=24 cellspacing=0 cellpadding=0>");
         hb.append("<tr>");
-        hb.append("<td width=18 align=right>", grade.equals("ALL") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=ALL action=\"bypass _bbsmemo ", bypass, " ", itemType, " ALL ", Integer.valueOf(page), "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
+        hb.append("<td width=18 align=right>", grade.equals("ALL") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=ALL action=\"bypass _bbsmemo ", bypass, " ", itemType, " ALL ", page, "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
                 " fore=", "L2UI_CH3.herochat_tab2_over", "></td>");
-        hb.append("<td width=18 align=right>", grade.equals("NONE") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=NO action=\"bypass _bbsmemo ", bypass, " ", itemType, " NONE ", Integer.valueOf(page), "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
+        hb.append("<td width=18 align=right>", grade.equals("NONE") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=NO action=\"bypass _bbsmemo ", bypass, " ", itemType, " NONE ", page, "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
                 " fore=", "L2UI_CH3.herochat_tab2_over", "></td>");
-        hb.append("<td width=18 align=right>", grade.equals("D") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=D action=\"bypass _bbsmemo ", bypass, " ", itemType, " D ", Integer.valueOf(page), "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
+        hb.append("<td width=18 align=right>", grade.equals("D") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=D action=\"bypass _bbsmemo ", bypass, " ", itemType, " D ", page, "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
                 " fore=", "L2UI_CH3.herochat_tab2_over", "></td>");
-        hb.append("<td width=18 align=right>", grade.equals("C") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=C action=\"bypass _bbsmemo ", bypass, " ", itemType, " C ", Integer.valueOf(page), "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
+        hb.append("<td width=18 align=right>", grade.equals("C") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=C action=\"bypass _bbsmemo ", bypass, " ", itemType, " C ", page, "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
                 " fore=", "L2UI_CH3.herochat_tab2_over", "></td>");
-        hb.append("<td width=18 align=right>", grade.equals("B") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=B action=\"bypass _bbsmemo ", bypass, " ", itemType, " B ", Integer.valueOf(page), "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
+        hb.append("<td width=18 align=right>", grade.equals("B") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=B action=\"bypass _bbsmemo ", bypass, " ", itemType, " B ", page, "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
                 " fore=", "L2UI_CH3.herochat_tab2_over", "></td>");
-        hb.append("<td width=18 align=right>", grade.equals("A") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=A action=\"bypass _bbsmemo ", bypass, " ", itemType, " A ", Integer.valueOf(page), "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
+        hb.append("<td width=18 align=right>", grade.equals("A") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=A action=\"bypass _bbsmemo ", bypass, " ", itemType, " A ", page, "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
                 " fore=", "L2UI_CH3.herochat_tab2_over", "></td>");
-        hb.append("<td width=18 align=right>", grade.equals("S") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=S action=\"bypass _bbsmemo ", bypass, " ", itemType, " S ", Integer.valueOf(page), "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
+        hb.append("<td width=18 align=right>", grade.equals("S") ? Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16) : "", "</td><td width=64><button value=S action=\"bypass _bbsmemo ", bypass, " ", itemType, " S ", page, "\" width=64 height=22 back=", "L2UI_CH3.herochat_tab2",
                 " fore=", "L2UI_CH3.herochat_tab2_over", "></td>");
         hb.append("</tr>");
         hb.append("</table>");
@@ -122,14 +122,14 @@ public class MemoCommunityBoard extends AbstractMods {
 
     private static String buyItem(Player player, PlayerHolder phOwner, int key) {
         HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.COMUNITY_TYPE);
-        if (!phOwner.getAuctionsSell().containsKey(Integer.valueOf(key))) {
+        if (!phOwner.getAuctionsSell().containsKey(key)) {
             hb.append("<br><br><br>");
             hb.append("What the hell are you trying to do???");
         } else if (player.getObjectId() == phOwner.getObjectId()) {
             hb.append("<br><br><br>");
             hb.append("What the hell are you trying to do???");
         } else {
-            AuctionItemHolder ih = phOwner.getAuctionsSell().get(Integer.valueOf(key));
+            AuctionItemHolder ih = phOwner.getAuctionsSell().get(key);
             hb.append("<br><br><br>");
             hb.append("<table cellspacing=0 cellpadding=0 height=80 width=600>");
             hb.append("<tr><td height=20 align=center>");
@@ -139,11 +139,11 @@ public class MemoCommunityBoard extends AbstractMods {
             ItemInstance item = ItemTable.getInstance().createDummyItem(ih.getItemId());
             hb.append("<table bgcolor=000000 cellspacing=0 cellpadding=0 width=474>");
             hb.append("<tr>");
-            hb.append("<td fixwidth=32>", Html.newImage(IconData.getIconByItemId(item.getItemId()), 32, 32), "</td>");
+            hb.append("<td fixwidth=32>", Html.newImage(IconsTable.getIconByItemId(item.getItemId()), 32, 32), "</td>");
             hb.append("<td align=center>");
             hb.append("<table cellspacing=0 cellpadding=0 width=337 height=60>");
             hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Name: "), item.getName(), " - ", item.getItem().getCrystalType().toString(), "</td></tr>");
-            hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Enchant: "), "+", Integer.valueOf(ih.getItemEnchantLevel()), "</td></tr>");
+            hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Enchant: "), "+", ih.getItemEnchantLevel(), "</td></tr>");
             hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Price: "), Html.formatAdena(ih.getItemPriceCount()), " ", ItemTable.getInstance().getTemplate(ih.getItemPriceId()).getName(), "</td></tr>");
             hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Owner: "), phOwner.getName(), "</td></tr>");
             hb.append("</table>");
@@ -154,7 +154,7 @@ public class MemoCommunityBoard extends AbstractMods {
             hb.append("<br>");
             hb.append("<table cellspacing=0 cellpadding=0>");
             hb.append("<tr>");
-            hb.append("<td><button value=\"Yes\" action=\"bypass _bbsmemo buyItemConfirm ", Integer.valueOf(phOwner.getObjectId()), " ", Integer.valueOf(key), "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
+            hb.append("<td><button value=\"Yes\" action=\"bypass _bbsmemo buyItemConfirm ", phOwner.getObjectId(), " ", key, "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
             hb.append("<td><button value=\"No\" action=\"bypass _bbsmemo allAuctions\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
             hb.append("</tr>");
             hb.append("</table>");
@@ -170,7 +170,7 @@ public class MemoCommunityBoard extends AbstractMods {
         hb.append("Please note that for putting an item on sale<br1>");
         hb.append("you will be charged ", Html.formatAdena(ConfigData.COMMISION_FOR_START_SELL), "  ", ItemTable.getInstance().getTemplate(ConfigData.COMMISION_FOR_START_SELL_ID).getName(), "<br1>");
         hb.append("and at the time of sale we keep<br1>");
-        hb.append(" ", Integer.valueOf(ConfigData.COMMISION_FOR_END_SELL), " % of the total amount.<br>");
+        hb.append(" ", ConfigData.COMMISION_FOR_END_SELL, " % of the total amount.<br>");
         hb.append(Html.newImage("L2UI.SquareGray", 600, 1));
         int MAX_PER_PAGE = 6;
         int searchPage = MAX_PER_PAGE * (page - 1);
@@ -183,20 +183,20 @@ public class MemoCommunityBoard extends AbstractMods {
             } else if (count < searchPage + MAX_PER_PAGE) {
                 hb.append("<table ", (color % 2 == 0) ? "bgcolor=000000 " : "", "cellspacing=0 cellpadding=0 width=600 height=42>");
                 hb.append("<tr>");
-                hb.append("<td width=32>", Html.newImage(IconData.getIconByItemId(item.getItemId()), 32, 32), "</td>");
+                hb.append("<td width=32>", Html.newImage(IconsTable.getIconByItemId(item.getItemId()), 32, 32), "</td>");
                 hb.append("<td width=300>");
                 hb.append("<table cellspacing=0 cellpadding=0 width=300 height=42>");
                 hb.append("<tr><td>", Html.newFontColor("FF8000", "Name: "), item.getName(), "</td></tr>");
                 hb.append("<tr><td>", Html.newFontColor("FF8000", "Grade: "), item.getItem().getCrystalType().toString(), "</td></tr>");
-                hb.append("<tr><td>", Html.newFontColor("FF8000", "Enchant: "), "+", Integer.valueOf(item.getEnchantLevel()), "</td></tr>");
+                hb.append("<tr><td>", Html.newFontColor("FF8000", "Enchant: "), "+", item.getEnchantLevel(), "</td></tr>");
                 hb.append("</table");
                 hb.append("</td>");
                 hb.append("<td width=50>Count:</td>");
-                hb.append("<td width=50><edit var=\"count", Integer.valueOf(color), "\" width=50></td>");
+                hb.append("<td width=50><edit var=\"count", color, "\" width=50></td>");
                 hb.append("<td width=50>Price:</td>");
-                hb.append("<td width=50><edit var=\"price", Integer.valueOf(color), "\" width=50></td>");
-                hb.append("<td width=50><combobox width=50 var=item", Integer.valueOf(color), " list=Adena;coin1;coin2;coin3;></td>");
-                hb.append("<td width=50><button value=SELL action=\"bypass _bbsmemo sellItem ", Integer.valueOf(item.getObjectId()), " $count", Integer.valueOf(color), " $price", Integer.valueOf(color), " $item", Integer.valueOf(color), "\" width=50 height=21 back=", "L2UI_CH3.Btn1_normalOn",
+                hb.append("<td width=50><edit var=\"price", color, "\" width=50></td>");
+                hb.append("<td width=50><combobox width=50 var=item", color, " list=Adena;coin1;coin2;coin3;></td>");
+                hb.append("<td width=50><button value=SELL action=\"bypass _bbsmemo sellItem ", item.getObjectId(), " $count", color, " $price", color, " $item", color, "\" width=50 height=21 back=", "L2UI_CH3.Btn1_normalOn",
                         " fore=", "L2UI_CH3.Btn1_normal", "></td>");
                 hb.append("</tr>");
                 hb.append("</table>");
@@ -215,7 +215,7 @@ public class MemoCommunityBoard extends AbstractMods {
                 if (currentPage == page) {
                     hb.append("<td width=20>", Html.newFontColor("LEVEL", currentPage), "</td>");
                 } else {
-                    hb.append("<td width=20><a action=\"bypass _bbsmemo setAuction ", Integer.valueOf(currentPage), "\">", Integer.valueOf(currentPage), "</a></td>");
+                    hb.append("<td width=20><a action=\"bypass _bbsmemo setAuction ", currentPage, "\">", currentPage, "</a></td>");
                 }
                 currentPage++;
             }
@@ -262,16 +262,16 @@ public class MemoCommunityBoard extends AbstractMods {
                     continue;
                 hb.append("<table ", (color % 2 == 0) ? "bgcolor=000000 " : "", "cellspacing=0 cellpadding=0 width=474 height=56>");
                 hb.append("<tr>");
-                hb.append("<td fixwidth=32>", Html.newImage(IconData.getIconByItemId(item.getItemId()), 32, 32), "</td>");
+                hb.append("<td fixwidth=32>", Html.newImage(IconsTable.getIconByItemId(item.getItemId()), 32, 32), "</td>");
                 hb.append("<td height=56>");
                 hb.append("<table cellspacing=0 cellpadding=0 width=337 height=56>");
-                hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Name: "), item.getName(), " - ", item.getItem().getCrystalType().toString(), " - (", Integer.valueOf(holder.getItemCount()), ")</td></tr>");
-                hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Enchant: "), "+", Integer.valueOf(holder.getItemEnchantLevel()), "</td></tr>");
+                hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Name: "), item.getName(), " - ", item.getItem().getCrystalType().toString(), " - (", holder.getItemCount(), ")</td></tr>");
+                hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Enchant: "), "+", holder.getItemEnchantLevel(), "</td></tr>");
                 hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Price: "), Html.formatAdena(holder.getItemPriceCount()), " ", ItemTable.getInstance().getTemplate(holder.getItemPriceId()).getName(), "</td></tr>");
                 hb.append("<tr><td fixwidth=337>", Html.newFontColor("FF8000", "Owner: "), PlayerData.get(holder.getOwnerId()).getName(), "</td></tr>");
                 hb.append("</table>");
                 hb.append("</td>");
-                hb.append("<td width=105><button value=BUY action=\"bypass _bbsmemo buyItem ", Integer.valueOf(holder.getOwnerId()), " ", Integer.valueOf(holder.getkey()), "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
+                hb.append("<td width=105><button value=BUY action=\"bypass _bbsmemo buyItem ", holder.getOwnerId(), " ", holder.getkey(), "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
                 hb.append("</tr>");
                 hb.append("</table>");
                 hb.append(Html.newImage("L2UI.SquareGray", 474, 1));
@@ -292,7 +292,7 @@ public class MemoCommunityBoard extends AbstractMods {
                     if (currentPage == page) {
                         hb.append("<td width=20>", Html.newFontColor("LEVEL", currentPage), "</td>");
                     } else {
-                        hb.append("<td width=20><a action=\"bypass _bbsmemo ", bypass, " ", itemType, " ", grade, " ", Integer.valueOf(currentPage), "\">", Integer.valueOf(currentPage),
+                        hb.append("<td width=20><a action=\"bypass _bbsmemo ", bypass, " ", itemType, " ", grade, " ", currentPage, "\">", currentPage,
                                 "</a></td>");
                     }
                     currentPage++;
@@ -305,7 +305,7 @@ public class MemoCommunityBoard extends AbstractMods {
         } else {
             hb.append("<center>No items for sale</center>");
         }
-        hb.append("<button value=\"Refresh\" action=\"bypass _bbsmemo ", bypass, " ", itemType, " ", grade, " ", Integer.valueOf(page), "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn",
+        hb.append("<button value=\"Refresh\" action=\"bypass _bbsmemo ", bypass, " ", itemType, " ", grade, " ", page, "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn",
                 " fore=", "L2UI_CH3.Btn1_normal", ">");
         return hb.toString();
     }
@@ -410,7 +410,7 @@ public class MemoCommunityBoard extends AbstractMods {
     private static int getNewKey(Map<Integer, AuctionItemHolder> map) {
         int id = -1;
         for (int i = 1; i <= 100; i++) {
-            if (!map.containsKey(Integer.valueOf(i))) {
+            if (!map.containsKey(i)) {
                 id = i;
                 break;
             }
@@ -534,7 +534,7 @@ public class MemoCommunityBoard extends AbstractMods {
                     if (st.hasMoreTokens()) {
                         PlayerHolder ph = PlayerData.get(player);
                         int key = Integer.parseInt(st.nextToken());
-                        AuctionItemHolder ih = ph.getAuctionsSell().get(Integer.valueOf(key));
+                        AuctionItemHolder ih = ph.getAuctionsSell().get(key);
                         if (ih != null)
                             if (ih.getOwnerId() == player.getObjectId()) {
                                 removeSell(ph, key);
@@ -591,11 +591,11 @@ public class MemoCommunityBoard extends AbstractMods {
 
     private String buyItemConfirm(Player player, PlayerHolder phOwner, int key) {
         HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.COMUNITY_TYPE);
-        if (!phOwner.getAuctionsSell().containsKey(Integer.valueOf(key))) {
+        if (!phOwner.getAuctionsSell().containsKey(key)) {
             hb.append("<br><br><br>");
             hb.append("What the hell are you trying to do???");
         } else {
-            AuctionItemHolder ih = phOwner.getAuctionsSell().get(Integer.valueOf(key));
+            AuctionItemHolder ih = phOwner.getAuctionsSell().get(key);
             int countBuy = player.getInventory().getInventoryItemCount(ih.getItemPriceId(), -1, false);
             if (countBuy < ih.getItemPriceCount()) {
                 hb.append("<br><br><br>");

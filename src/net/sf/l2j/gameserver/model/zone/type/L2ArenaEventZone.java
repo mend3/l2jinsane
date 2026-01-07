@@ -20,7 +20,7 @@ public class L2ArenaEventZone extends SpawnZoneType {
                 player.updatePvPFlag(1);
                 player.broadcastUserInfo();
             }
-            ((Player) character).sendPacket(SystemMessageId.ENTERED_COMBAT_ZONE);
+            player.sendPacket(SystemMessageId.ENTERED_COMBAT_ZONE);
         }
         character.setInsideZone(ZoneId.ARENA_EVENT, true);
         character.setInsideZone(ZoneId.PVP, true);
@@ -30,7 +30,7 @@ public class L2ArenaEventZone extends SpawnZoneType {
         if (character instanceof Player player) {
             player.updatePvPFlag(0);
             player.broadcastUserInfo();
-            ((Player) character).sendPacket(SystemMessageId.LEFT_COMBAT_ZONE);
+            player.sendPacket(SystemMessageId.LEFT_COMBAT_ZONE);
         }
         character.setInsideZone(ZoneId.ARENA_EVENT, false);
         character.setInsideZone(ZoneId.PVP, false);

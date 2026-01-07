@@ -18,10 +18,10 @@ public class Q341_HuntingForWildBeasts extends Quest {
 
     public Q341_HuntingForWildBeasts() {
         super(341, "Hunting for Wild Beasts");
-        CHANCES.put(Integer.valueOf(20021), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(20203), Integer.valueOf(900000));
-        CHANCES.put(Integer.valueOf(20310), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(20335), Integer.valueOf(700000));
+        CHANCES.put(20021, 500000);
+        CHANCES.put(20203, 900000);
+        CHANCES.put(20310, 500000);
+        CHANCES.put(20335, 700000);
         setItemsIds(4259);
         addStartNpc(30078);
         addTalkId(30078);
@@ -70,7 +70,7 @@ public class Q341_HuntingForWildBeasts extends Quest {
         QuestState st = checkPlayerState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropItems(4259, 1, 20, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(4259, 1, 20, CHANCES.get(npc.getNpcId()));
         return null;
     }
 }

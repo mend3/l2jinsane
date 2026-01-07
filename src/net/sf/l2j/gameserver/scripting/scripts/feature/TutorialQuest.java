@@ -80,18 +80,18 @@ public class TutorialQuest extends Quest {
             case 31:
             case 36:
             case 53:
-                weaponIds.addAll(Arrays.asList(Integer.valueOf(6354)));
+                weaponIds.addAll(List.of(6354));
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(6354));
                 break;
             case 44:
-                weaponIds.addAll(Arrays.asList(Integer.valueOf(257)));
+                weaponIds.addAll(List.of(257));
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(257));
                 break;
             case 10:
             case 25:
             case 38:
             case 49:
-                weaponIds.addAll(Arrays.asList(Integer.valueOf(100)));
+                weaponIds.addAll(List.of(100));
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(100));
                 break;
         }
@@ -105,21 +105,21 @@ public class TutorialQuest extends Quest {
             case 31:
             case 36:
             case 53:
-                armorIds.addAll(Arrays.asList(Integer.valueOf(44), Integer.valueOf(24), Integer.valueOf(31), Integer.valueOf(51), Integer.valueOf(38), Integer.valueOf(625), Integer.valueOf(908), Integer.valueOf(877), Integer.valueOf(877), Integer.valueOf(115),
-                        Integer.valueOf(115)));
+                armorIds.addAll(Arrays.asList(44, 24, 31, 51, 38, 625, 908, 877, 877, 115,
+                        115));
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(24));
                 break;
             case 44:
-                armorIds.addAll(Arrays.asList(Integer.valueOf(44), Integer.valueOf(24), Integer.valueOf(31), Integer.valueOf(51), Integer.valueOf(38), Integer.valueOf(625), Integer.valueOf(908), Integer.valueOf(877), Integer.valueOf(877), Integer.valueOf(115),
-                        Integer.valueOf(115)));
+                armorIds.addAll(Arrays.asList(44, 24, 31, 51, 38, 625, 908, 877, 877, 115,
+                        115));
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(24));
                 break;
             case 10:
             case 25:
             case 38:
             case 49:
-                armorIds.addAll(Arrays.asList(Integer.valueOf(44), Integer.valueOf(1101), Integer.valueOf(1104), Integer.valueOf(51), Integer.valueOf(38), Integer.valueOf(625), Integer.valueOf(908), Integer.valueOf(877), Integer.valueOf(877), Integer.valueOf(115),
-                        Integer.valueOf(115)));
+                armorIds.addAll(Arrays.asList(44, 1101, 1104, 51, 38, 625, 908, 877, 877, 115,
+                        115));
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(1101));
                 break;
         }
@@ -147,8 +147,8 @@ public class TutorialQuest extends Quest {
                 break;
             case 3:
                 st.set("cond", "4");
-                mageBuffs = Arrays.asList(Integer.valueOf(4342), Integer.valueOf(4355), Integer.valueOf(4356), Integer.valueOf(4344));
-                fighterBuffs = Arrays.asList(Integer.valueOf(4342), Integer.valueOf(4357), Integer.valueOf(4345), Integer.valueOf(4344));
+                mageBuffs = Arrays.asList(4342, 4355, 4356, 4344);
+                fighterBuffs = Arrays.asList(4342, 4357, 4345, 4344);
                 newbieBuffs = (player.isMageClass() || player.getClassId() == ClassId.ORC_MYSTIC) ? mageBuffs : fighterBuffs;
                 for (Integer id : newbieBuffs) {
                     player.setCurrentHpMp(player.getMaxHp(), player.getMaxMp());

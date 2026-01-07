@@ -9,7 +9,6 @@ import net.sf.l2j.gameserver.enums.skills.L2SkillType;
 import net.sf.l2j.gameserver.handler.IAdminCommandHandler;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.WorldObject;
-import net.sf.l2j.gameserver.model.actor.Npc;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.instance.Monster;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
@@ -37,9 +36,9 @@ public class AdminEditNpc implements IAdminCommandHandler {
             return;
         }
         StringBuilder sb = new StringBuilder(500);
-        StringUtil.append(sb, "<html><body><center><font color=\"LEVEL\">", NpcData.getInstance().getTemplate(buyList.getNpcId()).getName(), " (", Integer.valueOf(buyList.getNpcId()), ") buylist id: ", Integer.valueOf(buyList.getListId()), "</font></center><br><table width=\"100%\"><tr><td width=200>Item</td><td width=80>Price</td></tr>");
+        StringUtil.append(sb, "<html><body><center><font color=\"LEVEL\">", NpcData.getInstance().getTemplate(buyList.getNpcId()).getName(), " (", buyList.getNpcId(), ") buylist id: ", buyList.getListId(), "</font></center><br><table width=\"100%\"><tr><td width=200>Item</td><td width=80>Price</td></tr>");
         for (Product product : buyList.getProducts()) {
-            StringUtil.append(sb, "<tr><td>", product.getItem().getName(), "</td><td>", Integer.valueOf(product.getPrice()), "</td></tr>");
+            StringUtil.append(sb, "<tr><td>", product.getItem().getName(), "</td><td>", product.getPrice(), "</td></tr>");
         }
         sb.append("</table></body></html>");
         NpcHtmlMessage html = new NpcHtmlMessage(0);
@@ -57,11 +56,11 @@ public class AdminEditNpc implements IAdminCommandHandler {
         StringUtil.append(sb, "<html><title>Merchant Shop Lists</title><body>");
         if (activeChar.getTarget() instanceof net.sf.l2j.gameserver.model.actor.instance.Merchant merchant) {
             int taxRate = merchant.getCastle().getTaxPercent();
-            StringUtil.append(sb, "<center><font color=\"LEVEL\">", merchant.getName(), " (", Integer.valueOf(npcId), ")</font></center><br>Tax rate: ", Integer.valueOf(taxRate), "%");
+            StringUtil.append(sb, "<center><font color=\"LEVEL\">", merchant.getName(), " (", npcId, ")</font></center><br>Tax rate: ", taxRate, "%");
         }
         StringUtil.append(sb, "<table width=\"100%\">");
         for (NpcBuyList buyList : buyLists) {
-            StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_show_shoplist ", Integer.valueOf(buyList.getListId()), " 1\">Buylist id: ", Integer.valueOf(buyList.getListId()), "</a></td></tr>");
+            StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_show_shoplist ", buyList.getListId(), " 1\">Buylist id: ", buyList.getListId(), "</a></td></tr>");
         }
         StringUtil.append(sb, "</table></body></html>");
         NpcHtmlMessage html = new NpcHtmlMessage(0);
@@ -76,7 +75,7 @@ public class AdminEditNpc implements IAdminCommandHandler {
             return;
         }
         StringBuilder sb = new StringBuilder(2000);
-        StringUtil.append(sb, "<html><title>Show droplist page ", Integer.valueOf(page), "</title><body><center><font color=\"LEVEL\">", npcData.getName(), " (", Integer.valueOf(npcId), ")</font></center><br>");
+        StringUtil.append(sb, "<html><title>Show droplist page ", page, "</title><body><center><font color=\"LEVEL\">", npcData.getName(), " (", npcId, ")</font></center><br>");
         if (!npcData.getDropData().isEmpty()) {
             sb.append("Drop type legend: <font color=\"3BB9FF\">Drop</font> | <font color=\"00ff00\">Sweep</font><br><table><tr><td width=25>cat.</td><td width=255>item</td></tr>");
             int myPage = 1;
@@ -101,20 +100,20 @@ public class AdminEditNpc implements IAdminCommandHandler {
                         hasMore = true;
                         break;
                     }
-                    StringUtil.append(sb, "<tr><td><font color=\"", cat.isSweep() ? "00FF00" : "3BB9FF", "\">", Integer.valueOf(cat.getCategoryType()), "</td><td>", ItemTable.getInstance().getTemplate(drop.getItemId()).getName(), " (", Integer.valueOf(drop.getItemId()), ")</td></tr>");
+                    StringUtil.append(sb, "<tr><td><font color=\"", cat.isSweep() ? "00FF00" : "3BB9FF", "\">", cat.getCategoryType(), "</td><td>", ItemTable.getInstance().getTemplate(drop.getItemId()).getName(), " (", drop.getItemId(), ")</td></tr>");
                     shown++;
                 }
             }
             sb.append("</table><table width=\"100%\" bgcolor=666666><tr>");
             if (page > 1) {
-                StringUtil.append(sb, "<td width=120><a action=\"bypass -h admin_show_droplist ", Integer.valueOf(npcId), " ", Integer.valueOf(page - 1), "\">Prev Page</a></td>");
+                StringUtil.append(sb, "<td width=120><a action=\"bypass -h admin_show_droplist ", npcId, " ", page - 1, "\">Prev Page</a></td>");
                 if (!hasMore)
-                    StringUtil.append(sb, "<td width=100>Page ", Integer.valueOf(page), "</td><td width=70></td></tr>");
+                    StringUtil.append(sb, "<td width=100>Page ", page, "</td><td width=70></td></tr>");
             }
             if (hasMore) {
                 if (page <= 1)
                     sb.append("<td width=120></td>");
-                StringUtil.append(sb, "<td width=100>Page ", Integer.valueOf(page), "</td><td width=70><a action=\"bypass -h admin_show_droplist ", Integer.valueOf(npcId), " ", Integer.valueOf(page + 1), "\">Next Page</a></td></tr>");
+                StringUtil.append(sb, "<td width=100>Page ", page, "</td><td width=70><a action=\"bypass -h admin_show_droplist ", npcId, " ", page + 1, "\">Next Page</a></td></tr>");
             }
             sb.append("</table>");
         } else {
@@ -133,7 +132,7 @@ public class AdminEditNpc implements IAdminCommandHandler {
             return;
         }
         StringBuilder sb = new StringBuilder(500);
-        StringUtil.append(sb, "<html><body><center><font color=\"LEVEL\">", npcData.getName(), " (", Integer.valueOf(npcId), ") skills</font></center><br>");
+        StringUtil.append(sb, "<html><body><center><font color=\"LEVEL\">", npcData.getName(), " (", npcId, ") skills</font></center><br>");
         if (!npcData.getSkills().isEmpty()) {
             NpcTemplate.SkillType type = null;
             for (Map.Entry<NpcTemplate.SkillType, List<L2Skill>> entry : npcData.getSkills().entrySet()) {
@@ -142,7 +141,7 @@ public class AdminEditNpc implements IAdminCommandHandler {
                     StringUtil.append(sb, "<br><font color=\"LEVEL\">", type.name(), "</font><br1>");
                 }
                 for (L2Skill skill : entry.getValue()) {
-                    StringUtil.append(sb, (skill.getSkillType() == L2SkillType.NOTDONE) ? ("<font color=\"777777\">" + skill.getName() + "</font>") : skill.getName(), " [", Integer.valueOf(skill.getId()), "-", Integer.valueOf(skill.getLevel()), "]<br1>");
+                    StringUtil.append(sb, (skill.getSkillType() == L2SkillType.NOTDONE) ? ("<font color=\"777777\">" + skill.getName() + "</font>") : skill.getName(), " [", skill.getId(), "-", skill.getLevel(), "]<br1>");
                 }
             }
         } else {
@@ -161,7 +160,7 @@ public class AdminEditNpc implements IAdminCommandHandler {
             return;
         }
         StringBuilder sb = new StringBuilder(500);
-        StringUtil.append(sb, "<html><body><center><font color=\"LEVEL\">", npcData.getName(), " (", Integer.valueOf(npcId), ")</font></center><br>");
+        StringUtil.append(sb, "<html><body><center><font color=\"LEVEL\">", npcData.getName(), " (", npcId, ")</font></center><br>");
         if (!npcData.getEventQuests().isEmpty()) {
             ScriptEventType type = null;
             for (Map.Entry<ScriptEventType, List<Quest>> entry : npcData.getEventQuests().entrySet()) {
@@ -198,11 +197,11 @@ public class AdminEditNpc implements IAdminCommandHandler {
             Monster master = monster.getMaster();
             if (master != null) {
                 html.replace("%type%", "minion");
-                StringUtil.append(sb, "<tr><td>", Integer.valueOf(master.getNpcId()), "</td><td>", master.getName(), " (", master.isDead() ? "Dead" : "Alive", ")</td></tr>");
+                StringUtil.append(sb, "<tr><td>", master.getNpcId(), "</td><td>", master.getName(), " (", master.isDead() ? "Dead" : "Alive", ")</td></tr>");
             } else if (monster.hasMinions()) {
                 html.replace("%type%", "master");
                 for (Map.Entry<Monster, Boolean> data : monster.getMinionList().getMinions().entrySet()) {
-                    StringUtil.append(sb, "<tr><td>", Integer.valueOf(data.getKey().getNpcId()), "</td><td>", data.getKey().toString(), " (", data.getValue() ? "Alive" : "Dead", ")</td></tr>");
+                    StringUtil.append(sb, "<tr><td>", data.getKey().getNpcId(), "</td><td>", data.getKey().toString(), " (", data.getValue() ? "Alive" : "Dead", ")</td></tr>");
                 }
             } else {
                 html.replace("%type%", "regular monster");

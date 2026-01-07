@@ -5,7 +5,7 @@ import net.sf.l2j.commons.lang.StringUtil;
 import net.sf.l2j.gameserver.data.DollsData;
 import net.sf.l2j.gameserver.data.manager.CastleManager;
 import net.sf.l2j.gameserver.data.sql.ClanTable;
-import net.sf.l2j.gameserver.data.xml.PlayerData;
+import net.sf.l2j.gameserver.data.xml.PlayerClassData;
 import net.sf.l2j.gameserver.data.xml.SkillTreeData;
 import net.sf.l2j.gameserver.enums.actors.ClassId;
 import net.sf.l2j.gameserver.enums.skills.AcquireSkillType;
@@ -200,7 +200,7 @@ public class VillageMaster extends Folk {
                 return;
             }
             Clan clan = player.getClan();
-            SubPledge subPledge = player.getClan().getSubPledge(Integer.valueOf(cmdParams));
+            SubPledge subPledge = player.getClan().getSubPledge(Integer.parseInt(cmdParams));
             if (subPledge == null) {
                 player.sendMessage("Pledge doesn't exist.");
                 return;
@@ -381,7 +381,7 @@ public class VillageMaster extends Folk {
                     }
                     sb = new StringBuilder(300);
                     for (ClassId subClass : subsAvailable) {
-                        StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 4 ", Integer.valueOf(subClass.getId()), "\" msg=\"1268;", subClass, "\">", subClass, "</a><br>");
+                        StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 4 ", subClass.getId(), "\" msg=\"1268;", subClass, "\">", subClass, "</a><br>");
                     }
                     html.setFile("data/html/villagemaster/SubClass_Add.htm");
                     html.replace("%list%", sb.toString());
@@ -401,10 +401,10 @@ public class VillageMaster extends Folk {
                     }
                     sb = new StringBuilder(300);
                     if (checkVillageMaster(player.getBaseClass()))
-                        StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 5 0\">", PlayerData.getInstance().getClassNameById(player.getBaseClass()), "</a><br>");
+                        StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 5 0\">", PlayerClassData.getInstance().getClassNameById(player.getBaseClass()), "</a><br>");
                     for (SubClass subclass : player.getSubClasses().values()) {
                         if (checkVillageMaster(subclass.getClassDefinition()))
-                            StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 5 ", Integer.valueOf(subclass.getClassIndex()), "\">", subclass.getClassDefinition(), "</a><br>");
+                            StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 5 ", subclass.getClassIndex(), "\">", subclass.getClassDefinition(), "</a><br>");
                     }
                     if (sb.length() > 0) {
                         html.setFile("data/html/villagemaster/SubClass_Change.htm");
@@ -419,18 +419,18 @@ public class VillageMaster extends Folk {
                         break;
                     }
                     html.setFile("data/html/villagemaster/SubClass_Modify.htm");
-                    if (player.getSubClasses().containsKey(Integer.valueOf(1))) {
-                        html.replace("%sub1%", PlayerData.getInstance().getClassNameById(player.getSubClasses().get(Integer.valueOf(1)).getClassId()));
+                    if (player.getSubClasses().containsKey(1)) {
+                        html.replace("%sub1%", PlayerClassData.getInstance().getClassNameById(player.getSubClasses().get(1).getClassId()));
                     } else {
                         html.replace("<a action=\"bypass -h npc_%objectId%_Subclass 6 1\">%sub1%</a><br>", "");
                     }
-                    if (player.getSubClasses().containsKey(Integer.valueOf(2))) {
-                        html.replace("%sub2%", PlayerData.getInstance().getClassNameById(player.getSubClasses().get(Integer.valueOf(2)).getClassId()));
+                    if (player.getSubClasses().containsKey(2)) {
+                        html.replace("%sub2%", PlayerClassData.getInstance().getClassNameById(player.getSubClasses().get(2).getClassId()));
                     } else {
                         html.replace("<a action=\"bypass -h npc_%objectId%_Subclass 6 2\">%sub2%</a><br>", "");
                     }
-                    if (player.getSubClasses().containsKey(Integer.valueOf(3))) {
-                        html.replace("%sub3%", PlayerData.getInstance().getClassNameById(player.getSubClasses().get(Integer.valueOf(3)).getClassId()));
+                    if (player.getSubClasses().containsKey(3)) {
+                        html.replace("%sub3%", PlayerClassData.getInstance().getClassNameById(player.getSubClasses().get(3).getClassId()));
                         break;
                     }
                     html.replace("<a action=\"bypass -h npc_%objectId%_Subclass 6 3\">%sub3%</a><br>", "");
@@ -473,7 +473,7 @@ public class VillageMaster extends Folk {
                             return;
                     } else {
                         try {
-                            if (!checkVillageMaster(player.getSubClasses().get(Integer.valueOf(paramOne)).getClassDefinition()))
+                            if (!checkVillageMaster(player.getSubClasses().get(paramOne).getClassDefinition()))
                                 return;
                         } catch (NullPointerException e) {
                             return;
@@ -493,7 +493,7 @@ public class VillageMaster extends Folk {
                     }
                     sb = new StringBuilder(300);
                     for (ClassId subClass : subsAvailable) {
-                        StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 7 ", Integer.valueOf(paramOne), " ", Integer.valueOf(subClass.getId()), "\" msg=\"1445;", "\">", subClass, "</a><br>");
+                        StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 7 ", paramOne, " ", subClass.getId(), "\" msg=\"1445;", "\">", subClass, "</a><br>");
                     }
                     switch (paramOne) {
                         case 1:

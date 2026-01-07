@@ -23,7 +23,7 @@ public class PenaltyMonster extends Monster {
         if (Rnd.get(100) <= 80)
             broadcastNpcSay("Your bait was too delicious! Now, I will kill you!");
         this._ptk = ptk;
-        getAI().notifyEvent(AiEventType.AGGRESSION, this._ptk, Integer.valueOf(Rnd.get(1, 100)));
+        getAI().notifyEvent(AiEventType.AGGRESSION, this._ptk, Rnd.get(1, 100));
     }
 
     public boolean doDie(Creature killer) {

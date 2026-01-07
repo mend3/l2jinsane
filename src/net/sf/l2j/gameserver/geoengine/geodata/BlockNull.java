@@ -4,7 +4,7 @@ package net.sf.l2j.gameserver.geoengine.geodata;
 import java.io.BufferedOutputStream;
 
 public class BlockNull extends ABlock {
-    private byte _nswe = -1;
+    private final byte _nswe = -1;
 
     public final boolean hasGeoPos() {
         return false;

@@ -29,7 +29,7 @@ public class BuyListManager implements IXmlReader {
 
     public void load() {
         parseFile("./data/xml/buyLists.xml");
-        LOGGER.info("Loaded {} buyLists.", Integer.valueOf(this._buyLists.size()));
+        LOGGER.info("Loaded {} buyLists.", this._buyLists.size());
 
         try (Connection con = ConnectionPool.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM `buylists`");
@@ -62,7 +62,7 @@ public class BuyListManager implements IXmlReader {
     }
 
     public NpcBuyList getBuyList(int listId) {
-        return this._buyLists.get(Integer.valueOf(listId));
+        return this._buyLists.get(listId);
     }
 
     public List<NpcBuyList> getBuyListsByNpcId(int npcId) {

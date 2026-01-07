@@ -24,11 +24,8 @@ import net.sf.l2j.gameserver.data.SkillTable.FrequentSkill;
 import net.sf.l2j.gameserver.data.manager.*;
 import net.sf.l2j.gameserver.data.sql.ClanTable;
 import net.sf.l2j.gameserver.data.sql.PlayerInfoTable;
-import net.sf.l2j.gameserver.data.xml.AdminData;
+import net.sf.l2j.gameserver.data.xml.*;
 import net.sf.l2j.gameserver.data.xml.MapRegionData.TeleportType;
-import net.sf.l2j.gameserver.data.xml.NpcData;
-import net.sf.l2j.gameserver.data.xml.RecipeData;
-import net.sf.l2j.gameserver.data.xml.ScriptData;
 import net.sf.l2j.gameserver.enums.*;
 import net.sf.l2j.gameserver.enums.actors.*;
 import net.sf.l2j.gameserver.enums.items.*;
@@ -199,6 +196,8 @@ public final class Player extends Playable {
     private final List<Integer> _ignored;
     private final List<Integer> _ignoredMonster;
     private final List<Integer> _completedAchievements;
+    private final Map<Integer, Cubic> _cubics;
+    private final Set<Integer> _activeSoulShots;
     public int _lastX;
     public int _lastY;
     public int _lastZ;
@@ -226,8 +225,6 @@ public final class Player extends Playable {
     private Future<?> _mountFeedTask;
     private int _throneId;
     private boolean _inventoryDisable;
-    private Map<Integer, Cubic> _cubics;
-    private Set<Integer> _activeSoulShots;
     private int _armorSkinOption = 0;
     private int _weaponSkinOption = 0;
     private int _hairSkinOption = 0;
@@ -531,9 +528,7 @@ public final class Player extends Playable {
                     throw var16;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var17) {
                 if (con != null) {
                     try {
@@ -546,9 +541,7 @@ public final class Player extends Playable {
                 throw var17;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
 
             return player;
         } catch (Exception var18) {
@@ -573,7 +566,7 @@ public final class Player extends Playable {
                     try {
                         if (rs.next()) {
                             int activeClassId = rs.getInt("classid");
-                            PlayerTemplate template = net.sf.l2j.gameserver.data.xml.PlayerData.getInstance().getTemplate(activeClassId);
+                            PlayerTemplate template = PlayerClassData.getInstance().getTemplate(activeClassId);
                             Appearance app = new Appearance(rs.getByte("face"), rs.getByte("hairColor"), rs.getByte("hairStyle"), Sex.values()[rs.getInt("sex")]);
                             player = new Player(objectId, template, rs.getString("account_name"), app);
                             player.setName(rs.getString("char_name"));
@@ -635,10 +628,8 @@ public final class Player extends Playable {
                             }
 
                             if (restoreSubClassData(player) && activeClassId != player.getBaseClass()) {
-                                Iterator var9 = player.getSubClasses().values().iterator();
 
-                                while (var9.hasNext()) {
-                                    SubClass subClass = (SubClass) var9.next();
+                                for (SubClass subClass : player.getSubClasses().values()) {
                                     if (subClass.getClassId() == activeClassId) {
                                         player._classIndex = subClass.getClassIndex();
                                     }
@@ -715,9 +706,7 @@ public final class Player extends Playable {
                                     throw var22;
                                 }
 
-                                if (rs2 != null) {
-                                    rs2.close();
-                                }
+                                rs2.close();
                             } catch (Throwable var23) {
                                 if (ps2 != null) {
                                     try {
@@ -730,9 +719,7 @@ public final class Player extends Playable {
                                 throw var23;
                             }
 
-                            if (ps2 != null) {
-                                ps2.close();
-                            }
+                            ps2.close();
                         }
                     } catch (Throwable var24) {
                         if (rs != null) {
@@ -746,9 +733,7 @@ public final class Player extends Playable {
                         throw var24;
                     }
 
-                    if (rs != null) {
-                        rs.close();
-                    }
+                    rs.close();
                 } catch (Throwable var25) {
                     if (ps != null) {
                         try {
@@ -761,9 +746,7 @@ public final class Player extends Playable {
                     throw var25;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var26) {
                 if (con != null) {
                     try {
@@ -776,9 +759,7 @@ public final class Player extends Playable {
                 throw var26;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var27) {
             LOGGER.error("Couldn't restore player data.", var27);
         }
@@ -791,7 +772,7 @@ public final class Player extends Playable {
             Connection con = ConnectionPool.getConnection();
 
             try {
-                PreparedStatement ps = con.prepareStatement("SELECT class_id,exp,sp,level,class_index FROM character_subclasses WHERE char_obj_id=? ORDER BY class_index ASC");
+                PreparedStatement ps = con.prepareStatement("SELECT class_id,exp,sp,level,class_index FROM character_subclasses WHERE char_obj_id=? ORDER BY class_index");
 
                 try {
                     ps.setInt(1, player.getObjectId());
@@ -814,9 +795,7 @@ public final class Player extends Playable {
                         throw var9;
                     }
 
-                    if (rs != null) {
-                        rs.close();
-                    }
+                    rs.close();
                 } catch (Throwable var10) {
                     if (ps != null) {
                         try {
@@ -829,9 +808,7 @@ public final class Player extends Playable {
                     throw var10;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var11) {
                 if (con != null) {
                     try {
@@ -844,39 +821,12 @@ public final class Player extends Playable {
                 throw var11;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
 
             return true;
         } catch (Exception var12) {
             LOGGER.error("Couldn't restore subclasses for {}.", var12, player.getName());
             return false;
-        }
-    }
-
-    private static String getCastleName(int id) {
-        switch (id) {
-            case 1:
-                return "Gludio";
-            case 2:
-                return "Dion";
-            case 3:
-                return "Giran";
-            case 4:
-                return "Oren";
-            case 5:
-                return "Aden";
-            case 6:
-                return "Innadril";
-            case 7:
-                return "Goddard";
-            case 8:
-                return "Rune";
-            case 9:
-                return "Schuttgart";
-            default:
-                return "Not found";
         }
     }
 
@@ -897,7 +847,7 @@ public final class Player extends Playable {
 
             if (rs.next()) {
                 int activeClassId = rs.getInt("classid");
-                PlayerTemplate template = net.sf.l2j.gameserver.data.xml.PlayerData.getInstance().getTemplate(activeClassId);
+                PlayerTemplate template = PlayerClassData.getInstance().getTemplate(activeClassId);
                 Appearance app = new Appearance(rs.getByte("face"), rs.getByte("hairColor"), rs.getByte("hairStyle"), Sex.values()[rs.getInt("sex")]);
                 player = new Player(objectId, template, rs.getString("account_name"), app);
                 player.restoreDressMeData();
@@ -957,7 +907,7 @@ public final class Player extends Playable {
     }
 
     public PlayerTemplate getBaseTemplate() {
-        return net.sf.l2j.gameserver.data.xml.PlayerData.getInstance().getTemplate(this._baseClass);
+        return PlayerClassData.getInstance().getTemplate(this._baseClass);
     }
 
     public PlayerTemplate getTemplate() {
@@ -965,7 +915,7 @@ public final class Player extends Playable {
     }
 
     public void setTemplate(ClassId newclass) {
-        super.setTemplate(net.sf.l2j.gameserver.data.xml.PlayerData.getInstance().getTemplate(newclass));
+        super.setTemplate(PlayerClassData.getInstance().getTemplate(newclass));
     }
 
     public CreatureAI getAI() {
@@ -1064,7 +1014,7 @@ public final class Player extends Playable {
 
     public List<Quest> getAllQuests(boolean completed) {
         List<Quest> quests = new ArrayList<>();
-        Iterator var3 = this._quests.iterator();
+        Iterator<QuestState> var3 = this._quests.iterator();
 
         while (true) {
             QuestState qs;
@@ -1075,7 +1025,7 @@ public final class Player extends Playable {
                             return quests;
                         }
 
-                        qs = (QuestState) var3.next();
+                        qs = var3.next();
                     } while (qs == null);
                 } while (completed && qs.isCreated());
             } while (!completed && !qs.isStarted());
@@ -1096,10 +1046,8 @@ public final class Player extends Playable {
                 if (object instanceof Npc npc && this.isInsideRadius(object, 150, false, false)) {
                     List<Quest> scripts = npc.getTemplate().getEventQuests(ScriptEventType.ON_TALK);
                     if (scripts != null) {
-                        Iterator var8 = scripts.iterator();
 
-                        while (var8.hasNext()) {
-                            Quest script = (Quest) var8.next();
+                        for (Quest script : scripts) {
                             if (script != null && script.equals(quest)) {
                                 quest.notifyEvent(event, npc, this);
                                 break;
@@ -1353,9 +1301,7 @@ public final class Player extends Playable {
                     throw var12;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
 
                 ps = con.prepareStatement("UPDATE characters SET rec_have=? WHERE obj_Id=?");
 
@@ -1375,9 +1321,7 @@ public final class Player extends Playable {
                     throw var11;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
 
                 ps = con.prepareStatement("UPDATE characters SET rec_left=? WHERE obj_Id=?");
 
@@ -1397,9 +1341,7 @@ public final class Player extends Playable {
                     throw var10;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var13) {
                 if (con != null) {
                     try {
@@ -1412,9 +1354,7 @@ public final class Player extends Playable {
                 throw var13;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var14) {
             LOGGER.error("Couldn't update player recommendations.", var14);
         }
@@ -1515,10 +1455,8 @@ public final class Player extends Playable {
         int expertiseLevel = this.getSkillLevel(239);
         int armorPenalty = 0;
         boolean weaponPenalty = false;
-        Iterator var4 = this.getInventory().getPaperdollItems().iterator();
 
-        while (var4.hasNext()) {
-            ItemInstance item = (ItemInstance) var4.next();
+        for (ItemInstance item : this.getInventory().getPaperdollItems()) {
             if (item.getItemType() != EtcItemType.ARROW && item.getItem().getCrystalType().getId() > expertiseLevel) {
                 if (item.isWeapon()) {
                     weaponPenalty = true;
@@ -1919,10 +1857,8 @@ public final class Player extends Playable {
     }
 
     public void clearDepositedFreight() {
-        Iterator var1 = this._depositedFreight.iterator();
 
-        while (var1.hasNext()) {
-            PcFreight freight = (PcFreight) var1.next();
+        for (PcFreight freight : this._depositedFreight) {
             if (freight != null) {
                 freight.deleteMe();
             }
@@ -2507,6 +2443,11 @@ public final class Player extends Playable {
         super.onActionShift(player);
     }
 
+    /**
+     *
+     * @param barPixels pixel size from cp bar
+     * @return true if cp has been or will be updated, false otherwise
+     */
     private boolean needCpUpdate(int barPixels) {
         double currentCp = this.getCurrentCp();
         if (currentCp > 1.0D && this.getMaxCp() >= barPixels) {
@@ -2530,6 +2471,11 @@ public final class Player extends Playable {
         }
     }
 
+    /**
+     *
+     * @param barPixels pixel size from mp bar
+     * @return true if mp has been or will be updated, false otherwise
+     */
     private boolean needMpUpdate(int barPixels) {
         double currentMp = this.getCurrentMp();
         if (currentMp > 1.0D && this.getMaxMp() >= barPixels) {
@@ -2616,10 +2562,8 @@ public final class Player extends Playable {
     }
 
     public void broadcastCharInfo() {
-        Iterator var1 = this.getKnownType(Player.class).iterator();
 
-        while (var1.hasNext()) {
-            Player player = (Player) var1.next();
+        for (Player player : this.getKnownType(Player.class)) {
             player.sendPacket(new CharInfo(this));
             int relation = this.getRelation(player);
             boolean isAutoAttackable = this.isAutoAttackable(player);
@@ -3505,10 +3449,8 @@ public final class Player extends Playable {
         if (Config.AUTO_LEARN_SKILLS) {
             this.rewardSkills();
         } else {
-            Iterator var1 = this.getAvailableAutoGetSkills().iterator();
 
-            while (var1.hasNext()) {
-                GeneralSkillNode skill = (GeneralSkillNode) var1.next();
+            for (GeneralSkillNode skill : this.getAvailableAutoGetSkills()) {
                 this.addSkill(skill.getSkill(), false);
             }
 
@@ -3523,10 +3465,8 @@ public final class Player extends Playable {
     }
 
     public void rewardSkills() {
-        Iterator var1 = this.getAllAvailableSkills().iterator();
 
-        while (var1.hasNext()) {
-            GeneralSkillNode skill = (GeneralSkillNode) var1.next();
+        for (GeneralSkillNode skill : this.getAllAvailableSkills()) {
             this.addSkill(skill.getSkill(), skill.getCost() != 0);
         }
 
@@ -3541,32 +3481,30 @@ public final class Player extends Playable {
     private void removeInvalidSkills() {
         if (!this.getSkills().isEmpty()) {
             Map<Integer, Optional<GeneralSkillNode>> availableSkills = this.getTemplate().getSkills().stream().filter((s) -> s.getMinLvl() <= this.getLevel() + (s.getId() == 239 ? 0 : 9)).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL)));
-            Iterator var2 = this.getSkills().values().iterator();
+            Iterator<L2Skill> var2 = this.getSkills().values().iterator();
 
             while (true) {
-                while (true) {
-                    AtomicReference<L2Skill> skill = new AtomicReference<>();
-                    do {
-                        if (!var2.hasNext()) {
-                            return;
-                        }
+                AtomicReference<L2Skill> skill = new AtomicReference<>();
+                do {
+                    if (!var2.hasNext()) {
+                        return;
+                    }
 
-                        skill.set((L2Skill) var2.next());
-                    } while (this.getTemplate().getSkills().stream().filter((s) -> s.getId() == skill.get().getId()).count() == 0L);
+                    skill.set(var2.next());
+                } while (this.getTemplate().getSkills().stream().noneMatch((s) -> s.getId() == skill.get().getId()));
 
-                    Optional<GeneralSkillNode> tempSkill = availableSkills.get(skill.get().getId());
-                    if (tempSkill == null) {
-                        this.removeSkill(skill.get().getId(), true);
-                    } else {
-                        GeneralSkillNode availableSkill = tempSkill.get();
-                        int maxLevel = SkillTable.getInstance().getMaxLevel(skill.get().getId());
-                        if (skill.get().getLevel() > maxLevel) {
-                            if ((this.getLevel() < 76 || availableSkill.getValue() < maxLevel) && skill.get().getLevel() > availableSkill.getValue()) {
-                                this.addSkill(availableSkill.getSkill(), true);
-                            }
-                        } else if (skill.get().getLevel() > availableSkill.getValue()) {
+                Optional<GeneralSkillNode> tempSkill = availableSkills.get(skill.get().getId());
+                if (tempSkill == null) {
+                    this.removeSkill(skill.get().getId(), true);
+                } else if (tempSkill.isPresent()) {
+                    GeneralSkillNode availableSkill = tempSkill.get();
+                    int maxLevel = SkillTable.getInstance().getMaxLevel(skill.get().getId());
+                    if (skill.get().getLevel() > maxLevel) {
+                        if ((this.getLevel() < 76 || availableSkill.getValue() < maxLevel) && skill.get().getLevel() > availableSkill.getValue()) {
                             this.addSkill(availableSkill.getSkill(), true);
                         }
+                    } else if (skill.get().getLevel() > availableSkill.getValue()) {
+                        this.addSkill(availableSkill.getSkill(), true);
                     }
                 }
             }
@@ -3595,10 +3533,8 @@ public final class Player extends Playable {
 
     public void addSiegeSkills() {
         L2Skill[] var1 = SkillTable.getInstance().getSiegeSkills(this.isNoble());
-        int var2 = var1.length;
 
-        for (int var3 = 0; var3 < var2; ++var3) {
-            L2Skill sk = var1[var3];
+        for (L2Skill sk : var1) {
             this.addSkill(sk, false);
         }
 
@@ -3606,10 +3542,8 @@ public final class Player extends Playable {
 
     public void removeSiegeSkills() {
         L2Skill[] var1 = SkillTable.getInstance().getSiegeSkills(this.isNoble());
-        int var2 = var1.length;
 
-        for (int var3 = 0; var3 < var2; ++var3) {
-            L2Skill sk = var1[var3];
+        for (L2Skill sk : var1) {
             this.removeSkill(sk.getId(), false);
         }
 
@@ -3618,7 +3552,7 @@ public final class Player extends Playable {
     public List<GeneralSkillNode> getAvailableAutoGetSkills() {
         List<GeneralSkillNode> result = new ArrayList<>();
         (this.getTemplate().getSkills().stream().filter((s) -> s.getMinLvl() <= this.getLevel() && s.getCost() == 0).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL)))).forEach((i, s) -> {
-            if (this.getSkillLevel(i) < s.get().getValue()) {
+            if (s.isPresent() && this.getSkillLevel(i) < s.get().getValue()) {
                 result.add(s.get());
             }
 
@@ -3640,7 +3574,7 @@ public final class Player extends Playable {
     public List<GeneralSkillNode> getAllAvailableSkills() {
         List<GeneralSkillNode> result = new ArrayList<>();
         (this.getTemplate().getSkills().stream().filter((s) -> s.getMinLvl() <= this.getLevel()).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL)))).forEach((i, s) -> {
-            if (this.getSkillLevel(i) < s.get().getValue()) {
+            if (s.isPresent() && this.getSkillLevel(i) < s.get().getValue()) {
                 result.add(s.get());
             }
 
@@ -3724,11 +3658,8 @@ public final class Player extends Playable {
             if (wpn != null) {
                 ItemInstance[] unequipped = this.getInventory().unEquipItemInBodySlotAndRecord(wpn);
                 InventoryUpdate iu = new InventoryUpdate();
-                ItemInstance[] var4 = unequipped;
-                int var5 = unequipped.length;
 
-                for (var6 = 0; var6 < var5; ++var6) {
-                    ItemInstance itm = var4[var6];
+                for (ItemInstance itm : unequipped) {
                     iu.addModifiedItem(itm);
                 }
 
@@ -3751,11 +3682,8 @@ public final class Player extends Playable {
             if (sld != null) {
                 ItemInstance[] unequipped = this.getInventory().unEquipItemInBodySlotAndRecord(sld);
                 InventoryUpdate iu = new InventoryUpdate();
-                ItemInstance[] var13 = unequipped;
-                var6 = unequipped.length;
 
-                for (int var15 = 0; var15 < var6; ++var15) {
-                    ItemInstance itm = var13[var15];
+                for (ItemInstance itm : unequipped) {
                     iu.addModifiedItem(itm);
                 }
 
@@ -3866,7 +3794,7 @@ public final class Player extends Playable {
             }
 
             if (!summon.isDead() && !this.isMounted()) {
-                this.mount(summon);
+                return this.mount(summon);
             }
         } else if (this.isMounted()) {
             if (this.getMountType() == 2 && this.isInsideZone(ZoneId.NO_LANDING)) {
@@ -3927,9 +3855,7 @@ public final class Player extends Playable {
                         throw var8;
                     }
 
-                    if (ps != null) {
-                        ps.close();
-                    }
+                    ps.close();
                 } catch (Throwable var9) {
                     if (con != null) {
                         try {
@@ -3942,9 +3868,7 @@ public final class Player extends Playable {
                     throw var9;
                 }
 
-                if (con != null) {
-                    con.close();
-                }
+                con.close();
             } catch (Exception var10) {
                 LOGGER.error("Couldn't store pet food data for {}.", var10, this._controlItemId);
             }
@@ -4140,9 +4064,7 @@ public final class Player extends Playable {
                     throw var7;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var8) {
                 if (con != null) {
                     try {
@@ -4155,9 +4077,7 @@ public final class Player extends Playable {
                 throw var8;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var9) {
             LOGGER.error("Couldn't set player online status.", var9);
         }
@@ -4213,9 +4133,7 @@ public final class Player extends Playable {
                         throw var8;
                     }
 
-                    if (ps != null) {
-                        ps.close();
-                    }
+                    ps.close();
 
                     ps = con.prepareStatement("INSERT INTO character_recipebook (charId, recipeId) values(?,?)");
 
@@ -4252,9 +4170,7 @@ public final class Player extends Playable {
                         throw var9;
                     }
 
-                    if (ps != null) {
-                        ps.close();
-                    }
+                    ps.close();
                 } catch (Throwable var10) {
                     if (con != null) {
                         try {
@@ -4267,9 +4183,7 @@ public final class Player extends Playable {
                     throw var10;
                 }
 
-                if (con != null) {
-                    con.close();
-                }
+                con.close();
             } catch (Exception var11) {
                 LOGGER.error("Couldn't store recipe book data.", var11);
             }
@@ -4309,9 +4223,7 @@ public final class Player extends Playable {
                         throw var9;
                     }
 
-                    if (rs != null) {
-                        rs.close();
-                    }
+                    rs.close();
                 } catch (Throwable var10) {
                     if (ps != null) {
                         try {
@@ -4324,9 +4236,7 @@ public final class Player extends Playable {
                     throw var10;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var11) {
                 if (con != null) {
                     try {
@@ -4339,9 +4249,7 @@ public final class Player extends Playable {
                 throw var11;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var12) {
             LOGGER.error("Couldn't restore recipe book data.", var12);
         }
@@ -4448,9 +4356,7 @@ public final class Player extends Playable {
                     throw var12;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var13) {
                 if (con != null) {
                     try {
@@ -4463,9 +4369,7 @@ public final class Player extends Playable {
                 throw var13;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var14) {
             LOGGER.error("Couldn't store player base data.", var14);
         }
@@ -4495,10 +4399,8 @@ public final class Player extends Playable {
                     PreparedStatement ps = con.prepareStatement("UPDATE character_subclasses SET exp=?,sp=?,level=?,class_id=? WHERE char_obj_id=? AND class_index =?");
 
                     try {
-                        Iterator var3 = this._subClasses.values().iterator();
 
-                        while (var3.hasNext()) {
-                            SubClass subClass = (SubClass) var3.next();
+                        for (SubClass subClass : this._subClasses.values()) {
                             ps.setLong(1, subClass.getExp());
                             ps.setInt(2, subClass.getSp());
                             ps.setInt(3, subClass.getLevel());
@@ -4521,9 +4423,7 @@ public final class Player extends Playable {
                         throw var7;
                     }
 
-                    if (ps != null) {
-                        ps.close();
-                    }
+                    ps.close();
                 } catch (Throwable var8) {
                     if (con != null) {
                         try {
@@ -4536,9 +4436,7 @@ public final class Player extends Playable {
                     throw var8;
                 }
 
-                if (con != null) {
-                    con.close();
-                }
+                con.close();
             } catch (Exception var9) {
                 LOGGER.error("Couldn't store subclass data.", var9);
             }
@@ -4570,9 +4468,7 @@ public final class Player extends Playable {
                         throw var15;
                     }
 
-                    if (ps != null) {
-                        ps.close();
-                    }
+                    ps.close();
 
                     int buff_index = 0;
                     List<Integer> storedSkills = new ArrayList<>();
@@ -4622,10 +4518,8 @@ public final class Player extends Playable {
                             }
                         }
 
-                        Iterator var20 = this._reuseTimeStamps.entrySet().iterator();
-
-                        while (var20.hasNext()) {
-                            Entry<Integer, Timestamp> entry = (Entry) var20.next();
+                        for (Entry<Integer, Timestamp> integerTimestampEntry : this._reuseTimeStamps.entrySet()) {
+                            Entry<Integer, Timestamp> entry = integerTimestampEntry;
                             hash = entry.getKey();
                             if (!storedSkills.contains(hash)) {
                                 Timestamp t = entry.getValue();
@@ -4660,9 +4554,7 @@ public final class Player extends Playable {
                         throw var16;
                     }
 
-                    if (ps != null) {
-                        ps.close();
-                    }
+                    ps.close();
                 } catch (Throwable var17) {
                     if (con != null) {
                         try {
@@ -4675,9 +4567,7 @@ public final class Player extends Playable {
                     throw var17;
                 }
 
-                if (con != null) {
-                    con.close();
-                }
+                con.close();
             } catch (Exception var18) {
                 LOGGER.error("Couldn't store player effects.", var18);
             }
@@ -4798,9 +4688,7 @@ public final class Player extends Playable {
                             throw var11;
                         }
 
-                        if (ps != null) {
-                            ps.close();
-                        }
+                        ps.close();
                     } catch (Throwable var12) {
                         if (con != null) {
                             try {
@@ -4813,9 +4701,7 @@ public final class Player extends Playable {
                         throw var12;
                     }
 
-                    if (con != null) {
-                        con.close();
-                    }
+                    con.close();
                 } catch (Exception var13) {
                     LOGGER.error("Couldn't delete player skill.", var13);
                 }
@@ -4854,9 +4740,7 @@ public final class Player extends Playable {
                     throw var9;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var10) {
                 if (con != null) {
                     try {
@@ -4869,9 +4753,7 @@ public final class Player extends Playable {
                 throw var10;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var11) {
             LOGGER.error("Couldn't store player skill.", var11);
         }
@@ -4879,71 +4761,63 @@ public final class Player extends Playable {
     }
 
     private void restoreSkills() {
-        if (!EngineModsManager.onRestoreSkills(this)) {
+        EngineModsManager.onRestoreSkills(this);
+        try {
+            Connection con = ConnectionPool.getConnection();
+
             try {
-                Connection con = ConnectionPool.getConnection();
+                PreparedStatement ps = con.prepareStatement("SELECT skill_id,skill_level FROM character_skills WHERE char_obj_id=? AND class_index=?");
 
                 try {
-                    PreparedStatement ps = con.prepareStatement("SELECT skill_id,skill_level FROM character_skills WHERE char_obj_id=? AND class_index=?");
+                    ps.setInt(1, this.getObjectId());
+                    ps.setInt(2, this.getClassIndex());
+                    ResultSet rs = ps.executeQuery();
 
                     try {
-                        ps.setInt(1, this.getObjectId());
-                        ps.setInt(2, this.getClassIndex());
-                        ResultSet rs = ps.executeQuery();
-
-                        try {
-                            while (rs.next()) {
-                                this.addSkill(SkillTable.getInstance().getInfo(rs.getInt("skill_id"), rs.getInt("skill_level")), false);
-                            }
-                        } catch (Throwable var9) {
-                            if (rs != null) {
-                                try {
-                                    rs.close();
-                                } catch (Throwable var8) {
-                                    var9.addSuppressed(var8);
-                                }
-                            }
-
-                            throw var9;
+                        while (rs.next()) {
+                            this.addSkill(SkillTable.getInstance().getInfo(rs.getInt("skill_id"), rs.getInt("skill_level")), false);
                         }
-
+                    } catch (Throwable var9) {
                         if (rs != null) {
-                            rs.close();
-                        }
-                    } catch (Throwable var10) {
-                        if (ps != null) {
                             try {
-                                ps.close();
-                            } catch (Throwable var7) {
-                                var10.addSuppressed(var7);
+                                rs.close();
+                            } catch (Throwable var8) {
+                                var9.addSuppressed(var8);
                             }
                         }
 
-                        throw var10;
+                        throw var9;
                     }
 
+                    rs.close();
+                } catch (Throwable var10) {
                     if (ps != null) {
-                        ps.close();
-                    }
-                } catch (Throwable var11) {
-                    if (con != null) {
                         try {
-                            con.close();
-                        } catch (Throwable var6) {
-                            var11.addSuppressed(var6);
+                            ps.close();
+                        } catch (Throwable var7) {
+                            var10.addSuppressed(var7);
                         }
                     }
 
-                    throw var11;
+                    throw var10;
                 }
 
+                ps.close();
+            } catch (Throwable var11) {
                 if (con != null) {
-                    con.close();
+                    try {
+                        con.close();
+                    } catch (Throwable var6) {
+                        var11.addSuppressed(var6);
+                    }
                 }
-            } catch (Exception var12) {
-                LOGGER.error("Couldn't restore player skills.", var12);
+
+                throw var11;
             }
 
+            con.close();
+        } catch (Exception var12) {
+            LOGGER.error("Couldn't restore player skills.", var12);
         }
     }
 
@@ -4979,10 +4853,8 @@ public final class Player extends Playable {
                                     env.setCharacter(this);
                                     env.setTarget(this);
                                     env.setSkill(skill);
-                                    Iterator var15 = skill.getEffectTemplates().iterator();
 
-                                    while (var15.hasNext()) {
-                                        EffectTemplate et = (EffectTemplate) var15.next();
+                                    for (EffectTemplate et : skill.getEffectTemplates()) {
                                         L2Effect ef = et.getEffect(env);
                                         if (ef != null) {
                                             ef.setCount(effectCount);
@@ -5005,9 +4877,7 @@ public final class Player extends Playable {
                         throw var23;
                     }
 
-                    if (rs != null) {
-                        rs.close();
-                    }
+                    rs.close();
                 } catch (Throwable var24) {
                     if (ps != null) {
                         try {
@@ -5020,9 +4890,7 @@ public final class Player extends Playable {
                     throw var24;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
 
                 ps = con.prepareStatement("DELETE FROM character_skills_save WHERE char_obj_id=? AND class_index=?");
 
@@ -5042,9 +4910,7 @@ public final class Player extends Playable {
                     throw var22;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var25) {
                 if (con != null) {
                     try {
@@ -5057,9 +4923,7 @@ public final class Player extends Playable {
                 throw var25;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var26) {
             LOGGER.error("Couldn't restore effects.", var26);
         }
@@ -5093,9 +4957,7 @@ public final class Player extends Playable {
                         throw var9;
                     }
 
-                    if (rset != null) {
-                        rset.close();
-                    }
+                    rset.close();
                 } catch (Throwable var10) {
                     if (ps != null) {
                         try {
@@ -5108,9 +4970,7 @@ public final class Player extends Playable {
                     throw var10;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var11) {
                 if (con != null) {
                     try {
@@ -5123,9 +4983,7 @@ public final class Player extends Playable {
                 throw var11;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var12) {
             LOGGER.error("Couldn't restore recommendations.", var12);
         }
@@ -5232,20 +5090,11 @@ public final class Player extends Playable {
                 this.setIsCastingNow(false);
                 return false;
             } else {
-                WorldObject target = null;
-                switch (skill.getTargetType()) {
-                    case TARGET_AURA:
-                    case TARGET_FRONT_AURA:
-                    case TARGET_BEHIND_AURA:
-                    case TARGET_GROUND:
-                    case TARGET_SELF:
-                    case TARGET_CORPSE_ALLY:
-                    case TARGET_AURA_UNDEAD:
-                        target = this;
-                        break;
-                    default:
-                        target = skill.getFirstOfTargetList(this);
-                }
+                WorldObject target = switch (skill.getTargetType()) {
+                    case TARGET_AURA, TARGET_FRONT_AURA, TARGET_BEHIND_AURA, TARGET_GROUND, TARGET_SELF,
+                         TARGET_CORPSE_ALLY, TARGET_AURA_UNDEAD -> this;
+                    default -> skill.getFirstOfTargetList(this);
+                };
 
                 this.getAI().setIntention(IntentionType.CAST, skill, target);
                 return true;
@@ -5293,39 +5142,24 @@ public final class Player extends Playable {
                         this.sendPacket(ActionFailed.STATIC_PACKET);
                         return false;
                     } else {
-                        Object target;
-                        switch (sklTargetType) {
-                            case TARGET_AURA:
-                            case TARGET_FRONT_AURA:
-                            case TARGET_BEHIND_AURA:
-                            case TARGET_GROUND:
-                            case TARGET_SELF:
-                            case TARGET_CORPSE_ALLY:
-                            case TARGET_AURA_UNDEAD:
-                            case TARGET_PARTY:
-                            case TARGET_ALLY:
-                            case TARGET_CLAN:
-                            case TARGET_AREA_SUMMON:
-                                target = this;
-                                break;
-                            case TARGET_PET:
-                            case TARGET_SUMMON:
-                                target = this._summon;
-                                break;
-                            default:
-                                target = this.getTarget();
-                        }
+                        WorldObject target = switch (sklTargetType) {
+                            case TARGET_AURA, TARGET_FRONT_AURA, TARGET_BEHIND_AURA, TARGET_GROUND, TARGET_SELF,
+                                 TARGET_CORPSE_ALLY, TARGET_AURA_UNDEAD, TARGET_PARTY, TARGET_ALLY, TARGET_CLAN,
+                                 TARGET_AREA_SUMMON -> this;
+                            case TARGET_PET, TARGET_SUMMON -> this._summon;
+                            default -> this.getTarget();
+                        };
 
                         if (target == null) {
                             this.sendPacket(ActionFailed.STATIC_PACKET);
                             return false;
-                        } else if (target instanceof Door && (!((Door) target).isAutoAttackable(this) || ((Door) target).isUnlockable() && skill.getSkillType() != L2SkillType.UNLOCK)) {
+                        } else if (target instanceof Door && (!target.isAutoAttackable(this) || ((Door) target).isUnlockable() && skill.getSkillType() != L2SkillType.UNLOCK)) {
                             this.sendPacket(SystemMessageId.INCORRECT_TARGET);
                             this.sendPacket(ActionFailed.STATIC_PACKET);
                             return false;
                         } else {
                             if (this.isInDuel() && target instanceof Playable) {
-                                Player cha = ((WorldObject) target).getActingPlayer();
+                                Player cha = target.getActingPlayer();
                                 if (cha.getDuelId() != this.getDuelId()) {
                                     this.sendPacket(SystemMessageId.INCORRECT_TARGET);
                                     this.sendPacket(ActionFailed.STATIC_PACKET);
@@ -5346,12 +5180,12 @@ public final class Player extends Playable {
                                 }
                             }
 
-                            if (!skill.checkCondition(this, (WorldObject) target, false)) {
+                            if (!skill.checkCondition(this, target, false)) {
                                 this.sendPacket(ActionFailed.STATIC_PACKET);
                                 return false;
                             } else {
                                 if (skill.isOffensive()) {
-                                    if (isInsidePeaceZone(this, (WorldObject) target)) {
+                                    if (isInsidePeaceZone(this, target)) {
                                         this.sendPacket(SystemMessageId.TARGET_IN_PEACEZONE);
                                         this.sendPacket(ActionFailed.STATIC_PACKET);
                                         return false;
@@ -5362,12 +5196,12 @@ public final class Player extends Playable {
                                         return false;
                                     }
 
-                                    if (!((WorldObject) target).isAttackable() && !this.getAccessLevel().allowPeaceAttack()) {
+                                    if (!target.isAttackable() && !this.getAccessLevel().allowPeaceAttack()) {
                                         this.sendPacket(ActionFailed.STATIC_PACKET);
                                         return false;
                                     }
 
-                                    if (!((WorldObject) target).isAutoAttackable(this) && !forceUse) {
+                                    if (!target.isAutoAttackable(this) && !forceUse) {
                                         switch (sklTargetType) {
                                             case TARGET_AURA:
                                             case TARGET_FRONT_AURA:
@@ -5394,7 +5228,7 @@ public final class Player extends Playable {
                                                 this.sendPacket(ActionFailed.STATIC_PACKET);
                                                 return false;
                                             }
-                                        } else if (skill.getCastRange() > 0 && !this.isInsideRadius((WorldObject) target, (int) ((double) skill.getCastRange() + this.getCollisionRadius()), false, false)) {
+                                        } else if (skill.getCastRange() > 0 && !this.isInsideRadius(target, (int) ((double) skill.getCastRange() + this.getCollisionRadius()), false, false)) {
                                             this.sendPacket(SystemMessageId.TARGET_TOO_FAR);
                                             this.sendPacket(ActionFailed.STATIC_PACKET);
                                             return false;
@@ -5472,14 +5306,14 @@ public final class Player extends Playable {
                                             case TARGET_AREA_SUMMON:
                                                 break;
                                             default:
-                                                if (!this.checkPvpSkill((WorldObject) target, skill) && !this.getAccessLevel().allowPeaceAttack()) {
+                                                if (!this.checkPvpSkill(target, skill) && !this.getAccessLevel().allowPeaceAttack()) {
                                                     this.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
                                                     this.sendPacket(ActionFailed.STATIC_PACKET);
                                                     return false;
                                                 }
                                         }
 
-                                        if ((sklTargetType != SkillTargetType.TARGET_HOLY || this.checkIfOkToCastSealOfRule(CastleManager.getInstance().getCastle(this), false, skill, (WorldObject) target)) && (sklType != L2SkillType.SIEGEFLAG || L2SkillSiegeFlag.checkIfOkToPlaceFlag(this, false)) && (sklType != L2SkillType.STRSIEGEASSAULT || this.checkIfOkToUseStriderSiegeAssault(skill)) && (sklType != L2SkillType.SUMMON_FRIEND || this.checkSummonerStatus() && this.checkSummonTargetStatus((WorldObject) target))) {
+                                        if ((sklTargetType != SkillTargetType.TARGET_HOLY || this.checkIfOkToCastSealOfRule(CastleManager.getInstance().getCastle(this), false, skill, target)) && (sklType != L2SkillType.SIEGEFLAG || L2SkillSiegeFlag.checkIfOkToPlaceFlag(this, false)) && (sklType != L2SkillType.STRSIEGEASSAULT || this.checkIfOkToUseStriderSiegeAssault(skill)) && (sklType != L2SkillType.SUMMON_FRIEND || this.checkSummonerStatus() && this.checkSummonTargetStatus(target))) {
                                             if (skill.getCastRange() > 0) {
                                                 if (sklTargetType == SkillTargetType.TARGET_GROUND) {
                                                     if (!GeoEngine.getInstance().canSeeTarget(this, worldPosition)) {
@@ -5487,7 +5321,7 @@ public final class Player extends Playable {
                                                         this.sendPacket(ActionFailed.STATIC_PACKET);
                                                         return false;
                                                     }
-                                                } else if (!GeoEngine.getInstance().canSeeTarget(this, (WorldObject) target)) {
+                                                } else if (!GeoEngine.getInstance().canSeeTarget(this, target)) {
                                                     this.sendPacket(SystemMessageId.CANT_SEE_TARGET);
                                                     this.sendPacket(ActionFailed.STATIC_PACKET);
                                                     return false;
@@ -5705,8 +5539,8 @@ public final class Player extends Playable {
         if (this.getCubics() != null) {
             boolean removed = false;
 
-            for (Iterator var2 = this.getCubics().values().iterator(); var2.hasNext(); removed = true) {
-                Cubic cubic = (Cubic) var2.next();
+            for (Iterator<Cubic> var2 = this.getCubics().values().iterator(); var2.hasNext(); removed = true) {
+                Cubic cubic = var2.next();
                 cubic.stopAction();
                 this.delCubic(cubic.getId());
             }
@@ -5721,10 +5555,8 @@ public final class Player extends Playable {
     public void stopCubicsByOthers() {
         if (this.getCubics() != null) {
             boolean removed = false;
-            Iterator var2 = this.getCubics().values().iterator();
 
-            while (var2.hasNext()) {
-                Cubic cubic = (Cubic) var2.next();
+            for (Cubic cubic : this.getCubics().values()) {
                 if (cubic.givenByOther()) {
                     cubic.stopAction();
                     this.delCubic(cubic.getId());
@@ -5817,10 +5649,8 @@ public final class Player extends Playable {
 
     public void rechargeShots(boolean physical, boolean magic) {
         if (!this._activeSoulShots.isEmpty()) {
-            Iterator var3 = this._activeSoulShots.iterator();
 
-            while (var3.hasNext()) {
-                int itemId = (Integer) var3.next();
+            for (int itemId : this._activeSoulShots) {
                 ItemInstance item = this.getInventory().getItemByItemId(itemId);
                 if (item != null) {
                     IItemHandler handler;
@@ -5857,10 +5687,8 @@ public final class Player extends Playable {
     }
 
     public void disableAutoShotsAll() {
-        Iterator var1 = this._activeSoulShots.iterator();
 
-        while (var1.hasNext()) {
-            int itemId = (Integer) var1.next();
+        for (int itemId : this._activeSoulShots) {
             this.sendPacket(new ExAutoSoulShot(itemId, 0));
             this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.AUTO_USE_OF_S1_CANCELLED).addItemName(itemId));
         }
@@ -6089,7 +5917,7 @@ public final class Player extends Playable {
         int var4;
         L2Skill skill;
         if (hero && this._baseClass == this._activeClass) {
-            var2 = SkillTable.getInstance().getHeroSkills();
+            var2 = SkillTable.getHeroSkills();
             var3 = var2.length;
 
             for (var4 = 0; var4 < var3; ++var4) {
@@ -6097,7 +5925,7 @@ public final class Player extends Playable {
                 this.addSkill(skill, false);
             }
         } else {
-            var2 = SkillTable.getInstance().getHeroSkills();
+            var2 = SkillTable.getHeroSkills();
             var3 = var2.length;
 
             for (var4 = 0; var4 < var3; ++var4) {
@@ -6210,7 +6038,7 @@ public final class Player extends Playable {
         int var5;
         L2Skill skill;
         if (val) {
-            var3 = SkillTable.getInstance().getNobleSkills();
+            var3 = SkillTable.getNobleSkills();
             var4 = var3.length;
 
             for (var5 = 0; var5 < var4; ++var5) {
@@ -6218,7 +6046,7 @@ public final class Player extends Playable {
                 this.addSkill(skill, false);
             }
         } else {
-            var3 = SkillTable.getInstance().getNobleSkills();
+            var3 = SkillTable.getNobleSkills();
             var4 = var3.length;
 
             for (var5 = 0; var5 < var4; ++var5) {
@@ -6252,9 +6080,7 @@ public final class Player extends Playable {
                         throw var9;
                     }
 
-                    if (ps != null) {
-                        ps.close();
-                    }
+                    ps.close();
                 } catch (Throwable var10) {
                     if (con != null) {
                         try {
@@ -6267,9 +6093,7 @@ public final class Player extends Playable {
                     throw var10;
                 }
 
-                if (con != null) {
-                    con.close();
-                }
+                con.close();
             } catch (Exception var11) {
                 LOGGER.error("Couldn't update nobless status for {}.", var11, this.getName());
             }
@@ -6333,10 +6157,8 @@ public final class Player extends Playable {
         boolean isWearingFormalWear = this.isWearingFormalWear();
         boolean isClanDisabled = this.getClan() != null && this.getClan().getReputationScore() < 0;
         SkillList sl = new SkillList();
-        Iterator var4 = this.getSkills().values().iterator();
 
-        while (var4.hasNext()) {
-            L2Skill skill = (L2Skill) var4.next();
+        for (L2Skill skill : this.getSkills().values()) {
             sl.addSkill(skill.getId(), skill.getLevel(), skill.isPassive(), isWearingFormalWear || skill.isClanSkill() && isClanDisabled);
         }
 
@@ -6378,9 +6200,7 @@ public final class Player extends Playable {
                                 throw var17;
                             }
 
-                            if (ps != null) {
-                                ps.close();
-                            }
+                            ps.close();
                         } catch (Throwable var18) {
                             if (con != null) {
                                 try {
@@ -6393,19 +6213,15 @@ public final class Player extends Playable {
                             throw var18;
                         }
 
-                        if (con != null) {
-                            con.close();
-                        }
+                        con.close();
                     } catch (Exception var19) {
                         LOGGER.error("Couldn't add subclass for {}.", var19, this.getName());
-                        boolean var5 = false;
-                        return var5;
+                        return false;
                     }
 
                     this._subClasses.put(subclass.getClassIndex(), subclass);
-                    (net.sf.l2j.gameserver.data.xml.PlayerData.getInstance().getTemplate(classId).getSkills().stream().filter((s) -> s.getMinLvl() <= 40).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL)))).forEach((i, s) -> this.storeSkill(s.get().getSkill(), classIndex));
-                    boolean var22 = true;
-                    return var22;
+                    (PlayerClassData.getInstance().getTemplate(classId).getSkills().stream().filter((s) -> s.getMinLvl() <= 40).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL)))).forEach((i, s) -> this.storeSkill(s.get().getSkill(), classIndex));
+                    return true;
                 }
 
                 var3 = false;
@@ -6413,7 +6229,7 @@ public final class Player extends Playable {
                 this._subclassLock.unlock();
             }
 
-            return var3;
+            return false;
         }
     }
 
@@ -6444,9 +6260,7 @@ public final class Player extends Playable {
                             throw var32;
                         }
 
-                        if (ps != null) {
-                            ps.close();
-                        }
+                        ps.close();
 
                         ps = con.prepareStatement("DELETE FROM character_shortcuts WHERE char_obj_id=? AND class_index=?");
 
@@ -6466,9 +6280,7 @@ public final class Player extends Playable {
                             throw var29;
                         }
 
-                        if (ps != null) {
-                            ps.close();
-                        }
+                        ps.close();
 
                         ps = con.prepareStatement("DELETE FROM character_skills_save WHERE char_obj_id=? AND class_index=?");
 
@@ -6488,9 +6300,7 @@ public final class Player extends Playable {
                             throw var28;
                         }
 
-                        if (ps != null) {
-                            ps.close();
-                        }
+                        ps.close();
 
                         ps = con.prepareStatement("DELETE FROM character_skills WHERE char_obj_id=? AND class_index=?");
 
@@ -6510,9 +6320,7 @@ public final class Player extends Playable {
                             throw var31;
                         }
 
-                        if (ps != null) {
-                            ps.close();
-                        }
+                        ps.close();
 
                         ps = con.prepareStatement("DELETE FROM character_subclasses WHERE char_obj_id=? AND class_index=?");
 
@@ -6532,9 +6340,7 @@ public final class Player extends Playable {
                             throw var30;
                         }
 
-                        if (ps != null) {
-                            ps.close();
-                        }
+                        ps.close();
                     } catch (Throwable var33) {
                         if (con != null) {
                             try {
@@ -6547,14 +6353,11 @@ public final class Player extends Playable {
                         throw var33;
                     }
 
-                    if (con != null) {
-                        con.close();
-                    }
+                    con.close();
                 } catch (Exception var34) {
                     LOGGER.error("Couldn't modify subclass for {} to class index {}.", var34, this.getName(), classIndex);
                     this._subClasses.remove(classIndex);
-                    boolean var4 = false;
-                    return var4;
+                    return false;
                 }
 
                 this._subClasses.remove(classIndex);
@@ -6595,7 +6398,7 @@ public final class Player extends Playable {
 
     private void setClassTemplate(int classId) {
         this._activeClass = classId;
-        this.setTemplate(net.sf.l2j.gameserver.data.xml.PlayerData.getInstance().getTemplate(classId));
+        this.setTemplate(PlayerClassData.getInstance().getTemplate(classId));
     }
 
     public boolean setActiveClass(int classIndex) {
@@ -6606,16 +6409,14 @@ public final class Player extends Playable {
                 ItemInstance[] var2 = this.getInventory().getAugmentedItems();
                 int var3 = var2.length;
 
-                for (int var4 = 0; var4 < var3; ++var4) {
-                    ItemInstance item = var2[var4];
+                for (ItemInstance item : var2) {
                     if (item != null && item.isEquipped()) {
                         item.getAugmentation().removeBonus(this);
                     }
                 }
 
                 this.abortCast();
-                Iterator var11 = this.getKnownType(Creature.class).iterator();
-
+                Iterator<?> var11 = this.getKnownType(Creature.class).iterator();
                 while (var11.hasNext()) {
                     Creature character = (Creature) var11.next();
                     if (character.getFusionSkill() != null && character.getFusionSkill().getTarget() == this) {
@@ -6634,8 +6435,7 @@ public final class Player extends Playable {
                         this.setClassTemplate(this._subClasses.get(classIndex).getClassId());
                     } catch (Exception var9) {
                         LOGGER.error("Could not switch {}'s subclass to class index {}.", var9, this.getName(), classIndex);
-                        boolean var14 = false;
-                        return var14;
+                        return false;
                     }
                 }
 
@@ -6704,8 +6504,7 @@ public final class Player extends Playable {
                 this.sendPacket(new ShortCutInit(this));
                 this.broadcastPacket(new SocialAction(this, 15));
                 this.sendPacket(new SkillCoolTime(this));
-                boolean var17 = true;
-                return var17;
+                return true;
             } finally {
                 this._subclassLock.unlock();
             }
@@ -6717,11 +6516,9 @@ public final class Player extends Playable {
     }
 
     private void sendSiegeInfo() {
-        Iterator var1 = CastleManager.getInstance().getCastles().iterator();
 
-        while (var1.hasNext()) {
-            Castle castle = (Castle) var1.next();
-            this.sendMessage(String.format("Castle : %s will have its siege on: %s", getCastleName(castle.getCastleId()), castle.getSiegeDate().getTime()));
+        for (Castle castle : CastleManager.getInstance().getCastles()) {
+            this.sendMessage(String.format("Castle : %s will have its siege on: %s", CastleManager.getCastleName(castle.getCastleId()), castle.getSiegeDate().getTime()));
         }
 
     }
@@ -6929,7 +6726,7 @@ public final class Player extends Playable {
     }
 
     public synchronized boolean validateBypass(String cmd) {
-        Iterator var2 = this._validBypass.iterator();
+        Iterator<String> var2 = this._validBypass.iterator();
 
         String bp;
         do {
@@ -6941,13 +6738,13 @@ public final class Player extends Playable {
                         return false;
                     }
 
-                    bp = (String) var2.next();
+                    bp = var2.next();
                 } while (bp == null || !cmd.startsWith(bp));
 
                 return true;
             }
 
-            bp = (String) var2.next();
+            bp = var2.next();
         } while (bp == null || !bp.equals(cmd));
 
         return true;
@@ -7036,10 +6833,8 @@ public final class Player extends Playable {
             PvpFlagTaskManager.getInstance().remove(this);
             GameTimeTaskManager.getInstance().remove(this);
             ShadowItemTaskManager.getInstance().remove(this);
-            Iterator var1 = this.getKnownType(Creature.class).iterator();
 
-            while (var1.hasNext()) {
-                Creature character = (Creature) var1.next();
+            for (Creature character : this.getKnownType(Creature.class)) {
                 if (character.getFusionSkill() != null && character.getFusionSkill().getTarget() == this) {
                     character.abortCast();
                 }
@@ -7048,8 +6843,7 @@ public final class Player extends Playable {
             L2Effect[] var6 = this.getAllEffects();
             int var9 = var6.length;
 
-            for (int var3 = 0; var3 < var9; ++var3) {
-                L2Effect effect = var6[var3];
+            for (L2Effect effect : var6) {
                 if (effect.getSkill().isToggle()) {
                     effect.exit();
                 } else {
@@ -7363,10 +7157,8 @@ public final class Player extends Playable {
     }
 
     public void checkItemRestriction() {
-        Iterator var1 = this.getInventory().getPaperdollItems().iterator();
 
-        while (var1.hasNext()) {
-            ItemInstance equippedItem = (ItemInstance) var1.next();
+        for (ItemInstance equippedItem : this.getInventory().getPaperdollItems()) {
             if (!equippedItem.getItem().checkCondition(this, this, false)) {
                 this.useEquippableItem(equippedItem, equippedItem.isWeapon());
             }
@@ -7409,10 +7201,8 @@ public final class Player extends Playable {
     }
 
     public void removeFromBossZone() {
-        Iterator var1 = ZoneManager.getInstance().getAllZones(BossZone.class).iterator();
 
-        while (var1.hasNext()) {
-            BossZone zone = (BossZone) var1.next();
+        for (BossZone zone : ZoneManager.getInstance().getAllZones(BossZone.class)) {
             zone.removePlayer(this);
         }
 
@@ -7704,9 +7494,7 @@ public final class Player extends Playable {
                         throw var9;
                     }
 
-                    if (rset != null) {
-                        rset.close();
-                    }
+                    rset.close();
                 } catch (Throwable var10) {
                     if (ps != null) {
                         try {
@@ -7719,9 +7507,7 @@ public final class Player extends Playable {
                     throw var10;
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
+                ps.close();
             } catch (Throwable var11) {
                 if (con != null) {
                     try {
@@ -7734,9 +7520,7 @@ public final class Player extends Playable {
                 throw var11;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var12) {
             LOGGER.error("Couldn't restore {}'s friendlist.", var12, this.getName());
         }
@@ -7744,10 +7528,8 @@ public final class Player extends Playable {
     }
 
     private void notifyFriends(boolean login) {
-        Iterator var2 = this._friendList.iterator();
 
-        while (var2.hasNext()) {
-            int id = (Integer) var2.next();
+        for (int id : this._friendList) {
             Player friend = World.getInstance().getPlayer(id);
             if (friend != null) {
                 friend.sendPacket(new FriendList(friend));
@@ -7776,10 +7558,8 @@ public final class Player extends Playable {
     }
 
     public void broadcastRelationsChanges() {
-        Iterator var1 = this.getKnownType(Player.class).iterator();
 
-        while (var1.hasNext()) {
-            Player player = (Player) var1.next();
+        for (Player player : this.getKnownType(Player.class)) {
             int relation = this.getRelation(player);
             boolean isAutoAttackable = this.isAutoAttackable(player);
             player.sendPacket(new RelationChanged(this, relation, isAutoAttackable));
@@ -7923,7 +7703,7 @@ public final class Player extends Playable {
     }
 
     public void refreshInfos() {
-        Iterator var1 = this.getKnownType(WorldObject.class).iterator();
+        Iterator<WorldObject> var1 = this.getKnownType(WorldObject.class).iterator();
 
         while (true) {
             WorldObject object;
@@ -7932,7 +7712,7 @@ public final class Player extends Playable {
                     return;
                 }
 
-                object = (WorldObject) var1.next();
+                object = var1.next();
             } while (object instanceof Player && ((Player) object).isInObserverMode());
 
             this.sendInfoFrom(object);
@@ -8159,9 +7939,7 @@ public final class Player extends Playable {
                     throw var8;
                 }
 
-                if (updateStatement != null) {
-                    updateStatement.close();
-                }
+                updateStatement.close();
             } catch (Throwable var9) {
                 if (con != null) {
                     try {
@@ -8174,9 +7952,7 @@ public final class Player extends Playable {
                 throw var9;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (SQLException var10) {
             var10.printStackTrace();
         }
@@ -8229,9 +8005,7 @@ public final class Player extends Playable {
                         throw var10;
                     }
 
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
+                    resultSet.close();
                 } catch (Throwable var11) {
                     if (selectStatement != null) {
                         try {
@@ -8244,9 +8018,7 @@ public final class Player extends Playable {
                     throw var11;
                 }
 
-                if (selectStatement != null) {
-                    selectStatement.close();
-                }
+                selectStatement.close();
             } catch (Throwable var12) {
                 if (con != null) {
                     try {
@@ -8259,9 +8031,7 @@ public final class Player extends Playable {
                 throw var12;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (SQLException var13) {
             var13.printStackTrace();
         }
@@ -8405,12 +8175,10 @@ public final class Player extends Playable {
     }
 
     public String getHWID() {
-        if (this.getClient() == null) {
-            return this._hwid;
-        } else {
+        if (this.getClient() != null) {
             this._hwid = this.getClient().getHWID();
-            return this._hwid;
         }
+        return this._hwid;
     }
 
     public void addSpoilSkillinZone() {
@@ -8459,7 +8227,7 @@ public final class Player extends Playable {
                 try {
                     statement.setInt(1, this.getObjectId());
                     String s;
-                    Iterator var4;
+                    Iterator<Integer> var4;
                     int i;
                     if (this._armorSkins.isEmpty()) {
                         statement.setString(2, "");
@@ -8467,7 +8235,7 @@ public final class Player extends Playable {
                         s = "";
 
                         for (var4 = this._armorSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = (Integer) var4.next();
+                            i = var4.next();
                         }
 
                         statement.setString(2, s);
@@ -8480,7 +8248,7 @@ public final class Player extends Playable {
                         s = "";
 
                         for (var4 = this._weaponSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = (Integer) var4.next();
+                            i = var4.next();
                         }
 
                         statement.setString(4, s);
@@ -8493,7 +8261,7 @@ public final class Player extends Playable {
                         s = "";
 
                         for (var4 = this._hairSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = (Integer) var4.next();
+                            i = var4.next();
                         }
 
                         statement.setString(6, s);
@@ -8506,7 +8274,7 @@ public final class Player extends Playable {
                         s = "";
 
                         for (var4 = this._faceSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = (Integer) var4.next();
+                            i = var4.next();
                         }
 
                         statement.setString(8, s);
@@ -8519,7 +8287,7 @@ public final class Player extends Playable {
                         s = "";
 
                         for (var4 = this._shieldSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = (Integer) var4.next();
+                            i = var4.next();
                         }
 
                         statement.setString(10, s);
@@ -8533,7 +8301,7 @@ public final class Player extends Playable {
                         s = "";
 
                         for (var4 = this._armorSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = (Integer) var4.next();
+                            i = var4.next();
                         }
 
                         statement.setString(11, s);
@@ -8546,7 +8314,7 @@ public final class Player extends Playable {
                         s = "";
 
                         for (var4 = this._weaponSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = (Integer) var4.next();
+                            i = var4.next();
                         }
 
                         statement.setString(13, s);
@@ -8559,7 +8327,7 @@ public final class Player extends Playable {
                         s = "";
 
                         for (var4 = this._hairSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = (Integer) var4.next();
+                            i = var4.next();
                         }
 
                         statement.setString(15, s);
@@ -8572,7 +8340,7 @@ public final class Player extends Playable {
                         s = "";
 
                         for (var4 = this._faceSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = (Integer) var4.next();
+                            i = var4.next();
                         }
 
                         statement.setString(17, s);
@@ -8585,7 +8353,7 @@ public final class Player extends Playable {
                         s = "";
 
                         for (var4 = this._shieldSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = (Integer) var4.next();
+                            i = var4.next();
                         }
 
                         statement.setString(19, s);
@@ -8606,9 +8374,7 @@ public final class Player extends Playable {
                     throw var8;
                 }
 
-                if (statement != null) {
-                    statement.close();
-                }
+                statement.close();
             } catch (Throwable var9) {
                 if (con != null) {
                     try {
@@ -8621,9 +8387,7 @@ public final class Player extends Playable {
                 throw var9;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var10) {
             LOGGER.warn("Could not store storeDressMeData():");
             var10.printStackTrace();
@@ -8647,7 +8411,7 @@ public final class Player extends Playable {
                             String armorskinIds = rset.getString("armor_skins");
                             int var7;
                             String shieldkinIds;
-                            if (armorskinIds != null && armorskinIds.length() > 0) {
+                            if (armorskinIds != null && !armorskinIds.isEmpty()) {
                                 String[] var5 = armorskinIds.split(",");
                                 int var6 = var5.length;
 
@@ -8662,7 +8426,7 @@ public final class Player extends Playable {
                             this.setArmorSkinOption(rset.getInt("armor_skin_option"));
                             String weaponskinIds = rset.getString("weapon_skins");
                             int var24;
-                            if (weaponskinIds != null && weaponskinIds.length() > 0) {
+                            if (weaponskinIds != null && !weaponskinIds.isEmpty()) {
                                 String[] var21 = weaponskinIds.split(",");
                                 var7 = var21.length;
 
@@ -8677,7 +8441,7 @@ public final class Player extends Playable {
                             this.setWeaponSkinOption(rset.getInt("weapon_skin_option"));
                             String hairskinIds = rset.getString("hair_skins");
                             int var26;
-                            if (hairskinIds != null && hairskinIds.length() > 0) {
+                            if (hairskinIds != null && !hairskinIds.isEmpty()) {
                                 String[] var23 = hairskinIds.split(",");
                                 var24 = var23.length;
 
@@ -8692,7 +8456,7 @@ public final class Player extends Playable {
                             this.setHairSkinOption(rset.getInt("hair_skin_option"));
                             String faceskinIds = rset.getString("face_skins");
                             int var28;
-                            if (faceskinIds != null && faceskinIds.length() > 0) {
+                            if (faceskinIds != null && !faceskinIds.isEmpty()) {
                                 String[] var27 = faceskinIds.split(",");
                                 var26 = var27.length;
 
@@ -8706,7 +8470,7 @@ public final class Player extends Playable {
 
                             this.setFaceSkinOption(rset.getInt("face_skin_option"));
                             shieldkinIds = rset.getString("shield_skins");
-                            if (shieldkinIds != null && shieldkinIds.length() > 0) {
+                            if (shieldkinIds != null && !shieldkinIds.isEmpty()) {
                                 String[] var29 = shieldkinIds.split(",");
                                 var28 = var29.length;
 
@@ -8730,9 +8494,7 @@ public final class Player extends Playable {
                         throw var16;
                     }
 
-                    if (rset != null) {
-                        rset.close();
-                    }
+                    rset.close();
                 } catch (Throwable var17) {
                     if (statement != null) {
                         try {
@@ -8745,9 +8507,7 @@ public final class Player extends Playable {
                     throw var17;
                 }
 
-                if (statement != null) {
-                    statement.close();
-                }
+                statement.close();
             } catch (Throwable var18) {
                 if (con != null) {
                     try {
@@ -8760,9 +8520,7 @@ public final class Player extends Playable {
                 throw var18;
             }
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (Exception var19) {
             LOGGER.warn("Could not restore char data:");
             var19.printStackTrace();
@@ -8930,9 +8688,7 @@ public final class Player extends Playable {
                     this._completedAchievements.add(id);
                 }
             }
-            if (rs != null) {
-                rs.close();
-            }
+            rs.close();
 
             List<Integer> mustReplace = new ArrayList<>();
             for (int id : AchievementsManager.getInstance().getAchievementList().keySet()) {
@@ -8952,9 +8708,7 @@ public final class Player extends Playable {
             }
             statement.close();
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (SQLException var20) {
             LOGGER.error("[ACHIEVEMENTS ENGINE GETDATA]" + var20);
         }
@@ -8970,13 +8724,9 @@ public final class Player extends Playable {
             statement.setDate(3, new Date(Calendar.getInstance().getTimeInMillis()));
             statement.execute();
 
-            if (statement != null) {
-                statement.close();
-            }
+            statement.close();
 
-            if (con != null) {
-                con.close();
-            }
+            con.close();
         } catch (SQLException var11) {
             LOGGER.error("[ACHIEVEMENTS SAVE GETDATA]" + var11);
         }
@@ -9001,9 +8751,8 @@ public final class Player extends Playable {
 
     public void setAgathion(Npc npc) {
         if (npc instanceof Agathion) {
-            this.setAgathion(npc);
+            this.setAgathion((Agathion) npc);
         }
-
     }
 
     public void setAgathion(Agathion agathion) {
@@ -9011,7 +8760,6 @@ public final class Player extends Playable {
         if (agathion != null) {
             this._lastAgathionNpcId = agathion.getNpcId();
         }
-
     }
 
     public void despawnAgathion() {
@@ -9019,7 +8767,6 @@ public final class Player extends Playable {
             this._agathion.deleteMe();
             this._agathion = null;
         }
-
     }
 
     public long getLastAgathionUse() {
@@ -9077,9 +8824,7 @@ public final class Player extends Playable {
                         throw var9;
                     }
 
-                    if (statement != null) {
-                        statement.close();
-                    }
+                    statement.close();
                 } catch (Throwable var10) {
                     if (con != null) {
                         try {
@@ -9092,9 +8837,7 @@ public final class Player extends Playable {
                     throw var10;
                 }
 
-                if (con != null) {
-                    con.close();
-                }
+                con.close();
             } catch (Exception var11) {
                 var11.printStackTrace();
             }

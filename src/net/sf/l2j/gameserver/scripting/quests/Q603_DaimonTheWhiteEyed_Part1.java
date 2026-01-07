@@ -40,9 +40,9 @@ public class Q603_DaimonTheWhiteEyed_Part1 extends Quest {
 
     public Q603_DaimonTheWhiteEyed_Part1() {
         super(603, "Daimon the White-Eyed - Part 1");
-        CHANCES.put(Integer.valueOf(21297), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21299), Integer.valueOf(519000));
-        CHANCES.put(Integer.valueOf(21304), Integer.valueOf(673000));
+        CHANCES.put(21297, 500000);
+        CHANCES.put(21299, 519000);
+        CHANCES.put(21304, 673000);
         setItemsIds(7190, 7191);
         addStartNpc(31683);
         addTalkId(31683, 31548, 31549, 31550, 31551, 31552);
@@ -179,7 +179,7 @@ public class Q603_DaimonTheWhiteEyed_Part1 extends Quest {
         QuestState st = getRandomPartyMember(player, npc, "7");
         if (st == null)
             return null;
-        if (st.dropItems(7190, 1, 200, CHANCES.get(Integer.valueOf(npc.getNpcId()))))
+        if (st.dropItems(7190, 1, 200, CHANCES.get(npc.getNpcId())))
             st.set("cond", "8");
         return null;
     }

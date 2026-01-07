@@ -169,8 +169,8 @@ public class Antharas extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addEventIds(ANTHARAS_IDS, new ScriptEventType[]{ScriptEventType.ON_ATTACK, ScriptEventType.ON_SPAWN});
-        this.addKillId(new int[]{29066, 29067, 29068, 29069, 29070, 29071, 29072, 29073, 29074, 29075, 29076});
+        this.addEventIds(ANTHARAS_IDS, ScriptEventType.ON_ATTACK, ScriptEventType.ON_SPAWN);
+        this.addKillId(29066, 29067, 29068, 29069, 29070, 29071, 29072, 29073, 29074, 29075, 29076);
     }
 
     public String onAdvEvent(String event, Npc npc, Player player) {

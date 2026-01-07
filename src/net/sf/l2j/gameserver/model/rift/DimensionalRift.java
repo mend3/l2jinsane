@@ -122,8 +122,8 @@ public class DimensionalRift {
     }
 
     protected void chooseRoomAndTeleportPlayers(byte type, List<Player> players, boolean canUseBossRoom) {
-        this._completedRooms.add(Byte.valueOf(this._room.getId()));
-        List<DimensionalRiftRoom> list = DimensionalRiftManager.getInstance().getFreeRooms(type, canUseBossRoom).stream().filter(r -> !this._completedRooms.contains(Byte.valueOf(r.getId()))).collect(Collectors.toList());
+        this._completedRooms.add(this._room.getId());
+        List<DimensionalRiftRoom> list = DimensionalRiftManager.getInstance().getFreeRooms(type, canUseBossRoom).stream().filter(r -> !this._completedRooms.contains(r.getId())).collect(Collectors.toList());
         if (list.isEmpty()) {
             killRift();
             return;

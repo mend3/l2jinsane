@@ -27,7 +27,7 @@ public class BypassHandler {
         for (int i = 0; i < ids.length; i++) {
             if (Config.PACKET_HANDLER_DEBUG)
                 LOGGER.info("Adding handler for command " + ids[i]);
-            this._datatable.put(Integer.valueOf(ids[i].hashCode()), handler);
+            this._datatable.put(ids[i].hashCode(), handler);
         }
     }
 
@@ -36,8 +36,8 @@ public class BypassHandler {
         if (bypass.indexOf(" ") != -1)
             command = bypass.substring(0, bypass.indexOf(" "));
         if (Config.PACKET_HANDLER_DEBUG)
-            LOGGER.info("getting handler for command: " + command + " -> " + ((this._datatable.get(Integer.valueOf(command.hashCode())) != null) ? 1 : 0));
-        return this._datatable.get(Integer.valueOf(command.hashCode()));
+            LOGGER.info("getting handler for command: " + command + " -> " + ((this._datatable.get(command.hashCode()) != null) ? 1 : 0));
+        return this._datatable.get(command.hashCode());
     }
 
     public int size() {

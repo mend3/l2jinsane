@@ -91,12 +91,12 @@ public class HennaList {
                             int slot = rs.getInt("slot");
                             int symbolId = rs.getInt("symbol_id");
                             if (slot < 1 || slot > 4) {
-                                LOGGER.warn("{} has Henna on invalid slot {}.", this._owner.toString(), Integer.valueOf(slot));
+                                LOGGER.warn("{} has Henna on invalid slot {}.", this._owner.toString(), slot);
                                 continue;
                             }
                             Henna henna = HennaData.getInstance().getHenna(symbolId);
                             if (henna == null) {
-                                LOGGER.warn("{} has unknown Henna Symbol Id: {} in slot {}.", this._owner.toString(), Integer.valueOf(symbolId), Integer.valueOf(slot));
+                                LOGGER.warn("{} has unknown Henna Symbol Id: {} in slot {}.", this._owner.toString(), symbolId, slot);
                                 continue;
                             }
                             hennas[slot - 1] = henna;

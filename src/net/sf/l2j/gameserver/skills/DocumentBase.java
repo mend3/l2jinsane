@@ -159,13 +159,9 @@ abstract class DocumentBase {
         if (attrs.getNamedItem("time") != null)
             time = Integer.decode(getValue(attrs.getNamedItem("time").getNodeValue(), template));
 
-        boolean self = false;
-        if (attrs.getNamedItem("self") != null && Integer.decode(getValue(attrs.getNamedItem("self").getNodeValue(), template)) == 1)
-            self = true;
+        boolean self = attrs.getNamedItem("self") != null && Integer.decode(getValue(attrs.getNamedItem("self").getNodeValue(), template)) == 1;
 
-        boolean icon = true;
-        if (attrs.getNamedItem("noicon") != null && Integer.decode(getValue(attrs.getNamedItem("noicon").getNodeValue(), template)) == 1)
-            icon = false;
+        boolean icon = attrs.getNamedItem("noicon") == null || Integer.decode(getValue(attrs.getNamedItem("noicon").getNodeValue(), template)) != 1;
 
         String valueString = n.getAttributes().getNamedItem("val").getNodeValue();
         double value;
@@ -247,6 +243,7 @@ abstract class DocumentBase {
                 skill.attach(lt);
         }
     }
+
     protected abstract StatSet getStatsSet();
 
     private Lambda getLambda(Node n, Object template) {
@@ -297,6 +294,7 @@ abstract class DocumentBase {
         }
         return calc;
     }
+
     private void attachLambdaFunc(Node n, Object template, LambdaCalc calc) {
         String name = StringUtil.capitalizeFirst(n.getNodeName());
         Lambda lambda = getLambda(n, template);

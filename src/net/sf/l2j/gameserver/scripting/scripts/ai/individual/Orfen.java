@@ -91,10 +91,10 @@ public class Orfen extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addAttackId(new int[]{29014, 29018});
-        this.addFactionCallId(new int[]{29016, 29018});
-        this.addKillId(new int[]{29014});
-        this.addSkillSeeId(new int[]{29014});
+        this.addAttackId(29014, 29018);
+        this.addFactionCallId(29016, 29018);
+        this.addKillId(29014);
+        this.addSkillSeeId(29014);
     }
 
     public String onAdvEvent(String event, Npc npc, Player player) {

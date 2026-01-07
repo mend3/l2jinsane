@@ -33,14 +33,14 @@ public final class BuyListTaskManager implements Runnable {
 
     public void add(Product product, long interval) {
         long newRestockTime = System.currentTimeMillis() + interval;
-        if (this._products.putIfAbsent(product, Long.valueOf(newRestockTime)) == null)
+        if (this._products.putIfAbsent(product, newRestockTime) == null)
             product.save(newRestockTime);
     }
 
     public void test(Product product, int currentCount, long nextRestockTime) {
         if (nextRestockTime - System.currentTimeMillis() > 0L) {
             product.setCount(currentCount);
-            this._products.putIfAbsent(product, Long.valueOf(nextRestockTime));
+            this._products.putIfAbsent(product, nextRestockTime);
         } else {
             product.setCount(product.getMaxCount());
             product.delete();

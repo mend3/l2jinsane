@@ -120,7 +120,7 @@ public class Q222_TestOfTheDuelist extends Quest {
             st.giveItems(2767, 1);
             if (!player.getMemos().getBool("secondClassChange39", false)) {
                 htmltext = "30623-07a.htm";
-                st.giveItems(7562, DF_REWARD_39.get(Integer.valueOf(player.getClassId().getId())));
+                st.giveItems(7562, DF_REWARD_39.get(player.getClassId().getId()));
                 player.getMemos().set("secondClassChange39", true);
             }
         } else if (event.equalsIgnoreCase("30623-16.htm")) {

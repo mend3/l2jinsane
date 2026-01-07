@@ -98,7 +98,7 @@ public final class RequestDestroyItem extends L2GameClientPacket {
                     throw throwable;
                 }
             } catch (Exception e) {
-                LOGGER.error("Couldn't delete pet item with objectid {}.", e, Integer.valueOf(this._objectId));
+                LOGGER.error("Couldn't delete pet item with objectid {}.", e, this._objectId);
             }
         }
         player.destroyItem("Destroy", this._objectId, this._count, player, true);

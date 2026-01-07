@@ -18,14 +18,14 @@ public class BlessedSpiritShot implements IItemHandler {
         ItemInstance weaponInst = player.getActiveWeaponInstance();
         Weapon weaponItem = player.getActiveWeaponItem();
         if (weaponInst == null || weaponItem == null || weaponItem.getSpiritShotCount() == 0) {
-            if (!player.getAutoSoulShot().contains(Integer.valueOf(item.getItemId())))
+            if (!player.getAutoSoulShot().contains(item.getItemId()))
                 player.sendPacket(SystemMessageId.CANNOT_USE_SPIRITSHOTS);
             return;
         }
         if (player.isChargedShot(ShotType.BLESSED_SPIRITSHOT))
             return;
         if (weaponItem.getCrystalType() != item.getItem().getCrystalType()) {
-            if (!player.getAutoSoulShot().contains(Integer.valueOf(item.getItemId())))
+            if (!player.getAutoSoulShot().contains(item.getItemId()))
                 player.sendPacket(SystemMessageId.SPIRITSHOTS_GRADE_MISMATCH);
             return;
         }

@@ -39,7 +39,7 @@ public final class WaterTaskManager implements Runnable {
     public void add(Player player) {
         if (!player.isDead() && !this._players.containsKey(player)) {
             int time = (int) player.calcStat(Stats.BREATH, 60000.0D * player.getRace().getBreathMultiplier(), player, null);
-            this._players.put(player, Long.valueOf(System.currentTimeMillis() + time));
+            this._players.put(player, System.currentTimeMillis() + time);
             player.sendPacket(new SetupGauge(GaugeColor.CYAN, time));
         }
     }

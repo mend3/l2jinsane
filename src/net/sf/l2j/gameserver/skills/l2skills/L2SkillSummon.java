@@ -102,7 +102,7 @@ public class L2SkillSummon extends L2Skill {
                             }
                             player.getCubics().clear();
                         }
-                        if (player.getCubics().containsKey(Integer.valueOf(this._npcId))) {
+                        if (player.getCubics().containsKey(this._npcId)) {
                             Cubic cubic = player.getCubic(this._npcId);
                             cubic.stopAction();
                             cubic.cancelDisappear();
@@ -116,7 +116,7 @@ public class L2SkillSummon extends L2Skill {
                 }
                 return;
             }
-            if (activeChar.getCubics().containsKey(Integer.valueOf(this._npcId))) {
+            if (activeChar.getCubics().containsKey(this._npcId)) {
                 Cubic cubic = activeChar.getCubic(this._npcId);
                 cubic.stopAction();
                 cubic.cancelDisappear();

@@ -38,7 +38,7 @@ public final class RandomAnimationTaskManager implements Runnable {
     }
 
     public void add(Npc character, int interval) {
-        this._characters.put(character, Long.valueOf(System.currentTimeMillis() + (interval * 1000L)));
+        this._characters.put(character, System.currentTimeMillis() + (interval * 1000L));
     }
 
     private static final class SingletonHolder {

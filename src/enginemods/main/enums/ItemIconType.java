@@ -8,7 +8,7 @@ public enum ItemIconType {
     RECIPE("Icon.etc_recipe"),
     POTION("Icon.etc_potion_");
 
-    String _searchItem;
+    final String _searchItem;
 
     ItemIconType(String searchItem) {
         this._searchItem = searchItem;

@@ -11,12 +11,12 @@ public class DailyReward {
     private static final NavigableMap<Long, String> suffixes = new TreeMap<>();
 
     static {
-        suffixes.put(Long.valueOf(1000L), "K");
-        suffixes.put(Long.valueOf(1000000L), "KK");
-        suffixes.put(Long.valueOf(1000000000L), "KKK");
-        suffixes.put(Long.valueOf(1000000000000L), "T");
-        suffixes.put(Long.valueOf(1000000000000000L), "P");
-        suffixes.put(Long.valueOf(1000000000000000000L), "E");
+        suffixes.put(1000L, "K");
+        suffixes.put(1000000L, "KK");
+        suffixes.put(1000000000L, "KKK");
+        suffixes.put(1000000000000L, "T");
+        suffixes.put(1000000000000000L, "P");
+        suffixes.put(1000000000000000000L, "E");
     }
 
     private int _day;
@@ -36,7 +36,7 @@ public class DailyReward {
             return "-" + format(-value);
         if (value < 1000L)
             return Long.toString(value);
-        Map.Entry<Long, String> e = suffixes.floorEntry(Long.valueOf(value));
+        Map.Entry<Long, String> e = suffixes.floorEntry(value);
         Long divideBy = e.getKey();
         String suffix = e.getValue();
         long truncated = value / divideBy / 10L;

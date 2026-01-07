@@ -30,7 +30,7 @@ public class AdminSearch implements IAdminCommandHandler {
         } else if (command.startsWith("admin_search")) {
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
-            int page = Integer.valueOf(st.nextToken());
+            int page = Integer.parseInt(st.nextToken());
             if (st.hasMoreTokens()) {
                 StringBuilder sb = new StringBuilder(String.valueOf(page));
                 StringBuilder list = getList(activeChar, page, command.substring(14 + sb.length()));

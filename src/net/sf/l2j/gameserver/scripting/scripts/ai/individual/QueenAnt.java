@@ -64,13 +64,13 @@ public class QueenAnt extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addAttackId(new int[]{29001, 29002, 29003, 29004, 29005});
-        this.addAggroRangeEnterId(new int[]{29002, 29003, 29004, 29005});
-        this.addFactionCallId(new int[]{29001, 29003});
-        this.addKillId(new int[]{29001, 29003, 29005});
-        this.addSkillSeeId(new int[]{29001, 29002, 29003, 29004, 29005});
-        this.addSpawnId(new int[]{29002, 29003});
-        this.addExitZoneId(new int[]{110017});
+        this.addAttackId(29001, 29002, 29003, 29004, 29005);
+        this.addAggroRangeEnterId(29002, 29003, 29004, 29005);
+        this.addFactionCallId(29001, 29003);
+        this.addKillId(29001, 29003, 29005);
+        this.addSkillSeeId(29001, 29002, 29003, 29004, 29005);
+        this.addSpawnId(29002, 29003);
+        this.addExitZoneId(110017);
     }
 
     public String onAdvEvent(String event, Npc npc, Player player) {
@@ -144,8 +144,7 @@ public class QueenAnt extends L2AttackableAIScript {
     }
 
     public String onExitZone(Creature character, ZoneType zone) {
-        if (character instanceof GrandBoss) {
-            GrandBoss queen = (GrandBoss) character;
+        if (character instanceof GrandBoss queen) {
             if (queen.getNpcId() == 29001) {
                 queen.teleportTo(-21610, 181594, -5734, 0);
             }

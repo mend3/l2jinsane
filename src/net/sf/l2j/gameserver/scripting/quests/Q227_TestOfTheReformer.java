@@ -124,7 +124,7 @@ public class Q227_TestOfTheReformer extends Quest {
             st.giveItems(2822, 1);
             if (!player.getMemos().getBool("secondClassChange39", false)) {
                 htmltext = "30118-04b.htm";
-                st.giveItems(7562, DF_REWARD_39.get(Integer.valueOf(player.getClassId().getId())));
+                st.giveItems(7562, DF_REWARD_39.get(player.getClassId().getId()));
                 player.getMemos().set("secondClassChange39", true);
             }
         } else if (event.equalsIgnoreCase("30118-06.htm")) {

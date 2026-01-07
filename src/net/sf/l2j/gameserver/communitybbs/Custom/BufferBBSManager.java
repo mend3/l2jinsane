@@ -41,10 +41,10 @@ public class BufferBBSManager extends BaseBBSManager {
         sb.append("<table>");
         for (Map.Entry<String, ArrayList<Integer>> scheme : schemes.entrySet()) {
             if (schemeName.equalsIgnoreCase(scheme.getKey())) {
-                StringUtil.append(sb, "<tr><td width=200>", scheme.getKey(), " (<font color=\"LEVEL\">", Integer.valueOf(scheme.getValue().size()), "</font> / ", Integer.valueOf(player.getMaxBuffCount()), " skill(s))</td></tr>");
+                StringUtil.append(sb, "<tr><td width=200>", scheme.getKey(), " (<font color=\"LEVEL\">", scheme.getValue().size(), "</font> / ", player.getMaxBuffCount(), " skill(s))</td></tr>");
                 continue;
             }
-            StringUtil.append(sb, "<tr><td width=200><a action=\"bypass _bbsbuffer;editschemes;none;", scheme.getKey(), "\">", scheme.getKey(), " (", Integer.valueOf(scheme.getValue().size()), " / ", Integer.valueOf(player.getMaxBuffCount()), " skill(s))</a></td></tr>");
+            StringUtil.append(sb, "<tr><td width=200><a action=\"bypass _bbsbuffer;editschemes;none;", scheme.getKey(), "\">", scheme.getKey(), " (", scheme.getValue().size(), " / ", player.getMaxBuffCount(), " skill(s))</a></td></tr>");
         }
         sb.append("</table>");
         return sb.toString();
@@ -56,7 +56,7 @@ public class BufferBBSManager extends BaseBBSManager {
             int skillId = iterator1.next();
             if (BufferManager.getInstance().getSchemeContainsSkill(player.getObjectId(), schemeName, skillId))
                 continue;
-            skills.add(Integer.valueOf(skillId));
+            skills.add(skillId);
         }
         if (skills.isEmpty())
             return "That group doesn't contain any skills.";
@@ -239,8 +239,8 @@ public class BufferBBSManager extends BaseBBSManager {
                 }
                 separateAndSend(html, player);
             } else if (actualCommand.equalsIgnoreCase("dobuff")) {
-                int buffid = Integer.valueOf(st.nextToken());
-                int bufflevel = Integer.valueOf(st.nextToken());
+                int buffid = Integer.parseInt(st.nextToken());
+                int bufflevel = Integer.parseInt(st.nextToken());
                 String category = st.nextToken();
                 String windowhtml = st.nextToken();
                 if (player.getBuff() == 0) {
@@ -262,8 +262,8 @@ public class BufferBBSManager extends BaseBBSManager {
                 html.replace("%name%", player.getName());
                 separateAndSend(html, player);
             } else if (actualCommand.equalsIgnoreCase("getbuff")) {
-                int buffid = Integer.valueOf(st.nextToken());
-                int bufflevel = Integer.valueOf(st.nextToken());
+                int buffid = Integer.parseInt(st.nextToken());
+                int bufflevel = Integer.parseInt(st.nextToken());
                 if (buffid != 0) {
                     if (player.getBuff() == 0) {
                         MagicSkillUse mgc = new MagicSkillUse(player, player, buffid, bufflevel, 450, 0);
@@ -315,7 +315,7 @@ public class BufferBBSManager extends BaseBBSManager {
                 List<Integer> skills = BufferManager.getInstance().getScheme(player.getObjectId(), schemeName);
                 if (actualCommand.startsWith("skillselect") && !schemeName.equalsIgnoreCase("none")) {
                     if (skills.size() < Config.MAX_BUFFS_AMOUNT) {
-                        skills.add(Integer.valueOf(skillId));
+                        skills.add(skillId);
                     } else {
                         player.sendMessage("This scheme has reached the maximum amount of buffs.");
                     }
@@ -426,7 +426,7 @@ public class BufferBBSManager extends BaseBBSManager {
         } else {
             for (Map.Entry<String, ArrayList<Integer>> scheme : schemes.entrySet()) {
                 int cost = getFee(scheme.getValue());
-                StringUtil.append(sb, "<font color=\"LEVEL\"><a action=\"bypass _bbsbuffer;givebuffs;", targetType, ";", scheme.getKey(), ";", Integer.valueOf(cost), "\">", scheme.getKey(), " (", Integer.valueOf(scheme.getValue().size()),
+                StringUtil.append(sb, "<font color=\"LEVEL\"><a action=\"bypass _bbsbuffer;givebuffs;", targetType, ";", scheme.getKey(), ";", cost, "\">", scheme.getKey(), " (", scheme.getValue().size(),
                         " skill(s))</a>", (cost > 0) ? (" - Adena cost: " + cost) : "", "</font><br1>");
             }
         }
@@ -444,7 +444,7 @@ public class BufferBBSManager extends BaseBBSManager {
         } else {
             sb.append("<table>");
             for (Map.Entry<String, ArrayList<Integer>> scheme : schemes.entrySet()) {
-                StringUtil.append(sb, "<tr><td width=140>", scheme.getKey(), " (", Integer.valueOf(scheme.getValue().size()), " skill(s))</td><td width=60><button value=\"Clear\" action=\"bypass _bbsbuffer;clearscheme;", scheme.getKey(), "\" width=55 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td><td width=60><button value=\"Drop\" action=\"bypass _bbsbuffer;deletescheme;", scheme.getKey(), "\" width=55 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td></tr>");
+                StringUtil.append(sb, "<tr><td width=140>", scheme.getKey(), " (", scheme.getValue().size(), " skill(s))</td><td width=60><button value=\"Clear\" action=\"bypass _bbsbuffer;clearscheme;", scheme.getKey(), "\" width=55 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td><td width=60><button value=\"Drop\" action=\"bypass _bbsbuffer;deletescheme;", scheme.getKey(), "\" width=55 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td></tr>");
             }
             sb.append("</table>");
         }

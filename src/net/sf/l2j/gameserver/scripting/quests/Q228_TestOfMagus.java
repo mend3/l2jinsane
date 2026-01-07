@@ -128,7 +128,7 @@ public class Q228_TestOfMagus extends Quest {
             st.giveItems(2841, 1);
             if (!player.getMemos().getBool("secondClassChange39", false)) {
                 htmltext = "30629-04a.htm";
-                st.giveItems(7562, DF_REWARD_39.get(Integer.valueOf(player.getClassId().getId())));
+                st.giveItems(7562, DF_REWARD_39.get(player.getClassId().getId()));
                 player.getMemos().set("secondClassChange39", true);
             }
         } else if (event.equalsIgnoreCase("30629-10.htm")) {

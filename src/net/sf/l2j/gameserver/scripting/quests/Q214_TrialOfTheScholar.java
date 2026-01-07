@@ -178,7 +178,7 @@ public class Q214_TrialOfTheScholar extends Quest {
             st.giveItems(2675, 1);
             if (!player.getMemos().getBool("secondClassChange35", false)) {
                 htmltext = "30461-04a.htm";
-                st.giveItems(7562, DF_REWARD_35.get(Integer.valueOf(player.getClassId().getId())));
+                st.giveItems(7562, DF_REWARD_35.get(player.getClassId().getId()));
                 player.getMemos().set("secondClassChange35", true);
             }
         } else if (event.equalsIgnoreCase("30461-09.htm")) {

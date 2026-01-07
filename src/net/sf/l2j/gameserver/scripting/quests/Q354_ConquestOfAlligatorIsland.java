@@ -22,12 +22,12 @@ public class Q354_ConquestOfAlligatorIsland extends Quest {
 
     public Q354_ConquestOfAlligatorIsland() {
         super(354, "Conquest of Alligator Island");
-        DROPLIST.put(Integer.valueOf(20804), new int[][]{{5863, 1, 0, 490000}, {5864, 1, 0, 100000}});
-        DROPLIST.put(Integer.valueOf(20805), new int[][]{{5863, 1, 0, 560000}, {5864, 1, 0, 100000}});
-        DROPLIST.put(Integer.valueOf(20806), new int[][]{{5863, 1, 0, 500000}, {5864, 1, 0, 100000}});
-        DROPLIST.put(Integer.valueOf(20807), new int[][]{{5863, 1, 0, 600000}, {5864, 1, 0, 100000}});
-        DROPLIST.put(Integer.valueOf(20808), new int[][]{{5863, 1, 0, 690000}, {5864, 1, 0, 100000}});
-        DROPLIST.put(Integer.valueOf(20991), new int[][]{{5863, 1, 0, 600000}, {5864, 1, 0, 100000}});
+        DROPLIST.put(20804, new int[][]{{5863, 1, 0, 490000}, {5864, 1, 0, 100000}});
+        DROPLIST.put(20805, new int[][]{{5863, 1, 0, 560000}, {5864, 1, 0, 100000}});
+        DROPLIST.put(20806, new int[][]{{5863, 1, 0, 500000}, {5864, 1, 0, 100000}});
+        DROPLIST.put(20807, new int[][]{{5863, 1, 0, 600000}, {5864, 1, 0, 100000}});
+        DROPLIST.put(20808, new int[][]{{5863, 1, 0, 690000}, {5864, 1, 0, 100000}});
+        DROPLIST.put(20991, new int[][]{{5863, 1, 0, 600000}, {5864, 1, 0, 100000}});
         setItemsIds(5863, 5864);
         addStartNpc(30895);
         addTalkId(30895);
@@ -94,7 +94,7 @@ public class Q354_ConquestOfAlligatorIsland extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropMultipleItems(DROPLIST.get(Integer.valueOf(npc.getNpcId())));
+        st.dropMultipleItems(DROPLIST.get(npc.getNpcId()));
         return null;
     }
 }

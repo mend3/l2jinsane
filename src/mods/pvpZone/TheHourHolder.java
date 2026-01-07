@@ -1,11 +1,9 @@
 package mods.pvpZone;
 
 public class TheHourHolder {
-    private String _name = "";
-
-    private int _kills;
-
     private final int _objId;
+    private String _name = "";
+    private int _kills;
 
     public TheHourHolder(String name, int kills, int objId) {
         this._name = name;

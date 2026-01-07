@@ -28,9 +28,9 @@ public final class RequestAnswerFriendInvite extends L2GameClientPacket {
         if (this._response == 1) {
             requestor.sendPacket(SystemMessageId.YOU_HAVE_SUCCEEDED_INVITING_FRIEND);
             requestor.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_ADDED_TO_FRIENDS).addCharName(player));
-            requestor.getFriendList().add(Integer.valueOf(player.getObjectId()));
+            requestor.getFriendList().add(player.getObjectId());
             player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_JOINED_AS_FRIEND).addCharName(requestor));
-            player.getFriendList().add(Integer.valueOf(requestor.getObjectId()));
+            player.getFriendList().add(requestor.getObjectId());
             requestor.sendPacket(new FriendList(requestor));
             player.sendPacket(new FriendList(player));
             try {
@@ -66,7 +66,7 @@ public final class RequestAnswerFriendInvite extends L2GameClientPacket {
                     throw throwable;
                 }
             } catch (Exception e) {
-                LOGGER.error("Couldn't add friendId {} for {}.", e, Integer.valueOf(player.getObjectId()), requestor.toString());
+                LOGGER.error("Couldn't add friendId {} for {}.", e, player.getObjectId(), requestor.toString());
             }
         } else {
             requestor.sendPacket(SystemMessageId.FAILED_TO_INVITE_A_FRIEND);

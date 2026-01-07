@@ -40,65 +40,24 @@ public class PvPEventManager implements Runnable {
     public void run() {
         if (this._state == PvPEventManager.EngineState.AWAITING) {
             Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(11);
-            int minute = calendar.get(12);
-            String[] var4 = Config.PVP_EVENT_INTERVAL;
-            int var5 = var4.length;
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
 
-            for (int var6 = 0; var6 < var5; ++var6) {
-                String time = var4[var6];
+            for (String time : Config.PVP_EVENT_INTERVAL) {
                 String[] splitTime = time.split(":");
                 if (Integer.parseInt(splitTime[0]) == hour && Integer.parseInt(splitTime[1]) == minute) {
                     this.startEvent();
                 }
             }
         } else if (this._state == PvPEventManager.EngineState.ACTIVE) {
-            switch (this._tick) {
-                case 1:
-                    announce(this._tick + " second(s) until the event is finished!");
-                    break;
-                case 2:
-                    announce(this._tick + " second(s) until the event is finished!");
-                    break;
-                case 3:
-                case 4:
-                case 5:
-                case 10:
-                    announce(this._tick + " second(s) until the event is finished!");
-                    break;
-                case 30:
-                    announce(this._tick + " second(s) until the event is finished!");
-                    announce(" check the current ranking by .pvpEvent!");
-                    break;
-                case 60:
-                case 180:
-                    announce(this._tick / 60 + " minute(s) until the event is finished!");
-                    announce(" check the current ranking by .pvpEvent!");
-                    break;
-                case 300:
-                    announce(this._tick / 60 + " minute(s) until the event is finished!");
-                    announce(" check the current ranking by .pvpEvent!");
-                    break;
-                case 600:
-                case 900:
-                    announce(this._tick / 60 + " minute(s) until the event is finished!");
-                    announce(" check the current ranking by .pvpEvent!");
-                    break;
-                case 1800:
-                    announce(this._tick / 60 + " minute(s) until the event is finished!");
-                    announce(" check the current ranking by .pvpEvent!");
-                    break;
-                case 3600:
-                    announce(this._tick / 60 + " minute(s) until the event is finished!");
-                    announce(" check the current ranking by .pvpEvent!");
-                    break;
-                case 5400:
-                    announce(this._tick / 60 + " minute(s) until the event is finished!");
-                    announce(" check the current ranking by .pvpEvent!");
-                    break;
-                case 7200:
-                    announce(this._tick / 60 + " minute(s) until the event is finished!");
-                    announce(" check the current ranking by .pvpEvent!");
+            if (this._tick >= 60) {
+                announce(this._tick / 60 + " minute(s) until the event is finished!");
+                announce(" check the current ranking by .pvpEvent!");
+            } else if (this._tick >= 30) {
+                announce(this._tick + " second(s) until the event is finished!");
+                announce(" check the current ranking by .pvpEvent!");
+            } else {
+                announce(this._tick + " second(s) until the event is finished!");
             }
 
             if (this._tick == 0) {
@@ -129,7 +88,7 @@ public class PvPEventManager implements Runnable {
 
     }
 
-    protected enum EngineState {
+    public enum EngineState {
         AWAITING,
         ACTIVE,
         INACTIVE;

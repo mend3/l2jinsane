@@ -67,8 +67,8 @@ public class Core extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addAttackId(new int[]{29006});
-        this.addKillId(new int[]{29006, 29007, 29008, 29011});
+        this.addAttackId(29006);
+        this.addKillId(29006, 29007, 29008, 29011);
     }
 
     public void spawnBoss(GrandBoss npc) {

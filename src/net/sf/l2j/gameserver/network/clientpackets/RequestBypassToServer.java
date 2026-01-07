@@ -393,7 +393,7 @@ public final class RequestBypassToServer extends L2GameClientPacket {
             int npcId = Integer.parseInt(st.nextToken());
             int page = st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 1;
             if (st.hasMoreTokens())
-                player.ignored(Integer.valueOf(Integer.parseInt(st.nextToken())));
+                player.ignored(Integer.parseInt(st.nextToken()));
             Npc.sendNpcDrop(player, npcId, page);
         } else if (this._command.startsWith("bp_")) {
             String command = this._command.split(" ")[0];

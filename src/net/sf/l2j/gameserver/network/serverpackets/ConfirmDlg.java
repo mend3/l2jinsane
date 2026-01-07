@@ -47,7 +47,7 @@ public class ConfirmDlg extends L2GameServerPacket {
     }
 
     public ConfirmDlg addNumber(int number) {
-        this._info.add(new CnfDlgData(1, Integer.valueOf(number)));
+        this._info.add(new CnfDlgData(1, number));
         return this;
     }
 
@@ -64,7 +64,7 @@ public class ConfirmDlg extends L2GameServerPacket {
     }
 
     public ConfirmDlg addItemName(int id) {
-        this._info.add(new CnfDlgData(3, Integer.valueOf(id)));
+        this._info.add(new CnfDlgData(3, id));
         return this;
     }
 
@@ -137,11 +137,11 @@ public class ConfirmDlg extends L2GameServerPacket {
     private record CnfDlgData(int _type, Object _value) {
 
         public int getType() {
-                return this._type;
-            }
-
-            public Object getObject() {
-                return this._value;
-            }
+            return this._type;
         }
+
+        public Object getObject() {
+            return this._value;
+        }
+    }
 }

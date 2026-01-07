@@ -186,7 +186,7 @@ public class Q221_TestimonyOfProsperity extends Quest {
             st.giveItems(3239, 1);
             if (!player.getMemos().getBool("secondClassChange37", false)) {
                 htmltext = "30104-04e.htm";
-                st.giveItems(7562, DF_REWARD_37.get(Integer.valueOf(player.getRace().ordinal())));
+                st.giveItems(7562, DF_REWARD_37.get(player.getRace().ordinal()));
                 player.getMemos().set("secondClassChange37", true);
             }
         } else if (event.equalsIgnoreCase("30104-07.htm")) {

@@ -25,9 +25,9 @@ public class Q371_ShriekOfGhosts extends Quest {
 
     public Q371_ShriekOfGhosts() {
         super(371, "Shriek of Ghosts");
-        CHANCES.put(Integer.valueOf(20818), new int[]{38, 43});
-        CHANCES.put(Integer.valueOf(20820), new int[]{48, 56});
-        CHANCES.put(Integer.valueOf(20824), new int[]{50, 58});
+        CHANCES.put(20818, new int[]{38, 43});
+        CHANCES.put(20820, new int[]{48, 56});
+        CHANCES.put(20824, new int[]{50, 58});
         setItemsIds(5903, 6002);
         addStartNpc(30867);
         addTalkId(30867, 30929);
@@ -116,7 +116,7 @@ public class Q371_ShriekOfGhosts extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        int[] chances = CHANCES.get(Integer.valueOf(npc.getNpcId()));
+        int[] chances = CHANCES.get(npc.getNpcId());
         int random = Rnd.get(100);
         if (random < chances[1])
             st.dropItemsAlways((random < chances[0]) ? 5903 : 6002, 1, 0);

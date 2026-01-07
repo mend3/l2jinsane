@@ -153,7 +153,7 @@ public class Q229_TestOfWitchcraft extends Quest {
             st.giveItems(3308, 1);
             if (!player.getMemos().getBool("secondClassChange39", false)) {
                 htmltext = "30630-08a.htm";
-                st.giveItems(7562, DF_REWARD_39.get(Integer.valueOf(player.getClassId().getId())));
+                st.giveItems(7562, DF_REWARD_39.get(player.getClassId().getId()));
                 player.getMemos().set("secondClassChange39", true);
             }
         } else if (event.equalsIgnoreCase("30630-14.htm")) {

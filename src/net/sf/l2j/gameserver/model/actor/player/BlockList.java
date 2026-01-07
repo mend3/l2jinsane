@@ -30,7 +30,7 @@ public class BlockList {
 
     public BlockList(Player owner) {
         this._owner = owner;
-        this._blockList = OFFLINE_LIST.get(Integer.valueOf(owner.getObjectId()));
+        this._blockList = OFFLINE_LIST.get(owner.getObjectId());
         if (this._blockList == null)
             this._blockList = loadList(this._owner.getObjectId());
     }
@@ -49,7 +49,7 @@ public class BlockList {
                             int friendId = rset.getInt("friend_id");
                             if (friendId == objectId)
                                 continue;
-                            list.add(Integer.valueOf(friendId));
+                            list.add(friendId);
                         }
                         if (rset != null)
                             rset.close();
@@ -85,7 +85,7 @@ public class BlockList {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't load blocklist for {}.", e, Integer.valueOf(objectId));
+            LOGGER.error("Couldn't load blocklist for {}.", e, objectId);
         }
         return list;
     }
@@ -104,11 +104,11 @@ public class BlockList {
         if (listOwner == null)
             return;
         String targetName = PlayerInfoTable.getInstance().getPlayerName(targetId);
-        if (listOwner.getFriendList().contains(Integer.valueOf(targetId))) {
+        if (listOwner.getFriendList().contains(targetId)) {
             listOwner.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_ALREADY_IN_FRIENDS_LIST).addString(targetName));
             return;
         }
-        if (listOwner.getBlockList().getBlockList().contains(Integer.valueOf(targetId))) {
+        if (listOwner.getBlockList().getBlockList().contains(targetId)) {
             listOwner.sendMessage(targetName + " is already registered in your ignore list.");
             return;
         }
@@ -122,7 +122,7 @@ public class BlockList {
     public static void removeFromBlockList(Player listOwner, int targetId) {
         if (listOwner == null)
             return;
-        if (!listOwner.getBlockList().getBlockList().contains(Integer.valueOf(targetId))) {
+        if (!listOwner.getBlockList().getBlockList().contains(targetId)) {
             listOwner.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
             return;
         }
@@ -152,13 +152,13 @@ public class BlockList {
         Player player = World.getInstance().getPlayer(ownerId);
         if (player != null)
             return isBlocked(player, targetId);
-        if (!OFFLINE_LIST.containsKey(Integer.valueOf(ownerId)))
-            OFFLINE_LIST.put(Integer.valueOf(ownerId), loadList(ownerId));
-        return OFFLINE_LIST.get(Integer.valueOf(ownerId)).contains(Integer.valueOf(targetId));
+        if (!OFFLINE_LIST.containsKey(ownerId))
+            OFFLINE_LIST.put(ownerId, loadList(ownerId));
+        return OFFLINE_LIST.get(ownerId).contains(targetId);
     }
 
     private synchronized void addToBlockList(int target) {
-        this._blockList.add(Integer.valueOf(target));
+        this._blockList.add(target);
         updateInDB(target, true);
     }
 
@@ -168,7 +168,7 @@ public class BlockList {
     }
 
     public void playerLogout() {
-        OFFLINE_LIST.put(Integer.valueOf(this._owner.getObjectId()), this._blockList);
+        OFFLINE_LIST.put(this._owner.getObjectId(), this._blockList);
     }
 
     private void updateInDB(int targetId, boolean state) {
@@ -208,11 +208,11 @@ public class BlockList {
     }
 
     public boolean isInBlockList(Player target) {
-        return this._blockList.contains(Integer.valueOf(target.getObjectId()));
+        return this._blockList.contains(target.getObjectId());
     }
 
     public boolean isInBlockList(int targetId) {
-        return this._blockList.contains(Integer.valueOf(targetId));
+        return this._blockList.contains(targetId);
     }
 
     private boolean isBlockAll() {

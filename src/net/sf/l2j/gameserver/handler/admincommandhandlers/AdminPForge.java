@@ -23,12 +23,12 @@ public class AdminPForge implements IAdminCommandHandler {
         StringBuilder sb = new StringBuilder();
         int i;
         for (i = 0; i < format.length(); i++) {
-            StringUtil.append(sb, Character.valueOf(format.charAt(i)), " : <edit var=\"v", Integer.valueOf(i), "\" width=100><br1>");
+            StringUtil.append(sb, format.charAt(i), " : <edit var=\"v", i, "\" width=100><br1>");
         }
         html.replace("%valueditors%", sb.toString());
         sb.setLength(0);
         for (i = 0; i < format.length(); i++) {
-            StringUtil.append(sb, " \\$v", Integer.valueOf(i));
+            StringUtil.append(sb, " \\$v", i);
         }
         html.basicReplace("%send%", sb.toString());
         activeChar.sendPacket(html);

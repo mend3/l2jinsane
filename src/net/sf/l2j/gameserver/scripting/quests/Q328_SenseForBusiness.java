@@ -23,12 +23,12 @@ public class Q328_SenseForBusiness extends Quest {
 
     public Q328_SenseForBusiness() {
         super(328, "Sense for Business");
-        CHANCES.put(Integer.valueOf(20055), Integer.valueOf(48));
-        CHANCES.put(Integer.valueOf(20059), Integer.valueOf(52));
-        CHANCES.put(Integer.valueOf(20067), Integer.valueOf(68));
-        CHANCES.put(Integer.valueOf(20068), Integer.valueOf(76));
-        CHANCES.put(Integer.valueOf(20070), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(20072), Integer.valueOf(510000));
+        CHANCES.put(20055, 48);
+        CHANCES.put(20059, 52);
+        CHANCES.put(20067, 68);
+        CHANCES.put(20068, 76);
+        CHANCES.put(20070, 500000);
+        CHANCES.put(20072, 510000);
         setItemsIds(1366, 1347, 1348);
         addStartNpc(30436);
         addTalkId(30436);
@@ -86,7 +86,7 @@ public class Q328_SenseForBusiness extends Quest {
         if (st == null)
             return null;
         int npcId = npc.getNpcId();
-        int chance = CHANCES.get(Integer.valueOf(npcId));
+        int chance = CHANCES.get(npcId);
         if (npcId < 20069) {
             int rnd = Rnd.get(100);
             if (rnd < chance + 1)

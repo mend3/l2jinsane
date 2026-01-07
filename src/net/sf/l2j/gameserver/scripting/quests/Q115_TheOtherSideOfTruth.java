@@ -39,10 +39,10 @@ public class Q115_TheOtherSideOfTruth extends Quest {
 
     public Q115_TheOtherSideOfTruth() {
         super(115, "The Other Side of Truth");
-        NPC_VALUES.put(Integer.valueOf(32021), new int[]{1, 2, 1, 6, 10, 12, 14});
-        NPC_VALUES.put(Integer.valueOf(32077), new int[]{2, 4, 1, 5, 9, 12, 13});
-        NPC_VALUES.put(Integer.valueOf(32078), new int[]{4, 8, 3, 3, 9, 10, 11});
-        NPC_VALUES.put(Integer.valueOf(32079), new int[]{8, 0, 7, 3, 5, 6, 7});
+        NPC_VALUES.put(32021, new int[]{1, 2, 1, 6, 10, 12, 14});
+        NPC_VALUES.put(32077, new int[]{2, 4, 1, 5, 9, 12, 13});
+        NPC_VALUES.put(32078, new int[]{4, 8, 3, 3, 9, 10, 11});
+        NPC_VALUES.put(32079, new int[]{8, 0, 7, 3, 5, 6, 7});
         setItemsIds(8079, 8080, 8081, 8082);
         addStartNpc(32020);
         addTalkId(32020, 32018, 32022, 32021, 32077, 32078, 32079);
@@ -103,7 +103,7 @@ public class Q115_TheOtherSideOfTruth extends Quest {
             st.playSound("ItemSound.quest_middle");
             st.takeItems(8080, 1);
         } else if (event.equalsIgnoreCase("sculpture-03.htm")) {
-            int[] infos = NPC_VALUES.get(Integer.valueOf(npc.getNpcId()));
+            int[] infos = NPC_VALUES.get(npc.getNpcId());
             int ex = st.getInt("ex");
             int numberToModulo = (infos[1] == 0) ? ex : (ex % infos[1]);
             if (numberToModulo <= infos[2])
@@ -113,7 +113,7 @@ public class Q115_TheOtherSideOfTruth extends Quest {
                     st.playSound("ItemSound.quest_itemget");
                 }
         } else if (event.equalsIgnoreCase("sculpture-04.htm")) {
-            int[] infos = NPC_VALUES.get(Integer.valueOf(npc.getNpcId()));
+            int[] infos = NPC_VALUES.get(npc.getNpcId());
             int ex = st.getInt("ex");
             int numberToModulo = (infos[1] == 0) ? ex : (ex % infos[1]);
             if (numberToModulo <= infos[2] && (
@@ -265,7 +265,7 @@ public class Q115_TheOtherSideOfTruth extends Quest {
                     case 32078:
                     case 32079:
                         if (cond == 7) {
-                            int[] infos = NPC_VALUES.get(Integer.valueOf(npc.getNpcId()));
+                            int[] infos = NPC_VALUES.get(npc.getNpcId());
                             int ex = st.getInt("ex");
                             int numberToModulo = (infos[1] == 0) ? ex : (ex % infos[1]);
                             if (numberToModulo <= infos[2]) {

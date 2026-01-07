@@ -40,7 +40,7 @@ public class Q350_EnhanceYourWeapon extends Quest {
         SoulCrystal crystalData = null;
         ItemInstance crystalItem = null;
         for (ItemInstance item : player.getInventory().getItems()) {
-            SoulCrystal data = SoulCrystalData.getInstance().getSoulCrystals().get(Integer.valueOf(item.getItemId()));
+            SoulCrystal data = SoulCrystalData.getInstance().getSoulCrystals().get(item.getItemId());
             if (data == null)
                 continue;
             if (crystalData != null) {
@@ -139,7 +139,7 @@ public class Q350_EnhanceYourWeapon extends Quest {
                 break;
             case 1:
                 for (ItemInstance item : player.getInventory().getItems()) {
-                    if (SoulCrystalData.getInstance().getSoulCrystals().get(Integer.valueOf(item.getItemId())) != null)
+                    if (SoulCrystalData.getInstance().getSoulCrystals().get(item.getItemId()) != null)
                         return npc.getNpcId() + "-03.htm";
                 }
                 htmltext = npc.getNpcId() + "-21.htm";
@@ -153,7 +153,7 @@ public class Q350_EnhanceYourWeapon extends Quest {
             return null;
         if (target == null || !(target instanceof Monster mob))
             return null;
-        if (mob.isDead() || !SoulCrystalData.getInstance().getLevelingInfos().containsKey(Integer.valueOf(mob.getNpcId())))
+        if (mob.isDead() || !SoulCrystalData.getInstance().getLevelingInfos().containsKey(mob.getNpcId()))
             return null;
         mob.addAbsorber(user, item);
         return null;
@@ -164,7 +164,7 @@ public class Q350_EnhanceYourWeapon extends Quest {
         Player player = killer.getActingPlayer();
         if (player == null)
             return null;
-        LevelingInfo npcInfo = SoulCrystalData.getInstance().getLevelingInfos().get(Integer.valueOf(npc.getNpcId()));
+        LevelingInfo npcInfo = SoulCrystalData.getInstance().getLevelingInfos().get(npc.getNpcId());
         if (npcInfo == null)
             return null;
         int chance = Rnd.get(1000);

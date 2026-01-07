@@ -44,12 +44,12 @@ public class Q039_RedEyedInvaders extends Quest {
 
     public Q039_RedEyedInvaders() {
         super(39, "Red-Eyed Invaders");
-        FIRST_DP.put(Integer.valueOf(20921), new int[]{7179, 7178});
-        FIRST_DP.put(Integer.valueOf(20919), new int[]{7178, 7179});
-        FIRST_DP.put(Integer.valueOf(20920), new int[]{7178, 7179});
-        SECOND_DP.put(Integer.valueOf(20925), new int[]{7181, 7180, 500000});
-        SECOND_DP.put(Integer.valueOf(20921), new int[]{7180, 7181, 300000});
-        SECOND_DP.put(Integer.valueOf(20920), new int[]{7180, 7181, 250000});
+        FIRST_DP.put(20921, new int[]{7179, 7178});
+        FIRST_DP.put(20919, new int[]{7178, 7179});
+        FIRST_DP.put(20920, new int[]{7178, 7179});
+        SECOND_DP.put(20925, new int[]{7181, 7180, 500000});
+        SECOND_DP.put(20921, new int[]{7180, 7181, 300000});
+        SECOND_DP.put(20920, new int[]{7180, 7181, 250000});
         setItemsIds(7178, 7179, 7180, 7181);
         addStartNpc(30334);
         addTalkId(30334, 30332);
@@ -135,13 +135,13 @@ public class Q039_RedEyedInvaders extends Quest {
         int npcId = npc.getNpcId();
         QuestState st = getRandomPartyMember(player, npc, "2");
         if (st != null && npcId != 20925) {
-            int[] list = FIRST_DP.get(Integer.valueOf(npcId));
+            int[] list = FIRST_DP.get(npcId);
             if (st.dropItems(list[0], 1, 100, 500000) && st.getQuestItemsCount(list[1]) == 100)
                 st.set("cond", "3");
         } else {
             st = getRandomPartyMember(player, npc, "4");
             if (st != null && npcId != 20919) {
-                int[] list = SECOND_DP.get(Integer.valueOf(npcId));
+                int[] list = SECOND_DP.get(npcId);
                 if (st.dropItems(list[0], 1, 30, list[2]) && st.getQuestItemsCount(list[1]) == 30)
                     st.set("cond", "5");
             }

@@ -130,7 +130,7 @@ public final class L2Spawn implements Runnable {
         try {
             if (this._template.isType("Pet"))
                 return null;
-            Object[] parameters = {Integer.valueOf(IdFactory.getInstance().getNextId()), this._template};
+            Object[] parameters = {IdFactory.getInstance().getNextId(), this._template};
             Object tmp = this._constructor.newInstance(parameters);
             if (isSummonSpawn && tmp instanceof Creature)
                 ((Creature) tmp).setShowSummonAnimation(isSummonSpawn);

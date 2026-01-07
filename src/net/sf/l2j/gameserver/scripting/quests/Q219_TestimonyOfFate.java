@@ -132,15 +132,15 @@ public class Q219_TestimonyOfFate extends Quest {
 
     public Q219_TestimonyOfFate() {
         super(219, "Testimony of Fate");
-        CHANCES.put(Integer.valueOf(20202), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(20192), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(20193), Integer.valueOf(600000));
-        CHANCES.put(Integer.valueOf(20158), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(20157), Integer.valueOf(400000));
-        CHANCES.put(Integer.valueOf(20230), Integer.valueOf(300000));
-        CHANCES.put(Integer.valueOf(20232), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(20234), Integer.valueOf(600000));
-        CHANCES.put(Integer.valueOf(20233), Integer.valueOf(500000));
+        CHANCES.put(20202, 500000);
+        CHANCES.put(20192, 500000);
+        CHANCES.put(20193, 600000);
+        CHANCES.put(20158, 500000);
+        CHANCES.put(20157, 400000);
+        CHANCES.put(20230, 300000);
+        CHANCES.put(20232, 500000);
+        CHANCES.put(20234, 600000);
+        CHANCES.put(20233, 500000);
         setItemsIds(3173, 3174, 3175, 3176, 3177, 3178, 3179, 3180, 3181, 3182,
                 3183, 3184, 3185, 3186, 3187, 3189, 3188, 3190, 3191, 3192,
                 3193, 3194, 3195, 3196, 3197, 3198, 3199, 3200, 3201, 3202);
@@ -162,7 +162,7 @@ public class Q219_TestimonyOfFate extends Quest {
             st.giveItems(3173, 1);
             if (!player.getMemos().getBool("secondClassChange37", false)) {
                 htmltext = "30476-05a.htm";
-                st.giveItems(7562, DF_REWARD_37.get(Integer.valueOf(player.getRace().ordinal())));
+                st.giveItems(7562, DF_REWARD_37.get(player.getRace().ordinal()));
                 player.getMemos().set("secondClassChange37", true);
             }
         } else if (event.equalsIgnoreCase("30114-04.htm")) {
@@ -493,18 +493,18 @@ public class Q219_TestimonyOfFate extends Quest {
                 }
                 break;
             case 20202:
-                if (st.getInt("cond") == 6 && st.dropItems(3180, 1, 10, CHANCES.get(Integer.valueOf(npcId))) &&
+                if (st.getInt("cond") == 6 && st.dropItems(3180, 1, 10, CHANCES.get(npcId)) &&
                         st.getQuestItemsCount(3181) >= 10 && st.getQuestItemsCount(3178) >= 10 && st.getQuestItemsCount(3182) >= 10 && st.getQuestItemsCount(3179) >= 10)
                     st.set("cond", "7");
                 break;
             case 20192:
             case 20193:
-                if (st.getInt("cond") == 6 && st.dropItems(3181, 1, 10, CHANCES.get(Integer.valueOf(npcId))) &&
+                if (st.getInt("cond") == 6 && st.dropItems(3181, 1, 10, CHANCES.get(npcId)) &&
                         st.getQuestItemsCount(3180) >= 10 && st.getQuestItemsCount(3178) >= 10 && st.getQuestItemsCount(3182) >= 10 && st.getQuestItemsCount(3179) >= 10)
                     st.set("cond", "7");
                 break;
             case 20158:
-                if (st.getInt("cond") == 6 && st.dropItems(3178, 1, 10, CHANCES.get(Integer.valueOf(npcId))) &&
+                if (st.getInt("cond") == 6 && st.dropItems(3178, 1, 10, CHANCES.get(npcId)) &&
                         st.getQuestItemsCount(3180) >= 10 && st.getQuestItemsCount(3181) >= 10 && st.getQuestItemsCount(3182) >= 10 && st.getQuestItemsCount(3179) >= 10)
                     st.set("cond", "7");
                 break;
@@ -512,12 +512,12 @@ public class Q219_TestimonyOfFate extends Quest {
             case 20230:
             case 20232:
             case 20234:
-                if (st.getInt("cond") == 6 && st.dropItems(3182, 1, 10, CHANCES.get(Integer.valueOf(npcId))) &&
+                if (st.getInt("cond") == 6 && st.dropItems(3182, 1, 10, CHANCES.get(npcId)) &&
                         st.getQuestItemsCount(3180) >= 10 && st.getQuestItemsCount(3181) >= 10 && st.getQuestItemsCount(3178) >= 10 && st.getQuestItemsCount(3179) >= 10)
                     st.set("cond", "7");
                 break;
             case 20233:
-                if (st.getInt("cond") == 6 && st.dropItems(3179, 1, 10, CHANCES.get(Integer.valueOf(npcId))) &&
+                if (st.getInt("cond") == 6 && st.dropItems(3179, 1, 10, CHANCES.get(npcId)) &&
                         st.getQuestItemsCount(3180) >= 10 && st.getQuestItemsCount(3181) >= 10 && st.getQuestItemsCount(3178) >= 10 && st.getQuestItemsCount(3182) >= 10)
                     st.set("cond", "7");
                 break;

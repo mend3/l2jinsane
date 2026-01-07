@@ -204,7 +204,7 @@ public class Hwid {
         }
         HWID.auditGMAction(player.getHWID(), player.getName());
         IPLog.auditGMAction(player.getName(), player.getClient().getConnection().getInetAddress().getHostAddress(), player.getHWID());
-        HwidManager.getInstance().validBox(player, Integer.valueOf(boxCanUse), World.getInstance().getPlayers(), Boolean.valueOf(true));
+        HwidManager.getInstance().validBox(player, boxCanUse, World.getInstance().getPlayers(), Boolean.TRUE);
     }
 
     public static void waitSecs(int i) {

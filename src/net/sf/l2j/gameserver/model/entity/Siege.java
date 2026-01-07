@@ -23,7 +23,6 @@ import net.sf.l2j.gameserver.model.pledge.Clan;
 import net.sf.l2j.gameserver.model.pledge.ClanMember;
 import net.sf.l2j.gameserver.model.spawn.L2Spawn;
 import net.sf.l2j.gameserver.network.SystemMessageId;
-import net.sf.l2j.gameserver.network.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.network.serverpackets.PlaySound;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.network.serverpackets.UserInfo;
@@ -156,7 +155,7 @@ public class Siege implements Siegable {
                 this.getCastle().getSiegeZone().setIsActive(true);
                 this.getCastle().getSiegeZone().updateZoneStatusForCharactersInside();
                 this._siegeEndDate = Calendar.getInstance();
-                this._siegeEndDate.add(12, Config.SIEGE_LENGTH);
+                this._siegeEndDate.add(Calendar.MINUTE, Config.SIEGE_LENGTH);
                 ThreadPool.schedule(new Siege.EndSiegeTask(this.getCastle()), 1000L);
                 World.toAllOnlinePlayers(SystemMessage.getSystemMessage(SystemMessageId.SIEGE_OF_S1_HAS_STARTED).addString(this.getCastle().getName()));
                 World.toAllOnlinePlayers(new PlaySound("systemmsg_e.17"));
@@ -713,7 +712,7 @@ public class Siege implements Siegable {
 
             Castle castle = (Castle) var2.next();
             siege = castle.getSiege();
-        } while (siege == this || siege.getSiegeDate().get(7) != this.getSiegeDate().get(7) || !siege.checkSides(clan));
+        } while (siege == this || siege.getSiegeDate().get(Calendar.DAY_OF_WEEK) != this.getSiegeDate().get(Calendar.DAY_OF_WEEK) || !siege.checkSides(clan));
 
         return true;
     }
@@ -882,66 +881,66 @@ public class Siege implements Siegable {
 
         switch (this.getCastle().getCastleId()) {
             case 1:
-                siegeDate.set(7, Config.SIEGE_DAY_GLUDIO);
+                siegeDate.set(Calendar.DAY_OF_WEEK, Config.SIEGE_DAY_GLUDIO);
                 break;
             case 2:
-                siegeDate.set(7, Config.SIEGE_DAY_DION);
+                siegeDate.set(Calendar.DAY_OF_WEEK, Config.SIEGE_DAY_DION);
                 break;
             case 3:
-                siegeDate.set(7, Config.SIEGE_DAY_GIRAN);
+                siegeDate.set(Calendar.DAY_OF_WEEK, Config.SIEGE_DAY_GIRAN);
                 break;
             case 4:
-                siegeDate.set(7, Config.SIEGE_DAY_OREN);
+                siegeDate.set(Calendar.DAY_OF_WEEK, Config.SIEGE_DAY_OREN);
                 break;
             case 5:
-                siegeDate.set(7, Config.SIEGE_DAY_ADEN);
+                siegeDate.set(Calendar.DAY_OF_WEEK, Config.SIEGE_DAY_ADEN);
                 break;
             case 6:
-                siegeDate.set(7, Config.SIEGE_DAY_INNADRIL);
+                siegeDate.set(Calendar.DAY_OF_WEEK, Config.SIEGE_DAY_INNADRIL);
                 break;
             case 7:
-                siegeDate.set(7, Config.SIEGE_DAY_GODDARD);
+                siegeDate.set(Calendar.DAY_OF_WEEK, Config.SIEGE_DAY_GODDARD);
                 break;
             case 8:
-                siegeDate.set(7, Config.SIEGE_DAY_RUNE);
+                siegeDate.set(Calendar.DAY_OF_WEEK, Config.SIEGE_DAY_RUNE);
                 break;
             case 9:
-                siegeDate.set(7, Config.SIEGE_DAY_SCHUT);
+                siegeDate.set(Calendar.DAY_OF_WEEK, Config.SIEGE_DAY_SCHUT);
         }
 
-        siegeDate.add(3, Config.DAY_TO_SIEGE);
+        siegeDate.add(Calendar.WEEK_OF_YEAR, Config.DAY_TO_SIEGE);
         switch (this.getCastle().getCastleId()) {
             case 1:
-                siegeDate.set(11, Config.SIEGE_HOUR_GLUDIO);
+                siegeDate.set(Calendar.HOUR_OF_DAY, Config.SIEGE_HOUR_GLUDIO);
                 break;
             case 2:
-                siegeDate.set(11, Config.SIEGE_HOUR_DION);
+                siegeDate.set(Calendar.HOUR_OF_DAY, Config.SIEGE_HOUR_DION);
                 break;
             case 3:
-                siegeDate.set(11, Config.SIEGE_HOUR_GIRAN);
+                siegeDate.set(Calendar.HOUR_OF_DAY, Config.SIEGE_HOUR_GIRAN);
                 break;
             case 4:
-                siegeDate.set(11, Config.SIEGE_HOUR_OREN);
+                siegeDate.set(Calendar.HOUR_OF_DAY, Config.SIEGE_HOUR_OREN);
                 break;
             case 5:
-                siegeDate.set(11, Config.SIEGE_HOUR_ADEN);
+                siegeDate.set(Calendar.HOUR_OF_DAY, Config.SIEGE_HOUR_ADEN);
                 break;
             case 6:
-                siegeDate.set(11, Config.SIEGE_HOUR_INNADRIL);
+                siegeDate.set(Calendar.HOUR_OF_DAY, Config.SIEGE_HOUR_INNADRIL);
                 break;
             case 7:
-                siegeDate.set(11, Config.SIEGE_HOUR_GODDARD);
+                siegeDate.set(Calendar.HOUR_OF_DAY, Config.SIEGE_HOUR_GODDARD);
                 break;
             case 8:
-                siegeDate.set(11, Config.SIEGE_HOUR_RUNE);
+                siegeDate.set(Calendar.HOUR_OF_DAY, Config.SIEGE_HOUR_RUNE);
                 break;
             case 9:
-                siegeDate.set(11, Config.SIEGE_HOUR_SCHUT);
+                siegeDate.set(Calendar.HOUR_OF_DAY, Config.SIEGE_HOUR_SCHUT);
         }
 
-        siegeDate.set(12, 0);
-        siegeDate.set(13, 0);
-        siegeDate.set(14, 0);
+        siegeDate.set(Calendar.MINUTE, 0);
+        siegeDate.set(Calendar.SECOND, 0);
+        siegeDate.set(Calendar.MILLISECOND, 0);
         World.toAllOnlinePlayers(SystemMessage.getSystemMessage(SystemMessageId.S1_ANNOUNCED_SIEGE_TIME).addString(this.getCastle().getName()));
         this.changeStatus(SiegeStatus.REGISTRATION_OPENED);
     }

@@ -26,11 +26,11 @@ public class NewCharacterCreated extends AbstractMods {
 
     public void onCreateCharacter(Player player) {
         player.setTitle(ConfigData.NEW_CHARACTER_CREATED_TITLE);
-        _players.add(Integer.valueOf(player.getObjectId()));
+        _players.add(player.getObjectId());
     }
 
     public void onEnterWorld(Player player) {
-        if (_players.contains(Integer.valueOf(player.getObjectId()))) {
+        if (_players.contains(player.getObjectId())) {
             if (ConfigData.NEW_CHARACTER_CREATED_GIVE_BUFF)
                 for (IntIntHolder bsh : ConfigData.NEW_CHARACTER_CREATED_BUFFS) {
                     L2Skill skill = bsh.getSkill();

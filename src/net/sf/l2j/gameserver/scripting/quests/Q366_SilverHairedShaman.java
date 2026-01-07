@@ -20,9 +20,9 @@ public class Q366_SilverHairedShaman extends Quest {
 
     public Q366_SilverHairedShaman() {
         super(366, "Silver Haired Shaman");
-        CHANCES.put(Integer.valueOf(20986), Integer.valueOf(560000));
-        CHANCES.put(Integer.valueOf(20987), Integer.valueOf(660000));
-        CHANCES.put(Integer.valueOf(20988), Integer.valueOf(620000));
+        CHANCES.put(20986, 560000);
+        CHANCES.put(20987, 660000);
+        CHANCES.put(20988, 620000);
         setItemsIds(5874);
         addStartNpc(30111);
         addTalkId(30111);
@@ -74,7 +74,7 @@ public class Q366_SilverHairedShaman extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropItems(5874, 1, 0, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(5874, 1, 0, CHANCES.get(npc.getNpcId()));
         return null;
     }
 }

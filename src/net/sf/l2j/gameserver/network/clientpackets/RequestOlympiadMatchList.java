@@ -17,7 +17,7 @@ public final class RequestOlympiadMatchList extends L2GameClientPacket {
         int i = 0;
         StringBuilder sb = new StringBuilder(1500);
         for (OlympiadGameTask task : OlympiadGameManager.getInstance().getOlympiadTasks()) {
-            StringUtil.append(sb, "<tr><td fixwidth=10><a action=\"bypass arenachange ", Integer.valueOf(i), "\">", Integer.valueOf(++i), "</a></td><td fixwidth=80>");
+            StringUtil.append(sb, "<tr><td fixwidth=10><a action=\"bypass arenachange ", i, "\">", ++i, "</a></td><td fixwidth=80>");
             if (task.isGameStarted()) {
                 if (task.isInTimerTime()) {
                     StringUtil.append(sb, "&$907;");

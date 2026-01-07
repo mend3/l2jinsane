@@ -170,7 +170,7 @@ public class NpcBufferScheme extends AbstractMods {
                 String name = bh.getSkill().getName().replace("+", " ");
                 hb.append("<tr>");
                 hb.append("<td height=32 fixwidth=32>", getSkillIconHtml(bh.getId(), bh.getLevel()), "</td>");
-                hb.append("<td height=32 fixwidth=232 align=center><a action=\"bypass -h Engine NpcBufferScheme giveBuffs ", Integer.valueOf(bh.getId()), " ", Integer.valueOf(bh.getLevel()), " ", buffType.name(), " ", Integer.valueOf(page), "\">", name,
+                hb.append("<td height=32 fixwidth=232 align=center><a action=\"bypass -h Engine NpcBufferScheme giveBuffs ", bh.getId(), " ", bh.getLevel(), " ", buffType.name(), " ", page, "\">", name,
                         "</a></td>");
                 hb.append("<td height=32 fixwidth=32>", getSkillIconHtml(bh.getId(), bh.getLevel()), "</td>");
                 hb.append("</tr>");
@@ -185,7 +185,7 @@ public class NpcBufferScheme extends AbstractMods {
             int currentPage = 1;
             for (int i = 0; i < buffs.size(); i++) {
                 if (i % MAX_PER_PAGE == 0) {
-                    hb.append("<td width=20 align=center><a action=\"bypass -h Engine NpcBufferScheme redirect_view_", buffType.name().toLowerCase(), " ", Integer.valueOf(currentPage), "\">", Integer.valueOf(currentPage), "</a></td>");
+                    hb.append("<td width=20 align=center><a action=\"bypass -h Engine NpcBufferScheme redirect_view_", buffType.name().toLowerCase(), " ", currentPage, "\">", currentPage, "</a></td>");
                     currentPage++;
                 }
             }
@@ -772,7 +772,7 @@ public class NpcBufferScheme extends AbstractMods {
         int daceSong = Integer.parseInt(eventSplit[2]);
         List<BuffHolder> buffs = new ArrayList<>();
         if (action.equals("add")) {
-            hb.append("You can add <font color=LEVEL>", Integer.valueOf(24 - buffsCount), "</font> Buffs and <font color=LEVEL>", Integer.valueOf(12 - daceSong), "</font> Dances more!");
+            hb.append("You can add <font color=LEVEL>", 24 - buffsCount, "</font> Buffs and <font color=LEVEL>", 12 - daceSong, "</font> Dances more!");
             for (BuffHolder bh : SchemeBuffData.getAllGeneralBuffs()) {
                 if (daceSong > 12)
                     if (bh.getType() == BuffType.DANCE || bh.getType() == BuffType.SONG)
@@ -783,7 +783,7 @@ public class NpcBufferScheme extends AbstractMods {
                 buffs.add(bh);
             }
         } else if (action.equals("remove")) {
-            hb.append("You have <font color=LEVEL>", Integer.valueOf(buffsCount), "</font> Buffs and <font color=LEVEL>", Integer.valueOf(daceSong), "</font> Dances");
+            hb.append("You have <font color=LEVEL>", buffsCount, "</font> Buffs and <font color=LEVEL>", daceSong, "</font> Dances");
             String buffList = getValueDB(player.getObjectId(), schemeName);
             if (buffList == null) {
                 System.out.println("error en remove buff");
@@ -807,11 +807,11 @@ public class NpcBufferScheme extends AbstractMods {
         }
         for (int ii = 1; ii <= pc; ii++) {
             if (ii == Integer.parseInt(page)) {
-                hb.append("<td width=", width, " align=center><font color=LEVEL>", Integer.valueOf(ii), "</font></td>");
+                hb.append("<td width=", width, " align=center><font color=LEVEL>", ii, "</font></td>");
             } else if (action.equals("add")) {
-                hb.append("<td width=", width, ">", "<a action=\"bypass -h Engine NpcBufferScheme manage_scheme_add ", schemeName, " ", Integer.valueOf(ii), " x\">", Integer.valueOf(ii), "</a></td>");
+                hb.append("<td width=", width, ">", "<a action=\"bypass -h Engine NpcBufferScheme manage_scheme_add ", schemeName, " ", ii, " x\">", ii, "</a></td>");
             } else if (action.equals("remove")) {
-                hb.append("<td width=", width, ">", "<a action=\"bypass -h Engine NpcBufferScheme manage_scheme_remove ", schemeName, " ", Integer.valueOf(ii), " x\">", Integer.valueOf(ii), "</a></td>");
+                hb.append("<td width=", width, ">", "<a action=\"bypass -h Engine NpcBufferScheme manage_scheme_remove ", schemeName, " ", ii, " x\">", ii, "</a></td>");
             } else {
                 throw new RuntimeException();
             }
@@ -836,7 +836,7 @@ public class NpcBufferScheme extends AbstractMods {
                     hb.append("<tr>");
                     hb.append("<td width=35>", getSkillIconHtml(id, level), "</td>");
                     hb.append("<td fixwidth=170>", name, "</td>");
-                    hb.append("<td><button value=\"Add\" action=\"bypass -h Engine NpcBufferScheme add_buff ", schemeName, "_", Integer.valueOf(id), "_", Integer.valueOf(level), " ", page, " ", Integer.valueOf(buffsTotal),
+                    hb.append("<td><button value=\"Add\" action=\"bypass -h Engine NpcBufferScheme add_buff ", schemeName, "_", id, "_", level, " ", page, " ", buffsTotal,
                             "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
                     hb.append("</tr>");
                     hb.append("</table>");
@@ -851,7 +851,7 @@ public class NpcBufferScheme extends AbstractMods {
                 hb.append("<tr>");
                 hb.append("<td width=35>", getSkillIconHtml(id, level), "</td>");
                 hb.append("<td fixwidth=170>", name, "</td>");
-                hb.append("<td><button value=\"Remove\" action=\"bypass -h Engine NpcBufferScheme remove_buff ", schemeName, "_", Integer.valueOf(id), "_", Integer.valueOf(level), " ", page, " ", Integer.valueOf(buffsTotal),
+                hb.append("<td><button value=\"Remove\" action=\"bypass -h Engine NpcBufferScheme remove_buff ", schemeName, "_", id, "_", level, " ", page, " ", buffsTotal,
                         "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
                 hb.append("</tr>");
                 hb.append("</table>");

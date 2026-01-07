@@ -19,7 +19,7 @@ public class ExShowProcureCropDetail extends L2GameServerPacket {
         for (Castle c : CastleManager.getInstance().getCastles()) {
             CropProcure cropItem = CastleManorManager.getInstance().getCropProcure(c.getCastleId(), cropId, false);
             if (cropItem != null && cropItem.getAmount() > 0)
-                this._castleCrops.put(Integer.valueOf(c.getCastleId()), cropItem);
+                this._castleCrops.put(c.getCastleId(), cropItem);
         }
     }
 

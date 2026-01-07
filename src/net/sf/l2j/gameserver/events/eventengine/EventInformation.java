@@ -28,7 +28,7 @@ public class EventInformation implements Runnable {
     }
 
     public void addReplacement(String id, int value) {
-        this.replacements.put(id, Integer.valueOf(value));
+        this.replacements.put(id, value);
     }
 
     public void run() {

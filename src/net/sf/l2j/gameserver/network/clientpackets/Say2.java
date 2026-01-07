@@ -114,7 +114,7 @@ public final class Say2 extends L2GameClientPacket {
             return;
         IChatHandler handler = ChatHandler.getInstance().getHandler(this._type);
         if (handler == null) {
-            LOGGER.warn("{} tried to use unregistred chathandler type: {}.", player.getName(), Integer.valueOf(this._type));
+            LOGGER.warn("{} tried to use unregistred chathandler type: {}.", player.getName(), this._type);
             return;
         }
         handler.handleChat(this._type, player, this._target, this._text);

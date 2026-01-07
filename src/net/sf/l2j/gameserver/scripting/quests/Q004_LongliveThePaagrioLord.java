@@ -17,12 +17,12 @@ public class Q004_LongliveThePaagrioLord extends Quest {
 
     public Q004_LongliveThePaagrioLord() {
         super(4, "Long live the Pa'agrio Lord!");
-        NPC_GIFTS.put(Integer.valueOf(30585), Integer.valueOf(1542));
-        NPC_GIFTS.put(Integer.valueOf(30566), Integer.valueOf(1541));
-        NPC_GIFTS.put(Integer.valueOf(30562), Integer.valueOf(1543));
-        NPC_GIFTS.put(Integer.valueOf(30560), Integer.valueOf(1544));
-        NPC_GIFTS.put(Integer.valueOf(30559), Integer.valueOf(1545));
-        NPC_GIFTS.put(Integer.valueOf(30587), Integer.valueOf(1546));
+        NPC_GIFTS.put(30585, 1542);
+        NPC_GIFTS.put(30566, 1541);
+        NPC_GIFTS.put(30562, 1543);
+        NPC_GIFTS.put(30560, 1544);
+        NPC_GIFTS.put(30559, 1545);
+        NPC_GIFTS.put(30587, 1546);
         setItemsIds(1541, 1542, 1543, 1544, 1545, 1546);
         addStartNpc(30578);
         addTalkId(30578, 30585, 30566, 30562, 30560, 30559, 30587);
@@ -80,7 +80,7 @@ public class Q004_LongliveThePaagrioLord extends Quest {
                     }
                     break;
                 }
-                i = NPC_GIFTS.get(Integer.valueOf(npcId));
+                i = NPC_GIFTS.get(npcId);
                 if (st.hasQuestItems(i)) {
                     htmltext = npcId + "-02.htm";
                     break;

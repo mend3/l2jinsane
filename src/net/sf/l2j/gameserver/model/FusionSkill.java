@@ -13,12 +13,12 @@ import java.util.logging.Logger;
 
 public final class FusionSkill {
     private static final Logger _log = Logger.getLogger(FusionSkill.class.getName());
-    private int _skillCastRange;
-    private int _fusionId;
-    private int _fusionLevel;
-    private Creature _caster;
-    private Creature _target;
-    private Future<?> _geoCheckTask;
+    private final int _skillCastRange;
+    private final int _fusionId;
+    private final int _fusionLevel;
+    private final Creature _caster;
+    private final Creature _target;
+    private final Future<?> _geoCheckTask;
 
     public FusionSkill(Creature caster, Creature target, L2Skill skill) {
         this._skillCastRange = skill.getCastRange();

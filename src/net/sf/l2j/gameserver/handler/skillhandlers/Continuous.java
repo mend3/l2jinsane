@@ -85,7 +85,7 @@ public class Continuous implements ISkillHandler {
                             }
                             if (skill.getSkillType() == L2SkillType.AGGDEBUFF)
                                 if (target instanceof net.sf.l2j.gameserver.model.actor.Attackable) {
-                                    target.getAI().notifyEvent(AiEventType.AGGRESSION, activeChar, Integer.valueOf((int) skill.getPower()));
+                                    target.getAI().notifyEvent(AiEventType.AGGRESSION, activeChar, (int) skill.getPower());
                                 } else if (target instanceof net.sf.l2j.gameserver.model.actor.Playable) {
                                     if (target.getTarget() == activeChar) {
                                         target.getAI().setIntention(IntentionType.ATTACK, activeChar);

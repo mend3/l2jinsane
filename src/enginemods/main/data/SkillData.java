@@ -30,7 +30,7 @@ public class SkillData {
                     SKILLS.put(id + " " + level, description);
                 }
             }
-            LOG.info(SkillData.class.getSimpleName() + " load " + SkillData.class.getSimpleName() + " skills data.");
+            LOG.info("Loaded " + SKILLS.size() + " modded skills.");
         } catch (Exception e) {
             e.printStackTrace();
         }

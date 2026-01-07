@@ -17,10 +17,10 @@ public class SummonMinions extends L2AttackableAIScript {
     private static final Map<Integer, int[]> MINIONS = new HashMap<>();
 
     static {
-        MINIONS.put(Integer.valueOf(20767), new int[]{20768, 20769, 20770});
-        MINIONS.put(Integer.valueOf(21524), new int[]{21525});
-        MINIONS.put(Integer.valueOf(21531), new int[]{21658});
-        MINIONS.put(Integer.valueOf(21539), new int[]{21540});
+        MINIONS.put(20767, new int[]{20768, 20769, 20770});
+        MINIONS.put(21524, new int[]{21525});
+        MINIONS.put(21531, new int[]{21658});
+        MINIONS.put(21539, new int[]{21540});
     }
 
     public SummonMinions() {
@@ -35,12 +35,12 @@ public class SummonMinions extends L2AttackableAIScript {
         if (npc.isScriptValue(0)) {
             int npcId = npc.getNpcId();
             if (npcId != 20767) {
-                for (int val : MINIONS.get(Integer.valueOf(npcId))) {
+                for (int val : MINIONS.get(npcId)) {
                     Attackable newNpc = (Attackable) addSpawn(val, npc, true, 0L, false);
                     attack(newNpc, attacker);
                 }
             } else {
-                for (int val : MINIONS.get(Integer.valueOf(npcId)))
+                for (int val : MINIONS.get(npcId))
                     addSpawn(val, npc, true, 0L, false);
                 npc.broadcastNpcSay((String) Rnd.get((Object[]) ORCS_WORDS));
             }

@@ -25,12 +25,12 @@ public class Q369_CollectorOfJewels extends Quest {
 
     public Q369_CollectorOfJewels() {
         super(369, "Collector of Jewels");
-        DROPLIST.put(Integer.valueOf(20609), new int[]{5882, 630000});
-        DROPLIST.put(Integer.valueOf(20612), new int[]{5882, 770000});
-        DROPLIST.put(Integer.valueOf(20749), new int[]{5882, 850000});
-        DROPLIST.put(Integer.valueOf(20616), new int[]{5883, 600000});
-        DROPLIST.put(Integer.valueOf(20619), new int[]{5883, 730000});
-        DROPLIST.put(Integer.valueOf(20747), new int[]{5883, 850000});
+        DROPLIST.put(20609, new int[]{5882, 630000});
+        DROPLIST.put(20612, new int[]{5882, 770000});
+        DROPLIST.put(20749, new int[]{5882, 850000});
+        DROPLIST.put(20616, new int[]{5883, 600000});
+        DROPLIST.put(20619, new int[]{5883, 730000});
+        DROPLIST.put(20747, new int[]{5883, 850000});
         setItemsIds(5882, 5883);
         addStartNpc(30376);
         addTalkId(30376);
@@ -108,7 +108,7 @@ public class Q369_CollectorOfJewels extends Quest {
         if (st == null)
             return null;
         int cond = st.getInt("cond");
-        int[] drop = DROPLIST.get(Integer.valueOf(npc.getNpcId()));
+        int[] drop = DROPLIST.get(npc.getNpcId());
         if (cond == 1) {
             if (st.dropItems(drop[0], 1, 50, drop[1]) && st.getQuestItemsCount((drop[0] == 5882) ? 5883 : 5882) >= 50)
                 st.set("cond", "2");

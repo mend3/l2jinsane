@@ -7,7 +7,7 @@ import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.data.sql.ClanTable;
 import net.sf.l2j.gameserver.data.sql.PlayerInfoTable;
 import net.sf.l2j.gameserver.data.xml.NpcData;
-import net.sf.l2j.gameserver.data.xml.PlayerData;
+import net.sf.l2j.gameserver.data.xml.PlayerClassData;
 import net.sf.l2j.gameserver.model.World;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
@@ -66,10 +66,10 @@ public class HeroManager {
     private final List<StatSet> _diary = new ArrayList<>();
 
     private static String calcFightTime(long fightTime) {
-        String format = String.format("%%0%dd", Integer.valueOf(2));
+        String format = String.format("%%0%dd", 2);
         fightTime /= 1000L;
-        String seconds = String.format(format, Long.valueOf(fightTime % 60L));
-        String minutes = String.format(format, Long.valueOf(fightTime % 3600L / 60L));
+        String seconds = String.format(format, fightTime % 60L);
+        String minutes = String.format(format, fightTime % 3600L / 60L);
         String time = minutes + ":" + minutes;
         return time;
     }
@@ -137,7 +137,7 @@ public class HeroManager {
                                     throw throwable;
                                 }
                                 ps2.clearParameters();
-                                this._heroes.put(Integer.valueOf(objectId), hero);
+                                this._heroes.put(objectId, hero);
                             }
                             if (rs != null)
                                 rs.close();
@@ -211,7 +211,7 @@ public class HeroManager {
                                     throw throwable;
                                 }
                                 ps2.clearParameters();
-                                this._completeHeroes.put(Integer.valueOf(objectId), hero);
+                                this._completeHeroes.put(objectId, hero);
                             }
                             if (rs != null)
                                 rs.close();
@@ -260,7 +260,7 @@ public class HeroManager {
         } catch (Exception e) {
             LOGGER.error("Couldn't load heroes.", e);
         }
-        LOGGER.info("Loaded {} heroes and {} all time heroes.", Integer.valueOf(this._heroes.size()), Integer.valueOf(this._completeHeroes.size()));
+        LOGGER.info("Loaded {} heroes and {} all time heroes.", this._heroes.size(), this._completeHeroes.size());
     }
 
     private void loadMessage(int objectId) {
@@ -273,7 +273,7 @@ public class HeroManager {
                     ResultSet rs = ps.executeQuery();
                     try {
                         if (rs.next())
-                            this._heroMessages.put(Integer.valueOf(objectId), rs.getString("message"));
+                            this._heroMessages.put(objectId, rs.getString("message"));
                         if (rs != null)
                             rs.close();
                     } catch (Throwable throwable) {
@@ -308,7 +308,7 @@ public class HeroManager {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't load hero message for: {}.", e, Integer.valueOf(objectId));
+            LOGGER.error("Couldn't load hero message for: {}.", e, objectId);
         }
     }
 
@@ -327,7 +327,7 @@ public class HeroManager {
                             int action = rs.getInt("action");
                             int param = rs.getInt("param");
                             StatSet entry = new StatSet();
-                            entry.set("date", (new SimpleDateFormat("yyyy-MM-dd HH")).format(Long.valueOf(time)));
+                            entry.set("date", (new SimpleDateFormat("yyyy-MM-dd HH")).format(time));
                             if (action == 1) {
                                 NpcTemplate template = NpcData.getInstance().getTemplate(param);
                                 if (template != null)
@@ -353,7 +353,7 @@ public class HeroManager {
                             }
                         throw throwable;
                     }
-                    this._heroDiaries.put(Integer.valueOf(objectId), this._diary);
+                    this._heroDiaries.put(objectId, this._diary);
                     if (ps != null)
                         ps.close();
                 } catch (Throwable throwable) {
@@ -377,18 +377,18 @@ public class HeroManager {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't load hero diary for: {}.", e, Integer.valueOf(objectId));
+            LOGGER.error("Couldn't load hero diary for: {}.", e, objectId);
         }
-        LOGGER.info("Loaded {} diary entries for hero: {}.", Integer.valueOf(entries), PlayerInfoTable.getInstance().getPlayerName(objectId));
+        LOGGER.info("Loaded {} diary entries for hero: {}.", entries, PlayerInfoTable.getInstance().getPlayerName(objectId));
     }
 
     private void loadFights(int charId) {
         StatSet heroCountData = new StatSet();
         Calendar data = Calendar.getInstance();
-        data.set(5, 1);
-        data.set(11, 0);
-        data.set(12, 0);
-        data.set(14, 0);
+        data.set(Calendar.DATE, 1);
+        data.set(Calendar.HOUR_OF_DAY, 0);
+        data.set(Calendar.MINUTE, 0);
+        data.set(Calendar.MILLISECOND, 0);
         long from = data.getTimeInMillis();
         int numberOfFights = 0;
         int victories = 0;
@@ -415,13 +415,13 @@ public class HeroManager {
                             int classed = rset.getInt("classed");
                             if (charId == charOneId) {
                                 String name = PlayerInfoTable.getInstance().getPlayerName(charTwoId);
-                                String cls = PlayerData.getInstance().getClassNameById(charTwoClass);
+                                String cls = PlayerClassData.getInstance().getClassNameById(charTwoClass);
                                 if (name != null && cls != null) {
                                     StatSet fight = new StatSet();
                                     fight.set("oponent", name);
                                     fight.set("oponentclass", cls);
                                     fight.set("time", calcFightTime(time));
-                                    fight.set("start", (new SimpleDateFormat("yyyy-MM-dd HH:mm")).format(Long.valueOf(start)));
+                                    fight.set("start", (new SimpleDateFormat("yyyy-MM-dd HH:mm")).format(start));
                                     fight.set("classed", classed);
                                     if (winner == 1) {
                                         fight.set("result", "<font color=\"00ff00\">victory</font>");
@@ -440,13 +440,13 @@ public class HeroManager {
                             }
                             if (charId == charTwoId) {
                                 String name = PlayerInfoTable.getInstance().getPlayerName(charOneId);
-                                String cls = PlayerData.getInstance().getClassNameById(charOneClass);
+                                String cls = PlayerClassData.getInstance().getClassNameById(charOneClass);
                                 if (name != null && cls != null) {
                                     StatSet fight = new StatSet();
                                     fight.set("oponent", name);
                                     fight.set("oponentclass", cls);
                                     fight.set("time", calcFightTime(time));
-                                    fight.set("start", (new SimpleDateFormat("yyyy-MM-dd HH:mm")).format(Long.valueOf(start)));
+                                    fight.set("start", (new SimpleDateFormat("yyyy-MM-dd HH:mm")).format(start));
                                     fight.set("classed", classed);
                                     if (winner == 1) {
                                         fight.set("result", "<font color=\"ff0000\">loss</font>");
@@ -477,8 +477,8 @@ public class HeroManager {
                     heroCountData.set("victory", victories);
                     heroCountData.set("draw", draws);
                     heroCountData.set("loss", losses);
-                    this._heroCounts.put(Integer.valueOf(charId), heroCountData);
-                    this._heroFights.put(Integer.valueOf(charId), this._fights);
+                    this._heroCounts.put(charId, heroCountData);
+                    this._heroFights.put(charId, this._fights);
                     if (ps != null)
                         ps.close();
                 } catch (Throwable throwable) {
@@ -502,9 +502,9 @@ public class HeroManager {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't load hero fights history for: {}.", e, Integer.valueOf(charId));
+            LOGGER.error("Couldn't load hero fights history for: {}.", e, charId);
         }
-        LOGGER.info("Loaded {} fights for: {}.", Integer.valueOf(numberOfFights), PlayerInfoTable.getInstance().getPlayerName(charId));
+        LOGGER.info("Loaded {} fights for: {}.", numberOfFights, PlayerInfoTable.getInstance().getPlayerName(charId));
     }
 
     public Map<Integer, StatSet> getHeroes() {
@@ -516,9 +516,9 @@ public class HeroManager {
     }
 
     public int getHeroesCount(Player player) {
-        if (this._heroes.isEmpty() || !this._heroes.containsKey(Integer.valueOf(player.getObjectId())))
+        if (this._heroes.isEmpty() || !this._heroes.containsKey(player.getObjectId()))
             return 0;
-        int val = Integer.parseInt(this._heroes.get(Integer.valueOf(player.getObjectId())).getString("count"));
+        int val = Integer.parseInt(this._heroes.get(player.getObjectId()).getString("count"));
         return (val > 0) ? val : 0;
     }
 
@@ -540,13 +540,13 @@ public class HeroManager {
     }
 
     public void showHeroDiary(Player player, int heroclass, int objectId, int page) {
-        List<StatSet> mainList = this._heroDiaries.get(Integer.valueOf(objectId));
+        List<StatSet> mainList = this._heroDiaries.get(objectId);
         if (mainList == null)
             return;
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setFile("data/html/olympiad/herodiary.htm");
         html.replace("%heroname%", PlayerInfoTable.getInstance().getPlayerName(objectId));
-        html.replace("%message%", this._heroMessages.get(Integer.valueOf(objectId)));
+        html.replace("%message%", this._heroMessages.get(objectId));
         html.disableValidation();
         if (!mainList.isEmpty()) {
             List<StatSet> list = new ArrayList<>();
@@ -586,7 +586,7 @@ public class HeroManager {
     }
 
     public void showHeroFights(Player player, int heroclass, int objectId, int page) {
-        List<StatSet> list = this._heroFights.get(Integer.valueOf(objectId));
+        List<StatSet> list = this._heroFights.get(objectId);
         if (list == null)
             return;
         int win = 0;
@@ -597,8 +597,8 @@ public class HeroManager {
         html.replace("%heroname%", PlayerInfoTable.getInstance().getPlayerName(objectId));
         html.disableValidation();
         if (!list.isEmpty()) {
-            if (this._heroCounts.containsKey(Integer.valueOf(objectId))) {
-                StatSet _herocount = this._heroCounts.get(Integer.valueOf(objectId));
+            if (this._heroCounts.containsKey(objectId)) {
+                StatSet _herocount = this._heroCounts.get(objectId);
                 win = _herocount.getInteger("victory");
                 loss = _herocount.getInteger("loss");
                 draw = _herocount.getInteger("draw");
@@ -697,7 +697,7 @@ public class HeroManager {
         Map<Integer, StatSet> heroes = new HashMap<>();
         for (StatSet hero : newHeroes) {
             int objectId = hero.getInteger("char_id");
-            StatSet set = this._completeHeroes.get(Integer.valueOf(objectId));
+            StatSet set = this._completeHeroes.get(objectId);
             if (set != null) {
                 set.set("count", set.getInteger("count") + 1);
                 set.set("played", 1);
@@ -710,7 +710,7 @@ public class HeroManager {
                 set.set("played", 1);
                 set.set("active", 0);
             }
-            heroes.put(Integer.valueOf(objectId), set);
+            heroes.put(objectId, set);
         }
         try {
             Connection con = ConnectionPool.getConnection();
@@ -764,7 +764,7 @@ public class HeroManager {
                         ps.setInt(4, hero.getInteger("played"));
                         ps.setInt(5, hero.getInteger("active"));
                         ps.addBatch();
-                        if (!this._completeHeroes.containsKey(Integer.valueOf(heroId))) {
+                        if (!this._completeHeroes.containsKey(heroId)) {
                             PreparedStatement ps2 = con.prepareStatement("SELECT characters.clanid AS clanid, coalesce(clan_data.ally_Id, 0) AS allyId FROM characters LEFT JOIN clan_data ON clan_data.clan_id = characters.clanid WHERE characters.obj_Id = ?");
                             try {
                                 ps2.setInt(1, heroId);
@@ -815,8 +815,8 @@ public class HeroManager {
                                     }
                                 throw throwable;
                             }
-                            this._heroes.put(Integer.valueOf(heroId), hero);
-                            this._completeHeroes.put(Integer.valueOf(heroId), hero);
+                            this._heroes.put(heroId, hero);
+                            this._completeHeroes.put(heroId, hero);
                         }
                     }
                     ps.executeBatch();
@@ -856,15 +856,15 @@ public class HeroManager {
         NpcTemplate template = NpcData.getInstance().getTemplate(npcId);
         if (template == null)
             return;
-        List<StatSet> list = this._heroDiaries.get(Integer.valueOf(objectId));
+        List<StatSet> list = this._heroDiaries.get(objectId);
         if (list == null)
             return;
-        this._heroDiaries.remove(Integer.valueOf(objectId));
+        this._heroDiaries.remove(objectId);
         StatSet entry = new StatSet();
-        entry.set("date", (new SimpleDateFormat("yyyy-MM-dd HH")).format(Long.valueOf(System.currentTimeMillis())));
+        entry.set("date", (new SimpleDateFormat("yyyy-MM-dd HH")).format(System.currentTimeMillis()));
         entry.set("action", template.getName() + " was defeated");
         list.add(entry);
-        this._heroDiaries.put(Integer.valueOf(objectId), list);
+        this._heroDiaries.put(objectId, list);
     }
 
     public void setCastleTaken(int objectId, int castleId) {
@@ -872,15 +872,15 @@ public class HeroManager {
         Castle castle = CastleManager.getInstance().getCastleById(castleId);
         if (castle == null)
             return;
-        List<StatSet> list = this._heroDiaries.get(Integer.valueOf(objectId));
+        List<StatSet> list = this._heroDiaries.get(objectId);
         if (list == null)
             return;
-        this._heroDiaries.remove(Integer.valueOf(objectId));
+        this._heroDiaries.remove(objectId);
         StatSet entry = new StatSet();
-        entry.set("date", (new SimpleDateFormat("yyyy-MM-dd HH")).format(Long.valueOf(System.currentTimeMillis())));
+        entry.set("date", (new SimpleDateFormat("yyyy-MM-dd HH")).format(System.currentTimeMillis()));
         entry.set("action", castle.getName() + " Castle was successfuly taken");
         list.add(entry);
-        this._heroDiaries.put(Integer.valueOf(objectId), list);
+        this._heroDiaries.put(objectId, list);
     }
 
     public void setDiaryData(int objectId, int action, int param) {
@@ -917,23 +917,23 @@ public class HeroManager {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't save diary data for {}.", e, Integer.valueOf(objectId));
+            LOGGER.error("Couldn't save diary data for {}.", e, objectId);
         }
     }
 
     public void setHeroMessage(Player player, String message) {
-        this._heroMessages.put(Integer.valueOf(player.getObjectId()), message);
+        this._heroMessages.put(player.getObjectId(), message);
     }
 
     public void saveHeroMessage(int objectId) {
-        if (!this._heroMessages.containsKey(Integer.valueOf(objectId)))
+        if (!this._heroMessages.containsKey(objectId))
             return;
         try {
             Connection con = ConnectionPool.getConnection();
             try {
                 PreparedStatement ps = con.prepareStatement("UPDATE heroes SET message=? WHERE char_id=?");
                 try {
-                    ps.setString(1, this._heroMessages.get(Integer.valueOf(objectId)));
+                    ps.setString(1, this._heroMessages.get(objectId));
                     ps.setInt(2, objectId);
                     ps.execute();
                     if (ps != null)
@@ -959,7 +959,7 @@ public class HeroManager {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't save hero message for {}.", e, Integer.valueOf(objectId));
+            LOGGER.error("Couldn't save hero message for {}.", e, objectId);
         }
     }
 
@@ -971,17 +971,17 @@ public class HeroManager {
     }
 
     public boolean isActiveHero(int id) {
-        StatSet entry = this._heroes.get(Integer.valueOf(id));
+        StatSet entry = this._heroes.get(id);
         return (entry != null && entry.getInteger("active") == 1);
     }
 
     public boolean isInactiveHero(int id) {
-        StatSet entry = this._heroes.get(Integer.valueOf(id));
+        StatSet entry = this._heroes.get(id);
         return (entry != null && entry.getInteger("active") == 0);
     }
 
     public void activateHero(Player player) {
-        StatSet hero = this._heroes.get(Integer.valueOf(player.getObjectId()));
+        StatSet hero = this._heroes.get(player.getObjectId());
         if (hero == null)
             return;
         hero.set("active", 1);
@@ -996,7 +996,7 @@ public class HeroManager {
         setHeroGained(player.getObjectId());
         loadFights(player.getObjectId());
         loadDiary(player.getObjectId());
-        this._heroMessages.put(Integer.valueOf(player.getObjectId()), "");
+        this._heroMessages.put(player.getObjectId(), "");
         updateHeroes();
     }
 

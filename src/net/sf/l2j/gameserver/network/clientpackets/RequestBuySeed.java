@@ -91,7 +91,7 @@ public class RequestBuySeed extends L2GameClientPacket {
             } else if (player.getInventory().getItemByItemId(ih.getId()) == null) {
                 slots++;
             }
-            _productInfo.put(Integer.valueOf(ih.getId()), sp);
+            _productInfo.put(ih.getId(), sp);
         }
         if (!player.getInventory().validateWeight(totalWeight)) {
             sendPacket(SystemMessage.getSystemMessage(SystemMessageId.WEIGHT_LIMIT_EXCEEDED));
@@ -106,7 +106,7 @@ public class RequestBuySeed extends L2GameClientPacket {
             return;
         }
         for (IntIntHolder i : this._items) {
-            SeedProduction sp = _productInfo.get(Integer.valueOf(i.getId()));
+            SeedProduction sp = _productInfo.get(i.getId());
             int price = sp.getPrice() * i.getValue();
             if (!sp.decreaseAmount(i.getValue()) || !player.reduceAdena("Buy", price, player, false)) {
                 totalPrice -= price;

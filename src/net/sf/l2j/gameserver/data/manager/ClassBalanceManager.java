@@ -85,7 +85,7 @@ public class ClassBalanceManager implements IXmlReader {
 
         while (var3.hasNext()) {
             Entry<String, ClassBalanceHolder> data = (Entry) var3.next();
-            if (Integer.valueOf(data.getKey().split(";")[0]) == classId) {
+            if (Integer.parseInt(data.getKey().split(";")[0]) == classId) {
                 list.add(data.getValue());
             }
         }
@@ -281,15 +281,15 @@ public class ClassBalanceManager implements IXmlReader {
         }
 
         public int compare(String l, String r) {
-            int left = Integer.valueOf(l.split(";")[0]);
-            int right = Integer.valueOf(r.split(";")[0]);
+            int left = Integer.parseInt(l.split(";")[0]);
+            int right = Integer.parseInt(r.split(";")[0]);
             if (left > right) {
                 return 1;
             } else if (left < right) {
                 return -1;
-            } else if (Integer.valueOf(l.split(";")[1]) > Integer.valueOf(r.split(";")[1])) {
+            } else if (Integer.parseInt(l.split(";")[1]) > Integer.parseInt(r.split(";")[1])) {
                 return 1;
-            } else if (Integer.valueOf(r.split(";")[1]) > Integer.valueOf(l.split(";")[1])) {
+            } else if (Integer.parseInt(r.split(";")[1]) > Integer.parseInt(l.split(";")[1])) {
                 return -1;
             } else {
                 Random x = new Random();

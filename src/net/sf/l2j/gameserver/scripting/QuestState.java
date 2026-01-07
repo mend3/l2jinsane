@@ -209,7 +209,7 @@ public final class QuestState {
         try {
             value = Integer.parseInt(variable);
         } catch (Exception e) {
-            LOGGER.error("{}: variable {} isn't an integer: {}.", e, this._player.getName(), var, Integer.valueOf(value));
+            LOGGER.error("{}: variable {} isn't an integer: {}.", e, this._player.getName(), var, value);
         }
         return value;
     }

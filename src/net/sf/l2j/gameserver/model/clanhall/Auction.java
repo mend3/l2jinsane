@@ -7,7 +7,6 @@ import net.sf.l2j.commons.pool.ThreadPool;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.pledge.Clan;
 import net.sf.l2j.gameserver.network.SystemMessageId;
-import net.sf.l2j.gameserver.network.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 
 import java.sql.Connection;
@@ -61,7 +60,7 @@ public class Auction {
                             Bidder bidder = new Bidder(rs.getString("bidderName"), rs.getString("clan_name"), rs.getInt("maxBid"), rs.getLong("time_bid"));
                             if (rs.isFirst())
                                 this._highestBidder = bidder;
-                            this._bidders.put(Integer.valueOf(rs.getInt("bidderId")), bidder);
+                            this._bidders.put(rs.getInt("bidderId"), bidder);
                         }
                         if (rs != null)
                             rs.close();
@@ -191,7 +190,7 @@ public class Auction {
             return;
         }
         int requiredAdena = bid;
-        Bidder bidder = this._bidders.get(Integer.valueOf(player.getClanId()));
+        Bidder bidder = this._bidders.get(player.getClanId());
         if (bidder != null) {
             if (bid <= bidder.getBid()) {
                 player.sendPacket(SystemMessageId.BID_PRICE_MUST_BE_HIGHER);
@@ -204,7 +203,7 @@ public class Auction {
         long time = System.currentTimeMillis();
         if (bidder == null) {
             bidder = new Bidder(clan.getLeaderName(), clan.getName(), bid, time);
-            this._bidders.put(Integer.valueOf(player.getClanId()), bidder);
+            this._bidders.put(player.getClanId(), bidder);
         } else {
             bidder.setBid(bid);
             bidder.setTime(time);
@@ -368,7 +367,7 @@ public class Auction {
         } catch (Exception e) {
             LOGGER.error("Couldn't cancel Auction bid.", e);
         }
-        Bidder bidder = this._bidders.remove(Integer.valueOf(objectId));
+        Bidder bidder = this._bidders.remove(objectId);
         if (bidder != null) {
             Clan clan = bidder.getClan();
             if (clan != null) {

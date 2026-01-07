@@ -163,7 +163,7 @@ public class OlympiadManagerNpc extends Folk {
                     i = 0;
                     sb = new StringBuilder(2000);
                     for (OlympiadGameTask task : OlympiadGameManager.getInstance().getOlympiadTasks()) {
-                        StringUtil.append(sb, "<a action=\"bypass arenachange ", Integer.valueOf(i), "\">Arena ", Integer.valueOf(++i), "&nbsp;");
+                        StringUtil.append(sb, "<a action=\"bypass arenachange ", i, "\">Arena ", ++i, "&nbsp;");
                         if (task.isGameStarted()) {
                             if (task.isInTimerTime()) {
                                 StringUtil.append(sb, "(&$907;)");

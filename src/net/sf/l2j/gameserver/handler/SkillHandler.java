@@ -49,11 +49,11 @@ public class SkillHandler {
 
     private void registerHandler(ISkillHandler handler) {
         for (L2SkillType t : handler.getSkillIds())
-            this._entries.put(Integer.valueOf(t.ordinal()), handler);
+            this._entries.put(t.ordinal(), handler);
     }
 
     public ISkillHandler getHandler(L2SkillType skillType) {
-        return this._entries.get(Integer.valueOf(skillType.ordinal()));
+        return this._entries.get(skillType.ordinal());
     }
 
     public int size() {

@@ -42,44 +42,44 @@ public class Q663_SeductiveWhispers extends Quest {
 
     public Q663_SeductiveWhispers() {
         super(663, "Seductive Whispers");
-        CARDS.put(Integer.valueOf(0), "No such card");
-        CARDS.put(Integer.valueOf(11), "<font color=\"ff453d\"> Sun Card: 1 </font>");
-        CARDS.put(Integer.valueOf(12), "<font color=\"ff453d\"> Sun Card: 2 </font>");
-        CARDS.put(Integer.valueOf(13), "<font color=\"ff453d\"> Sun Card: 3 </font>");
-        CARDS.put(Integer.valueOf(14), "<font color=\"ff453d\"> Sun Card: 4 </font>");
-        CARDS.put(Integer.valueOf(15), "<font color=\"ff453d\"> Sun Card: 5 </font>");
-        CARDS.put(Integer.valueOf(21), "<font color=\"fff802\"> Moon Card: 1 </font>");
-        CARDS.put(Integer.valueOf(22), "<font color=\"fff802\"> Moon Card: 2 </font>");
-        CARDS.put(Integer.valueOf(23), "<font color=\"fff802\"> Moon Card: 3 </font>");
-        CARDS.put(Integer.valueOf(24), "<font color=\"fff802\"> Moon Card: 4 </font>");
-        CARDS.put(Integer.valueOf(25), "<font color=\"fff802\"> Moon Card: 5 </font>");
-        CHANCES.put(Integer.valueOf(20674), Integer.valueOf(807000));
-        CHANCES.put(Integer.valueOf(20678), Integer.valueOf(372000));
-        CHANCES.put(Integer.valueOf(20954), Integer.valueOf(460000));
-        CHANCES.put(Integer.valueOf(20955), Integer.valueOf(537000));
-        CHANCES.put(Integer.valueOf(20956), Integer.valueOf(540000));
-        CHANCES.put(Integer.valueOf(20957), Integer.valueOf(565000));
-        CHANCES.put(Integer.valueOf(20958), Integer.valueOf(425000));
-        CHANCES.put(Integer.valueOf(20959), Integer.valueOf(682000));
-        CHANCES.put(Integer.valueOf(20960), Integer.valueOf(372000));
-        CHANCES.put(Integer.valueOf(20961), Integer.valueOf(547000));
-        CHANCES.put(Integer.valueOf(20962), Integer.valueOf(522000));
-        CHANCES.put(Integer.valueOf(20963), Integer.valueOf(498000));
-        CHANCES.put(Integer.valueOf(20974), Integer.valueOf(1000000));
-        CHANCES.put(Integer.valueOf(20975), Integer.valueOf(975000));
-        CHANCES.put(Integer.valueOf(20976), Integer.valueOf(825000));
-        CHANCES.put(Integer.valueOf(20996), Integer.valueOf(385000));
-        CHANCES.put(Integer.valueOf(20997), Integer.valueOf(342000));
-        CHANCES.put(Integer.valueOf(20998), Integer.valueOf(377000));
-        CHANCES.put(Integer.valueOf(20999), Integer.valueOf(450000));
-        CHANCES.put(Integer.valueOf(21000), Integer.valueOf(395000));
-        CHANCES.put(Integer.valueOf(21001), Integer.valueOf(535000));
-        CHANCES.put(Integer.valueOf(21002), Integer.valueOf(472000));
-        CHANCES.put(Integer.valueOf(21006), Integer.valueOf(502000));
-        CHANCES.put(Integer.valueOf(21007), Integer.valueOf(540000));
-        CHANCES.put(Integer.valueOf(21008), Integer.valueOf(692000));
-        CHANCES.put(Integer.valueOf(21009), Integer.valueOf(740000));
-        CHANCES.put(Integer.valueOf(21010), Integer.valueOf(595000));
+        CARDS.put(0, "No such card");
+        CARDS.put(11, "<font color=\"ff453d\"> Sun Card: 1 </font>");
+        CARDS.put(12, "<font color=\"ff453d\"> Sun Card: 2 </font>");
+        CARDS.put(13, "<font color=\"ff453d\"> Sun Card: 3 </font>");
+        CARDS.put(14, "<font color=\"ff453d\"> Sun Card: 4 </font>");
+        CARDS.put(15, "<font color=\"ff453d\"> Sun Card: 5 </font>");
+        CARDS.put(21, "<font color=\"fff802\"> Moon Card: 1 </font>");
+        CARDS.put(22, "<font color=\"fff802\"> Moon Card: 2 </font>");
+        CARDS.put(23, "<font color=\"fff802\"> Moon Card: 3 </font>");
+        CARDS.put(24, "<font color=\"fff802\"> Moon Card: 4 </font>");
+        CARDS.put(25, "<font color=\"fff802\"> Moon Card: 5 </font>");
+        CHANCES.put(20674, 807000);
+        CHANCES.put(20678, 372000);
+        CHANCES.put(20954, 460000);
+        CHANCES.put(20955, 537000);
+        CHANCES.put(20956, 540000);
+        CHANCES.put(20957, 565000);
+        CHANCES.put(20958, 425000);
+        CHANCES.put(20959, 682000);
+        CHANCES.put(20960, 372000);
+        CHANCES.put(20961, 547000);
+        CHANCES.put(20962, 522000);
+        CHANCES.put(20963, 498000);
+        CHANCES.put(20974, 1000000);
+        CHANCES.put(20975, 975000);
+        CHANCES.put(20976, 825000);
+        CHANCES.put(20996, 385000);
+        CHANCES.put(20997, 342000);
+        CHANCES.put(20998, 377000);
+        CHANCES.put(20999, 450000);
+        CHANCES.put(21000, 395000);
+        CHANCES.put(21001, 535000);
+        CHANCES.put(21002, 472000);
+        CHANCES.put(21006, 502000);
+        CHANCES.put(21007, 540000);
+        CHANCES.put(21008, 692000);
+        CHANCES.put(21009, 740000);
+        CHANCES.put(21010, 595000);
         setItemsIds(8766);
         addStartNpc(30846);
         addTalkId(30846);
@@ -345,11 +345,11 @@ public class Q663_SeductiveWhispers extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropItems(8766, 1, 0, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(8766, 1, 0, CHANCES.get(npc.getNpcId()));
         return null;
     }
 
     private String getHTML(String html, int index, int param3, String name) {
-        return getHtmlText(html).replace("%card1pic%", CARDS.get(Integer.valueOf(index))).replace("%card2pic%", CARDS.get(Integer.valueOf(param3))).replace("%name%", name);
+        return getHtmlText(html).replace("%card1pic%", CARDS.get(index)).replace("%card2pic%", CARDS.get(param3)).replace("%name%", name);
     }
 }

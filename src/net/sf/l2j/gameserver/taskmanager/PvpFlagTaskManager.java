@@ -44,7 +44,7 @@ public final class PvpFlagTaskManager implements Runnable {
     }
 
     public void add(Player player, long time) {
-        this._players.put(player, Long.valueOf(System.currentTimeMillis() + time));
+        this._players.put(player, System.currentTimeMillis() + time);
     }
 
     public void remove(Player player) {

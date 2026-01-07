@@ -36,7 +36,7 @@ public final class DebugMovementTaskManager implements Runnable {
         ItemInstance item = new ItemInstance(IdFactory.getInstance().getNextId(), itemId);
         item.setCount(1);
         item.spawnMe(x, y, z + 5);
-        this._items.put(item, Long.valueOf(System.currentTimeMillis() + Config.DEBUG_MOVEMENT));
+        this._items.put(item, System.currentTimeMillis() + Config.DEBUG_MOVEMENT);
     }
 
     private static class SingletonHolder {

@@ -36,7 +36,7 @@ public class RegionComunityBoard extends AbstractMods {
         } else if (lvl >= 76) {
             hb.append(Html.newFontColor("FF0000", lvl));
         } else {
-            hb.append(Integer.valueOf(lvl));
+            hb.append(lvl);
         }
         return hb.toString();
     }
@@ -113,7 +113,7 @@ public class RegionComunityBoard extends AbstractMods {
                     if (currentPage == page) {
                         hb.append("<td width=20>", Html.newFontColor("LEVEL", currentPage), "</td>");
                     } else {
-                        hb.append("<td width=20><a action=\"bypass _bbsloc ", Integer.valueOf(currentPage), "\">", Integer.valueOf(currentPage), "</a></td>");
+                        hb.append("<td width=20><a action=\"bypass _bbsloc ", currentPage, "\">", currentPage, "</a></td>");
                     }
                     currentPage++;
                 }

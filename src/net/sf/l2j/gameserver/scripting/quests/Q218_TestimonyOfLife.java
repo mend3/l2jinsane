@@ -108,7 +108,7 @@ public class Q218_TestimonyOfLife extends Quest {
             st.giveItems(3141, 1);
             if (!player.getMemos().getBool("secondClassChange37", false)) {
                 htmltext = "30460-04a.htm";
-                st.giveItems(7562, DF_REWARD_37.get(Integer.valueOf(player.getRace().ordinal())));
+                st.giveItems(7562, DF_REWARD_37.get(player.getRace().ordinal()));
                 player.getMemos().set("secondClassChange37", true);
             }
         } else if (event.equalsIgnoreCase("30154-07.htm")) {

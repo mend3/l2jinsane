@@ -55,13 +55,13 @@ public class ItemHandler {
     }
 
     private void registerHandler(IItemHandler handler) {
-        this._entries.put(Integer.valueOf(handler.getClass().getSimpleName().intern().hashCode()), handler);
+        this._entries.put(handler.getClass().getSimpleName().intern().hashCode(), handler);
     }
 
     public IItemHandler getHandler(EtcItem item) {
         if (item == null || item.getHandlerName() == null)
             return null;
-        return this._entries.get(Integer.valueOf(item.getHandlerName().hashCode()));
+        return this._entries.get(item.getHandlerName().hashCode());
     }
 
     public int size() {

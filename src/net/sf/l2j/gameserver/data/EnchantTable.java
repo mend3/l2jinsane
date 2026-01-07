@@ -34,15 +34,15 @@ public class EnchantTable {
                     for (Node d = n.getFirstChild(); d != null; d = d.getNextSibling()) {
                         if ("enchant".equalsIgnoreCase(d.getNodeName())) {
                             NamedNodeMap attrs = d.getAttributes();
-                            int id = Integer.valueOf(attrs.getNamedItem("id").getNodeValue());
-                            byte grade = Byte.valueOf(attrs.getNamedItem("grade").getNodeValue());
-                            boolean weapon = Boolean.valueOf(attrs.getNamedItem("weapon").getNodeValue());
-                            boolean breaks = Boolean.valueOf(attrs.getNamedItem("break").getNodeValue());
-                            boolean maintain = Boolean.valueOf(attrs.getNamedItem("maintain").getNodeValue());
+                            int id = Integer.parseInt(attrs.getNamedItem("id").getNodeValue());
+                            byte grade = Byte.parseByte(attrs.getNamedItem("grade").getNodeValue());
+                            boolean weapon = Boolean.parseBoolean(attrs.getNamedItem("weapon").getNodeValue());
+                            boolean breaks = Boolean.parseBoolean(attrs.getNamedItem("break").getNodeValue());
+                            boolean maintain = Boolean.parseBoolean(attrs.getNamedItem("maintain").getNodeValue());
                             String[] list = attrs.getNamedItem("chance").getNodeValue().split(";");
                             byte[] chance = new byte[list.length];
                             for (int i = 0; i < list.length; i++)
-                                chance[i] = Byte.valueOf(list[i]);
+                                chance[i] = Byte.parseByte(list[i]);
                             CrystalType grade_test = CrystalType.NONE;
                             switch (grade) {
                                 case 1:
@@ -61,7 +61,7 @@ public class EnchantTable {
                                     grade_test = CrystalType.S;
                                     break;
                             }
-                            _map.put(Integer.valueOf(id), new L2EnchantScroll(grade_test, weapon, breaks, maintain, chance));
+                            _map.put(id, new L2EnchantScroll(grade_test, weapon, breaks, maintain, chance));
                         }
                     }
             }
@@ -72,7 +72,7 @@ public class EnchantTable {
     }
 
     public L2EnchantScroll getEnchantScroll(ItemInstance item) {
-        return _map.get(Integer.valueOf(item.getItemId()));
+        return _map.get(item.getItemId());
     }
 
     private static class SingletonHolder {

@@ -51,7 +51,7 @@ public final class PetTemplate extends NpcTemplate {
     }
 
     public PetDataEntry getPetDataEntry(int level) {
-        return this._dataEntries.get(Integer.valueOf(level));
+        return this._dataEntries.get(level);
     }
 
     public boolean canEatFood(int itemId) {

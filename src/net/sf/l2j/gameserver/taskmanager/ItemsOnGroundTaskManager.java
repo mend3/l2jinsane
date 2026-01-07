@@ -54,7 +54,7 @@ public final class ItemsOnGroundTaskManager implements Runnable {
                                 if (castle != null && castle.getTicket(item.getItemId()) != null)
                                     castle.addDroppedTicket(item);
                                 long interval = rs.getLong(8);
-                                this._items.put(item, Long.valueOf((interval == 0L) ? 0L : (time + interval)));
+                                this._items.put(item, (interval == 0L) ? 0L : (time + interval));
                             }
                             st2.execute();
                             if (rs != null)
@@ -104,7 +104,7 @@ public final class ItemsOnGroundTaskManager implements Runnable {
         } catch (Exception e) {
             LOGGER.error("Error while loading items on ground data.", e);
         }
-        LOGGER.info("Restored {} items on ground.", Integer.valueOf(this._items.size()));
+        LOGGER.info("Restored {} items on ground.", this._items.size());
     }
 
     public static ItemsOnGroundTaskManager getInstance() {
@@ -128,7 +128,7 @@ public final class ItemsOnGroundTaskManager implements Runnable {
         if (actor == null || item.isDestroyProtected())
             return;
         long dropTime = 0L;
-        Integer special = Config.SPECIAL_ITEM_DESTROY_TIME.get(Integer.valueOf(item.getItemId()));
+        Integer special = Config.SPECIAL_ITEM_DESTROY_TIME.get(item.getItemId());
         if (special != null) {
             dropTime = special;
         } else if (item.isHerb()) {
@@ -143,7 +143,7 @@ public final class ItemsOnGroundTaskManager implements Runnable {
             dropTime *= Config.PLAYER_DROPPED_ITEM_MULTIPLIER;
         if (dropTime != 0L)
             dropTime += System.currentTimeMillis();
-        this._items.put(item, Long.valueOf(dropTime));
+        this._items.put(item, dropTime);
     }
 
     public void remove(ItemInstance item) {
@@ -202,7 +202,7 @@ public final class ItemsOnGroundTaskManager implements Runnable {
         } catch (Exception e) {
             LOGGER.error("Couldn't save items on ground.", e);
         }
-        LOGGER.info("Saved {} items on ground.", Integer.valueOf(this._items.size()));
+        LOGGER.info("Saved {} items on ground.", this._items.size());
     }
 
     private static class SingletonHolder {

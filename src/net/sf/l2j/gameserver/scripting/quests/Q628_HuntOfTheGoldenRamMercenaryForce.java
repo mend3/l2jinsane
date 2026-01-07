@@ -27,16 +27,16 @@ public class Q628_HuntOfTheGoldenRamMercenaryForce extends Quest {
 
     public Q628_HuntOfTheGoldenRamMercenaryForce() {
         super(628, "Hunt of the Golden Ram Mercenary Force");
-        CHANCES.put(Integer.valueOf(21508), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21509), Integer.valueOf(430000));
-        CHANCES.put(Integer.valueOf(21510), Integer.valueOf(521000));
-        CHANCES.put(Integer.valueOf(21511), Integer.valueOf(575000));
-        CHANCES.put(Integer.valueOf(21512), Integer.valueOf(746000));
-        CHANCES.put(Integer.valueOf(21513), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21514), Integer.valueOf(430000));
-        CHANCES.put(Integer.valueOf(21515), Integer.valueOf(520000));
-        CHANCES.put(Integer.valueOf(21516), Integer.valueOf(531000));
-        CHANCES.put(Integer.valueOf(21517), Integer.valueOf(744000));
+        CHANCES.put(21508, 500000);
+        CHANCES.put(21509, 430000);
+        CHANCES.put(21510, 521000);
+        CHANCES.put(21511, 575000);
+        CHANCES.put(21512, 746000);
+        CHANCES.put(21513, 500000);
+        CHANCES.put(21514, 430000);
+        CHANCES.put(21515, 520000);
+        CHANCES.put(21516, 531000);
+        CHANCES.put(21517, 744000);
         setItemsIds(7248, 7249, 7246, 7247);
         addStartNpc(31554);
         addTalkId(31554);
@@ -129,7 +129,7 @@ public class Q628_HuntOfTheGoldenRamMercenaryForce extends Quest {
             case 21511:
             case 21512:
                 if (cond == 1 || cond == 2)
-                    st.dropItems(7248, 1, 100, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7248, 1, 100, CHANCES.get(npcId));
                 break;
             case 21513:
             case 21514:
@@ -137,7 +137,7 @@ public class Q628_HuntOfTheGoldenRamMercenaryForce extends Quest {
             case 21516:
             case 21517:
                 if (cond == 2)
-                    st.dropItems(7249, 1, 100, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7249, 1, 100, CHANCES.get(npcId));
                 break;
         }
         return null;

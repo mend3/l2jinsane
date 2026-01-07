@@ -63,18 +63,18 @@ public class AdminSkill implements IAdminCommandHandler {
         int max = MathUtil.countPagesNumber(skills.size(), 10);
         skills = skills.subList((page - 1) * 10, Math.min(page * 10, skills.size()));
         StringBuilder sb = new StringBuilder(3000);
-        StringUtil.append(sb, "<html><body><table width=270><tr><td width=45><button value=\"Main\" action=\"bypass -h admin_admin\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td><td width=180><center>Delete Skills Menu</center></td><td width=45><button value=\"Back\" action=\"bypass -h admin_show_skills\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td></tr></table><br><br><center>Editing <font color=\"LEVEL\">", player.getName(), "</font>, ", player.getTemplate().getClassName(), " lvl ", Integer.valueOf(player.getLevel()), ".<br><center><table width=270><tr>");
+        StringUtil.append(sb, "<html><body><table width=270><tr><td width=45><button value=\"Main\" action=\"bypass -h admin_admin\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td><td width=180><center>Delete Skills Menu</center></td><td width=45><button value=\"Back\" action=\"bypass -h admin_show_skills\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td></tr></table><br><br><center>Editing <font color=\"LEVEL\">", player.getName(), "</font>, ", player.getTemplate().getClassName(), " lvl ", player.getLevel(), ".<br><center><table width=270><tr>");
         for (int i = 0; i < max; i++) {
             int pagenr = i + 1;
             if (page == pagenr) {
-                StringUtil.append(sb, "<td>", Integer.valueOf(pagenr), "</td>");
+                StringUtil.append(sb, "<td>", pagenr, "</td>");
             } else {
-                StringUtil.append(sb, "<td><a action=\"bypass -h admin_remove_skills ", Integer.valueOf(pagenr), "\">", Integer.valueOf(pagenr), "</a></td>");
+                StringUtil.append(sb, "<td><a action=\"bypass -h admin_remove_skills ", pagenr, "\">", pagenr, "</a></td>");
             }
         }
         sb.append("</tr></table></center><br><table width=270><tr><td width=80>Name:</td><td width=60>Level:</td><td width=40>Id:</td></tr>");
         for (L2Skill skill : skills) {
-            StringUtil.append(sb, "<tr><td width=80><a action=\"bypass -h admin_remove_skill ", Integer.valueOf(skill.getId()), "\">", skill.getName(), "</a></td><td width=60>", Integer.valueOf(skill.getLevel()), "</td><td width=40>", Integer.valueOf(skill.getId()), "</td></tr>");
+            StringUtil.append(sb, "<tr><td width=80><a action=\"bypass -h admin_remove_skill ", skill.getId(), "\">", skill.getName(), "</a></td><td width=60>", skill.getLevel(), "</td><td width=40>", skill.getId(), "</td></tr>");
         }
         sb.append("</table><br><center><table width=200><tr><td width=50 align=right>Id: </td><td><edit var=\"id_to_remove\" width=55></td><td width=100><button value=\"Remove skill\" action=\"bypass -h admin_remove_skill $id_to_remove\" width=95 height=21 back=\"bigbutton_over\" fore=\"bigbutton\"></td></tr><tr><td></td><td></td><td><button value=\"Back to stats\" action=\"bypass -h admin_current_player\" width=95 height=21 back=\"bigbutton_over\" fore=\"bigbutton\"></td></tr></table></center></body></html>");
         NpcHtmlMessage html = new NpcHtmlMessage(0);

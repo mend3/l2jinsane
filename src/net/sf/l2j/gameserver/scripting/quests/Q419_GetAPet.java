@@ -51,20 +51,20 @@ public class Q419_GetAPet extends Quest {
 
     public Q419_GetAPet() {
         super(419, "Get a Pet");
-        DROPLIST.put(Integer.valueOf(20103), new int[]{3423, 600000});
-        DROPLIST.put(Integer.valueOf(20106), new int[]{3423, 750000});
-        DROPLIST.put(Integer.valueOf(20108), new int[]{3423, 1000000});
-        DROPLIST.put(Integer.valueOf(20460), new int[]{3424, 600000});
-        DROPLIST.put(Integer.valueOf(20308), new int[]{3424, 750000});
-        DROPLIST.put(Integer.valueOf(20466), new int[]{3424, 1000000});
-        DROPLIST.put(Integer.valueOf(20025), new int[]{3425, 600000});
-        DROPLIST.put(Integer.valueOf(20105), new int[]{3425, 750000});
-        DROPLIST.put(Integer.valueOf(20034), new int[]{3425, 1000000});
-        DROPLIST.put(Integer.valueOf(20474), new int[]{3426, 600000});
-        DROPLIST.put(Integer.valueOf(20476), new int[]{3426, 750000});
-        DROPLIST.put(Integer.valueOf(20478), new int[]{3426, 1000000});
-        DROPLIST.put(Integer.valueOf(20403), new int[]{3427, 750000});
-        DROPLIST.put(Integer.valueOf(20508), new int[]{3427, 1000000});
+        DROPLIST.put(20103, new int[]{3423, 600000});
+        DROPLIST.put(20106, new int[]{3423, 750000});
+        DROPLIST.put(20108, new int[]{3423, 1000000});
+        DROPLIST.put(20460, new int[]{3424, 600000});
+        DROPLIST.put(20308, new int[]{3424, 750000});
+        DROPLIST.put(20466, new int[]{3424, 1000000});
+        DROPLIST.put(20025, new int[]{3425, 600000});
+        DROPLIST.put(20105, new int[]{3425, 750000});
+        DROPLIST.put(20034, new int[]{3425, 1000000});
+        DROPLIST.put(20474, new int[]{3426, 600000});
+        DROPLIST.put(20476, new int[]{3426, 750000});
+        DROPLIST.put(20478, new int[]{3426, 1000000});
+        DROPLIST.put(20403, new int[]{3427, 750000});
+        DROPLIST.put(20508, new int[]{3427, 1000000});
         setItemsIds(3417, 3418, 3419, 3420, 3421, 3422, 3423, 3424, 3425, 3426,
                 3427);
         addStartNpc(30731);
@@ -208,7 +208,7 @@ public class Q419_GetAPet extends Quest {
         QuestState st = checkPlayerState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        int[] drop = DROPLIST.get(Integer.valueOf(npc.getNpcId()));
+        int[] drop = DROPLIST.get(npc.getNpcId());
         if (st.hasQuestItems(drop[0] - 5))
             st.dropItems(drop[0], 1, 50, drop[1]);
         return null;

@@ -42,7 +42,7 @@ public class DailyRewardData implements IXmlReader {
                             reward.setAmount(Integer.parseInt(attrs.getNamedItem("amount").getNodeValue()));
                             reward.setEnchantLevel(Integer.parseInt(attrs.getNamedItem("enchantLevel").getNodeValue()));
                             if (ItemTable.getInstance().getTemplate(Integer.parseInt(attrs.getNamedItem("itemId").getNodeValue())) != null) {
-                                this._dailyRewards.put(Integer.valueOf(day), reward);
+                                this._dailyRewards.put(day, reward);
                             } else {
                                 LOGGER.warn("Daily Reward Data: Item ID: " + Integer.parseInt(attrs.getNamedItem("itemId").getNodeValue()) + " doesn't exists in game.");
                             }
@@ -61,7 +61,7 @@ public class DailyRewardData implements IXmlReader {
     }
 
     public DailyReward getDailyRewardByDay(int day) {
-        return this._dailyRewards.get(Integer.valueOf(day));
+        return this._dailyRewards.get(day);
     }
 
     public List<DailyReward> getAllDailyRewads() {

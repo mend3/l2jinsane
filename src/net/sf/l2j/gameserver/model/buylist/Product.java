@@ -122,7 +122,7 @@ public class Product {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't save product for buylist id:{} and item id: {}.", e, Integer.valueOf(getBuyListId()), Integer.valueOf(getItemId()));
+            LOGGER.error("Couldn't save product for buylist id:{} and item id: {}.", e, getBuyListId(), getItemId());
         }
     }
 
@@ -158,7 +158,7 @@ public class Product {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't delete product for buylist id:{} and item id: {}.", e, Integer.valueOf(getBuyListId()), Integer.valueOf(getItemId()));
+            LOGGER.error("Couldn't delete product for buylist id:{} and item id: {}.", e, getBuyListId(), getItemId());
         }
     }
 }

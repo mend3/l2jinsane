@@ -24,7 +24,7 @@ public class DonationShopData {
                     shopHolder.setName(name);
                     for (Node d = n.getFirstChild(); d != null; d = d.getNextSibling()) {
                         if ("allowMod".equalsIgnoreCase(d.getNodeName())) {
-                            boolean val = Boolean.valueOf(d.getAttributes().getNamedItem("val").getNodeValue());
+                            boolean val = Boolean.parseBoolean(d.getAttributes().getNamedItem("val").getNodeValue());
                             shopHolder.setAllowMod(val);
                         } else if ("priceId".equalsIgnoreCase(d.getNodeName())) {
                             int val = Integer.parseInt(d.getAttributes().getNamedItem("val").getNodeValue());

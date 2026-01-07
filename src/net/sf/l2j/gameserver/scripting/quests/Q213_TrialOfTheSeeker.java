@@ -119,7 +119,7 @@ public class Q213_TrialOfTheSeeker extends Quest {
             st.giveItems(2647, 1);
             if (!player.getMemos().getBool("secondClassChange35", false)) {
                 htmltext = "30106-05a.htm";
-                st.giveItems(7562, DF_REWARD_35.get(Integer.valueOf(player.getClassId().getId())));
+                st.giveItems(7562, DF_REWARD_35.get(player.getClassId().getId()));
                 player.getMemos().set("secondClassChange35", true);
             }
         } else if (event.equalsIgnoreCase("30064-03.htm")) {

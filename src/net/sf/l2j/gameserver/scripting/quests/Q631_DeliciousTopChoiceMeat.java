@@ -24,30 +24,30 @@ public class Q631_DeliciousTopChoiceMeat extends Quest {
 
     public Q631_DeliciousTopChoiceMeat() {
         super(631, "Delicious Top Choice Meat");
-        CHANCES.put(Integer.valueOf(21460), Integer.valueOf(601000));
-        CHANCES.put(Integer.valueOf(21461), Integer.valueOf(480000));
-        CHANCES.put(Integer.valueOf(21462), Integer.valueOf(447000));
-        CHANCES.put(Integer.valueOf(21463), Integer.valueOf(808000));
-        CHANCES.put(Integer.valueOf(21464), Integer.valueOf(447000));
-        CHANCES.put(Integer.valueOf(21465), Integer.valueOf(808000));
-        CHANCES.put(Integer.valueOf(21466), Integer.valueOf(447000));
-        CHANCES.put(Integer.valueOf(21467), Integer.valueOf(808000));
-        CHANCES.put(Integer.valueOf(21479), Integer.valueOf(477000));
-        CHANCES.put(Integer.valueOf(21480), Integer.valueOf(863000));
-        CHANCES.put(Integer.valueOf(21481), Integer.valueOf(477000));
-        CHANCES.put(Integer.valueOf(21482), Integer.valueOf(863000));
-        CHANCES.put(Integer.valueOf(21483), Integer.valueOf(477000));
-        CHANCES.put(Integer.valueOf(21484), Integer.valueOf(863000));
-        CHANCES.put(Integer.valueOf(21485), Integer.valueOf(477000));
-        CHANCES.put(Integer.valueOf(21486), Integer.valueOf(863000));
-        CHANCES.put(Integer.valueOf(21498), Integer.valueOf(509000));
-        CHANCES.put(Integer.valueOf(21499), Integer.valueOf(920000));
-        CHANCES.put(Integer.valueOf(21500), Integer.valueOf(509000));
-        CHANCES.put(Integer.valueOf(21501), Integer.valueOf(920000));
-        CHANCES.put(Integer.valueOf(21502), Integer.valueOf(509000));
-        CHANCES.put(Integer.valueOf(21503), Integer.valueOf(920000));
-        CHANCES.put(Integer.valueOf(21504), Integer.valueOf(509000));
-        CHANCES.put(Integer.valueOf(21505), Integer.valueOf(920000));
+        CHANCES.put(21460, 601000);
+        CHANCES.put(21461, 480000);
+        CHANCES.put(21462, 447000);
+        CHANCES.put(21463, 808000);
+        CHANCES.put(21464, 447000);
+        CHANCES.put(21465, 808000);
+        CHANCES.put(21466, 447000);
+        CHANCES.put(21467, 808000);
+        CHANCES.put(21479, 477000);
+        CHANCES.put(21480, 863000);
+        CHANCES.put(21481, 477000);
+        CHANCES.put(21482, 863000);
+        CHANCES.put(21483, 477000);
+        CHANCES.put(21484, 863000);
+        CHANCES.put(21485, 477000);
+        CHANCES.put(21486, 863000);
+        CHANCES.put(21498, 509000);
+        CHANCES.put(21499, 920000);
+        CHANCES.put(21500, 509000);
+        CHANCES.put(21501, 920000);
+        CHANCES.put(21502, 509000);
+        CHANCES.put(21503, 920000);
+        CHANCES.put(21504, 509000);
+        CHANCES.put(21505, 920000);
         setItemsIds(7546);
         addStartNpc(31537);
         addTalkId(31537);
@@ -121,7 +121,7 @@ public class Q631_DeliciousTopChoiceMeat extends Quest {
         QuestState st = getRandomPartyMember(player, npc, "1");
         if (st == null)
             return null;
-        if (st.dropItems(7546, 1, 120, CHANCES.get(Integer.valueOf(npc.getNpcId()))))
+        if (st.dropItems(7546, 1, 120, CHANCES.get(npc.getNpcId())))
             st.set("cond", "2");
         return null;
     }

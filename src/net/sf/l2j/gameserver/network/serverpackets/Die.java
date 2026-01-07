@@ -57,7 +57,7 @@ public class Die extends L2GameServerPacket {
             writeD(0);
             writeD(0);
             writeD(0);
-            if (this._activeChar instanceof Player player && ((Player) this._activeChar).getDungeon() != null) {
+            if (this._activeChar instanceof Player player && player.getDungeon() != null) {
                 player.getDungeon().onPlayerDeath(player);
             }
             return;

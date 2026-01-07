@@ -25,18 +25,18 @@ public class VoicedEpic implements IVoicedCommandHandler {
 
     public void showMainPage(Player player) {
         List<Integer> infos = new ArrayList<>();
-        infos.add(Integer.valueOf(25512));
-        infos.add(Integer.valueOf(29001));
-        infos.add(Integer.valueOf(29006));
-        infos.add(Integer.valueOf(29014));
-        infos.add(Integer.valueOf(29019));
-        infos.add(Integer.valueOf(29020));
-        infos.add(Integer.valueOf(29022));
-        infos.add(Integer.valueOf(29028));
-        infos.add(Integer.valueOf(29045));
-        infos.add(Integer.valueOf(29046));
-        infos.add(Integer.valueOf(29047));
-        infos.add(Integer.valueOf(29065));
+        infos.add(25512);
+        infos.add(29001);
+        infos.add(29006);
+        infos.add(29014);
+        infos.add(29019);
+        infos.add(29020);
+        infos.add(29022);
+        infos.add(29028);
+        infos.add(29045);
+        infos.add(29046);
+        infos.add(29047);
+        infos.add(29065);
         StringBuilder sb = new StringBuilder();
         sb.append("<html><title>Epic Boss Info</title><body>");
         sb.append("<img src=\"L2UI.SquareGray\" width=300 height=1>");

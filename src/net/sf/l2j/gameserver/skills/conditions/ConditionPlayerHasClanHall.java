@@ -20,6 +20,6 @@ public final class ConditionPlayerHasClanHall extends Condition {
             return (this._clanHall.size() == 1 && this._clanHall.get(0) == 0);
         if (this._clanHall.size() == 1 && this._clanHall.get(0) == -1)
             return clan.hasClanHall();
-        return this._clanHall.contains(Integer.valueOf(clan.getClanHallId()));
+        return this._clanHall.contains(clan.getClanHallId());
     }
 }

@@ -58,7 +58,7 @@ public final class RaidPointReset extends ScheduledQuest {
                         points = (entry.getValue() <= 50) ? 25 : 12;
                         break;
                 }
-                rewards.merge(clan, Integer.valueOf(points), Integer::sum);
+                rewards.merge(clan, points, Integer::sum);
             }
         }
         for (Map.Entry<Clan, Integer> entry : rewards.entrySet())

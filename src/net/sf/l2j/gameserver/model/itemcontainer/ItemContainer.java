@@ -328,7 +328,7 @@ public abstract class ItemContainer {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't restore container for {}.", e, Integer.valueOf(getOwnerId()));
+            LOGGER.error("Couldn't restore container for {}.", e, getOwnerId());
         }
         refreshWeight();
     }

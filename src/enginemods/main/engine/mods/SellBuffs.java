@@ -148,7 +148,7 @@ public class SellBuffs extends AbstractMods {
         tb.append("<center>");
         tb.append("<br><br>");
         tb.append("Hello <font color=\"00C3FF\">", player.getName(), "</font>");
-        tb.append("<br><center>My Buff Cost: <font color=\"LEVEL\">", Integer.valueOf(ph.getSellBuffPrice()), "</font> adena each!</center>");
+        tb.append("<br><center>My Buff Cost: <font color=\"LEVEL\">", ph.getSellBuffPrice(), "</font> adena each!</center>");
         tb.append("<br>");
         tb.append("<center><button value=\"View my Buffs\" action=\"bypass -h Engine SellBuffs view\" width=\"80\" height=\"25\" back=\"L2UI_CH3.Btn1_normalOn\" fore=\"L2UI_CH3.btn1_normal\">");
         tb.append("</center>");
@@ -167,7 +167,7 @@ public class SellBuffs extends AbstractMods {
         tb.append("<br><br>");
         tb.append("<center>");
         tb.append("<font color=\"LEVEL\">Hello </font><font color=\"00C3FF\">", buyer.getName(), "</font><font color=\"LEVEL\"> want my Buff!</font>");
-        tb.append("<br>My Buff Cost: <font color=\"00C3FF\">", Integer.valueOf(ph.getSellBuffPrice()), "</font><font color=\"LEVEL\"> adena each!</font><br>");
+        tb.append("<br>My Buff Cost: <font color=\"00C3FF\">", ph.getSellBuffPrice(), "</font><font color=\"LEVEL\"> adena each!</font><br>");
         int MAX_SKILL_PER_PAGE = 12;
         int searchPage = MAX_SKILL_PER_PAGE * (page - 1);
         int skillCount = 0;
@@ -185,7 +185,7 @@ public class SellBuffs extends AbstractMods {
             tb.append("<table>");
             tb.append("<tr>");
             tb.append("<td width=\"32\"><center><img src=\"", SkillData.getSkillIcon(sk.getId()), "\" width=\"32\" height=\"16\"></center></td>");
-            tb.append("<td width=\"180\"><center><a action=\"bypass -h Engine SellBuffs buy ", Integer.valueOf(sk.getId()), " ", Integer.valueOf(sk.getLevel()), " ", sellerBuff.getName(), " ", Integer.valueOf(page), "\">", sk.getName(),
+            tb.append("<td width=\"180\"><center><a action=\"bypass -h Engine SellBuffs buy ", sk.getId(), " ", sk.getLevel(), " ", sellerBuff.getName(), " ", page, "\">", sk.getName(),
                     "</center></td>");
             tb.append("<td width=\"32\"><center><img src=\"", SkillData.getSkillIcon(sk.getId()), "\" width=\"32\" height=\"16\"></center></td>");
             tb.append("</tr>");

@@ -7,7 +7,7 @@ public class AuthResponse extends ServerBasePacket {
     public AuthResponse(int serverId) {
         writeC(2);
         writeC(serverId);
-        writeS(GameServerManager.getInstance().getServerNames().get(Integer.valueOf(serverId)));
+        writeS(GameServerManager.getInstance().getServerNames().get(serverId));
     }
 
     public byte[] getContent() {

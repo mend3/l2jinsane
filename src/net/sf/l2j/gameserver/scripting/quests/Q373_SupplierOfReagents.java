@@ -107,13 +107,13 @@ public class Q373_SupplierOfReagents extends Quest {
 
     public Q373_SupplierOfReagents() {
         super(373, "Supplier of Reagents");
-        DROPLIST.put(Integer.valueOf(21066), new int[]{6010, 442000, 0});
-        DROPLIST.put(Integer.valueOf(21115), new int[]{6009, 470000, 0});
-        DROPLIST.put(Integer.valueOf(20828), new int[]{6008, 6019, 680, 1000});
-        DROPLIST.put(Integer.valueOf(20822), new int[]{6007, 6018, 664, 844});
-        DROPLIST.put(Integer.valueOf(21061), new int[]{6015, 6013, 729, 833});
-        DROPLIST.put(Integer.valueOf(20813), new int[]{6014, 6019, 618, 1000});
-        DROPLIST.put(Integer.valueOf(21111), new int[]{6011, 6012, 505, 750});
+        DROPLIST.put(21066, new int[]{6010, 442000, 0});
+        DROPLIST.put(21115, new int[]{6009, 470000, 0});
+        DROPLIST.put(20828, new int[]{6008, 6019, 680, 1000});
+        DROPLIST.put(20822, new int[]{6007, 6018, 664, 844});
+        DROPLIST.put(21061, new int[]{6015, 6013, 729, 833});
+        DROPLIST.put(20813, new int[]{6014, 6019, 618, 1000});
+        DROPLIST.put(21111, new int[]{6011, 6012, 505, 750});
         setItemsIds(5904, 6317);
         addStartNpc(30166);
         addTalkId(30166, 31149);
@@ -218,7 +218,7 @@ public class Q373_SupplierOfReagents extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        int[] drop = DROPLIST.get(Integer.valueOf(npc.getNpcId()));
+        int[] drop = DROPLIST.get(npc.getNpcId());
         if (drop[2] == 0) {
             st.dropItems(drop[0], 1, 0, drop[1]);
         } else {

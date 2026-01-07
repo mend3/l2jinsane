@@ -29,8 +29,8 @@ public class DrChaos extends L2AttackableAIScript {
 
     public DrChaos() {
         super("ai/individual");
-        this.addFirstTalkId(new int[]{32033});
-        this.addSpawnId(new int[]{32033});
+        this.addFirstTalkId(32033);
+        this.addSpawnId(32033);
         StatSet info = GrandBossManager.getInstance().getStatsSet(25512);
         int status = GrandBossManager.getInstance().getBossStatus(25512);
         if (status == 2) {
@@ -61,8 +61,8 @@ public class DrChaos extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addKillId(new int[]{25512});
-        this.addAttackActId(new int[]{25512});
+        this.addKillId(25512);
+        this.addAttackActId(25512);
     }
 
     public String onAdvEvent(String event, Npc npc, Player player) {
@@ -143,7 +143,7 @@ public class DrChaos extends L2AttackableAIScript {
     public String onKill(Npc npc, Creature killer) {
         this.cancelQuestTimer("golem_despawn", npc, null);
         npc.broadcastNpcSay("Urggh! You will pay dearly for this insult.");
-        long respawnTime = (36 + Rnd.get(-24, 24)) * 3600000;
+        long respawnTime = (36 + Rnd.get(-24, 24)) * 3600000L;
         GrandBossManager.getInstance().setBossStatus(25512, 2);
         this.startQuestTimer("reset_drchaos", respawnTime, null, null, false);
         StatSet info = GrandBossManager.getInstance().getStatsSet(25512);

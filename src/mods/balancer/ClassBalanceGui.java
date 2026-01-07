@@ -102,7 +102,7 @@ public class ClassBalanceGui extends BaseBBSManager {
             st.nextToken();
             String key = st.nextToken();
             int pageId = Integer.parseInt(st.nextToken());
-            int type = Integer.valueOf(st.nextToken());
+            int type = Integer.parseInt(st.nextToken());
             boolean isOly = Boolean.parseBoolean(st.nextToken());
             ClassBalanceManager.getInstance().removeClassBalance(key, AttackType.VALUES[type], isOly);
             showMainHtml(activeChar, pageId, isOly);
@@ -110,9 +110,9 @@ public class ClassBalanceGui extends BaseBBSManager {
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
             String[] array = st.nextToken().split(";");
-            int classId = Integer.valueOf(array[0]);
-            int targetClassId = Integer.valueOf(array[1]);
-            int attackType = Integer.valueOf(array[2]);
+            int classId = Integer.parseInt(array[0]);
+            int targetClassId = Integer.parseInt(array[1]);
+            int attackType = Integer.parseInt(array[2]);
             double value = Double.parseDouble(array[3]);
             int pageId = Integer.parseInt(array[4]);
             boolean isSearch = Boolean.parseBoolean(array[5]);
@@ -126,7 +126,7 @@ public class ClassBalanceGui extends BaseBBSManager {
             }
             ClassBalanceManager.getInstance().addClassBalance(key, cbh, true);
             if (isSearch) {
-                showSearchHtml(activeChar, pageId, Integer.valueOf(classId), isOly);
+                showSearchHtml(activeChar, pageId, classId, isOly);
             } else {
                 showMainHtml(activeChar, pageId, isOly);
             }
@@ -186,7 +186,7 @@ public class ClassBalanceGui extends BaseBBSManager {
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
             if (st.countTokens() == 2) {
-                int classId = Integer.valueOf(st.nextToken());
+                int classId = Integer.parseInt(st.nextToken());
                 boolean isOly = Boolean.parseBoolean(st.nextToken());
                 showSearchHtml(activeChar, 1, classId, isOly);
             }
@@ -194,8 +194,8 @@ public class ClassBalanceGui extends BaseBBSManager {
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
             if (st.countTokens() == 3) {
-                int classId = Integer.valueOf(st.nextToken());
-                int pageID = Integer.valueOf(st.nextToken());
+                int classId = Integer.parseInt(st.nextToken());
+                int pageID = Integer.parseInt(st.nextToken());
                 boolean isOly = Boolean.parseBoolean(st.nextToken());
                 showSearchHtml(activeChar, pageID, classId, isOly);
             }

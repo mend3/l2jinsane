@@ -36,32 +36,32 @@ public class Q384_WarehouseKeepersPastime extends Quest {
 
     public Q384_WarehouseKeepersPastime() {
         super(384, "Warehouse Keeper's Pastime");
-        CHANCES.put(Integer.valueOf(20947), Integer.valueOf(160000));
-        CHANCES.put(Integer.valueOf(20948), Integer.valueOf(180000));
-        CHANCES.put(Integer.valueOf(20945), Integer.valueOf(120000));
-        CHANCES.put(Integer.valueOf(20946), Integer.valueOf(150000));
-        CHANCES.put(Integer.valueOf(20635), Integer.valueOf(150000));
-        CHANCES.put(Integer.valueOf(20773), Integer.valueOf(610000));
-        CHANCES.put(Integer.valueOf(20774), Integer.valueOf(600000));
-        CHANCES.put(Integer.valueOf(20760), Integer.valueOf(240000));
-        CHANCES.put(Integer.valueOf(20758), Integer.valueOf(240000));
-        CHANCES.put(Integer.valueOf(20759), Integer.valueOf(230000));
-        CHANCES.put(Integer.valueOf(20242), Integer.valueOf(220000));
-        CHANCES.put(Integer.valueOf(20281), Integer.valueOf(220000));
-        CHANCES.put(Integer.valueOf(20556), Integer.valueOf(140000));
-        CHANCES.put(Integer.valueOf(20668), Integer.valueOf(210000));
-        CHANCES.put(Integer.valueOf(20241), Integer.valueOf(220000));
-        CHANCES.put(Integer.valueOf(20286), Integer.valueOf(220000));
-        CHANCES.put(Integer.valueOf(20949), Integer.valueOf(190000));
-        CHANCES.put(Integer.valueOf(20950), Integer.valueOf(200000));
-        CHANCES.put(Integer.valueOf(20942), Integer.valueOf(90000));
-        CHANCES.put(Integer.valueOf(20943), Integer.valueOf(120000));
-        CHANCES.put(Integer.valueOf(20944), Integer.valueOf(110000));
-        CHANCES.put(Integer.valueOf(20559), Integer.valueOf(140000));
-        CHANCES.put(Integer.valueOf(20243), Integer.valueOf(210000));
-        CHANCES.put(Integer.valueOf(20282), Integer.valueOf(210000));
-        CHANCES.put(Integer.valueOf(20677), Integer.valueOf(340000));
-        CHANCES.put(Integer.valueOf(20605), Integer.valueOf(150000));
+        CHANCES.put(20947, 160000);
+        CHANCES.put(20948, 180000);
+        CHANCES.put(20945, 120000);
+        CHANCES.put(20946, 150000);
+        CHANCES.put(20635, 150000);
+        CHANCES.put(20773, 610000);
+        CHANCES.put(20774, 600000);
+        CHANCES.put(20760, 240000);
+        CHANCES.put(20758, 240000);
+        CHANCES.put(20759, 230000);
+        CHANCES.put(20242, 220000);
+        CHANCES.put(20281, 220000);
+        CHANCES.put(20556, 140000);
+        CHANCES.put(20668, 210000);
+        CHANCES.put(20241, 220000);
+        CHANCES.put(20286, 220000);
+        CHANCES.put(20949, 190000);
+        CHANCES.put(20950, 200000);
+        CHANCES.put(20942, 90000);
+        CHANCES.put(20943, 120000);
+        CHANCES.put(20944, 110000);
+        CHANCES.put(20559, 140000);
+        CHANCES.put(20243, 210000);
+        CHANCES.put(20282, 210000);
+        CHANCES.put(20677, 340000);
+        CHANCES.put(20605, 150000);
         setItemsIds(5964);
         addStartNpc(30182);
         addTalkId(30182, 30685);
@@ -196,7 +196,7 @@ public class Q384_WarehouseKeepersPastime extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropItems(5964, 1, 0, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(5964, 1, 0, CHANCES.get(npc.getNpcId()));
         return null;
     }
 }

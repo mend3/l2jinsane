@@ -27,7 +27,7 @@ public class HeroWeapon extends Quest {
 
     public String onAdvEvent(String event, Npc npc, Player player) {
         QuestState st = player.getQuestState(getName());
-        int weaponId = Integer.valueOf(event);
+        int weaponId = Integer.parseInt(event);
         if (ArraysUtil.contains(WEAPON_IDS, weaponId))
             st.giveItems(weaponId, 1);
         st.exitQuest(true);

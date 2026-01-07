@@ -71,7 +71,7 @@ public class ForumsBBSManager extends BaseBBSManager {
     public void initRoot() {
         for (Forum forum : this._forums)
             forum.vload();
-        LOGGER.info("Loaded {} forums.", Integer.valueOf(this._forums.size()));
+        LOGGER.info("Loaded {} forums.", this._forums.size());
     }
 
     public void addForum(Forum forum) {

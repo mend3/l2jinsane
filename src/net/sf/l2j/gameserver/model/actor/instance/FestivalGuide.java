@@ -142,10 +142,10 @@ public final class FestivalGuide extends Folk {
     }
 
     private static String calculateDate(String milliFromEpoch) {
-        long numMillis = Long.valueOf(milliFromEpoch);
+        long numMillis = Long.parseLong(milliFromEpoch);
         Calendar calCalc = Calendar.getInstance();
         calCalc.setTimeInMillis(numMillis);
-        return calCalc.get(1) + "/" + calCalc.get(1) + "/" + calCalc.get(2);
+        return calCalc.get(Calendar.YEAR) + "/" + calCalc.get(Calendar.YEAR) + "/" + calCalc.get(Calendar.MONTH);
     }
 
     public void onBypassFeedback(Player player, String command) {
@@ -233,7 +233,7 @@ public final class FestivalGuide extends Folk {
                         return;
                     }
                     prevParticipants = FestivalOfDarknessManager.getInstance().getPreviousParticipants(this._festivalOracle, festivalIndex);
-                    if (prevParticipants == null || prevParticipants.isEmpty() || !prevParticipants.contains(Integer.valueOf(player.getObjectId()))) {
+                    if (prevParticipants == null || prevParticipants.isEmpty() || !prevParticipants.contains(player.getObjectId())) {
                         showChatWindow(player, 3, "b", false);
                         return;
                     }

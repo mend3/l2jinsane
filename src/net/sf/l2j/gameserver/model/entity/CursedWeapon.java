@@ -37,6 +37,11 @@ public class CursedWeapon {
     private final String _name;
     private final int _skillId;
     private final int _skillMaxLevel;
+    private final int _dropRate;
+    private final int _dissapearChance;
+    private final int _duration;
+    private final int _durationLost;
+    private final int _stageKills;
     protected Player _player = null;
     protected int _nbKills = 0;
     protected int _currentStage = 1;
@@ -45,11 +50,6 @@ public class CursedWeapon {
     protected long _endTime = 0L;
     private ItemInstance _item = null;
     private int _playerId = 0;
-    private final int _dropRate;
-    private final int _dissapearChance;
-    private final int _duration;
-    private final int _durationLost;
-    private final int _stageKills;
     private boolean _isDropped = false;
     private boolean _isActivated = false;
     private ScheduledFuture<?> _overallTimer;

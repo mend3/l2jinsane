@@ -24,10 +24,10 @@ public class ExShowSeedSetting extends L2GameServerPacket {
         for (Seed s : this._seeds) {
             SeedProduction sp = manor.getSeedProduct(manorId, s.getSeedId(), false);
             if (sp != null)
-                this._current.put(Integer.valueOf(s.getSeedId()), sp);
+                this._current.put(s.getSeedId(), sp);
             sp = manor.getSeedProduct(manorId, s.getSeedId(), true);
             if (sp != null)
-                this._next.put(Integer.valueOf(s.getSeedId()), sp);
+                this._next.put(s.getSeedId(), sp);
         }
     }
 
@@ -47,16 +47,16 @@ public class ExShowSeedSetting extends L2GameServerPacket {
             writeD(s.getSeedReferencePrice());
             writeD(s.getSeedMinPrice());
             writeD(s.getSeedMaxPrice());
-            if (this._current.containsKey(Integer.valueOf(s.getSeedId()))) {
-                SeedProduction sp = this._current.get(Integer.valueOf(s.getSeedId()));
+            if (this._current.containsKey(s.getSeedId())) {
+                SeedProduction sp = this._current.get(s.getSeedId());
                 writeD(sp.getStartAmount());
                 writeD(sp.getPrice());
             } else {
                 writeD(0);
                 writeD(0);
             }
-            if (this._next.containsKey(Integer.valueOf(s.getSeedId()))) {
-                SeedProduction sp = this._next.get(Integer.valueOf(s.getSeedId()));
+            if (this._next.containsKey(s.getSeedId())) {
+                SeedProduction sp = this._next.get(s.getSeedId());
                 writeD(sp.getStartAmount());
                 writeD(sp.getPrice());
                 continue;

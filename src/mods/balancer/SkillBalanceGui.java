@@ -81,15 +81,15 @@ public class SkillBalanceGui extends BaseBBSManager {
             String[] info = command.substring(25).split(" ");
             String key = info[0];
             int pageId = (info.length > 1) ? Integer.parseInt(info[1]) : 1;
-            int type = Integer.valueOf(info[2]);
+            int type = Integer.parseInt(info[2]);
             boolean isOly = Boolean.parseBoolean(info[3]);
             SkillBalanceManager.getInstance().removeSkillBalance(key, SkillChangeType.VALUES[type], isOly);
             showMainHtml(activeChar, pageId, isOly);
         } else if (command.startsWith("_bbs_modify_skillbalance")) {
             String[] st = command.split(";");
-            int skillId = Integer.valueOf(st[0].substring(25));
-            int target = Integer.valueOf(st[1]);
-            int changeType = Integer.valueOf(st[2]);
+            int skillId = Integer.parseInt(st[0].substring(25));
+            int target = Integer.parseInt(st[1]);
+            int changeType = Integer.parseInt(st[2]);
             double value = Double.parseDouble(st[3]);
             int pageId = Integer.parseInt(st[4]);
             boolean isSearch = Boolean.parseBoolean(st[5]);
@@ -120,7 +120,7 @@ public class SkillBalanceGui extends BaseBBSManager {
                 activeChar.sendMessage("Incorrect input count.");
                 return;
             }
-            int skillId = Integer.valueOf(st[0].trim());
+            int skillId = Integer.parseInt(st[0].trim());
             String attackTypeSt = st[1].trim();
             String val = st[2].trim();
             String targetClassName = st[3].trim();
@@ -154,7 +154,7 @@ public class SkillBalanceGui extends BaseBBSManager {
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
             if (st.countTokens() == 2) {
-                int skillId = Integer.valueOf(st.nextToken());
+                int skillId = Integer.parseInt(st.nextToken());
                 boolean isOly = Boolean.parseBoolean(st.nextToken());
                 showSearchHtml(activeChar, 1, skillId, isOly);
             }
@@ -162,8 +162,8 @@ public class SkillBalanceGui extends BaseBBSManager {
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
             if (st.countTokens() == 3) {
-                int skillId = Integer.valueOf(st.nextToken());
-                int pageID = Integer.valueOf(st.nextToken());
+                int skillId = Integer.parseInt(st.nextToken());
+                int pageID = Integer.parseInt(st.nextToken());
                 boolean isOly = Boolean.parseBoolean(st.nextToken());
                 showSearchHtml(activeChar, pageID, skillId, isOly);
             }
@@ -171,7 +171,7 @@ public class SkillBalanceGui extends BaseBBSManager {
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
             if (st.hasMoreTokens()) {
-                int skillId = Integer.valueOf(st.nextToken());
+                int skillId = Integer.parseInt(st.nextToken());
                 L2Skill skill = SkillTable.getInstance().getInfo(skillId, SkillTable.getInstance().getMaxLevel(skillId));
                 if (skill != null) {
                     activeChar.addSkill(skill, true);

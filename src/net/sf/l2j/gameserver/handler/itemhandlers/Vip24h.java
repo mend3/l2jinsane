@@ -31,7 +31,7 @@ public class Vip24h implements IItemHandler {
         }
         activeChar.destroyItem("Consume", item.getObjectId(), 1, null, false);
         Calendar time = new GregorianCalendar();
-        time.add(6, Integer.parseInt("1"));
+        time.add(Calendar.DAY_OF_YEAR, Integer.parseInt("1"));
         SystemVip.getInstance().setValueDB(activeChar, "vip", "" + time.getTimeInMillis());
         PlayerData.get(activeChar).setVip(true);
         PlayerData.get(activeChar).setVipExpireDate(time.getTimeInMillis());

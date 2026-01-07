@@ -40,7 +40,7 @@ public class HwidBan {
                             HWID = rset.getString("HWID");
                             HwidBanList hb = new HwidBanList(counterHWIDBan);
                             hb.setHWIDBan(HWID);
-                            _lists.put(Integer.valueOf(counterHWIDBan), hb);
+                            _lists.put(counterHWIDBan, hb);
                             counterHWIDBan++;
                         }
                         if (rset != null)
@@ -94,7 +94,7 @@ public class HwidBan {
         int counterHwidBan = _lists.size();
         HwidBanList hb = new HwidBanList(counterHwidBan);
         hb.setHWIDBan(HWID);
-        _lists.put(Integer.valueOf(counterHwidBan), hb);
+        _lists.put(counterHwidBan, hb);
         try {
             Connection con = ConnectionPool.getConnection();
             try {
@@ -133,7 +133,7 @@ public class HwidBan {
         if (_lists.size() == 0)
             return false;
         for (int i = 0; i < _lists.size(); i++) {
-            if (_lists.get(Integer.valueOf(i)).getHWID().equals(client.getHWID()))
+            if (_lists.get(i).getHWID().equals(client.getHWID()))
                 return true;
         }
         return false;

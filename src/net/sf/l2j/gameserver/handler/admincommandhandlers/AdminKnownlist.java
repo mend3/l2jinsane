@@ -41,9 +41,9 @@ public class AdminKnownlist implements IAdminCommandHandler {
         for (int i = 0; i < max; i++) {
             int pagenr = i + 1;
             if (page == pagenr) {
-                StringUtil.append(sb, Integer.valueOf(pagenr), "&nbsp;");
+                StringUtil.append(sb, pagenr, "&nbsp;");
             } else {
-                StringUtil.append(sb, "<a action=\"bypass -h admin_knownlist_page ", Integer.valueOf(target.getObjectId()), " ", Integer.valueOf(pagenr), "\">", Integer.valueOf(pagenr), "</a>&nbsp;");
+                StringUtil.append(sb, "<a action=\"bypass -h admin_knownlist_page ", target.getObjectId(), " ", pagenr, "\">", pagenr, "</a>&nbsp;");
             }
         }
         html.replace("%pages%", sb.toString());

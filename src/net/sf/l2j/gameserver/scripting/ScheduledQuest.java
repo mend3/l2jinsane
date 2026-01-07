@@ -88,67 +88,67 @@ public abstract class ScheduledQuest extends Quest {
         switch (this._type) {
             case HOURLY:
                 timeStamp = value.split(":");
-                calendar.set(12, Integer.valueOf(timeStamp[0]));
-                calendar.set(13, Integer.valueOf(timeStamp[1]));
-                calendar.set(14, 0);
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeStamp[0]));
+                calendar.set(Calendar.SECOND, Integer.parseInt(timeStamp[1]));
+                calendar.set(Calendar.MILLISECOND, 0);
                 return calendar;
             case DAILY:
                 timeStamp = value.split(":");
-                calendar.set(11, Integer.valueOf(timeStamp[0]));
-                calendar.set(12, Integer.valueOf(timeStamp[1]));
-                calendar.set(13, Integer.valueOf(timeStamp[2]));
-                calendar.set(14, 0);
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeStamp[0]));
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeStamp[1]));
+                calendar.set(Calendar.SECOND, Integer.parseInt(timeStamp[2]));
+                calendar.set(Calendar.MILLISECOND, 0);
                 return calendar;
             case WEEKLY:
                 params = value.split(" ");
                 timeStamp = params[1].split(":");
-                calendar.set(7, getDayOfWeek(params[0]));
-                calendar.set(11, Integer.valueOf(timeStamp[0]));
-                calendar.set(12, Integer.valueOf(timeStamp[1]));
-                calendar.set(13, Integer.valueOf(timeStamp[2]));
-                calendar.set(14, 0);
+                calendar.set(Calendar.DAY_OF_WEEK, getDayOfWeek(params[0]));
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeStamp[0]));
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeStamp[1]));
+                calendar.set(Calendar.SECOND, Integer.parseInt(timeStamp[2]));
+                calendar.set(Calendar.MILLISECOND, 0);
                 return calendar;
             case MONTHLY_DAY:
                 params = value.split(" ");
                 timeStamp = params[1].split(":");
-                calendar.set(5, Integer.valueOf(params[0]));
-                calendar.set(11, Integer.valueOf(timeStamp[0]));
-                calendar.set(12, Integer.valueOf(timeStamp[1]));
-                calendar.set(13, Integer.valueOf(timeStamp[2]));
-                calendar.set(14, 0);
+                calendar.set(Calendar.DATE, Integer.parseInt(params[0]));
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeStamp[0]));
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeStamp[1]));
+                calendar.set(Calendar.SECOND, Integer.parseInt(timeStamp[2]));
+                calendar.set(Calendar.MILLISECOND, 0);
                 return calendar;
             case MONTHLY_WEEK:
                 params = value.split(" ");
                 date = params[0].split("-");
                 timeStamp = params[1].split(":");
-                calendar.set(7, getDayOfWeek(date[0]));
-                calendar.set(4, Integer.valueOf(date[1]));
-                calendar.set(11, Integer.valueOf(timeStamp[0]));
-                calendar.set(12, Integer.valueOf(timeStamp[1]));
-                calendar.set(13, Integer.valueOf(timeStamp[2]));
-                calendar.set(14, 0);
+                calendar.set(Calendar.DAY_OF_WEEK, getDayOfWeek(date[0]));
+                calendar.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(date[1]));
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeStamp[0]));
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeStamp[1]));
+                calendar.set(Calendar.SECOND, Integer.parseInt(timeStamp[2]));
+                calendar.set(Calendar.MILLISECOND, 0);
                 return calendar;
             case YEARLY_DAY:
                 params = value.split(" ");
                 date = params[0].split("-");
                 timeStamp = params[1].split(":");
-                calendar.set(5, Integer.valueOf(date[0]));
-                calendar.set(2, Integer.valueOf(date[1]) - 1);
-                calendar.set(11, Integer.valueOf(timeStamp[0]));
-                calendar.set(12, Integer.valueOf(timeStamp[1]));
-                calendar.set(13, Integer.valueOf(timeStamp[2]));
-                calendar.set(14, 0);
+                calendar.set(Calendar.DATE, Integer.parseInt(date[0]));
+                calendar.set(Calendar.MONTH, Integer.parseInt(date[1]) - 1);
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeStamp[0]));
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeStamp[1]));
+                calendar.set(Calendar.SECOND, Integer.parseInt(timeStamp[2]));
+                calendar.set(Calendar.MILLISECOND, 0);
                 return calendar;
             case YEARLY_WEEK:
                 params = value.split(" ");
                 date = params[0].split("-");
                 timeStamp = params[1].split(":");
-                calendar.set(7, getDayOfWeek(date[0]));
-                calendar.set(3, Integer.valueOf(date[1]));
-                calendar.set(11, Integer.valueOf(timeStamp[0]));
-                calendar.set(12, Integer.valueOf(timeStamp[1]));
-                calendar.set(13, Integer.valueOf(timeStamp[2]));
-                calendar.set(14, 0);
+                calendar.set(Calendar.DAY_OF_WEEK, getDayOfWeek(date[0]));
+                calendar.set(Calendar.WEEK_OF_YEAR, Integer.parseInt(date[1]));
+                calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeStamp[0]));
+                calendar.set(Calendar.MINUTE, Integer.parseInt(timeStamp[1]));
+                calendar.set(Calendar.SECOND, Integer.parseInt(timeStamp[2]));
+                calendar.set(Calendar.MILLISECOND, 0);
                 return calendar;
         }
         return null;
@@ -205,6 +205,6 @@ public abstract class ScheduledQuest extends Quest {
     protected abstract void onEnd();
 
     private final void print(Calendar c) {
-        LOGGER.debug("{}: {} = {}.", toString(), (c == this._start) ? "Next start" : "Next end", String.format("%d.%d.%d %d:%02d:%02d", Integer.valueOf(c.get(5)), Integer.valueOf(c.get(2) + 1), Integer.valueOf(c.get(1)), Integer.valueOf(c.get(11)), Integer.valueOf(c.get(12)), Integer.valueOf(c.get(13))));
+        LOGGER.debug("{}: {} = {}.", toString(), (c == this._start) ? "Next start" : "Next end", String.format("%d.%d.%d %d:%02d:%02d", c.get(Calendar.DATE), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND)));
     }
 }

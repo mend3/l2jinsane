@@ -5,7 +5,7 @@ import net.sf.l2j.commons.lang.StringUtil;
 import net.sf.l2j.gameserver.data.DollsData;
 import net.sf.l2j.gameserver.data.ItemTable;
 import net.sf.l2j.gameserver.data.cache.HtmCache;
-import net.sf.l2j.gameserver.data.xml.PlayerData;
+import net.sf.l2j.gameserver.data.xml.PlayerClassData;
 import net.sf.l2j.gameserver.enums.actors.ClassId;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
@@ -109,11 +109,11 @@ public final class ClassMaster extends Folk {
                     for (ClassId cid : ClassId.VALUES) {
                         if (cid.level() == level)
                             if (validateClassId(currentClassId, cid))
-                                StringUtil.append(menu, "<a action=\"bypass -h npc_%objectId%_change_class ", Integer.valueOf(cid.getId()), "\">", PlayerData.getInstance().getClassNameById(cid.getId()), "</a><br>");
+                                StringUtil.append(menu, "<a action=\"bypass -h npc_%objectId%_change_class ", cid.getId(), "\">", PlayerClassData.getInstance().getClassNameById(cid.getId()), "</a><br>");
                     }
                     if (menu.length() > 0) {
                         html.setFile("data/html/classmaster/template.htm");
-                        html.replace("%name%", PlayerData.getInstance().getClassNameById(currentClassId.getId()));
+                        html.replace("%name%", PlayerClassData.getInstance().getClassNameById(currentClassId.getId()));
                         html.replace("%menu%", menu.toString());
                     } else {
                         html.setFile("data/html/classmaster/comebacklater.htm");
@@ -137,11 +137,11 @@ public final class ClassMaster extends Folk {
         if (getMinLevel(currentClassId.level()) > player.getLevel() && !Config.ALLOW_ENTIRE_TREE)
             return;
         String msg = HtmCache.getInstance().getHtm("data/html/classmaster/tutorialtemplate.htm");
-        msg = msg.replaceAll("%name%", PlayerData.getInstance().getClassNameById(currentClassId.getId()));
+        msg = msg.replaceAll("%name%", PlayerClassData.getInstance().getClassNameById(currentClassId.getId()));
         StringBuilder menu = new StringBuilder(100);
         for (ClassId cid : ClassId.values()) {
             if (validateClassId(currentClassId, cid))
-                StringUtil.append(menu, "<a action=\"link CO", String.valueOf(cid.getId()), "\">", PlayerData.getInstance().getClassNameById(cid.getId()), "</a><br>");
+                StringUtil.append(menu, "<a action=\"link CO", String.valueOf(cid.getId()), "\">", PlayerClassData.getInstance().getClassNameById(cid.getId()), "</a><br>");
         }
         msg = msg.replaceAll("%menu%", menu.toString());
         msg = msg.replace("%req_items%", getRequiredItems(currentClassId.level() + 1));
@@ -176,7 +176,7 @@ public final class ClassMaster extends Folk {
             player.addItem("ClassMaster", item.getId(), item.getValue(), player, true);
         player.setClassId(val);
         if (player.isSubClassActive()) {
-            player.getSubClasses().get(Integer.valueOf(player.getClassIndex())).setClassId(player.getActiveClass());
+            player.getSubClasses().get(player.getClassIndex()).setClassId(player.getActiveClass());
         } else {
             player.setBaseClass(player.getActiveClass());
         }
@@ -225,7 +225,7 @@ public final class ClassMaster extends Folk {
             return "<tr><td>none</td></r>";
         StringBuilder sb = new StringBuilder();
         for (IntIntHolder item : neededItems) {
-            StringUtil.append(sb, "<tr><td><font color=\"LEVEL\">", Integer.valueOf(item.getValue()), "</font></td><td>", ItemTable.getInstance().getTemplate(item.getId()).getName(), "</td></tr>");
+            StringUtil.append(sb, "<tr><td><font color=\"LEVEL\">", item.getValue(), "</font></td><td>", ItemTable.getInstance().getTemplate(item.getId()).getName(), "</td></tr>");
         }
         return sb.toString();
     }
@@ -255,7 +255,7 @@ public final class ClassMaster extends Folk {
             if (checkAndChangeClass(player, val)) {
                 NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
                 html.setFile("data/html/classmaster/ok.htm");
-                html.replace("%name%", PlayerData.getInstance().getClassNameById(val));
+                html.replace("%name%", PlayerClassData.getInstance().getClassNameById(val));
                 player.sendPacket(html);
                 DollsData.refreshAllDollSkills(player);
             }

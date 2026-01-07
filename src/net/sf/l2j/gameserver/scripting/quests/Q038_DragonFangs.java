@@ -36,10 +36,10 @@ public class Q038_DragonFangs extends Quest {
 
     public Q038_DragonFangs() {
         super(38, "Dragon Fangs");
-        DROPLIST.put(Integer.valueOf(21100), new int[]{1, 7173, 100, 1000000});
-        DROPLIST.put(Integer.valueOf(20357), new int[]{1, 7173, 100, 1000000});
-        DROPLIST.put(Integer.valueOf(21101), new int[]{6, 7175, 50, 500000});
-        DROPLIST.put(Integer.valueOf(20356), new int[]{6, 7175, 50, 500000});
+        DROPLIST.put(21100, new int[]{1, 7173, 100, 1000000});
+        DROPLIST.put(20357, new int[]{1, 7173, 100, 1000000});
+        DROPLIST.put(21101, new int[]{6, 7175, 50, 500000});
+        DROPLIST.put(20356, new int[]{6, 7175, 50, 500000});
         setItemsIds(7173, 7174, 7175, 7176, 7177);
         addStartNpc(30386);
         addTalkId(30386, 30034, 30344);
@@ -167,7 +167,7 @@ public class Q038_DragonFangs extends Quest {
         QuestState st = checkPlayerState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        int[] droplist = DROPLIST.get(Integer.valueOf(npc.getNpcId()));
+        int[] droplist = DROPLIST.get(npc.getNpcId());
         if (st.getInt("cond") == droplist[0] && st.dropItems(droplist[1], 1, droplist[2], droplist[3]))
             st.set("cond", String.valueOf(droplist[0] + 1));
         return null;

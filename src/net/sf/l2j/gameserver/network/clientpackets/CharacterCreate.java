@@ -5,7 +5,7 @@ import net.sf.l2j.Config;
 import net.sf.l2j.commons.lang.StringUtil;
 import net.sf.l2j.gameserver.data.sql.PlayerInfoTable;
 import net.sf.l2j.gameserver.data.xml.NpcData;
-import net.sf.l2j.gameserver.data.xml.PlayerData;
+import net.sf.l2j.gameserver.data.xml.PlayerClassData;
 import net.sf.l2j.gameserver.data.xml.ScriptData;
 import net.sf.l2j.gameserver.enums.ShortcutType;
 import net.sf.l2j.gameserver.enums.actors.Sex;
@@ -99,7 +99,7 @@ public final class CharacterCreate extends L2GameClientPacket {
             sendPacket(CharCreateFail.REASON_NAME_ALREADY_EXISTS);
             return;
         }
-        PlayerTemplate template = PlayerData.getInstance().getTemplate(this._classId);
+        PlayerTemplate template = PlayerClassData.getInstance().getTemplate(this._classId);
         if (template == null || template.getClassBaseLevel() > 1) {
             sendPacket(CharCreateFail.REASON_CREATION_FAILED);
             return;

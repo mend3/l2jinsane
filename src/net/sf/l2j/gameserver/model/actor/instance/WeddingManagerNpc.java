@@ -107,7 +107,7 @@ public class WeddingManagerNpc extends Folk {
             sendHtmlMessage(requester, "data/html/mods/wedding/error_sex.htm");
             return false;
         }
-        if (!requester.getFriendList().contains(Integer.valueOf(partner.getObjectId()))) {
+        if (!requester.getFriendList().contains(partner.getObjectId())) {
             sendHtmlMessage(requester, "data/html/mods/wedding/error_friendlist.htm");
             return false;
         }

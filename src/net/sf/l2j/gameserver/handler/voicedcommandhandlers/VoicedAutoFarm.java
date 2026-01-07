@@ -195,7 +195,7 @@ public class VoicedAutoFarm implements IVoicedCommandHandler {
                 return false;
             }
             activeChar.sendMessage(target.getName() + " has been added to the ignore list.");
-            activeChar.ignoredMonster(Integer.valueOf(monsterId));
+            activeChar.ignoredMonster(monsterId);
         }
         if (command.startsWith("activeMonster")) {
             int monsterId = 0;
@@ -207,7 +207,7 @@ public class VoicedAutoFarm implements IVoicedCommandHandler {
                 return false;
             }
             activeChar.sendMessage(target.getName() + " has been removed from the ignore list.");
-            activeChar.activeMonster(Integer.valueOf(monsterId));
+            activeChar.activeMonster(monsterId);
         }
         return false;
     }

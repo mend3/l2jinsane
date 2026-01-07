@@ -70,7 +70,7 @@ public class MinionList {
     }
 
     public void onMinionDie(Monster minion, int respawnTime) {
-        this._minions.put(minion, Boolean.valueOf(false));
+        this._minions.put(minion, Boolean.FALSE);
         if (minion.isRaidRelated() && respawnTime > 0 && !this._master.isAlikeDead())
             ThreadPool.schedule(() -> {
                 if (!this._master.isAlikeDead() && this._master.isVisible() && !(Boolean) this._minions.get(minion)) {
@@ -104,7 +104,7 @@ public class MinionList {
     }
 
     protected final Monster initializeNpcInstance(Monster master, Monster minion) {
-        this._minions.put(minion, Boolean.valueOf(true));
+        this._minions.put(minion, Boolean.TRUE);
         minion.setIsNoRndWalk(true);
         minion.stopAllEffects();
         minion.setIsDead(false);

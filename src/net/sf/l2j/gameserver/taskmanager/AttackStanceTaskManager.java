@@ -51,7 +51,7 @@ public final class AttackStanceTaskManager implements Runnable {
     }
 
     public boolean remove(Creature creature) {
-        if(this._creatures.isEmpty())
+        if (this._creatures.isEmpty())
             return false;
         Player player = null;
         if (creature instanceof Summon)

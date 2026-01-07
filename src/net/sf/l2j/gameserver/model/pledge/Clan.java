@@ -161,7 +161,7 @@ public class Clan {
     public Clan(int clanId, int leaderId) {
         this._clanId = clanId;
         for (int i = 1; i < 10; i++)
-            this._priviledges.put(Integer.valueOf(i), Integer.valueOf(0));
+            this._priviledges.put(i, 0);
         try {
             Connection con = ConnectionPool.getConnection();
             try {
@@ -175,7 +175,7 @@ public class Clan {
                             if (member.getObjectId() == leaderId) {
                                 setLeader(member);
                             } else {
-                                this._members.put(Integer.valueOf(member.getObjectId()), member);
+                                this._members.put(member.getObjectId(), member);
                             }
                             member.setApprenticeAndSponsor(rs.getInt("apprentice"), rs.getInt("sponsor"));
                         }
@@ -208,7 +208,7 @@ public class Clan {
                     try {
                         while (rs.next()) {
                             int id = rs.getInt("sub_pledge_id");
-                            this._subPledges.put(Integer.valueOf(id), new SubPledge(id, rs.getString("name"), rs.getInt("leader_id")));
+                            this._subPledges.put(id, new SubPledge(id, rs.getString("name"), rs.getInt("leader_id")));
                         }
                         if (rs != null)
                             rs.close();
@@ -238,7 +238,7 @@ public class Clan {
                     ResultSet rs = ps.executeQuery();
                     try {
                         while (rs.next())
-                            this._priviledges.put(Integer.valueOf(rs.getInt("rank")), Integer.valueOf(rs.getInt("privs")));
+                            this._priviledges.put(rs.getInt("rank"), rs.getInt("privs"));
                         if (rs != null)
                             rs.close();
                     } catch (Throwable throwable) {
@@ -272,7 +272,7 @@ public class Clan {
                             L2Skill skill = SkillTable.getInstance().getInfo(id, level);
                             if (skill == null)
                                 continue;
-                            this._skills.put(Integer.valueOf(id), skill);
+                            this._skills.put(id, skill);
                         }
                         if (rs != null)
                             rs.close();
@@ -311,15 +311,15 @@ public class Clan {
             LOGGER.error("Error while restoring clan.", e);
         }
         if (this._crestId != 0 && CrestCache.getInstance().getCrest(CrestCache.CrestType.PLEDGE, this._crestId) == null) {
-            LOGGER.warn("Removing non-existent crest for clan {}, crestId: {}.", toString(), Integer.valueOf(this._crestId));
+            LOGGER.warn("Removing non-existent crest for clan {}, crestId: {}.", toString(), this._crestId);
             changeClanCrest(0);
         }
         if (this._crestLargeId != 0 && CrestCache.getInstance().getCrest(CrestCache.CrestType.PLEDGE_LARGE, this._crestLargeId) == null) {
-            LOGGER.warn("Removing non-existent large crest for clan {}, crestLargeId: {}.", toString(), Integer.valueOf(this._crestLargeId));
+            LOGGER.warn("Removing non-existent large crest for clan {}, crestLargeId: {}.", toString(), this._crestLargeId);
             changeLargeCrest(0);
         }
         if (this._allyCrestId != 0 && CrestCache.getInstance().getCrest(CrestCache.CrestType.ALLY, this._allyCrestId) == null) {
-            LOGGER.warn("Removing non-existent ally crest for clan {}, allyCrestId: {}.", toString(), Integer.valueOf(this._allyCrestId));
+            LOGGER.warn("Removing non-existent ally crest for clan {}, allyCrestId: {}.", toString(), this._allyCrestId);
             changeAllyCrest(0, true);
         }
         this._warehouse.restore();
@@ -329,7 +329,7 @@ public class Clan {
         this._clanId = clanId;
         this._name = clanName;
         for (int i = 1; i < 10; i++)
-            this._priviledges.put(Integer.valueOf(i), Integer.valueOf(0));
+            this._priviledges.put(i, 0);
     }
 
     public static boolean checkAllyJoinCondition(Player player, Player target) {
@@ -414,7 +414,7 @@ public class Clan {
 
     public void setLeader(ClanMember leader) {
         this._leader = leader;
-        this._members.put(Integer.valueOf(leader.getObjectId()), leader);
+        this._members.put(leader.getObjectId(), leader);
     }
 
     public int getLeaderId() {
@@ -669,7 +669,7 @@ public class Clan {
     }
 
     public ClanMember getClanMember(int objectId) {
-        return this._members.get(Integer.valueOf(objectId));
+        return this._members.get(objectId);
     }
 
     public ClanMember getClanMember(String name) {
@@ -677,12 +677,12 @@ public class Clan {
     }
 
     public boolean isMember(int objectId) {
-        return this._members.containsKey(Integer.valueOf(objectId));
+        return this._members.containsKey(objectId);
     }
 
     public void addClanMember(Player player) {
         ClanMember member = new ClanMember(this, player);
-        this._members.put(Integer.valueOf(member.getObjectId()), member);
+        this._members.put(member.getObjectId(), member);
         member.setPlayerInstance(player);
         player.setClan(this);
         player.setPledgeClass(ClanMember.calculatePledgeClass(player));
@@ -702,7 +702,7 @@ public class Clan {
     }
 
     public void removeClanMember(int objectId, long clanJoinExpiryTime) {
-        ClanMember exMember = this._members.remove(Integer.valueOf(objectId));
+        ClanMember exMember = this._members.remove(objectId);
         if (exMember == null)
             return;
         int subPledgeId = getLeaderSubPledge(objectId);
@@ -844,15 +844,15 @@ public class Clan {
     public String getSubPledgeLeaderName(int pledgeType) {
         if (pledgeType == 0)
             return this._leader.getName();
-        SubPledge subPledge = this._subPledges.get(Integer.valueOf(pledgeType));
+        SubPledge subPledge = this._subPledges.get(pledgeType);
         int leaderId = subPledge.getLeaderId();
         if (subPledge.getId() == -1 || leaderId == 0)
             return "";
-        if (!this._members.containsKey(Integer.valueOf(leaderId))) {
-            LOGGER.warn("SubPledge leader {} is missing from clan: {}.", Integer.valueOf(leaderId), toString());
+        if (!this._members.containsKey(leaderId)) {
+            LOGGER.warn("SubPledge leader {} is missing from clan: {}.", leaderId, toString());
             return "";
         }
-        return this._members.get(Integer.valueOf(leaderId)).getName();
+        return this._members.get(leaderId).getName();
     }
 
     public int getMaxNrOfMembers(int pledgeType) {
@@ -1140,7 +1140,7 @@ public class Clan {
             LOGGER.error("Error while storing a clan skill.", e);
             return;
         }
-        this._skills.put(Integer.valueOf(newSkill.getId()), newSkill);
+        this._skills.put(newSkill.getId(), newSkill);
         PledgeSkillListAdd pledgeListAdd = new PledgeSkillListAdd(newSkill.getId(), newSkill.getLevel());
         PledgeSkillList pledgeList = new PledgeSkillList(this);
         SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.CLAN_SKILL_S1_ADDED).addSkillName(newSkill.getId());
@@ -1194,37 +1194,37 @@ public class Clan {
     }
 
     public boolean isAtWarWith(int id) {
-        return this._atWarWith.contains(Integer.valueOf(id));
+        return this._atWarWith.contains(id);
     }
 
     public boolean isAtWarAttacker(int id) {
-        return this._atWarAttackers.contains(Integer.valueOf(id));
+        return this._atWarAttackers.contains(id);
     }
 
     public void setEnemyClan(int clanId) {
-        this._atWarWith.add(Integer.valueOf(clanId));
+        this._atWarWith.add(clanId);
     }
 
     public void setAttackerClan(int clanId) {
-        this._atWarAttackers.add(Integer.valueOf(clanId));
+        this._atWarAttackers.add(clanId);
     }
 
     public void deleteEnemyClan(int clanId) {
-        this._atWarWith.remove(Integer.valueOf(clanId));
+        this._atWarWith.remove(clanId);
     }
 
     public void deleteAttackerClan(int clanId) {
-        this._atWarAttackers.remove(Integer.valueOf(clanId));
+        this._atWarAttackers.remove(clanId);
     }
 
     public void addWarPenaltyTime(int clanId, long expiryTime) {
-        this._warPenaltyExpiryTime.put(Integer.valueOf(clanId), Long.valueOf(expiryTime));
+        this._warPenaltyExpiryTime.put(clanId, expiryTime);
     }
 
     public boolean hasWarPenaltyWith(int clanId) {
-        if (!this._warPenaltyExpiryTime.containsKey(Integer.valueOf(clanId)))
+        if (!this._warPenaltyExpiryTime.containsKey(clanId))
             return false;
-        return (this._warPenaltyExpiryTime.get(Integer.valueOf(clanId)) > System.currentTimeMillis());
+        return (this._warPenaltyExpiryTime.get(clanId) > System.currentTimeMillis());
     }
 
     public Map<Integer, Long> getWarPenalty() {
@@ -1262,7 +1262,7 @@ public class Clan {
     }
 
     public final SubPledge getSubPledge(int pledgeType) {
-        return this._subPledges.get(Integer.valueOf(pledgeType));
+        return this._subPledges.get(pledgeType);
     }
 
     public final SubPledge getSubPledge(String pledgeName) {
@@ -1324,7 +1324,7 @@ public class Clan {
             return null;
         }
         SubPledge subPledge = new SubPledge(pledgeType, subPledgeName, leaderId);
-        this._subPledges.put(Integer.valueOf(pledgeType), subPledge);
+        this._subPledges.put(pledgeType, subPledge);
         if (pledgeType != -1)
             if (pledgeType < 1001) {
                 takeReputationScore(5000);
@@ -1336,7 +1336,7 @@ public class Clan {
     }
 
     public int getAvailablePledgeTypes(int pledgeType) {
-        if (this._subPledges.get(Integer.valueOf(pledgeType)) != null)
+        if (this._subPledges.get(pledgeType) != null)
             switch (pledgeType) {
                 case -1:
                     return 0;
@@ -1403,13 +1403,13 @@ public class Clan {
     }
 
     public int getPriviledgesByRank(int rank) {
-        return this._priviledges.getOrDefault(Integer.valueOf(rank), Integer.valueOf(0));
+        return this._priviledges.getOrDefault(rank, 0);
     }
 
     public void setPriviledgesForRank(int rank, int privs) {
-        if (!this._priviledges.containsKey(Integer.valueOf(rank)))
+        if (!this._priviledges.containsKey(rank))
             return;
-        this._priviledges.put(Integer.valueOf(rank), Integer.valueOf(privs));
+        this._priviledges.put(rank, privs);
         for (Player member : getOnlineMembers()) {
             if (member.getPowerGrade() == rank)
                 member.setClanPrivileges(privs);

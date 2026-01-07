@@ -10,7 +10,7 @@ public class InstanceManager {
 
     protected InstanceManager() {
         this.instances = new ConcurrentHashMap<>();
-        this.instances.put(Integer.valueOf(0), new Instance(0));
+        this.instances.put(0, new Instance(0));
     }
 
     public static InstanceManager getInstance() {
@@ -18,9 +18,9 @@ public class InstanceManager {
     }
 
     public void addDoor(int id, Door door) {
-        if (!this.instances.containsKey(Integer.valueOf(id)) || id == 0)
+        if (!this.instances.containsKey(id) || id == 0)
             return;
-        this.instances.get(Integer.valueOf(id)).addDoor(door);
+        this.instances.get(id).addDoor(door);
     }
 
     public void deleteInstance(int id) {
@@ -31,12 +31,12 @@ public class InstanceManager {
 
     public synchronized Instance createInstance() {
         Instance instance = new Instance(InstanceIdFactory.getNextAvailable());
-        this.instances.put(Integer.valueOf(instance.getId()), instance);
+        this.instances.put(instance.getId(), instance);
         return instance;
     }
 
     public Instance getInstance(int id) {
-        return this.instances.get(Integer.valueOf(id));
+        return this.instances.get(id);
     }
 
     private static final class SingletonHolder {

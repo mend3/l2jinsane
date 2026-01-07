@@ -37,7 +37,7 @@ public class RaidbossInfo extends Quest {
         }
         for (L2Spawn spawn : SpawnTable.getInstance().getSpawns()) {
             if (spawn.getTemplate().isType("RaidBoss"))
-                RADARS.put(Integer.valueOf(spawn.getNpcId()), spawn.getLoc());
+                RADARS.put(spawn.getNpcId(), spawn.getLoc());
         }
     }
 
@@ -47,8 +47,8 @@ public class RaidbossInfo extends Quest {
             return event;
         if (StringUtil.isDigit(event)) {
             int rbid = Integer.parseInt(event);
-            if (RADARS.containsKey(Integer.valueOf(rbid))) {
-                Location loc = RADARS.get(Integer.valueOf(rbid));
+            if (RADARS.containsKey(rbid)) {
+                Location loc = RADARS.get(rbid);
                 st.addRadar(loc.getX(), loc.getY(), loc.getZ());
             }
             st.exitQuest(true);

@@ -345,7 +345,7 @@ public class CastleChamberlain extends Merchant {
                     break;
             }
             if (this._preHour != 6) {
-                getCastle().getSiegeDate().set(11, this._preHour + 12);
+                getCastle().getSiegeDate().set(Calendar.HOUR_OF_DAY, this._preHour + 12);
                 getCastle().getSiege().endTimeRegistration(false);
                 sendFileMessage(player, "data/html/chamberlain/siegetime8.htm");
                 return;

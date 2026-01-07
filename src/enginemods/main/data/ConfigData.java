@@ -429,7 +429,7 @@ public class ConfigData {
         RANDOM_BOSS_SPAWN_ENABLE_DAY = parseWeekDay(config, "RandomBossSpawnEnableDay");
         String aux = config.getProperty("RandomBossSpawnId", "10447,10450,10444,10490").trim();
         for (String info : aux.split(","))
-            RANDOM_BOSS_NPC_ID.add(Integer.valueOf(Integer.parseInt(info)));
+            RANDOM_BOSS_NPC_ID.add(Integer.parseInt(info));
         RANDOM_BOSS_REWARDS = parseReward(config, "RandomBossRewards");
         RANDOM_BOSS_SPWNNED_TIME = config.getProperty("RandomBossSpawnTime", 10);
     }
@@ -551,7 +551,7 @@ public class ConfigData {
     private static Map<Stats, Double> parseStats(UtilProperties propertie, String endConfigName) {
         Map<Stats, Double> map = new HashMap<>();
         for (Stats st : Stats.values())
-            map.put(st, Double.valueOf(propertie.getProperty(st.name() + st.name(), 1.0D)));
+            map.put(st, propertie.getProperty(st.name() + st.name(), 1.0D));
         return map;
     }
 
@@ -571,9 +571,9 @@ public class ConfigData {
         for (String pvpReward : aux.split(";")) {
             String[] infos = pvpReward.split(",");
             if (infos.length > 2) {
-                auxReturn.add(new RewardHolder(Integer.valueOf(infos[0]), Integer.valueOf(infos[1]), Integer.valueOf(infos[2])));
+                auxReturn.add(new RewardHolder(Integer.parseInt(infos[0]), Integer.parseInt(infos[1]), Integer.parseInt(infos[2])));
             } else {
-                auxReturn.add(new RewardHolder(Integer.valueOf(infos[0]), Integer.valueOf(infos[1])));
+                auxReturn.add(new RewardHolder(Integer.parseInt(infos[0]), Integer.parseInt(infos[1])));
             }
         }
         return auxReturn;
@@ -592,7 +592,7 @@ public class ConfigData {
         String aux = propertie.getProperty(configName).trim();
         for (String buff : aux.split(";")) {
             String[] infos = buff.split(",");
-            auxReturn.add(new IntIntHolder(Integer.valueOf(infos[0]), Integer.valueOf(infos[1])));
+            auxReturn.add(new IntIntHolder(Integer.parseInt(infos[0]), Integer.parseInt(infos[1])));
         }
         return auxReturn;
     }

@@ -262,7 +262,7 @@ public final class RequestActionUse extends L2GameClientPacket {
                 }
                 useSkill(5111, target);
         }
-        LOGGER.warn("Unhandled action type {} detected for {}.", Integer.valueOf(this._actionId), player.getName());
+        LOGGER.warn("Unhandled action type {} detected for {}.", this._actionId, player.getName());
     }
 
     private boolean useSkill(int skillId, WorldObject target) {

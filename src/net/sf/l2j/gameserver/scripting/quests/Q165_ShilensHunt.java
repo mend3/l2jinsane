@@ -29,10 +29,10 @@ public class Q165_ShilensHunt extends Quest {
 
     public Q165_ShilensHunt() {
         super(165, "Shilen's Hunt");
-        CHANCES.put(Integer.valueOf(20456), Integer.valueOf(1000000));
-        CHANCES.put(Integer.valueOf(20529), Integer.valueOf(333333));
-        CHANCES.put(Integer.valueOf(20532), Integer.valueOf(333333));
-        CHANCES.put(Integer.valueOf(20536), Integer.valueOf(666667));
+        CHANCES.put(20456, 1000000);
+        CHANCES.put(20529, 333333);
+        CHANCES.put(20532, 333333);
+        CHANCES.put(20536, 666667);
         setItemsIds(1160);
         addStartNpc(30348);
         addTalkId(30348);
@@ -93,7 +93,7 @@ public class Q165_ShilensHunt extends Quest {
         QuestState st = checkPlayerCondition(player, npc, "cond", "1");
         if (st == null)
             return null;
-        if (st.dropItems(1160, 1, 13, CHANCES.get(Integer.valueOf(npc.getNpcId()))))
+        if (st.dropItems(1160, 1, 13, CHANCES.get(npc.getNpcId())))
             st.set("cond", "2");
         return null;
     }

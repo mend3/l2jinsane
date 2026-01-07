@@ -150,9 +150,9 @@ public class Shutdown extends Thread {
     public void startShutdown(Player player, String ghostEntity, int seconds, boolean restart) {
         this._shutdownMode = restart ? 2 : 1;
         if (player != null) {
-            LOGGER.info("GM: {} issued {} process in {} seconds.", player.toString(), MODE_TEXT[this._shutdownMode], Integer.valueOf(seconds));
+            LOGGER.info("GM: {} issued {} process in {} seconds.", player.toString(), MODE_TEXT[this._shutdownMode], seconds);
         } else if (!ghostEntity.isEmpty()) {
-            LOGGER.info("Entity: {} issued {} process in {} seconds.", ghostEntity, MODE_TEXT[this._shutdownMode], Integer.valueOf(seconds));
+            LOGGER.info("Entity: {} issued {} process in {} seconds.", ghostEntity, MODE_TEXT[this._shutdownMode], seconds);
         }
         if (this._shutdownMode > 0)
             switch (seconds) {

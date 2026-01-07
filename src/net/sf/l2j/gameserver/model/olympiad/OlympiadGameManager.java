@@ -29,7 +29,7 @@ public class OlympiadGameManager implements Runnable {
         int i = 0;
         for (OlympiadStadiumZone zone : _zones)
             this._tasks[i++] = new OlympiadGameTask(zone);
-        LOGGER.info("Loaded {} stadiums.", Integer.valueOf(this._tasks.length));
+        LOGGER.info("Loaded {} stadiums.", this._tasks.length);
     }
 
     public final void run() {

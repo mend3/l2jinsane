@@ -6,12 +6,9 @@ import net.sf.l2j.gameserver.model.multisell.ListContainer;
 
 public class MultiSellList extends L2GameServerPacket {
     private final ListContainer _list;
-
-    private int _index;
-
-    private int _size;
-
     private final boolean _finished;
+    private int _index;
+    private int _size;
 
     public MultiSellList(ListContainer list, int index) {
         this._list = list;

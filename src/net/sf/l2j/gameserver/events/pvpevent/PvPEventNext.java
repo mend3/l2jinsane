@@ -73,11 +73,11 @@ public class PvPEventNext {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
                 String[] splitTimeOfDay = timeOfDay.split(":");
-                testStartTime.set(11, Integer.parseInt(splitTimeOfDay[0]));
-                testStartTime.set(12, Integer.parseInt(splitTimeOfDay[1]));
-                testStartTime.set(13, 0);
+                testStartTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitTimeOfDay[0]));
+                testStartTime.set(Calendar.MINUTE, Integer.parseInt(splitTimeOfDay[1]));
+                testStartTime.set(Calendar.SECOND, 0);
                 if (testStartTime.getTimeInMillis() < currentTime.getTimeInMillis())
-                    testStartTime.add(5, 1);
+                    testStartTime.add(Calendar.DATE, 1);
                 timeL = testStartTime.getTimeInMillis() - currentTime.getTimeInMillis();
                 if (count == 0) {
                     flush2 = timeL;
@@ -105,12 +105,12 @@ public class PvPEventNext {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
                 String[] splitTimeOfDay = timeOfDay.split(":");
-                testStartTime.set(11, Integer.parseInt(splitTimeOfDay[0]));
-                testStartTime.set(12, Integer.parseInt(splitTimeOfDay[1]));
-                testStartTime.set(13, 0);
-                testStartTime.set(14, 0);
+                testStartTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitTimeOfDay[0]));
+                testStartTime.set(Calendar.MINUTE, Integer.parseInt(splitTimeOfDay[1]));
+                testStartTime.set(Calendar.SECOND, 0);
+                testStartTime.set(Calendar.MILLISECOND, 0);
                 if (testStartTime.getTimeInMillis() <= currentTime.getTimeInMillis())
-                    testStartTime.add(5, 1);
+                    testStartTime.add(Calendar.DATE, 1);
                 if (nextStartTime == null || testStartTime.getTimeInMillis() < nextStartTime.getTimeInMillis())
                     nextStartTime = testStartTime;
             }

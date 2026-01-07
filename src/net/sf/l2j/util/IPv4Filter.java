@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class IPv4Filter implements IAcceptFilter, Runnable {
     private static final long SLEEP_TIME = 5000L;
-    private final Map<Integer, IPv4Filter.FloodHolder> _floods = new ConcurrentHashMap();
+    private final Map<Integer, IPv4Filter.FloodHolder> _floods = new ConcurrentHashMap<>();
 
     public IPv4Filter() {
         Thread t = new Thread(this);
@@ -44,21 +44,20 @@ public class IPv4Filter implements IAcceptFilter, Runnable {
                 flood.lastAccess = currentTime;
             }
         } else {
-            this._floods.put(hash, new FloodHolder(this));
+            this._floods.put(hash, new FloodHolder());
         }
 
         return true;
     }
 
+    @SuppressWarnings("BusyWait")
     public void run() {
         while (true) {
             long referenceTime = System.currentTimeMillis() - 300000L;
-            this._floods.values().removeIf((f) -> {
-                return f.lastAccess < referenceTime;
-            });
+            this._floods.values().removeIf((f) -> f.lastAccess < referenceTime);
 
             try {
-                Thread.sleep(5000L);
+                Thread.sleep(SLEEP_TIME);
             } catch (InterruptedException var4) {
                 return;
             }
@@ -69,7 +68,7 @@ public class IPv4Filter implements IAcceptFilter, Runnable {
         protected long lastAccess = System.currentTimeMillis();
         protected int tries;
 
-        protected FloodHolder(final IPv4Filter param1) {
+        protected FloodHolder() {
         }
     }
 }

@@ -16,14 +16,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PlayerData implements IXmlReader {
+public class PlayerClassData implements IXmlReader {
     private final Map<Integer, PlayerTemplate> _templates = new HashMap<>();
 
-    protected PlayerData() {
+    protected PlayerClassData() {
     }
 
-    public static PlayerData getInstance() {
-        return PlayerData.SingletonHolder.INSTANCE;
+    public static PlayerClassData getInstance() {
+        return PlayerClassData.SingletonHolder.INSTANCE;
     }
 
     public void load() {
@@ -86,6 +86,6 @@ public class PlayerData implements IXmlReader {
     }
 
     private static class SingletonHolder {
-        protected static final PlayerData INSTANCE = new PlayerData();
+        protected static final PlayerClassData INSTANCE = new PlayerClassData();
     }
 }

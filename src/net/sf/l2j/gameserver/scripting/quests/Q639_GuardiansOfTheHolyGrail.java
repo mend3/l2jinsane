@@ -29,20 +29,20 @@ public class Q639_GuardiansOfTheHolyGrail extends Quest {
 
     public Q639_GuardiansOfTheHolyGrail() {
         super(639, "Guardians of the Holy Grail");
-        CHANCES.put(Integer.valueOf(22122), Integer.valueOf(760000));
-        CHANCES.put(Integer.valueOf(22123), Integer.valueOf(750000));
-        CHANCES.put(Integer.valueOf(22124), Integer.valueOf(590000));
-        CHANCES.put(Integer.valueOf(22125), Integer.valueOf(580000));
-        CHANCES.put(Integer.valueOf(22126), Integer.valueOf(590000));
-        CHANCES.put(Integer.valueOf(22127), Integer.valueOf(580000));
-        CHANCES.put(Integer.valueOf(22128), Integer.valueOf(170000));
-        CHANCES.put(Integer.valueOf(22129), Integer.valueOf(590000));
-        CHANCES.put(Integer.valueOf(22130), Integer.valueOf(850000));
-        CHANCES.put(Integer.valueOf(22131), Integer.valueOf(920000));
-        CHANCES.put(Integer.valueOf(22132), Integer.valueOf(580000));
-        CHANCES.put(Integer.valueOf(22133), Integer.valueOf(930000));
-        CHANCES.put(Integer.valueOf(22134), Integer.valueOf(230000));
-        CHANCES.put(Integer.valueOf(22135), Integer.valueOf(580000));
+        CHANCES.put(22122, 760000);
+        CHANCES.put(22123, 750000);
+        CHANCES.put(22124, 590000);
+        CHANCES.put(22125, 580000);
+        CHANCES.put(22126, 590000);
+        CHANCES.put(22127, 580000);
+        CHANCES.put(22128, 170000);
+        CHANCES.put(22129, 590000);
+        CHANCES.put(22130, 850000);
+        CHANCES.put(22131, 920000);
+        CHANCES.put(22132, 580000);
+        CHANCES.put(22133, 930000);
+        CHANCES.put(22134, 230000);
+        CHANCES.put(22135, 580000);
         setItemsIds(8069, 8070, 8071);
         addStartNpc(31350);
         addTalkId(31350, 32008, 32028);
@@ -148,7 +148,7 @@ public class Q639_GuardiansOfTheHolyGrail extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropItems(8069, 1, 0, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(8069, 1, 0, CHANCES.get(npc.getNpcId()));
         return null;
     }
 }

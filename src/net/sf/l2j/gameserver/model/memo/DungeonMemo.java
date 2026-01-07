@@ -19,7 +19,7 @@ public class DungeonMemo {
             return;
         }
         getVarObject(player, name).setValue(value);
-        MariaDB.set("UPDATE character_memo_alt SET value=? WHERE obj_id=? AND name=?", value, Integer.valueOf(player.getObjectId()), name);
+        MariaDB.set("UPDATE character_memo_alt SET value=? WHERE obj_id=? AND name=?", value, player.getObjectId(), name);
     }
 
     public static void setVar(Player player, String name, String value, long expirationTime) {
@@ -94,7 +94,7 @@ public class DungeonMemo {
                 pv.getOwner().broadcastCharInfo();
                 pv.getOwner().broadcastUserInfo();
             }
-            MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", Integer.valueOf(pv.getOwner().getObjectId()), name);
+            MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", pv.getOwner().getObjectId(), name);
             pv.stopExpireTask();
         }
     }
@@ -104,7 +104,7 @@ public class DungeonMemo {
             return;
         if (name.contains("delete_temp_item"))
             player.deleteTempItem(Integer.parseInt(value));
-        MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", Integer.valueOf(player.getObjectId()), name);
+        MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", player.getObjectId(), name);
     }
 
     public static String getVar(Player player, String name) {

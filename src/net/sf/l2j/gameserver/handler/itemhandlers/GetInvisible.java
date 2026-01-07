@@ -30,21 +30,21 @@ public class GetInvisible implements IItemHandler {
 
     private static long getReuseTime(Player player) {
         long now = System.currentTimeMillis();
-        if (REUSE_LIST.containsKey(Integer.valueOf(player.getObjectId())))
-            return now - REUSE_LIST.get(Integer.valueOf(player.getObjectId()));
+        if (REUSE_LIST.containsKey(player.getObjectId()))
+            return now - REUSE_LIST.get(player.getObjectId());
         return 30000L;
     }
 
     private static void setReuseTime(Player player) {
-        REUSE_LIST.put(Integer.valueOf(player.getObjectId()), Long.valueOf(System.currentTimeMillis()));
+        REUSE_LIST.put(player.getObjectId(), System.currentTimeMillis());
     }
 
     private static boolean isInvisible(Player player) {
-        return INVIS_STATUS.getOrDefault(Integer.valueOf(player.getObjectId()), Boolean.valueOf(false));
+        return INVIS_STATUS.getOrDefault(player.getObjectId(), Boolean.FALSE);
     }
 
     private static void setInvisibleStatus(Player player, boolean status) {
-        INVIS_STATUS.put(Integer.valueOf(player.getObjectId()), Boolean.valueOf(status));
+        INVIS_STATUS.put(player.getObjectId(), status);
     }
 
     private static boolean activateInvisibility(Player player) {

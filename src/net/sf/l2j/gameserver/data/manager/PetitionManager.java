@@ -55,7 +55,7 @@ public final class PetitionManager {
     }
 
     public boolean isPetitionInProcess(int id) {
-        Petition petition = this._pendingPetitions.get(Integer.valueOf(id));
+        Petition petition = this._pendingPetitions.get(id);
         return (petition != null && petition.getState() == PetitionState.IN_PROCESS);
     }
 
@@ -82,7 +82,7 @@ public final class PetitionManager {
     }
 
     public boolean rejectPetition(Player player, int id) {
-        Petition petition = this._pendingPetitions.get(Integer.valueOf(id));
+        Petition petition = this._pendingPetitions.get(id);
         if (petition == null || petition.getResponder() != null)
             return false;
         petition.setResponder(player);
@@ -120,11 +120,11 @@ public final class PetitionManager {
         for (Petition petition : this._pendingPetitions.values()) {
             sb.append("<tr><td>");
             if (petition.getState() != PetitionState.IN_PROCESS) {
-                StringUtil.append(sb, "<button value=\"View\" action=\"bypass -h admin_view_petition ", Integer.valueOf(petition.getId()), "\" width=\"40\" height=\"15\" back=\"sek.cbui94\" fore=\"sek.cbui92\">");
+                StringUtil.append(sb, "<button value=\"View\" action=\"bypass -h admin_view_petition ", petition.getId(), "\" width=\"40\" height=\"15\" back=\"sek.cbui94\" fore=\"sek.cbui92\">");
             } else {
                 sb.append("<font color=\"999999\">In Process</font>");
             }
-            StringUtil.append(sb, "</td><td>", petition.getPetitioner().getName(), "</td><td>", petition.getTypeAsString(), "</td><td>", sdf.format(Long.valueOf(petition.getSubmitTime())), "</td></tr>");
+            StringUtil.append(sb, "</td><td>", petition.getPetitioner().getName(), "</td><td>", petition.getTypeAsString(), "</td><td>", sdf.format(petition.getSubmitTime()), "</td></tr>");
         }
         sb.append("</table><br><button value=\"Refresh\" action=\"bypass -h admin_view_petitions\" width=\"50\" height=\"15\" back=\"sek.cbui94\" fore=\"sek.cbui92\"><br><button value=\"Back\" action=\"bypass -h admin_admin\" width=\"40\" height=\"15\" back=\"sek.cbui94\" fore=\"sek.cbui92\"></center></body></html>");
         NpcHtmlMessage html = new NpcHtmlMessage(0);
@@ -134,7 +134,7 @@ public final class PetitionManager {
 
     public int submitPetition(Player player, String content, int type) {
         Petition petition = new Petition(player, content, type);
-        this._pendingPetitions.put(Integer.valueOf(petition.getId()), petition);
+        this._pendingPetitions.put(petition.getId(), petition);
         AdminData.getInstance().broadcastToGMs(new CreatureSay(player.getObjectId(), 17, "Petition System", player.getName() + " has submitted a new petition."));
         return petition.getId();
     }
@@ -142,12 +142,12 @@ public final class PetitionManager {
     public void viewPetition(Player player, int id) {
         if (!player.isGM())
             return;
-        Petition petition = this._pendingPetitions.get(Integer.valueOf(id));
+        Petition petition = this._pendingPetitions.get(id);
         if (petition == null)
             return;
         String sb = "<html><body>" + "<center><br><font color=\"LEVEL\">Petition #" + petition.getId() + "</font><br1>" +
                 "<img src=\"L2UI.SquareGray\" width=\"200\" height=\"1\"></center><br>" +
-                "Submit Time: " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(petition.getSubmitTime())) + "<br1>" +
+                "Submit Time: " + (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(petition.getSubmitTime()) + "<br1>" +
                 "Petitioner: " + petition.getPetitioner().getName() + "<br1>" +
                 "Petition Type: " + petition.getTypeAsString() + "<br>" + petition.getContent() + "<br>" +
                 "<center><button value=\"Accept\" action=\"bypass -h admin_accept_petition " + petition.getId() + "\"width=\"50\" height=\"15\" back=\"sek.cbui94\" fore=\"sek.cbui92\"><br1>" +
@@ -160,7 +160,7 @@ public final class PetitionManager {
     }
 
     public boolean acceptPetition(Player player, int id) {
-        Petition petition = this._pendingPetitions.get(Integer.valueOf(id));
+        Petition petition = this._pendingPetitions.get(id);
         if (petition == null || petition.getResponder() != null)
             return false;
         petition.setResponder(player);

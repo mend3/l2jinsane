@@ -58,12 +58,12 @@ public class BoatManager {
         set.set("runSpd", 0);
         Boat boat = new Boat(IdFactory.getInstance().getNextId(), new CreatureTemplate(set));
         boat.spawnMe(x, y, z, heading);
-        this._boats.put(Integer.valueOf(boat.getObjectId()), boat);
+        this._boats.put(boat.getObjectId(), boat);
         return boat;
     }
 
     public Boat getBoat(int boatId) {
-        return this._boats.get(Integer.valueOf(boatId));
+        return this._boats.get(boatId);
     }
 
     public void dockBoat(int dockId, boolean value) {

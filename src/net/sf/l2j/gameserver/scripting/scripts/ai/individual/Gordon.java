@@ -44,7 +44,7 @@ public class Gordon extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addEventIds(29095, new ScriptEventType[]{ScriptEventType.ON_KILL, ScriptEventType.ON_SPAWN});
+        this.addEventIds(29095, ScriptEventType.ON_KILL, ScriptEventType.ON_SPAWN);
     }
 
     public String onAdvEvent(String event, Npc npc, Player player) {

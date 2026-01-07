@@ -45,17 +45,17 @@ public class MacroList {
     }
 
     public Macro getMacro(int id) {
-        return this._macros.get(Integer.valueOf(id));
+        return this._macros.get(id);
     }
 
     public void registerMacro(Macro macro) {
         if (macro.id == 0) {
             macro.id = this._macroId++;
-            while (this._macros.get(Integer.valueOf(macro.id)) != null)
+            while (this._macros.get(macro.id) != null)
                 macro.id = this._macroId++;
-            this._macros.put(Integer.valueOf(macro.id), macro);
+            this._macros.put(macro.id, macro);
         } else {
-            Macro old = this._macros.put(Integer.valueOf(macro.id), macro);
+            Macro old = this._macros.put(macro.id, macro);
             if (old != null)
                 deleteMacroFromDb(old);
         }
@@ -64,10 +64,10 @@ public class MacroList {
     }
 
     public void deleteMacro(int id) {
-        Macro toRemove = this._macros.get(Integer.valueOf(id));
+        Macro toRemove = this._macros.get(id);
         if (toRemove != null)
             deleteMacroFromDb(toRemove);
-        this._macros.remove(Integer.valueOf(id));
+        this._macros.remove(id);
         this._owner.getShortcutList().deleteShortcuts(id, ShortcutType.MACRO);
         sendUpdate();
     }
@@ -86,7 +86,7 @@ public class MacroList {
     private void registerMacroInDb(Macro macro) {
         StringBuilder sb = new StringBuilder(300);
         for (Macro.MacroCmd cmd : macro.commands) {
-            StringUtil.append(sb, Integer.valueOf(cmd.type()), ",", Integer.valueOf(cmd.d1()), ",", Integer.valueOf(cmd.d2()));
+            StringUtil.append(sb, cmd.type(), ",", cmd.d1(), ",", cmd.d2());
             if (cmd.cmd() != null && cmd.cmd().length() > 0)
                 StringUtil.append(sb, ",", cmd.cmd());
             sb.append(';');
@@ -201,7 +201,7 @@ public class MacroList {
                                 commands.add(mcmd);
                             }
                             Macro macro = new Macro(id, icon, name, descr, acronym, commands.toArray(new Macro.MacroCmd[commands.size()]));
-                            this._macros.put(Integer.valueOf(macro.id), macro);
+                            this._macros.put(macro.id, macro);
                         }
                         if (rs != null)
                             rs.close();

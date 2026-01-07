@@ -31,6 +31,7 @@ public final class CastleManager implements IXmlReader {
 
     private static final String LOAD_OWNER = "SELECT clan_id FROM clan_data WHERE hasCastle=?";
 
+    @SuppressWarnings("SqlWithoutWhere")
     private static final String RESET_CERTIFICATES = "UPDATE castle SET certificates=300";
 
     private final Map<Integer, Castle> _castles = new HashMap<>();
@@ -42,12 +43,27 @@ public final class CastleManager implements IXmlReader {
         return SingletonHolder.INSTANCE;
     }
 
+    public static String getCastleName(int id) {
+        return switch (id) {
+            case 1 -> "Gludio";
+            case 2 -> "Dion";
+            case 3 -> "Giran";
+            case 4 -> "Oren";
+            case 5 -> "Aden";
+            case 6 -> "Innadril";
+            case 7 -> "Goddard";
+            case 8 -> "Rune";
+            case 9 -> "Schuttgart";
+            default -> "Not found";
+        };
+    }
+
     public void load() {
         parseFile("./data/xml/castles.xml");
-        LOGGER.info("Loaded {} castles.", Integer.valueOf(this._castles.size()));
+        LOGGER.info("Loaded {} castles.", this._castles.size());
         try {
             Connection con = ConnectionPool.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM castle ORDER BY id");
+            PreparedStatement ps = con.prepareStatement(LOAD_CASTLES);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int id = rs.getInt("id");
@@ -59,7 +75,7 @@ public final class CastleManager implements IXmlReader {
                 castle.setTaxPercent(rs.getInt("taxPercent"), false);
                 castle.setTreasury(rs.getLong("treasury"));
                 castle.setLeftCertificates(rs.getInt("certificates"), false);
-                PreparedStatement ps1 = con.prepareStatement("SELECT clan_id FROM clan_data WHERE hasCastle=?");
+                PreparedStatement ps1 = con.prepareStatement(LOAD_OWNER);
                 ps1.setInt(1, id);
                 ResultSet rs1 = ps1.executeQuery();
                 while (rs1.next()) {
@@ -70,16 +86,12 @@ public final class CastleManager implements IXmlReader {
                             castle.setOwnerId(ownerId);
                     }
                 }
-                if (rs1 != null)
-                    rs1.close();
-                if (ps1 != null)
-                    ps1.close();
+                rs1.close();
+                ps1.close();
                 this._castles.put(id, castle);
             }
-            if (ps != null)
-                ps.close();
-            if (con != null)
-                con.close();
+            ps.close();
+            con.close();
         } catch (Exception e) {
             LOGGER.error("Failed to load castles.", e);
         }
@@ -141,7 +153,7 @@ public final class CastleManager implements IXmlReader {
     }
 
     public Castle getCastleById(int castleId) {
-        return this._castles.get(Integer.valueOf(castleId));
+        return this._castles.get(castleId);
     }
 
     public Castle getCastleByOwner(Clan clan) {
@@ -165,18 +177,11 @@ public final class CastleManager implements IXmlReader {
     }
 
     public void validateTaxes(CabalType sealStrifeOwner) {
-        int maxTax;
-        switch (sealStrifeOwner) {
-            case DAWN:
-                maxTax = 25;
-                break;
-            case DUSK:
-                maxTax = 5;
-                break;
-            default:
-                maxTax = 15;
-                break;
-        }
+        int maxTax = switch (sealStrifeOwner) {
+            case DAWN -> 25;
+            case DUSK -> 5;
+            default -> 15;
+        };
         this._castles.values().stream().filter(c -> (c.getTaxPercent() > maxTax)).forEach(c -> c.setTaxPercent(maxTax, true));
     }
 
@@ -198,11 +203,10 @@ public final class CastleManager implements IXmlReader {
         try {
             Connection con = ConnectionPool.getConnection();
             try {
-                PreparedStatement ps = con.prepareStatement("UPDATE castle SET certificates=300");
+                PreparedStatement ps = con.prepareStatement(RESET_CERTIFICATES);
                 try {
                     ps.executeUpdate();
-                    if (ps != null)
-                        ps.close();
+                    ps.close();
                 } catch (Throwable throwable) {
                     if (ps != null)
                         try {
@@ -212,8 +216,7 @@ public final class CastleManager implements IXmlReader {
                         }
                     throw throwable;
                 }
-                if (con != null)
-                    con.close();
+                con.close();
             } catch (Throwable throwable) {
                 if (con != null)
                     try {

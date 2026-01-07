@@ -49,7 +49,7 @@ public class RankingBBSManager extends BaseBBSManager {
                                 Player databasePlayer = World.getInstance().getPlayer(name);
                                 String status = "L2UI_CH3.msnicon" + ((databasePlayer != null && databasePlayer.isOnline()) ? "1" : "4");
                                 if (databasePlayer != null && !databasePlayer.isGM()) {
-                                    StringUtil.append(PVP, "<table width=300 bgcolor=000000><tr><td width=20 align=right>", getColor(index), String.format("%02d", Integer.valueOf(index)), "</td>");
+                                    StringUtil.append(PVP, "<table width=300 bgcolor=000000><tr><td width=20 align=right>", getColor(index), String.format("%02d", index), "</td>");
                                     StringUtil.append(PVP, "<td width=20 height=18><img src=", status, " width=16 height=16></td><td width=160 align=left>", name, "</td>");
                                     StringUtil.append(PVP, "<td width=100 align=right>", StringUtil.formatNumber(rs.getInt("pvpkills")), "</font></td></tr></table><img src=L2UI.SquareGray width=296 height=1>");
                                     index++;
@@ -88,7 +88,7 @@ public class RankingBBSManager extends BaseBBSManager {
                                 Player databasePlayer = World.getInstance().getPlayer(name);
                                 String status = "L2UI_CH3.msnicon" + ((databasePlayer != null && databasePlayer.isOnline()) ? "1" : "4");
                                 if (databasePlayer != null && !databasePlayer.isGM()) {
-                                    StringUtil.append(PKS, "<table width=300 bgcolor=000000><tr><td width=20 align=right>", getColor(index), String.format("%02d", Integer.valueOf(index)), "</td>");
+                                    StringUtil.append(PKS, "<table width=300 bgcolor=000000><tr><td width=20 align=right>", getColor(index), String.format("%02d", index), "</td>");
                                     StringUtil.append(PKS, "<td width=20 height=18><img src=", status, " width=16 height=16></td><td width=160 align=left>", name, "</td>");
                                     StringUtil.append(PKS, "<td width=100 align=right>", StringUtil.formatNumber(rs.getInt("pkkills")), "</font></td></tr></table><img src=L2UI.SquareGray width=296 height=1>");
                                     index++;

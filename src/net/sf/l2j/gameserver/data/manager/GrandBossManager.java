@@ -49,8 +49,8 @@ public class GrandBossManager {
                             info.set("respawn_time", rset.getLong("respawn_time"));
                             info.set("currentHP", rset.getDouble("currentHP"));
                             info.set("currentMP", rset.getDouble("currentMP"));
-                            this._bossStatus.put(Integer.valueOf(bossId), Integer.valueOf(rset.getInt("status")));
-                            this._storedInfo.put(Integer.valueOf(bossId), info);
+                            this._bossStatus.put(bossId, rset.getInt("status"));
+                            this._storedInfo.put(bossId, info);
                         }
                         if (rset != null)
                             rset.close();
@@ -88,39 +88,39 @@ public class GrandBossManager {
         } catch (Exception e) {
             LOGGER.error("Couldn't load grandboss.", e);
         }
-        LOGGER.info("Loaded {} GrandBosses instances.", Integer.valueOf(this._storedInfo.size()));
+        LOGGER.info("Loaded {} GrandBosses instances.", this._storedInfo.size());
     }
 
     public int getBossStatus(int bossId) {
-        return this._bossStatus.get(Integer.valueOf(bossId));
+        return this._bossStatus.get(bossId);
     }
 
     public void setBossStatus(int bossId, int status) {
-        this._bossStatus.put(Integer.valueOf(bossId), Integer.valueOf(status));
-        LOGGER.info("Updated {} (id: {}) status to {}.", NpcData.getInstance().getTemplate(bossId).getName(), Integer.valueOf(bossId), Integer.valueOf(status));
+        this._bossStatus.put(bossId, status);
+        LOGGER.info("Updated {} (id: {}) status to {}.", NpcData.getInstance().getTemplate(bossId).getName(), bossId, status);
         updateDb(bossId, true);
     }
 
     public void addBoss(GrandBoss boss) {
         if (boss != null)
-            this._bosses.put(Integer.valueOf(boss.getNpcId()), boss);
+            this._bosses.put(boss.getNpcId(), boss);
     }
 
     public void addBoss(int npcId, GrandBoss boss) {
         if (boss != null)
-            this._bosses.put(Integer.valueOf(npcId), boss);
+            this._bosses.put(npcId, boss);
     }
 
     public GrandBoss getBoss(int bossId) {
-        return this._bosses.get(Integer.valueOf(bossId));
+        return this._bosses.get(bossId);
     }
 
     public StatSet getStatsSet(int bossId) {
-        return this._storedInfo.get(Integer.valueOf(bossId));
+        return this._storedInfo.get(bossId);
     }
 
     public void setStatsSet(int bossId, StatSet info) {
-        this._storedInfo.put(Integer.valueOf(bossId), info);
+        this._storedInfo.put(bossId, info);
         updateDb(bossId, false);
     }
 
@@ -128,12 +128,12 @@ public class GrandBossManager {
         try {
             Connection con = ConnectionPool.getConnection();
             try {
-                StatSet info = this._storedInfo.get(Integer.valueOf(bossId));
-                GrandBoss boss = this._bosses.get(Integer.valueOf(bossId));
+                StatSet info = this._storedInfo.get(bossId);
+                GrandBoss boss = this._bosses.get(bossId);
                 if (statusOnly || boss == null || info == null) {
                     PreparedStatement ps = con.prepareStatement("UPDATE grandboss_data set status = ? where boss_id = ?");
                     try {
-                        ps.setInt(1, (Integer) this._bossStatus.get(Integer.valueOf(bossId)));
+                        ps.setInt(1, (Integer) this._bossStatus.get(bossId));
                         ps.setInt(2, bossId);
                         ps.executeUpdate();
                         if (ps != null)
@@ -157,7 +157,7 @@ public class GrandBossManager {
                         ps.setLong(5, info.getLong("respawn_time"));
                         ps.setDouble(6, boss.isDead() ? boss.getMaxHp() : boss.getCurrentHp());
                         ps.setDouble(7, boss.isDead() ? boss.getMaxMp() : boss.getCurrentMp());
-                        ps.setInt(8, (Integer) this._bossStatus.get(Integer.valueOf(bossId)));
+                        ps.setInt(8, (Integer) this._bossStatus.get(bossId));
                         ps.setInt(9, bossId);
                         ps.executeUpdate();
                         if (ps != null)
@@ -199,9 +199,9 @@ public class GrandBossManager {
                         for (Map.Entry<Integer, StatSet> infoEntry : this._storedInfo.entrySet()) {
                             int bossId = infoEntry.getKey();
                             StatSet info = infoEntry.getValue();
-                            GrandBoss boss = this._bosses.get(Integer.valueOf(bossId));
+                            GrandBoss boss = this._bosses.get(bossId);
                             if (boss == null || info == null) {
-                                ps1.setInt(1, (Integer) this._bossStatus.get(Integer.valueOf(bossId)));
+                                ps1.setInt(1, (Integer) this._bossStatus.get(bossId));
                                 ps1.setInt(2, bossId);
                                 ps1.addBatch();
                                 continue;
@@ -213,7 +213,7 @@ public class GrandBossManager {
                             ps2.setLong(5, info.getLong("respawn_time"));
                             ps2.setDouble(6, boss.isDead() ? boss.getMaxHp() : boss.getCurrentHp());
                             ps2.setDouble(7, boss.isDead() ? boss.getMaxMp() : boss.getCurrentMp());
-                            ps2.setInt(8, (Integer) this._bossStatus.get(Integer.valueOf(bossId)));
+                            ps2.setInt(8, (Integer) this._bossStatus.get(bossId));
                             ps2.setInt(9, bossId);
                             ps2.addBatch();
                         }

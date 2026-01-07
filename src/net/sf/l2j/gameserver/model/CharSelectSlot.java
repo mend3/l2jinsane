@@ -105,7 +105,7 @@ public class CharSelectSlot {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't restore paperdolls for {}.", e, Integer.valueOf(objectId));
+            LOGGER.error("Couldn't restore paperdolls for {}.", e, objectId);
         }
         return paperdoll;
     }

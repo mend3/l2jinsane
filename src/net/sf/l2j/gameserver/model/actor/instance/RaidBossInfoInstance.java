@@ -33,7 +33,7 @@ public class RaidBossInfoInstance extends Folk {
         String currentCommand = st.nextToken();
         if (currentCommand.startsWith("RaidBossInfo")) {
             int pageId = Integer.parseInt(st.nextToken());
-            this._lastPage.put(Integer.valueOf(player.getObjectId()), Integer.valueOf(pageId));
+            this._lastPage.put(player.getObjectId(), pageId);
             showRaidBossInfo(player, pageId);
         } else if (currentCommand.startsWith("RaidBossDrop")) {
             int bossId = Integer.parseInt(st.nextToken());
@@ -116,7 +116,7 @@ public class RaidBossInfoInstance extends Folk {
             return;
         List<Integer> drops = new ArrayList<>();
         for (DropData drop : template.getAllDropData())
-            drops.add(Integer.valueOf(drop.getItemId()));
+            drops.add(drop.getItemId());
         int limit = Config.RAID_BOSS_DROP_PAGE_LIMIT;
         int max = drops.size() / limit + ((drops.size() % limit == 0) ? 0 : 1);
         drops = drops.subList((pageId - 1) * limit, Math.min(pageId * limit, drops.size()));
@@ -162,7 +162,7 @@ public class RaidBossInfoInstance extends Folk {
         sb.append("<br>");
         sb.append("<table width=\"160\" cellspacing=\"2\">");
         sb.append("<tr>");
-        sb.append("<td width=\"160\" align=\"center\"><a action=\"bypass -h npc_%objectId%_RaidBossInfo " + this._lastPage.get(Integer.valueOf(player.getObjectId())) + "\">Return</a></td>");
+        sb.append("<td width=\"160\" align=\"center\"><a action=\"bypass -h npc_%objectId%_RaidBossInfo " + this._lastPage.get(player.getObjectId()) + "\">Return</a></td>");
         sb.append("</tr>");
         sb.append("</table>");
         sb.append("</center>");

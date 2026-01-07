@@ -3,7 +3,7 @@ package net.sf.l2j.gameserver.model.actor.instance;
 import mods.newbies.NewbiesNpc;
 import net.sf.l2j.Config;
 import net.sf.l2j.gameserver.data.SkillTable;
-import net.sf.l2j.gameserver.data.xml.PlayerData;
+import net.sf.l2j.gameserver.data.xml.PlayerClassData;
 import net.sf.l2j.gameserver.enums.actors.ClassId;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.player.Experience;
@@ -43,7 +43,7 @@ public class NewbieNpc extends Folk {
             if (ClassMaster.checkAndChangeClass(player, val)) {
                 NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
                 html.setFile("data/html/classmaster/ok.htm");
-                html.replace("%name%", PlayerData.getInstance().getClassNameById(val));
+                html.replace("%name%", PlayerClassData.getInstance().getClassNameById(val));
                 player.sendPacket(html);
             }
         } else if (command.equalsIgnoreCase("LevelUp")) {

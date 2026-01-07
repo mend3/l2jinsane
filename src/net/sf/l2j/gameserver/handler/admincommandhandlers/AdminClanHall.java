@@ -34,9 +34,9 @@ public class AdminClanHall implements IAdminCommandHandler {
         if (auction == null) {
             sb.append("<tr><td>This clanhall doesn't have Auction.</td></tr>");
         } else if (auction.getHighestBidder() == null) {
-            StringUtil.append(sb, "<tr><td width=150>Bid: 0</td><td width=120>Bidders: ", Integer.valueOf(auction.getBidders().size()), "</td></tr><tr><td>End date: ", sdf.format(Long.valueOf(auction.getEndDate())), "</td><td>Winner: none</td></tr>");
+            StringUtil.append(sb, "<tr><td width=150>Bid: 0</td><td width=120>Bidders: ", auction.getBidders().size(), "</td></tr><tr><td>End date: ", sdf.format(auction.getEndDate()), "</td><td>Winner: none</td></tr>");
         } else {
-            StringUtil.append(sb, "<tr><td width=150>Bid: ", StringUtil.formatNumber(auction.getHighestBidder().getBid()), "</td><td width=120>Bidders: ", Integer.valueOf(auction.getBidders().size()), "</td></tr><tr><td>End date: ", sdf.format(Long.valueOf(auction.getEndDate())), "</td><td>Winner: ", auction.getHighestBidder().getName(), "</td></tr>");
+            StringUtil.append(sb, "<tr><td width=150>Bid: ", StringUtil.formatNumber(auction.getHighestBidder().getBid()), "</td><td width=120>Bidders: ", auction.getBidders().size(), "</td></tr><tr><td>End date: ", sdf.format(auction.getEndDate()), "</td><td>Winner: ", auction.getHighestBidder().getName(), "</td></tr>");
         }
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setFile("data/html/admin/clanhall.htm");
@@ -49,7 +49,7 @@ public class AdminClanHall implements IAdminCommandHandler {
         html.replace("%defaultbid%", StringUtil.formatNumber(ch.getDefaultBid()));
         html.replace("%owner%", clanName);
         html.replace("%paid%", String.valueOf(ch.getPaid()));
-        html.replace("%paiduntil%", sdf.format(Long.valueOf(ch.getPaidUntil())));
+        html.replace("%paiduntil%", sdf.format(ch.getPaidUntil()));
         html.replace("%auction", sb.toString());
         player.sendPacket(html);
     }
@@ -64,11 +64,11 @@ public class AdminClanHall implements IAdminCommandHandler {
             for (ClanHall ch : ClanHallManager.getInstance().getClanHallsByLocation(loc)) {
                 Auction auction = ch.getAuction();
                 if (auction == null) {
-                    StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_ch ", Integer.valueOf(ch.getId()), "\">", ch.getName(), ch.isFree() ? "" : "*", "</a></td><td>-</td><td>-</td></tr>");
+                    StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_ch ", ch.getId(), "\">", ch.getName(), ch.isFree() ? "" : "*", "</a></td><td>-</td><td>-</td></tr>");
                     continue;
                 }
-                StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_ch ", Integer.valueOf(ch.getId()), "\">", ch.getName(), ch.isFree() ? "" : "*", " [", Integer.valueOf(auction.getBidders().size()), "]</a></td><td>", sdf.format(Long.valueOf(auction.getEndDate())), "</td><td>",
-                        Integer.valueOf(auction.getMinimumBid()), "</td></tr>");
+                StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_ch ", ch.getId(), "\">", ch.getName(), ch.isFree() ? "" : "*", " [", auction.getBidders().size(), "]</a></td><td>", sdf.format(auction.getEndDate()), "</td><td>",
+                        auction.getMinimumBid(), "</td></tr>");
             }
             sb.append("</table><br>");
         }

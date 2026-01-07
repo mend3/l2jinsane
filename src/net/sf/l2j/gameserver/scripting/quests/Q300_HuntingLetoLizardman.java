@@ -29,11 +29,11 @@ public class Q300_HuntingLetoLizardman extends Quest {
 
     public Q300_HuntingLetoLizardman() {
         super(300, "Hunting Leto Lizardman");
-        CHANCES.put(Integer.valueOf(20577), Integer.valueOf(300000));
-        CHANCES.put(Integer.valueOf(20578), Integer.valueOf(320000));
-        CHANCES.put(Integer.valueOf(20579), Integer.valueOf(350000));
-        CHANCES.put(Integer.valueOf(20580), Integer.valueOf(650000));
-        CHANCES.put(Integer.valueOf(20582), Integer.valueOf(700000));
+        CHANCES.put(20577, 300000);
+        CHANCES.put(20578, 320000);
+        CHANCES.put(20579, 350000);
+        CHANCES.put(20580, 650000);
+        CHANCES.put(20582, 700000);
         setItemsIds(7139);
         addStartNpc(30126);
         addTalkId(30126);
@@ -89,7 +89,7 @@ public class Q300_HuntingLetoLizardman extends Quest {
         QuestState st = getRandomPartyMember(player, npc, "1");
         if (st == null)
             return null;
-        if (st.dropItems(7139, 1, 60, CHANCES.get(Integer.valueOf(npc.getNpcId()))))
+        if (st.dropItems(7139, 1, 60, CHANCES.get(npc.getNpcId())))
             st.set("cond", "2");
         return null;
     }

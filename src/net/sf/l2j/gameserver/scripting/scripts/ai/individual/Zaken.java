@@ -97,12 +97,12 @@ public class Zaken extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addAggroRangeEnterId(new int[]{29022, 29023, 29024, 29026, 29027});
-        this.addAttackId(new int[]{29022});
-        this.addFactionCallId(new int[]{29023, 29024, 29026, 29027});
-        this.addKillId(new int[]{29022, 29023, 29024, 29026, 29027});
-        this.addSkillSeeId(new int[]{29022});
-        this.addSpellFinishedId(new int[]{29022});
+        this.addAggroRangeEnterId(29022, 29023, 29024, 29026, 29027);
+        this.addAttackId(29022);
+        this.addFactionCallId(29023, 29024, 29026, 29027);
+        this.addKillId(29022, 29023, 29024, 29026, 29027);
+        this.addSkillSeeId(29022);
+        this.addSpellFinishedId(29022);
         this.addGameTimeNotify();
     }
 
@@ -137,10 +137,7 @@ public class Zaken extends L2AttackableAIScript {
 
                     Creature mostHated = ((Attackable) npc).getMostHated();
                     if (npc.getAI().getDesire().getIntention() == IntentionType.ATTACK && !this._hasTeleported) {
-                        boolean willTeleport = true;
-                        if (mostHated != null && mostHated.isInsideRadius(this._zakenLocation, 1500, true, false)) {
-                            willTeleport = false;
-                        }
+                        boolean willTeleport = mostHated == null || !mostHated.isInsideRadius(this._zakenLocation, 1500, true, false);
 
                         if (willTeleport) {
                             Iterator var7 = VICTIMS.iterator();
@@ -369,7 +366,7 @@ public class Zaken extends L2AttackableAIScript {
                 info.set("respawn_time", System.currentTimeMillis() + getRespawnInterval());
                 GrandBossManager.getInstance().setStatsSet(29022, info);
             } else if (GrandBossManager.getInstance().getBossStatus(29022) == 0) {
-                this.startQuestTimer("CreateOnePrivateEx", (30 + Rnd.get(60)) * 1000, npc, null, false);
+                this.startQuestTimer("CreateOnePrivateEx", (30 + Rnd.get(60)) * 1000L, npc, null, false);
             }
         } else if (npc.getNpcId() == 29022) {
             npc.broadcastPacket(new PlaySound(1, "BS02_D", npc));
@@ -382,7 +379,7 @@ public class Zaken extends L2AttackableAIScript {
             info.set("respawn_time", System.currentTimeMillis() + respawnTime);
             GrandBossManager.getInstance().setStatsSet(29022, info);
         } else if (GrandBossManager.getInstance().getBossStatus(29022) == 0) {
-            this.startQuestTimer("CreateOnePrivateEx", (30 + Rnd.get(60)) * 1000, npc, null, false);
+            this.startQuestTimer("CreateOnePrivateEx", (30 + Rnd.get(60)) * 1000L, npc, null, false);
         }
 
         return super.onKill(npc, killer);

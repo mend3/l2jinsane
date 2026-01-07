@@ -453,16 +453,16 @@ public class LotteryManager {
             World.announceToOnlinePlayers("Lottery tickets are now available for Lucky Lottery #" + LotteryManager.this.getId() + ".");
             Calendar finishTime = Calendar.getInstance();
             finishTime.setTimeInMillis(LotteryManager.this._endDate);
-            finishTime.set(12, 0);
-            finishTime.set(13, 0);
-            if (finishTime.get(7) == 1) {
-                finishTime.set(11, 19);
+            finishTime.set(Calendar.MINUTE, 0);
+            finishTime.set(Calendar.SECOND, 0);
+            if (finishTime.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+                finishTime.set(Calendar.HOUR_OF_DAY, 19);
                 LotteryManager.this._endDate = finishTime.getTimeInMillis();
                 LotteryManager var10000 = LotteryManager.this;
                 var10000._endDate += 604800000L;
             } else {
-                finishTime.set(7, 1);
-                finishTime.set(11, 19);
+                finishTime.set(Calendar.DAY_OF_WEEK, 1);
+                finishTime.set(Calendar.HOUR_OF_DAY, 19);
                 LotteryManager.this._endDate = finishTime.getTimeInMillis();
             }
 

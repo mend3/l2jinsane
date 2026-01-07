@@ -103,8 +103,8 @@ public class ModsData {
     }
 
     public static String get(int objectId, String event, AbstractMods mod) {
-        if (_playersValuesDb.containsKey(Integer.valueOf(objectId)))
-            for (ValuesHolder vh : _playersValuesDb.get(Integer.valueOf(objectId))) {
+        if (_playersValuesDb.containsKey(objectId))
+            for (ValuesHolder vh : _playersValuesDb.get(objectId)) {
                 if (vh.getMod().equals(mod.getClass().getSimpleName()))
                     if (vh.getEvent().equals(event))
                         return vh.getValue();
@@ -115,18 +115,18 @@ public class ModsData {
     public static void set(int objectId, String event, String value, AbstractMods mod) {
         String modName = mod.getClass().getSimpleName();
         boolean updateInfo = false;
-        if (_playersValuesDb.containsKey(Integer.valueOf(objectId))) {
-            for (ValuesHolder vh : _playersValuesDb.get(Integer.valueOf(objectId))) {
+        if (_playersValuesDb.containsKey(objectId)) {
+            for (ValuesHolder vh : _playersValuesDb.get(objectId)) {
                 if (vh.getEvent().equals(event) && vh.getMod().equals(modName)) {
                     updateInfo = true;
                     vh.setValue(value);
                 }
             }
         } else {
-            _playersValuesDb.put(Integer.valueOf(objectId), new ArrayList<>());
+            _playersValuesDb.put(objectId, new ArrayList<>());
         }
         if (!updateInfo)
-            _playersValuesDb.get(Integer.valueOf(objectId)).add(new ValuesHolder(modName, event, value));
+            _playersValuesDb.get(objectId).add(new ValuesHolder(modName, event, value));
         try {
             Connection con = ConnectionPool.getConnection();
             try {
@@ -179,9 +179,9 @@ public class ModsData {
                             String value = rset.getString("val");
                             String event = rset.getString("event");
                             String mod = rset.getString("modName");
-                            if (!_playersValuesDb.containsKey(Integer.valueOf(objId)))
-                                _playersValuesDb.put(Integer.valueOf(objId), new ArrayList<>());
-                            _playersValuesDb.get(Integer.valueOf(objId)).add(new ValuesHolder(mod, event, value));
+                            if (!_playersValuesDb.containsKey(objId))
+                                _playersValuesDb.put(objId, new ArrayList<>());
+                            _playersValuesDb.get(objId).add(new ValuesHolder(mod, event, value));
                         }
                         if (rset != null)
                             rset.close();

@@ -242,14 +242,14 @@ public class SchedulingPattern {
     public boolean match(TimeZone timezone, long millis) {
         GregorianCalendar gc = new GregorianCalendar(timezone);
         gc.setTimeInMillis(millis);
-        gc.set(13, 0);
-        gc.set(14, 0);
-        int minute = gc.get(12);
-        int hour = gc.get(11);
-        int dayOfMonth = gc.get(5);
-        int month = gc.get(2) + 1;
-        int dayOfWeek = gc.get(7) - 1;
-        int year = gc.get(1);
+        gc.set(Calendar.SECOND, 0);
+        gc.set(Calendar.MILLISECOND, 0);
+        int minute = gc.get(Calendar.MINUTE);
+        int hour = gc.get(Calendar.HOUR_OF_DAY);
+        int dayOfMonth = gc.get(Calendar.DATE);
+        int month = gc.get(Calendar.MONTH) + 1;
+        int dayOfWeek = gc.get(Calendar.DAY_OF_WEEK) - 1;
+        int year = gc.get(Calendar.YEAR);
 
         for (int i = 0; i < this.matcherSize; ++i) {
             boolean var10000;
@@ -301,8 +301,8 @@ public class SchedulingPattern {
         for (int i = 0; i < this.matcherSize; ++i) {
             GregorianCalendar gc = new GregorianCalendar(timezone);
             gc.setTimeInMillis(millis);
-            gc.set(13, 0);
-            gc.set(14, 0);
+            gc.set(Calendar.SECOND, 0);
+            gc.set(Calendar.MILLISECOND, 0);
             SchedulingPattern.ValueMatcher minuteMatcher = this.minuteMatchers.get(i);
             SchedulingPattern.ValueMatcher hourMatcher = this.hourMatchers.get(i);
             SchedulingPattern.ValueMatcher dayOfMonthMatcher = this.dayOfMonthMatchers.get(i);
@@ -310,15 +310,15 @@ public class SchedulingPattern {
             SchedulingPattern.ValueMatcher dayOfWeekMatcher = this.dayOfWeekMatchers.get(i);
 
             while (true) {
-                int year = gc.get(1);
+                int year = gc.get(Calendar.YEAR);
                 boolean isLeapYear = gc.isLeapYear(year);
 
-                for (int month = gc.get(2) + 1; month <= 12; ++month) {
+                for (int month = gc.get(Calendar.MONTH) + 1; month <= 12; ++month) {
                     if (monthMatcher.match(month)) {
-                        gc.set(2, month - 1);
+                        gc.set(Calendar.MONTH, month - 1);
                         int maxDayOfMonth = SchedulingPattern.DayOfMonthValueMatcher.getLastDayOfMonth(month, isLeapYear);
 
-                        for (int dayOfMonth = gc.get(5); dayOfMonth <= maxDayOfMonth; ++dayOfMonth) {
+                        for (int dayOfMonth = gc.get(Calendar.DATE); dayOfMonth <= maxDayOfMonth; ++dayOfMonth) {
                             label85:
                             {
                                 if (dayOfMonthMatcher instanceof SchedulingPattern.DayOfMonthValueMatcher) {
@@ -329,16 +329,16 @@ public class SchedulingPattern {
                                     break label85;
                                 }
 
-                                gc.set(5, dayOfMonth);
-                                int dayOfWeek = gc.get(7) - 1;
+                                gc.set(Calendar.DATE, dayOfMonth);
+                                int dayOfWeek = gc.get(Calendar.DAY_OF_WEEK) - 1;
                                 if (dayOfWeekMatcher.match(dayOfWeek)) {
-                                    for (int hour = gc.get(11); hour <= 23; ++hour) {
+                                    for (int hour = gc.get(Calendar.HOUR_OF_DAY); hour <= 23; ++hour) {
                                         if (hourMatcher.match(hour)) {
-                                            gc.set(11, hour);
+                                            gc.set(Calendar.HOUR_OF_DAY, hour);
 
-                                            for (int minute = gc.get(12); minute <= 59; ++minute) {
+                                            for (int minute = gc.get(Calendar.MINUTE); minute <= 59; ++minute) {
                                                 if (minuteMatcher.match(minute)) {
-                                                    gc.set(12, minute);
+                                                    gc.set(Calendar.MINUTE, minute);
                                                     long next0 = gc.getTimeInMillis();
                                                     if (next == -1L || next0 < next) {
                                                         next = next0;
@@ -348,25 +348,25 @@ public class SchedulingPattern {
                                             }
                                         }
 
-                                        gc.set(12, 0);
+                                        gc.set(Calendar.MINUTE, 0);
                                     }
                                 }
                             }
 
-                            gc.set(11, 0);
-                            gc.set(12, 0);
+                            gc.set(Calendar.HOUR_OF_DAY, 0);
+                            gc.set(Calendar.MINUTE, 0);
                         }
                     }
 
-                    gc.set(5, 1);
-                    gc.set(11, 0);
-                    gc.set(12, 0);
+                    gc.set(Calendar.DATE, 1);
+                    gc.set(Calendar.HOUR_OF_DAY, 0);
+                    gc.set(Calendar.MINUTE, 0);
                 }
 
-                gc.set(2, 0);
-                gc.set(11, 0);
-                gc.set(12, 0);
-                gc.roll(1, true);
+                gc.set(Calendar.MONTH, 0);
+                gc.set(Calendar.HOUR_OF_DAY, 0);
+                gc.set(Calendar.MINUTE, 0);
+                gc.roll(Calendar.YEAR, true);
             }
         }
 

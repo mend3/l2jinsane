@@ -376,7 +376,7 @@ public class FestivalOfDarknessManager {
                                 int festivalCycle = set.getInteger("cycle");
                                 int festivalId = set.getInteger("festivalId");
                                 String cabal = set.getString("cabal");
-                                ps.setLong(1, Long.valueOf(set.getString("date")));
+                                ps.setLong(1, Long.parseLong(set.getString("date")));
                                 ps.setInt(2, set.getInteger("score"));
                                 ps.setString(3, set.getString("members"));
                                 ps.setInt(4, festivalCycle);
@@ -386,7 +386,7 @@ public class FestivalOfDarknessManager {
                                     ps2.setInt(1, festivalId);
                                     ps2.setString(2, cabal);
                                     ps2.setInt(3, festivalCycle);
-                                    ps2.setLong(4, Long.valueOf(set.getString("date")));
+                                    ps2.setLong(4, Long.parseLong(set.getString("date")));
                                     ps2.setInt(5, set.getInteger("score"));
                                     ps2.setString(6, set.getString("members"));
                                     ps2.execute();

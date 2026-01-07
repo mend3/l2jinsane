@@ -87,10 +87,10 @@ public class PlayableStat extends CreatureStat {
             return false;
         getActiveChar().getStatus().setCurrentHpMp(getMaxHp(), getMaxMp());
         if (Config.LEVEL_REWARDS_ENABLE)
-            if (Config.LEVEL_REWARDS.containsKey(Integer.valueOf(value))) {
+            if (Config.LEVEL_REWARDS.containsKey((int) value)) {
                 getActiveChar().sendMessage("You win a level reward. Good work !!.");
                 getActiveChar().sendPacket(new CreatureSay(0, 2, "", "You win a level reward. Good work !!."));
-                IntIntHolder rewardID = Config.LEVEL_REWARDS.get(Integer.valueOf(value));
+                IntIntHolder rewardID = Config.LEVEL_REWARDS.get((int) value);
                 ((Player) getActiveChar()).addItem("Level Reward", rewardID.getId(), rewardID.getValue(), getActiveChar(), true);
             }
         return true;

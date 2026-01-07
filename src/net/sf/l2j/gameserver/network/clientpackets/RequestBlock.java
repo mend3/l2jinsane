@@ -61,6 +61,6 @@ public final class RequestBlock extends L2GameClientPacket {
                 BlockList.setBlockAll(activeChar, false);
                 return;
         }
-        LOGGER.warn("Unknown block type detected: {}.", Integer.valueOf(this._type));
+        LOGGER.warn("Unknown block type detected: {}.", this._type);
     }
 }

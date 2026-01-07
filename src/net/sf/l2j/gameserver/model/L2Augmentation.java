@@ -45,8 +45,8 @@ public final class L2Augmentation {
         if (this._skill != null) {
             player.addSkill(this._skill, false);
             if (this._skill.isActive())
-                if (player.getReuseTimeStamp().containsKey(Integer.valueOf(this._skill.getReuseHashCode()))) {
-                    long delay = player.getReuseTimeStamp().get(Integer.valueOf(this._skill.getReuseHashCode())).getRemaining();
+                if (player.getReuseTimeStamp().containsKey(this._skill.getReuseHashCode())) {
+                    long delay = player.getReuseTimeStamp().get(this._skill.getReuseHashCode()).getRemaining();
                     if (delay > 0L) {
                         player.disableSkill(this._skill, delay);
                         updateTimeStamp = true;

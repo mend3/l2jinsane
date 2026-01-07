@@ -3,7 +3,6 @@ package net.sf.l2j.gameserver.handler.chathandlers;
 import net.sf.l2j.gameserver.handler.IChatHandler;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.network.serverpackets.CreatureSay;
-import net.sf.l2j.gameserver.network.serverpackets.L2GameServerPacket;
 
 public class ChatClan implements IChatHandler {
     private static final int[] COMMAND_IDS = new int[]{4};

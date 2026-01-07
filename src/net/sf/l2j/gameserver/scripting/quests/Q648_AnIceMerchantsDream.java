@@ -39,22 +39,22 @@ public class Q648_AnIceMerchantsDream extends Quest {
         REWARDS.put("e", new int[]{8078, 240, 730});
         REWARDS.put("f", new int[]{8078, 500, 947});
         REWARDS.put("g", new int[]{8078, 80, 948});
-        CHANCES.put(Integer.valueOf(22080), new int[]{285000, 48000});
-        CHANCES.put(Integer.valueOf(22081), new int[]{443000, 0});
-        CHANCES.put(Integer.valueOf(22082), new int[]{510000, 0});
-        CHANCES.put(Integer.valueOf(22084), new int[]{477000, 49000});
-        CHANCES.put(Integer.valueOf(22085), new int[]{420000, 43000});
-        CHANCES.put(Integer.valueOf(22086), new int[]{490000, 50000});
-        CHANCES.put(Integer.valueOf(22087), new int[]{787000, 81000});
-        CHANCES.put(Integer.valueOf(22088), new int[]{480000, 49000});
-        CHANCES.put(Integer.valueOf(22089), new int[]{550000, 56000});
-        CHANCES.put(Integer.valueOf(22090), new int[]{570000, 58000});
-        CHANCES.put(Integer.valueOf(22092), new int[]{623000, 0});
-        CHANCES.put(Integer.valueOf(22093), new int[]{910000, 93000});
-        CHANCES.put(Integer.valueOf(22094), new int[]{553000, 57000});
-        CHANCES.put(Integer.valueOf(22096), new int[]{593000, 61000});
-        CHANCES.put(Integer.valueOf(22097), new int[]{693000, 71000});
-        CHANCES.put(Integer.valueOf(22098), new int[]{717000, 74000});
+        CHANCES.put(22080, new int[]{285000, 48000});
+        CHANCES.put(22081, new int[]{443000, 0});
+        CHANCES.put(22082, new int[]{510000, 0});
+        CHANCES.put(22084, new int[]{477000, 49000});
+        CHANCES.put(22085, new int[]{420000, 43000});
+        CHANCES.put(22086, new int[]{490000, 50000});
+        CHANCES.put(22087, new int[]{787000, 81000});
+        CHANCES.put(22088, new int[]{480000, 49000});
+        CHANCES.put(22089, new int[]{550000, 56000});
+        CHANCES.put(22090, new int[]{570000, 58000});
+        CHANCES.put(22092, new int[]{623000, 0});
+        CHANCES.put(22093, new int[]{910000, 93000});
+        CHANCES.put(22094, new int[]{553000, 57000});
+        CHANCES.put(22096, new int[]{593000, 61000});
+        CHANCES.put(22097, new int[]{693000, 71000});
+        CHANCES.put(22098, new int[]{717000, 74000});
         setItemsIds(8057, 8077, 8078);
         addStartNpc(32020, 32023);
         addTalkId(32020, 32023);
@@ -180,7 +180,7 @@ public class Q648_AnIceMerchantsDream extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        int[] chance = CHANCES.get(Integer.valueOf(npc.getNpcId()));
+        int[] chance = CHANCES.get(npc.getNpcId());
         st.dropItems(8077, 1, 0, chance[0]);
         if (st.getInt("cond") == 2 && chance[1] > 0)
             st.dropItems(8057, 1, 0, chance[1]);

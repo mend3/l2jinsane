@@ -102,8 +102,8 @@ public class BossSpawn {
         cancelTask();
         this._task = ThreadPool.schedule(() -> onSpawn(), (respawnDelay * 3600000L));
         updateOnDb();
-        LOGGER.info("Raid boss: {} - {} ({}h).", this._spawn.getNpc().getName(), (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(Long.valueOf(respawnTime)), Integer.valueOf(respawnDelay));
-        if (Config.LIST_RAID_BOSS_IDS.contains(Integer.valueOf(this._spawn.getNpc().getNpcId())))
+        LOGGER.info("Raid boss: {} - {} ({}h).", this._spawn.getNpc().getName(), (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(respawnTime), respawnDelay);
+        if (Config.LIST_RAID_BOSS_IDS.contains(this._spawn.getNpc().getNpcId()))
             RaidBossInfoManager.getInstance().updateRaidBossInfo(this._spawn.getNpc().getNpcId(), respawnTime);
     }
 
@@ -116,7 +116,7 @@ public class BossSpawn {
         cancelTask();
         updateOnDb();
         LOGGER.info("{} raid boss has spawned.", npc.getName());
-        if (Config.LIST_RAID_BOSS_IDS.contains(Integer.valueOf(npc.getNpcId())))
+        if (Config.LIST_RAID_BOSS_IDS.contains(npc.getNpcId()))
             RaidBossInfoManager.getInstance().updateRaidBossInfo(npc.getNpcId(), 0L);
     }
 
@@ -155,7 +155,7 @@ public class BossSpawn {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't remove raid boss #{}.", e, Integer.valueOf(this._spawn.getNpcId()));
+            LOGGER.error("Couldn't remove raid boss #{}.", e, this._spawn.getNpcId());
         }
         this._spawn = null;
     }
@@ -194,7 +194,7 @@ public class BossSpawn {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't update raid boss #{}.", e, Integer.valueOf(this._spawn.getNpcId()));
+            LOGGER.error("Couldn't update raid boss #{}.", e, this._spawn.getNpcId());
         }
     }
 }

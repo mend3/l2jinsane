@@ -81,10 +81,10 @@ public class Q327_RecoverTheFarmland extends Quest {
 
     public Q327_RecoverTheFarmland() {
         super(327, "Recover the Farmland");
-        EXP_REWARD.put(Integer.valueOf(1852), Integer.valueOf(2766));
-        EXP_REWARD.put(Integer.valueOf(1853), Integer.valueOf(3227));
-        EXP_REWARD.put(Integer.valueOf(1854), Integer.valueOf(3227));
-        EXP_REWARD.put(Integer.valueOf(1855), Integer.valueOf(3919));
+        EXP_REWARD.put(1852, 2766);
+        EXP_REWARD.put(1853, 3227);
+        EXP_REWARD.put(1854, 3227);
+        EXP_REWARD.put(1855, 3919);
         setItemsIds(5012);
         addStartNpc(30382, 30597);
         addTalkId(30382, 30597, 30034, 30313, 30314);
@@ -190,7 +190,7 @@ public class Q327_RecoverTheFarmland extends Quest {
                 int n = st.getQuestItemsCount(i);
                 if (n > 0) {
                     st.takeItems(i, n);
-                    st.rewardExpAndSp(((long) n * EXP_REWARD.get(Integer.valueOf(i))), 0);
+                    st.rewardExpAndSp(((long) n * EXP_REWARD.get(i)), 0);
                     isRewarded = true;
                 }
             }

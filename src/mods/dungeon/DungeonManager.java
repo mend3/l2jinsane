@@ -30,10 +30,8 @@ public class DungeonManager {
     private final List<Dungeon> running = new CopyOnWriteArrayList<>();
 
     private final List<Integer> dungeonParticipants = new CopyOnWriteArrayList<>();
-
-    private boolean reloading = false;
-
     private final Map<String, Long[]> dungeonPlayerData = new ConcurrentHashMap<>();
+    private boolean reloading = false;
 
     protected DungeonManager() {
     }
@@ -128,7 +126,7 @@ public class DungeonManager {
                         String[] rewards_data_split = rewards_data.split(";");
                         for (String reward : rewards_data_split) {
                             String[] reward_split = reward.split(",");
-                            rewards.put(Integer.valueOf(Integer.parseInt(reward_split[0])), Integer.valueOf(Integer.parseInt(reward_split[1])));
+                            rewards.put(Integer.parseInt(reward_split[0]), Integer.parseInt(reward_split[1]));
                         }
                     }
                     for (Node cd = d.getFirstChild(); cd != null; cd = cd.getNextSibling()) {
@@ -152,13 +150,13 @@ public class DungeonManager {
                                         String[] locc_data = locc.split(",");
                                         locs.add(new Location(Integer.parseInt(locc_data[0]), Integer.parseInt(locc_data[1]), Integer.parseInt(locc_data[2])));
                                     }
-                                    mobs.put(Integer.valueOf(npcId), locs);
+                                    mobs.put(npcId, locs);
                                 }
                             }
-                            stages.put(Integer.valueOf(order), new DungeonStage(order, loc, teleport, minutes, mobs));
+                            stages.put(order, new DungeonStage(order, loc, teleport, minutes, mobs));
                         }
                     }
-                    this.templates.put(Integer.valueOf(id), new DungeonTemplate(id, name, players, rewards, rewardHtm, stages));
+                    this.templates.put(id, new DungeonTemplate(id, name, players, rewards, rewardHtm, stages));
                 }
             }
         } catch (Exception e) {
@@ -179,12 +177,12 @@ public class DungeonManager {
                             if (!this.dungeonPlayerData.containsKey(ipaddr)) {
                                 Long[] times = new Long[this.templates.size() + 1];
                                 for (int i = 0; i < times.length; i++)
-                                    times[i] = Long.valueOf(0L);
-                                times[dungid] = Long.valueOf(lastjoin);
+                                    times[i] = 0L;
+                                times[dungid] = lastjoin;
                                 this.dungeonPlayerData.put(ipaddr, times);
                                 continue;
                             }
-                            this.dungeonPlayerData.get(ipaddr)[dungid] = Long.valueOf(lastjoin);
+                            this.dungeonPlayerData.get(ipaddr)[dungid] = lastjoin;
                         }
                         if (rset != null)
                             rset.close();
@@ -239,12 +237,12 @@ public class DungeonManager {
             player.sendMessage("The Dungeon system is reloading, please try again in a few minutes.");
             return;
         }
-        DungeonTemplate template = this.templates.get(Integer.valueOf(id));
-        if (template.getPlayers() > 1 && (!player.isInParty() || player.getParty().getMembersCount() != template.getPlayers())) {
-            player.sendMessage("You need a party of " + template.getPlayers() + " players to enter this Dungeon.");
+        DungeonTemplate template = this.templates.get(id);
+        if (template.players() > 1 && (!player.isInParty() || player.getParty().getMembersCount() != template.players())) {
+            player.sendMessage("You need a party of " + template.players() + " players to enter this Dungeon.");
             return;
         }
-        if (template.getPlayers() == 1 && player.isInParty()) {
+        if (template.players() == 1 && player.isInParty()) {
             player.sendMessage("You can only enter this Dungeon alone.");
             return;
         }
@@ -252,40 +250,40 @@ public class DungeonManager {
         if (player.isInParty()) {
             for (Player pm : player.getParty().getMembers()) {
                 String pmip = pm.getHWID();
-                if (this.dungeonPlayerData.containsKey(pmip) && System.currentTimeMillis() - ((Long[]) this.dungeonPlayerData.get(pmip))[template.getId()] < 43200000L) {
+                if (this.dungeonPlayerData.containsKey(pmip) && System.currentTimeMillis() - ((Long[]) this.dungeonPlayerData.get(pmip))[template.id()] < 43200000L) {
                     player.sendMessage("One of your party members cannot join this Dungeon because 12 hours have not passed since they last joined.");
                     return;
                 }
             }
             for (Player pm : player.getParty().getMembers()) {
                 String pmip = pm.getHWID();
-                this.dungeonParticipants.add(Integer.valueOf(pm.getObjectId()));
+                this.dungeonParticipants.add(pm.getObjectId());
                 players.add(pm);
                 if (this.dungeonPlayerData.containsKey(pmip)) {
-                    this.dungeonPlayerData.get(pmip)[template.getId()] = Long.valueOf(System.currentTimeMillis());
+                    this.dungeonPlayerData.get(pmip)[template.id()] = System.currentTimeMillis();
                     continue;
                 }
                 Long[] times = new Long[this.templates.size() + 1];
                 for (int i = 0; i < times.length; i++)
-                    times[i] = Long.valueOf(0L);
-                times[template.getId()] = Long.valueOf(System.currentTimeMillis());
+                    times[i] = 0L;
+                times[template.id()] = System.currentTimeMillis();
                 this.dungeonPlayerData.put(pmip, times);
             }
         } else {
             String pmip = player.getHWID();
-            if (this.dungeonPlayerData.containsKey(pmip) && System.currentTimeMillis() - ((Long[]) this.dungeonPlayerData.get(pmip))[template.getId()] < 43200000L) {
+            if (this.dungeonPlayerData.containsKey(pmip) && System.currentTimeMillis() - ((Long[]) this.dungeonPlayerData.get(pmip))[template.id()] < 43200000L) {
                 player.sendMessage("12 hours have not passed since you last entered this Dungeon.");
                 return;
             }
-            this.dungeonParticipants.add(Integer.valueOf(player.getObjectId()));
+            this.dungeonParticipants.add(player.getObjectId());
             players.add(player);
             if (this.dungeonPlayerData.containsKey(pmip)) {
-                this.dungeonPlayerData.get(pmip)[template.getId()] = Long.valueOf(System.currentTimeMillis());
+                this.dungeonPlayerData.get(pmip)[template.id()] = System.currentTimeMillis();
             } else {
                 Long[] times = new Long[this.templates.size() + 1];
                 for (int i = 0; i < times.length; i++)
-                    times[i] = Long.valueOf(0L);
-                times[template.getId()] = Long.valueOf(System.currentTimeMillis());
+                    times[i] = 0L;
+                times[template.id()] = System.currentTimeMillis();
                 this.dungeonPlayerData.put(pmip, times);
             }
         }

@@ -5,7 +5,7 @@ import enginemods.main.util.Util;
 import enginemods.main.util.builders.html.Html;
 import enginemods.main.util.builders.html.HtmlBuilder;
 import net.sf.l2j.gameserver.data.ItemTable;
-import net.sf.l2j.gameserver.data.xml.PlayerData;
+import net.sf.l2j.gameserver.data.xml.PlayerClassData;
 import net.sf.l2j.gameserver.enums.actors.ClassId;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Npc;
@@ -55,7 +55,7 @@ public class NpcClassMaster extends AbstractMods {
                     ClassId cid = var7[var9];
                     if (validateClassId(currentClassId, cid) && cid.level() == level) {
                         menu.append("<button value=\"");
-                        menu.append(PlayerData.getInstance().getClassNameById(cid.getId()) + "\" ");
+                        menu.append(PlayerClassData.getInstance().getClassNameById(cid.getId()) + "\" ");
                         menu.append("action=\"bypass -h Engine NpcClassMaster change_class ");
                         menu.append(cid.getId() + "\"");
                         menu.append(" width=204 height=20 back=\"sek.cbui77\" fore=\"sek.cbui75\"><br>");
@@ -64,7 +64,7 @@ public class NpcClassMaster extends AbstractMods {
 
                 if (menu.length() > 0) {
                     html.setFile("data/html/engine/npc/classmaster/template.htm");
-                    html.replace("%name%", PlayerData.getInstance().getClassNameById(currentClassId.getId()));
+                    html.replace("%name%", PlayerClassData.getInstance().getClassNameById(currentClassId.getId()));
                     html.replace("%menu%", menu.toString());
                 } else {
                     html.setFile("data/html/engine/npc/classmaster/comebacklater.htm");
@@ -246,7 +246,7 @@ public class NpcClassMaster extends AbstractMods {
                     player.sendPacket(new PlaySound("Systemmsg_e.char_change"));
                     NpcHtmlMessage html = new NpcHtmlMessage(npc.getObjectId());
                     html.setFile("data/html/engine/npc/classmaster/ok.htm");
-                    html.replace("%name%", PlayerData.getInstance().getClassNameById(val));
+                    html.replace("%name%", PlayerClassData.getInstance().getClassNameById(val));
                     player.sendPacket(html);
                 }
             }

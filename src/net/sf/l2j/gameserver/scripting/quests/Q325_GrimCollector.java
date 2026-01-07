@@ -43,16 +43,16 @@ public class Q325_GrimCollector extends Quest {
 
     public Q325_GrimCollector() {
         super(325, "Grim Collector");
-        DROPLIST.put(Integer.valueOf(20026), Arrays.asList(new IntIntHolder(1350, 30), new IntIntHolder(1351, 50), new IntIntHolder(1352, 75)));
-        DROPLIST.put(Integer.valueOf(20029), Arrays.asList(new IntIntHolder(1350, 30), new IntIntHolder(1351, 52), new IntIntHolder(1352, 75)));
-        DROPLIST.put(Integer.valueOf(20035), Arrays.asList(new IntIntHolder(1353, 5), new IntIntHolder(1354, 15), new IntIntHolder(1355, 29), new IntIntHolder(1357, 79)));
-        DROPLIST.put(Integer.valueOf(20042), Arrays.asList(new IntIntHolder(1353, 6), new IntIntHolder(1354, 19), new IntIntHolder(1356, 69), new IntIntHolder(1357, 86)));
-        DROPLIST.put(Integer.valueOf(20045), Arrays.asList(new IntIntHolder(1353, 9), new IntIntHolder(1355, 59), new IntIntHolder(1356, 77), new IntIntHolder(1357, 97)));
-        DROPLIST.put(Integer.valueOf(20051), Arrays.asList(new IntIntHolder(1353, 9), new IntIntHolder(1354, 59), new IntIntHolder(1355, 79), new IntIntHolder(1356, 100)));
-        DROPLIST.put(Integer.valueOf(20457), Arrays.asList(new IntIntHolder(1350, 40), new IntIntHolder(1351, 60), new IntIntHolder(1352, 80)));
-        DROPLIST.put(Integer.valueOf(20458), Arrays.asList(new IntIntHolder(1350, 40), new IntIntHolder(1351, 70), new IntIntHolder(1352, 100)));
-        DROPLIST.put(Integer.valueOf(20514), Arrays.asList(new IntIntHolder(1353, 6), new IntIntHolder(1354, 21), new IntIntHolder(1355, 30), new IntIntHolder(1356, 31), new IntIntHolder(1357, 64)));
-        DROPLIST.put(Integer.valueOf(20515), Arrays.asList(new IntIntHolder(1353, 5), new IntIntHolder(1354, 20), new IntIntHolder(1355, 31), new IntIntHolder(1356, 33), new IntIntHolder(1357, 69)));
+        DROPLIST.put(20026, Arrays.asList(new IntIntHolder(1350, 30), new IntIntHolder(1351, 50), new IntIntHolder(1352, 75)));
+        DROPLIST.put(20029, Arrays.asList(new IntIntHolder(1350, 30), new IntIntHolder(1351, 52), new IntIntHolder(1352, 75)));
+        DROPLIST.put(20035, Arrays.asList(new IntIntHolder(1353, 5), new IntIntHolder(1354, 15), new IntIntHolder(1355, 29), new IntIntHolder(1357, 79)));
+        DROPLIST.put(20042, Arrays.asList(new IntIntHolder(1353, 6), new IntIntHolder(1354, 19), new IntIntHolder(1356, 69), new IntIntHolder(1357, 86)));
+        DROPLIST.put(20045, Arrays.asList(new IntIntHolder(1353, 9), new IntIntHolder(1355, 59), new IntIntHolder(1356, 77), new IntIntHolder(1357, 97)));
+        DROPLIST.put(20051, Arrays.asList(new IntIntHolder(1353, 9), new IntIntHolder(1354, 59), new IntIntHolder(1355, 79), new IntIntHolder(1356, 100)));
+        DROPLIST.put(20457, Arrays.asList(new IntIntHolder(1350, 40), new IntIntHolder(1351, 60), new IntIntHolder(1352, 80)));
+        DROPLIST.put(20458, Arrays.asList(new IntIntHolder(1350, 40), new IntIntHolder(1351, 70), new IntIntHolder(1352, 100)));
+        DROPLIST.put(20514, Arrays.asList(new IntIntHolder(1353, 6), new IntIntHolder(1354, 21), new IntIntHolder(1355, 30), new IntIntHolder(1356, 31), new IntIntHolder(1357, 64)));
+        DROPLIST.put(20515, Arrays.asList(new IntIntHolder(1353, 5), new IntIntHolder(1354, 20), new IntIntHolder(1355, 31), new IntIntHolder(1356, 33), new IntIntHolder(1357, 69)));
         setItemsIds(1350, 1351, 1352, 1353, 1354, 1355, 1356, 1357, 1358, 1349);
         addStartNpc(30336);
         addTalkId(30336, 30342, 30434);
@@ -173,7 +173,7 @@ public class Q325_GrimCollector extends Quest {
             return null;
         if (st.hasQuestItems(1349)) {
             int chance = Rnd.get(100);
-            for (IntIntHolder drop : DROPLIST.get(Integer.valueOf(npc.getNpcId()))) {
+            for (IntIntHolder drop : DROPLIST.get(npc.getNpcId())) {
                 if (chance < drop.getValue()) {
                     st.dropItemsAlways(drop.getId(), 1, 0);
                     break;

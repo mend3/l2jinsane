@@ -120,7 +120,7 @@ public class Q232_TestOfTheLord extends Quest {
             st.giveItems(3391, 1);
             if (!player.getMemos().getBool("secondClassChange39", false)) {
                 htmltext = "30565-05b.htm";
-                st.giveItems(7562, DF_REWARD_39.get(Integer.valueOf(player.getClassId().getId())));
+                st.giveItems(7562, DF_REWARD_39.get(player.getClassId().getId()));
                 player.getMemos().set("secondClassChange39", true);
             }
         } else if (event.equalsIgnoreCase("30565-08.htm")) {

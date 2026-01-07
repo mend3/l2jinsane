@@ -31,7 +31,7 @@ public final class WalkerTaskManager implements Runnable {
     }
 
     public void add(Walker walker, int delay) {
-        this._walkers.put(walker, Long.valueOf(System.currentTimeMillis() + delay));
+        this._walkers.put(walker, System.currentTimeMillis() + delay);
     }
 
     private static class SingletonHolder {

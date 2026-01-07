@@ -25,12 +25,12 @@ import java.util.logging.Logger;
 public class BossEvent {
     protected static final Logger _log = Logger.getLogger(BossEvent.class.getName());
     public L2Spawn bossSpawn;
-    public List<Location> locList = new ArrayList();
+    public List<Location> locList = new ArrayList<>();
     public Location loc;
-    public List<Integer> bossList = new ArrayList();
+    public List<Integer> bossList = new ArrayList<>();
     public int bossId;
     public int objectId;
-    public List<Player> eventPlayers = new ArrayList();
+    public List<Player> eventPlayers = new ArrayList<>();
     public boolean started;
     public boolean aborted;
     public ScheduledFuture<?> despawnBoss;
@@ -45,24 +45,24 @@ public class BossEvent {
     private Map<Integer, Integer> mainDamageDealerRewards;
     private String bossName;
 
+    public static BossEvent getInstance() {
+        return BossEvent.SingleTonHolder._instance;
+    }
+
     public void load() {
         this.state = BossEvent.EventState.INACTIVE;
         this.started = false;
         this.aborted = false;
         this.lastAttacker = null;
-        this.generalRewards = new HashMap();
-        this.lastAttackerRewards = new HashMap();
-        this.mainDamageDealerRewards = new HashMap();
+        this.generalRewards = new HashMap<>();
+        this.lastAttackerRewards = new HashMap<>();
+        this.mainDamageDealerRewards = new HashMap<>();
         this.despawnBoss = null;
         this.countDownTask = null;
         this.bossName = "";
         this.bossKilled = false;
         this.eventNpc = null;
         _log.info("Boss Event loaded.");
-    }
-
-    public static BossEvent getInstance() {
-        return BossEvent.SingleTonHolder._instance;
     }
 
     public boolean addPlayer(Player player) {
@@ -78,10 +78,8 @@ public class BossEvent {
     }
 
     public void teleToTown() {
-        Iterator var1 = this.eventPlayers.iterator();
 
-        while (var1.hasNext()) {
-            Player p = (Player) var1.next();
+        for (Player p : this.eventPlayers) {
             p.teleportTo(new Location(83374, 148081, -3407), 300);
         }
 
@@ -98,10 +96,8 @@ public class BossEvent {
     }
 
     public void reward(Player p, Map<Integer, Integer> rewardType) {
-        Iterator var3 = rewardType.entrySet().iterator();
 
-        while (var3.hasNext()) {
-            Entry<Integer, Integer> entry = (Entry) var3.next();
+        for (Entry<Integer, Integer> entry : rewardType.entrySet()) {
             if (p.isVip()) {
                 p.addItem("BossEventReward", entry.getKey(), entry.getValue() * ConfigData.VIP_DROP_EVENTS_MULTIPLIER, null, true);
             } else {
@@ -112,10 +108,8 @@ public class BossEvent {
     }
 
     public void rewardPlayers() {
-        Iterator var1 = this.eventPlayers.iterator();
 
-        while (var1.hasNext()) {
-            Player p = (Player) var1.next();
+        for (Player p : this.eventPlayers) {
             if (p.getBossEventDamage() > Config.BOSS_EVENT_MIN_DAMAGE_TO_OBTAIN_REWARD) {
                 this.reward(p, this.generalRewards);
             } else {
@@ -182,9 +176,7 @@ public class BossEvent {
             this.locList = Config.BOSS_EVENT_LOCATION;
             this.loc = this.locList.get(Rnd.get(this.locList.size()));
             if (NpcData.getInstance().getTemplate(this.bossId) == null) {
-                Logger var10000 = _log;
-                String var10001 = this.getClass().getName();
-                var10000.warning(var10001 + ": cannot be started. Invalid BossId: " + this.bossList);
+                _log.warning(getClass().getName() + ": cannot be started. Invalid BossId: " + this.bossList);
                 return;
             }
 
@@ -241,10 +233,8 @@ public class BossEvent {
     }
 
     public void resetPlayersDamage() {
-        Iterator var1 = World.getInstance().getPlayers().iterator();
 
-        while (var1.hasNext()) {
-            Player p = (Player) var1.next();
+        for (Player p : World.getInstance().getPlayers()) {
             p.setBossEventDamage(0);
         }
 
@@ -275,10 +265,8 @@ public class BossEvent {
     public final Player getMainDamageDealer() {
         int dmg = 0;
         Player mainDamageDealer = null;
-        Iterator var3 = this.eventPlayers.iterator();
 
-        while (var3.hasNext()) {
-            Player p = (Player) var3.next();
+        for (Player p : this.eventPlayers) {
             if (p.getBossEventDamage() > dmg) {
                 dmg = p.getBossEventDamage();
                 mainDamageDealer = p;
@@ -289,36 +277,27 @@ public class BossEvent {
     }
 
     public void startCountDown(int time, boolean eventOnly) {
-        new ArrayList();
         Collection<Player> players = eventOnly ? this.eventPlayers : World.getInstance().getPlayers();
-        Iterator var4 = ((Collection) players).iterator();
 
-        while (var4.hasNext()) {
-            Player player = (Player) var4.next();
-            ThreadPool.schedule(new BossEvent.Countdown(player, time, this.getState()), 0L);
+        for (Player player : players) {
+            ThreadPool.schedule(new Countdown(player, time, this.getState()), 0L);
         }
 
     }
 
     public void announce(String text, boolean eventOnly) {
-        new ArrayList();
         Collection<Player> players = eventOnly ? this.eventPlayers : World.getInstance().getPlayers();
-        Iterator var4 = ((Collection) players).iterator();
 
-        while (var4.hasNext()) {
-            Player player = (Player) var4.next();
+        for (Player player : players) {
             player.sendPacket(new CreatureSay(0, 18, "[Boss Event]", text));
         }
 
     }
 
     public void announceScreen(String text, boolean eventOnly) {
-        new ArrayList();
         Collection<Player> players = eventOnly ? this.eventPlayers : World.getInstance().getPlayers();
-        Iterator var4 = ((Collection) players).iterator();
 
-        while (var4.hasNext()) {
-            Player player = (Player) var4.next();
+        for (Player player : players) {
             player.sendPacket(new ExShowScreenMessage(text, 4000));
         }
 
@@ -354,12 +333,7 @@ public class BossEvent {
         WAITING,
         FIGHTING,
         FINISHING,
-        INACTIVE;
-
-        // $FF: synthetic method
-        private static BossEvent.EventState[] $values() {
-            return new BossEvent.EventState[]{REGISTRATION, TELEPORTING, WAITING, FIGHTING, FINISHING, INACTIVE};
-        }
+        INACTIVE
     }
 
     private static class SingleTonHolder {
@@ -368,9 +342,9 @@ public class BossEvent {
 
     class Teleporting implements Runnable {
         Location teleTo;
-        List<Player> toTeleport = new ArrayList();
+        List<Player> toTeleport;
 
-        public Teleporting(List<Player> param2, Location param3) {
+        public Teleporting(List<Player> toTeleport, Location teleTo) {
             this.teleTo = teleTo;
             this.toTeleport = toTeleport;
         }
@@ -381,10 +355,8 @@ public class BossEvent {
                 BossEvent.this.setState(BossEvent.EventState.TELEPORTING);
                 BossEvent.this.announce("Event Started!", false);
                 BossEvent.this.startCountDown(Config.BOSS_EVENT_TIME_TO_TELEPORT_PLAYERS, true);
-                Iterator var1 = this.toTeleport.iterator();
 
-                while (var1.hasNext()) {
-                    final Player p = (Player) var1.next();
+                for (Player p : this.toTeleport) {
                     ThreadPool.schedule(new Runnable() {
                         public void run() {
                             p.teleportTo(Teleporting.this.teleTo, 300);
@@ -413,7 +385,7 @@ public class BossEvent {
         BossEvent.EventState evtState;
         private String text = "";
 
-        public Countdown(Player player, int time, BossEvent.EventState param4) {
+        public Countdown(Player player, int time, BossEvent.EventState evtState) {
             this._time = time;
             this._player = player;
             switch (evtState.ordinal()) {
@@ -425,11 +397,13 @@ public class BossEvent {
                     break;
                 case 2:
                     this.text = "Boss will spawn in: ";
-                case 3:
-                default:
                     break;
                 case 4:
                     this.text = "You will be teleported to City in: ";
+                    break;
+                case 3:
+                default:
+                    break;
             }
 
             this.evtState = evtState;
@@ -486,7 +460,7 @@ public class BossEvent {
     class DespawnBossTask implements Runnable {
         L2Spawn spawn;
 
-        public DespawnBossTask(L2Spawn param2) {
+        public DespawnBossTask(L2Spawn spawn) {
             this.spawn = spawn;
         }
 
@@ -513,7 +487,7 @@ public class BossEvent {
         int bossId;
         Location spawnLoc;
 
-        public Fighting(int param2, Location param3) {
+        public Fighting(int bossId, Location spawnLoc) {
             this.bossId = bossId;
             this.spawnLoc = spawnLoc;
         }
@@ -527,10 +501,8 @@ public class BossEvent {
 
                 BossEvent.this.despawnBoss = ThreadPool.schedule(BossEvent.this.new DespawnBossTask(BossEvent.this.bossSpawn), Config.BOSS_EVENT_TIME_TO_DESPAWN_BOSS * 1000L);
                 BossEvent.this.objectId = BossEvent.this.bossSpawn.getNpc().getObjectId();
-                Iterator var1 = BossEvent.this.eventPlayers.iterator();
 
-                while (var1.hasNext()) {
-                    Player p = (Player) var1.next();
+                for (Player p : BossEvent.this.eventPlayers) {
                     p.sendPacket(new ExShowScreenMessage("Boss " + BossEvent.this.bossSpawn.getNpc().getName() + " has been spawned. Go and Defeat him!", 5000));
                 }
             }

@@ -148,7 +148,7 @@ public class Q233_TestOfTheWarSpirit extends Quest {
             st.playSound("ItemSound.quest_accept");
             if (!player.getMemos().getBool("secondClassChange39", false)) {
                 htmltext = "30510-05e.htm";
-                st.giveItems(7562, DF_REWARD_39.get(Integer.valueOf(player.getClassId().getId())));
+                st.giveItems(7562, DF_REWARD_39.get(player.getClassId().getId()));
                 player.getMemos().set("secondClassChange39", true);
             }
         } else if (event.equalsIgnoreCase("30630-04.htm")) {

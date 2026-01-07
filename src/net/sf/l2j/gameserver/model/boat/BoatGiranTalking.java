@@ -7,7 +7,6 @@ import net.sf.l2j.gameserver.model.location.BoatLocation;
 import net.sf.l2j.gameserver.model.location.Location;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.CreatureSay;
-import net.sf.l2j.gameserver.network.serverpackets.L2GameServerPacket;
 import net.sf.l2j.gameserver.network.serverpackets.PlaySound;
 
 public class BoatGiranTalking implements Runnable {

@@ -507,9 +507,9 @@ public class FourSepulchersManager {
 
     private void launchCycle() {
         Calendar cal = Calendar.getInstance();
-        cal.add(12, 1);
-        cal.set(13, 0);
-        cal.set(14, 0);
+        cal.add(Calendar.MINUTE, 1);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         ThreadPool.scheduleAtFixedRate(new FourSepulchersManager.Cycle(), cal.getTimeInMillis() - System.currentTimeMillis(), 60000L);
     }
 
@@ -977,7 +977,7 @@ public class FourSepulchersManager {
 
     protected class Cycle implements Runnable {
         public void run() {
-            int currentMinute = Calendar.getInstance().get(12);
+            int currentMinute = Calendar.getInstance().get(Calendar.MINUTE);
             FourSepulchersManager.State newState = FourSepulchersManager.State.ATTACK;
             if (currentMinute >= Config.FS_TIME_ENTRY) {
                 newState = FourSepulchersManager.State.ENTRY;

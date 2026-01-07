@@ -85,11 +85,9 @@ public abstract class AbstractMods {
     }
 
     public void cancelScheduledState() {
-        Iterator var1 = _sheduledStateMod.iterator();
 
-        while (var1.hasNext()) {
-            Future<?> run = (Future) var1.next();
-            run.cancel(true);
+        for (Future<?> future : _sheduledStateMod) {
+            future.cancel(true);
         }
 
     }
@@ -131,10 +129,8 @@ public abstract class AbstractMods {
             timers.add(new ModTimerHolder(this, name, npc, player, time, repeating));
             this._eventTimers.put(name.hashCode(), timers);
         } else {
-            Iterator var8 = timers.iterator();
 
-            while (var8.hasNext()) {
-                ModTimerHolder timer = (ModTimerHolder) var8.next();
+            for (ModTimerHolder timer : timers) {
                 if (timer != null && timer.equals(this, name, npc, player)) {
                     return;
                 }
@@ -156,7 +152,7 @@ public abstract class AbstractMods {
     public ModTimerHolder getTimer(String name, Npc npc, Player player) {
         List<ModTimerHolder> timers = this._eventTimers.get(name.hashCode());
         if (timers != null && !timers.isEmpty()) {
-            Iterator var5 = timers.iterator();
+            Iterator<ModTimerHolder> var5 = timers.iterator();
 
             ModTimerHolder timer;
             do {
@@ -164,7 +160,7 @@ public abstract class AbstractMods {
                     return null;
                 }
 
-                timer = (ModTimerHolder) var5.next();
+                timer = var5.next();
             } while (timer == null || !timer.equals(this, name, npc, player));
 
             return timer;
@@ -184,10 +180,8 @@ public abstract class AbstractMods {
     public void cancelTimers(String name) {
         List<ModTimerHolder> timers = this._eventTimers.get(name.hashCode());
         if (timers != null && !timers.isEmpty()) {
-            Iterator var3 = timers.iterator();
 
-            while (var3.hasNext()) {
-                ModTimerHolder timer = (ModTimerHolder) var3.next();
+            for (ModTimerHolder timer : timers) {
                 if (timer != null) {
                     timer.cancel();
                 }
@@ -255,10 +249,8 @@ public abstract class AbstractMods {
     public void registerMod(boolean config, List<WeekDayType> day) {
         EngineModsManager.registerMod(this);
         if (config) {
-            Iterator var3 = day.iterator();
 
-            while (var3.hasNext()) {
-                WeekDayType d = (WeekDayType) var3.next();
+            for (WeekDayType d : day) {
                 this.registerMod(d);
             }
         }
@@ -270,7 +262,7 @@ public abstract class AbstractMods {
             int eventTime = -1;
             int missingDayToStart = 0;
             Calendar time = new GregorianCalendar();
-            int i = time.get(7);
+            int i = time.get(Calendar.DAY_OF_WEEK);
 
             while (eventTime < 0) {
                 if (WeekDayType.values()[i - 1] == day) {
@@ -285,10 +277,10 @@ public abstract class AbstractMods {
             }
 
             eventTime += weekToStartEvent * 7;
-            time.add(6, eventTime);
+            time.add(Calendar.DAY_OF_YEAR, eventTime);
             long timeStart = time.getTimeInMillis() - System.currentTimeMillis();
-            _sheduledStateMod.add(ThreadPool.schedule(new AbstractMods.ScheduleStart(), timeStart < 0L ? 0L : timeStart));
-            time.add(6, eventTime + 1);
+            _sheduledStateMod.add(ThreadPool.schedule(new AbstractMods.ScheduleStart(), Math.max(timeStart, 0L)));
+            time.add(Calendar.DAY_OF_YEAR, eventTime + 1);
             _sheduledStateMod.add(ThreadPool.schedule(new AbstractMods.ScheduleEnd(), time.getTimeInMillis() - System.currentTimeMillis()));
         }
 
@@ -312,20 +304,14 @@ public abstract class AbstractMods {
             Calendar timeEnd = new GregorianCalendar();
             timeEnd.set(anioEnd, mesEnd, diaEnd, 0, 0, 0);
             long hoy = System.currentTimeMillis();
-            Logger var10000 = LOG;
-            String var10001 = this.getClass().getSimpleName();
-            var10000.warning("Event " + var10001 + ": Start! -> " + timeStart.getTime());
-            var10000 = LOG;
-            var10001 = this.getClass().getSimpleName();
-            var10000.warning("Event " + var10001 + ": End! -> " + timeEnd.getTime());
+            String name = this.getClass().getSimpleName();
+            LOG.warning("Event " + name + ": Start! -> " + timeStart.getTime());
+            LOG.warning("Event " + name + ": End! -> " + timeEnd.getTime());
             if (timeEnd.getTimeInMillis() >= hoy) {
                 if (timeStart.getTimeInMillis() >= timeEnd.getTimeInMillis()) {
                     LOG.warning("Event " + this.getClass().getSimpleName() + ": The start date of the event can not be greater than or equal to the end of the event");
                 } else {
-                    long time = 0L;
-                    if (timeStart.getTimeInMillis() - hoy > 0L) {
-                        time = timeStart.getTimeInMillis() - hoy;
-                    }
+                    long time = Math.max(timeStart.getTimeInMillis() - hoy, 0L);
 
                     _sheduledStateMod.add(ThreadPool.schedule(new AbstractMods.ScheduleStart(), time));
                     _sheduledStateMod.add(ThreadPool.schedule(new AbstractMods.ScheduleEnd(), timeEnd.getTimeInMillis() - hoy));

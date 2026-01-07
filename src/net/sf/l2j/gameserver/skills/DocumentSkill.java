@@ -74,7 +74,7 @@ public final class DocumentSkill extends DocumentBase {
 
     }
 
-    protected void parseSkill(Node n) {
+    private void parseSkill(Node n) {
         NamedNodeMap attrs = n.getAttributes();
         int enchantLevels1 = 0;
         int enchantLevels2 = 0;

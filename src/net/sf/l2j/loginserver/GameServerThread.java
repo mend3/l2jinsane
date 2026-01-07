@@ -2,7 +2,6 @@ package net.sf.l2j.loginserver;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.commons.logging.CLogger;
-import net.sf.l2j.gameserver.model.AccessLevel;
 import net.sf.l2j.loginserver.crypt.NewCrypt;
 import net.sf.l2j.loginserver.model.GameServerInfo;
 import net.sf.l2j.loginserver.network.SessionKey;
@@ -23,7 +22,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 public class GameServerThread extends Thread {
     private static final CLogger LOGGER = new CLogger(GameServerThread.class.getName());

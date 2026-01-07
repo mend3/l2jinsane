@@ -59,11 +59,11 @@ public class FishingChampionshipManager {
     private void setEndOfChamp() {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(this._endDate);
-        cal.set(12, 0);
-        cal.set(13, 0);
-        cal.add(5, 6);
-        cal.set(7, 3);
-        cal.set(11, 19);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.add(Calendar.DATE, 6);
+        cal.set(Calendar.DAY_OF_WEEK, 3);
+        cal.set(Calendar.HOUR_OF_DAY, 19);
         this._endDate = cal.getTimeInMillis();
     }
 

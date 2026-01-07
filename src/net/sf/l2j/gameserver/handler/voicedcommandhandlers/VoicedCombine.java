@@ -116,7 +116,7 @@ public class VoicedCombine implements IVoicedCommandHandler {
             return true;
         }
         if (!hasRequiredAdena(player, entry)) {
-            player.sendMessage("You need %d adena to combine.".formatted(Integer.valueOf(entry.getAdena())));
+            player.sendMessage("You need %d adena to combine.".formatted(entry.getAdena()));
             return true;
         }
         return processCombination(player, entry, parts);

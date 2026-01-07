@@ -26,10 +26,10 @@ public class Q357_WarehouseKeepersAmbition extends Quest {
 
     public Q357_WarehouseKeepersAmbition() {
         super(357, "Warehouse Keeper's Ambition");
-        CHANCES.put(Integer.valueOf(20594), Integer.valueOf(400000));
-        CHANCES.put(Integer.valueOf(20595), Integer.valueOf(410000));
-        CHANCES.put(Integer.valueOf(20596), Integer.valueOf(440000));
-        CHANCES.put(Integer.valueOf(20597), Integer.valueOf(650000));
+        CHANCES.put(20594, 400000);
+        CHANCES.put(20595, 410000);
+        CHANCES.put(20596, 440000);
+        CHANCES.put(20597, 650000);
         setItemsIds(5867);
         addStartNpc(30686);
         addTalkId(30686);
@@ -84,7 +84,7 @@ public class Q357_WarehouseKeepersAmbition extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropItems(5867, 1, 0, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(5867, 1, 0, CHANCES.get(npc.getNpcId()));
         return null;
     }
 }

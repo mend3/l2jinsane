@@ -132,12 +132,12 @@ public class SevenSignsManager {
         switch (this._activePeriod) {
             case SEAL_VALIDATION:
             case COMPETITION:
-                lastPeriodChange.set(7, 2);
-                lastPeriodChange.set(11, 18);
-                lastPeriodChange.set(12, 0);
-                lastPeriodChange.set(13, 0);
+                lastPeriodChange.set(Calendar.DAY_OF_WEEK, 2);
+                lastPeriodChange.set(Calendar.HOUR_OF_DAY, 18);
+                lastPeriodChange.set(Calendar.MINUTE, 0);
+                lastPeriodChange.set(Calendar.SECOND, 0);
                 if (Calendar.getInstance().before(lastPeriodChange)) {
-                    lastPeriodChange.add(10, -168);
+                    lastPeriodChange.add(Calendar.HOUR, -168);
                 }
                 break;
             case RECRUITING:
@@ -342,7 +342,7 @@ public class SevenSignsManager {
     }
 
     private final int getDaysToPeriodChange() {
-        int numDays = this._nextPeriodChange.get(7) - 2;
+        int numDays = this._nextPeriodChange.get(Calendar.DAY_OF_WEEK) - 2;
         return numDays < 0 ? -numDays : 7 - numDays;
     }
 
@@ -356,25 +356,25 @@ public class SevenSignsManager {
             case COMPETITION:
                 int daysToChange = this.getDaysToPeriodChange();
                 if (daysToChange == 7) {
-                    if (this._nextPeriodChange.get(11) < 18) {
+                    if (this._nextPeriodChange.get(Calendar.HOUR_OF_DAY) < 18) {
                         daysToChange = 0;
-                    } else if (this._nextPeriodChange.get(11) == 18 && this._nextPeriodChange.get(12) < 0) {
+                    } else if (this._nextPeriodChange.get(Calendar.HOUR_OF_DAY) == 18 && this._nextPeriodChange.get(Calendar.MINUTE) < 0) {
                         daysToChange = 0;
                     }
                 }
 
                 if (daysToChange > 0) {
-                    this._nextPeriodChange.add(5, daysToChange);
+                    this._nextPeriodChange.add(Calendar.DATE, daysToChange);
                 }
 
-                this._nextPeriodChange.set(11, 18);
-                this._nextPeriodChange.set(12, 0);
-                this._nextPeriodChange.set(13, 0);
-                this._nextPeriodChange.set(14, 0);
+                this._nextPeriodChange.set(Calendar.HOUR_OF_DAY, 18);
+                this._nextPeriodChange.set(Calendar.MINUTE, 0);
+                this._nextPeriodChange.set(Calendar.SECOND, 0);
+                this._nextPeriodChange.set(Calendar.MILLISECOND, 0);
                 break;
             case RECRUITING:
             case RESULTS:
-                this._nextPeriodChange.add(14, 900000);
+                this._nextPeriodChange.add(Calendar.MILLISECOND, 900000);
         }
 
         LOGGER.info("Next Seven Signs period change set to {}.", this._nextPeriodChange.getTime());

@@ -35,7 +35,7 @@ public class AdminZone implements IAdminCommandHandler {
         sb.setLength(0);
         for (ZoneType zone : World.getInstance().getRegion(x, y).getZones()) {
             if (zone.isCharacterInZone(player))
-                StringUtil.append(sb, Integer.valueOf(zone.getId()), " ");
+                StringUtil.append(sb, zone.getId(), " ");
         }
         html.replace("%ZLIST%", sb.toString());
         player.sendPacket(html);

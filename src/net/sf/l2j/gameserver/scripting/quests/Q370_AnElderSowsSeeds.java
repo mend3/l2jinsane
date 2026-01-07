@@ -28,11 +28,11 @@ public class Q370_AnElderSowsSeeds extends Quest {
 
     public Q370_AnElderSowsSeeds() {
         super(370, "An Elder Sows Seeds");
-        CHANCES.put(Integer.valueOf(20082), Integer.valueOf(86000));
-        CHANCES.put(Integer.valueOf(20084), Integer.valueOf(94000));
-        CHANCES.put(Integer.valueOf(20086), Integer.valueOf(90000));
-        CHANCES.put(Integer.valueOf(20089), Integer.valueOf(100000));
-        CHANCES.put(Integer.valueOf(20090), Integer.valueOf(202000));
+        CHANCES.put(20082, 86000);
+        CHANCES.put(20084, 94000);
+        CHANCES.put(20086, 90000);
+        CHANCES.put(20089, 100000);
+        CHANCES.put(20090, 202000);
         setItemsIds(5916, 5917, 5918, 5919, 5920);
         addStartNpc(30612);
         addTalkId(30612);
@@ -85,7 +85,7 @@ public class Q370_AnElderSowsSeeds extends Quest {
         QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
         if (st == null)
             return null;
-        st.dropItems(5916, 1, 0, CHANCES.get(Integer.valueOf(npc.getNpcId())));
+        st.dropItems(5916, 1, 0, CHANCES.get(npc.getNpcId()));
         return null;
     }
 }

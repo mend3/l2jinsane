@@ -21,8 +21,8 @@ public final class TamedBeast extends FeedableBeast {
     private static final String[] FOOD_CHAT = new String[]{"Refills! Yeah!", "I am such a gluttonous beast, it is embarrassing! Ha ha.", "Your cooperative feeling has been getting better and better.", "I will help you!", "The weather is really good. Wanna go for a picnic?", "I really like you! This is tasty...", "If you do not have to leave this place, then I can help you.", "What can I help you with?", "I am not here only for food!", "Yam, yam, yam, yam, yam!"};
     private static final int MAX_DISTANCE_FROM_HOME = 13000;
     private static final int TASK_INTERVAL = 5000;
-    private int _foodId;
-    private Player _owner;
+    private final int _foodId;
+    private final Player _owner;
     private Future<?> _aiTask = null;
 
     public TamedBeast(int objectId, NpcTemplate template, Player owner, int foodId, Location loc) {

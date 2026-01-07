@@ -43,8 +43,8 @@ public class ShortCutInit extends L2GameServerPacket {
                             } else {
                                 for (IntIntHolder skillInfo : skills) {
                                     L2Skill itemSkill = skillInfo.getSkill();
-                                    if (this._player.getReuseTimeStamp().containsKey(Integer.valueOf(itemSkill.getReuseHashCode()))) {
-                                        writeD((int) (this._player.getReuseTimeStamp().get(Integer.valueOf(itemSkill.getReuseHashCode())).getRemaining() / 1000L));
+                                    if (this._player.getReuseTimeStamp().containsKey(itemSkill.getReuseHashCode())) {
+                                        writeD((int) (this._player.getReuseTimeStamp().get(itemSkill.getReuseHashCode()).getRemaining() / 1000L));
                                         writeD((int) (itemSkill.getReuseDelay() / 1000L));
                                     } else {
                                         writeD(0);

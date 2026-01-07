@@ -43,23 +43,23 @@ public class Q234_FatesWhisper extends Quest {
 
     public Q234_FatesWhisper() {
         super(234, "Fate's Whispers");
-        CHEST_SPAWN.put(Integer.valueOf(25035), Integer.valueOf(31027));
-        CHEST_SPAWN.put(Integer.valueOf(25054), Integer.valueOf(31028));
-        CHEST_SPAWN.put(Integer.valueOf(25126), Integer.valueOf(31029));
-        CHEST_SPAWN.put(Integer.valueOf(25220), Integer.valueOf(31030));
-        WEAPONS.put(Integer.valueOf(79), "Sword of Damascus");
-        WEAPONS.put(Integer.valueOf(97), "Lance");
-        WEAPONS.put(Integer.valueOf(171), "Deadman's Glory");
-        WEAPONS.put(Integer.valueOf(175), "Art of Battle Axe");
-        WEAPONS.put(Integer.valueOf(210), "Staff of Evil Spirits");
-        WEAPONS.put(Integer.valueOf(234), "Demon Dagger");
-        WEAPONS.put(Integer.valueOf(268), "Bellion Cestus");
-        WEAPONS.put(Integer.valueOf(287), "Bow of Peril");
-        WEAPONS.put(Integer.valueOf(2626), "Samurai Dual-sword");
-        WEAPONS.put(Integer.valueOf(7883), "Guardian Sword");
-        WEAPONS.put(Integer.valueOf(7889), "Wizard's Tear");
-        WEAPONS.put(Integer.valueOf(7893), "Kaim Vanul's Bones");
-        WEAPONS.put(Integer.valueOf(7901), "Star Buster");
+        CHEST_SPAWN.put(25035, 31027);
+        CHEST_SPAWN.put(25054, 31028);
+        CHEST_SPAWN.put(25126, 31029);
+        CHEST_SPAWN.put(25220, 31030);
+        WEAPONS.put(79, "Sword of Damascus");
+        WEAPONS.put(97, "Lance");
+        WEAPONS.put(171, "Deadman's Glory");
+        WEAPONS.put(175, "Art of Battle Axe");
+        WEAPONS.put(210, "Staff of Evil Spirits");
+        WEAPONS.put(234, "Demon Dagger");
+        WEAPONS.put(268, "Bellion Cestus");
+        WEAPONS.put(287, "Bow of Peril");
+        WEAPONS.put(2626, "Samurai Dual-sword");
+        WEAPONS.put(7883, "Guardian Sword");
+        WEAPONS.put(7889, "Wizard's Tear");
+        WEAPONS.put(7893, "Kaim Vanul's Bones");
+        WEAPONS.put(7901, "Star Buster");
         setItemsIds(4665, 4673);
         addStartNpc(31002);
         addTalkId(31002, 30182, 30847, 30178, 30833, 31028, 31029, 31030, 31027);
@@ -91,10 +91,10 @@ public class Q234_FatesWhisper extends Quest {
                 return null;
             String bGradeId = event.replace("selectBGrade_", "");
             st.set("weaponId", bGradeId);
-            htmltext = getHtmlText("31002-13.htm").replace("%weaponname%", WEAPONS.get(Integer.valueOf(st.getInt("weaponId"))));
+            htmltext = getHtmlText("31002-13.htm").replace("%weaponname%", WEAPONS.get(st.getInt("weaponId")));
         } else if (event.startsWith("confirmWeapon")) {
             st.set("bypass", "1");
-            htmltext = getHtmlText("31002-14.htm").replace("%weaponname%", WEAPONS.get(Integer.valueOf(st.getInt("weaponId"))));
+            htmltext = getHtmlText("31002-14.htm").replace("%weaponname%", WEAPONS.get(st.getInt("weaponId")));
         } else if (event.startsWith("selectAGrade_")) {
             if (st.getInt("bypass") == 1) {
                 int itemId = st.getInt("weaponId");
@@ -108,7 +108,7 @@ public class Q234_FatesWhisper extends Quest {
                     st.playSound("ItemSound.quest_finish");
                     st.exitQuest(false);
                 } else {
-                    htmltext = getHtmlText("31002-15.htm").replace("%weaponname%", WEAPONS.get(Integer.valueOf(itemId)));
+                    htmltext = getHtmlText("31002-15.htm").replace("%weaponname%", WEAPONS.get(itemId));
                 }
             } else {
                 htmltext = "31002-16.htm";
@@ -202,7 +202,7 @@ public class Q234_FatesWhisper extends Quest {
                         if (cond == 10) {
                             if (st.getInt("bypass") == 1) {
                                 int i = st.getInt("weaponId");
-                                htmltext = getHtmlText(st.hasQuestItems(i) ? "31002-AGradeList.htm" : "31002-15.htm").replace("%weaponname%", WEAPONS.get(Integer.valueOf(i)));
+                                htmltext = getHtmlText(st.hasQuestItems(i) ? "31002-AGradeList.htm" : "31002-15.htm").replace("%weaponname%", WEAPONS.get(i));
                                 break;
                             }
                             htmltext = "31002-BGradeList.htm";
@@ -294,7 +294,7 @@ public class Q234_FatesWhisper extends Quest {
     }
 
     public String onKill(Npc npc, Creature killer) {
-        addSpawn(CHEST_SPAWN.get(Integer.valueOf(npc.getNpcId())), npc, true, 120000L, false);
+        addSpawn(CHEST_SPAWN.get(npc.getNpcId()), npc, true, 120000L, false);
         return null;
     }
 }

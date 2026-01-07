@@ -36,7 +36,7 @@ public class BufferManager implements IXmlReader {
 
     public void load() {
         parseFile("./data/xml/bufferSkills.xml");
-        LOGGER.info("Loaded {} available buffs.", Integer.valueOf(this._availableBuffs.size()));
+        LOGGER.info("Loaded {} available buffs.", this._availableBuffs.size());
 
         try (Connection con = ConnectionPool.getConnection();
              PreparedStatement ps = con.prepareStatement(LOAD_SCHEMES);
@@ -106,7 +106,7 @@ public class BufferManager implements IXmlReader {
                         for (Map.Entry<String, ArrayList<Integer>> scheme : (Iterable<Map.Entry<String, ArrayList<Integer>>>) ((HashMap) player.getValue()).entrySet()) {
                             for (Iterator<Integer> iterator = ((ArrayList) scheme.getValue()).iterator(); iterator.hasNext(); ) {
                                 int skillId = iterator.next();
-                                StringUtil.append(sb, Integer.valueOf(skillId), ",");
+                                StringUtil.append(sb, skillId, ",");
                             }
                             if (sb.length() > 0)
                                 sb.setLength(sb.length() - 1);
@@ -146,22 +146,22 @@ public class BufferManager implements IXmlReader {
     }
 
     public void setScheme(int playerId, String schemeName, ArrayList<Integer> list) {
-        if (!this._schemesTable.containsKey(Integer.valueOf(playerId))) {
-            this._schemesTable.put(Integer.valueOf(playerId), new HashMap<>());
-        } else if (this._schemesTable.get(Integer.valueOf(playerId)).size() >= Config.BUFFER_MAX_SCHEMES) {
+        if (!this._schemesTable.containsKey(playerId)) {
+            this._schemesTable.put(playerId, new HashMap<>());
+        } else if (this._schemesTable.get(playerId).size() >= Config.BUFFER_MAX_SCHEMES) {
             return;
         }
-        this._schemesTable.get(Integer.valueOf(playerId)).put(schemeName, list);
+        this._schemesTable.get(playerId).put(schemeName, list);
     }
 
     public Map<String, ArrayList<Integer>> getPlayerSchemes(int playerId) {
-        return this._schemesTable.get(Integer.valueOf(playerId));
+        return this._schemesTable.get(playerId);
     }
 
     public List<Integer> getScheme(int playerId, String schemeName) {
-        if (this._schemesTable.get(Integer.valueOf(playerId)) == null || ((HashMap) this._schemesTable.get(Integer.valueOf(playerId))).get(schemeName) == null)
+        if (this._schemesTable.get(playerId) == null || ((HashMap) this._schemesTable.get(playerId)).get(schemeName) == null)
             return Collections.emptyList();
-        return (List<Integer>) ((HashMap) this._schemesTable.get(Integer.valueOf(playerId))).get(schemeName);
+        return (List<Integer>) ((HashMap) this._schemesTable.get(playerId)).get(schemeName);
     }
 
     public boolean getSchemeContainsSkill(int playerId, String schemeName, int skillId) {
@@ -180,7 +180,7 @@ public class BufferManager implements IXmlReader {
         List<Integer> skills = new ArrayList<>();
         for (BuffSkillHolder skill : this._availableBuffs.values()) {
             if (skill.getType().equalsIgnoreCase(groupType))
-                skills.add(Integer.valueOf(skill.getId()));
+                skills.add(skill.getId());
         }
         return skills;
     }
@@ -195,7 +195,7 @@ public class BufferManager implements IXmlReader {
     }
 
     public BuffSkillHolder getAvailableBuff(int skillId) {
-        return this._availableBuffs.get(Integer.valueOf(skillId));
+        return this._availableBuffs.get(skillId);
     }
 
     public Map<Integer, BuffSkillHolder> getAvailableBuffs() {

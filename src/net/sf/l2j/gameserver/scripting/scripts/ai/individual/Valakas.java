@@ -103,7 +103,7 @@ public class Valakas extends L2AttackableAIScript {
     }
 
     protected void registerNpcs() {
-        this.addEventIds(29028, new ScriptEventType[]{ScriptEventType.ON_ATTACK, ScriptEventType.ON_KILL, ScriptEventType.ON_SPAWN, ScriptEventType.ON_AGGRO});
+        this.addEventIds(29028, ScriptEventType.ON_ATTACK, ScriptEventType.ON_KILL, ScriptEventType.ON_SPAWN, ScriptEventType.ON_AGGRO);
     }
 
     public String onAdvEvent(String event, Npc npc, Player player) {

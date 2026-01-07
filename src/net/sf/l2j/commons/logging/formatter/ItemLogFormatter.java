@@ -13,10 +13,10 @@ public class ItemLogFormatter extends MasterFormatter {
         for (Object p : record.getParameters()) {
             if (p != null) {
                 if (p instanceof ItemInstance item) {
-                    StringUtil.append(sb, Integer.valueOf(item.getCount()), "\t");
+                    StringUtil.append(sb, item.getCount(), "\t");
                     if (item.getEnchantLevel() > 0)
-                        StringUtil.append(sb, "+", Integer.valueOf(item.getEnchantLevel()), " ");
-                    StringUtil.append(sb, item.getItem().getName(), "\t", Integer.valueOf(item.getObjectId()));
+                        StringUtil.append(sb, "+", item.getEnchantLevel(), " ");
+                    StringUtil.append(sb, item.getItem().getName(), "\t", item.getObjectId());
                 } else {
                     sb.append(p);
                 }

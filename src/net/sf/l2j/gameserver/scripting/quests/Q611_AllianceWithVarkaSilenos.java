@@ -44,42 +44,42 @@ public class Q611_AllianceWithVarkaSilenos extends Quest {
 
     public Q611_AllianceWithVarkaSilenos() {
         super(611, "Alliance with Varka Silenos");
-        CHANCES.put(Integer.valueOf(21324), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21325), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21327), Integer.valueOf(509000));
-        CHANCES.put(Integer.valueOf(21328), Integer.valueOf(521000));
-        CHANCES.put(Integer.valueOf(21329), Integer.valueOf(519000));
-        CHANCES.put(Integer.valueOf(21331), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21332), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21334), Integer.valueOf(509000));
-        CHANCES.put(Integer.valueOf(21335), Integer.valueOf(518000));
-        CHANCES.put(Integer.valueOf(21336), Integer.valueOf(518000));
-        CHANCES.put(Integer.valueOf(21338), Integer.valueOf(527000));
-        CHANCES.put(Integer.valueOf(21339), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21340), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21342), Integer.valueOf(508000));
-        CHANCES.put(Integer.valueOf(21343), Integer.valueOf(628000));
-        CHANCES.put(Integer.valueOf(21344), Integer.valueOf(604000));
-        CHANCES.put(Integer.valueOf(21345), Integer.valueOf(627000));
-        CHANCES.put(Integer.valueOf(21346), Integer.valueOf(604000));
-        CHANCES.put(Integer.valueOf(21347), Integer.valueOf(649000));
-        CHANCES.put(Integer.valueOf(21348), Integer.valueOf(626000));
-        CHANCES.put(Integer.valueOf(21349), Integer.valueOf(626000));
-        CHANCES_MOLAR.put(Integer.valueOf(21324), Integer.valueOf(500000));
-        CHANCES_MOLAR.put(Integer.valueOf(21327), Integer.valueOf(510000));
-        CHANCES_MOLAR.put(Integer.valueOf(21328), Integer.valueOf(522000));
-        CHANCES_MOLAR.put(Integer.valueOf(21329), Integer.valueOf(519000));
-        CHANCES_MOLAR.put(Integer.valueOf(21331), Integer.valueOf(529000));
-        CHANCES_MOLAR.put(Integer.valueOf(21332), Integer.valueOf(529000));
-        CHANCES_MOLAR.put(Integer.valueOf(21334), Integer.valueOf(539000));
-        CHANCES_MOLAR.put(Integer.valueOf(21336), Integer.valueOf(548000));
-        CHANCES_MOLAR.put(Integer.valueOf(21338), Integer.valueOf(558000));
-        CHANCES_MOLAR.put(Integer.valueOf(21339), Integer.valueOf(568000));
-        CHANCES_MOLAR.put(Integer.valueOf(21340), Integer.valueOf(568000));
-        CHANCES_MOLAR.put(Integer.valueOf(21342), Integer.valueOf(578000));
-        CHANCES_MOLAR.put(Integer.valueOf(21343), Integer.valueOf(664000));
-        CHANCES_MOLAR.put(Integer.valueOf(21345), Integer.valueOf(713000));
-        CHANCES_MOLAR.put(Integer.valueOf(21347), Integer.valueOf(738000));
+        CHANCES.put(21324, 500000);
+        CHANCES.put(21325, 500000);
+        CHANCES.put(21327, 509000);
+        CHANCES.put(21328, 521000);
+        CHANCES.put(21329, 519000);
+        CHANCES.put(21331, 500000);
+        CHANCES.put(21332, 500000);
+        CHANCES.put(21334, 509000);
+        CHANCES.put(21335, 518000);
+        CHANCES.put(21336, 518000);
+        CHANCES.put(21338, 527000);
+        CHANCES.put(21339, 500000);
+        CHANCES.put(21340, 500000);
+        CHANCES.put(21342, 508000);
+        CHANCES.put(21343, 628000);
+        CHANCES.put(21344, 604000);
+        CHANCES.put(21345, 627000);
+        CHANCES.put(21346, 604000);
+        CHANCES.put(21347, 649000);
+        CHANCES.put(21348, 626000);
+        CHANCES.put(21349, 626000);
+        CHANCES_MOLAR.put(21324, 500000);
+        CHANCES_MOLAR.put(21327, 510000);
+        CHANCES_MOLAR.put(21328, 522000);
+        CHANCES_MOLAR.put(21329, 519000);
+        CHANCES_MOLAR.put(21331, 529000);
+        CHANCES_MOLAR.put(21332, 529000);
+        CHANCES_MOLAR.put(21334, 539000);
+        CHANCES_MOLAR.put(21336, 548000);
+        CHANCES_MOLAR.put(21338, 558000);
+        CHANCES_MOLAR.put(21339, 568000);
+        CHANCES_MOLAR.put(21340, 568000);
+        CHANCES_MOLAR.put(21342, 578000);
+        CHANCES_MOLAR.put(21343, 664000);
+        CHANCES_MOLAR.put(21345, 713000);
+        CHANCES_MOLAR.put(21347, 738000);
         setItemsIds(7226, 7227, 7228);
         addStartNpc(31378);
         addTalkId(31378);
@@ -253,8 +253,8 @@ public class Q611_AllianceWithVarkaSilenos extends Quest {
             return null;
         int npcId = npc.getNpcId();
         QuestState st2 = st.getPlayer().getQuestState("Q612_WarWithKetraOrcs");
-        if (st2 != null && Rnd.nextBoolean() && CHANCES_MOLAR.containsKey(Integer.valueOf(npcId))) {
-            st2.dropItems(7234, 1, 0, CHANCES_MOLAR.get(Integer.valueOf(npcId)));
+        if (st2 != null && Rnd.nextBoolean() && CHANCES_MOLAR.containsKey(npcId)) {
+            st2.dropItems(7234, 1, 0, CHANCES_MOLAR.get(npcId));
             return null;
         }
         int cond = st.getInt("cond");
@@ -267,19 +267,19 @@ public class Q611_AllianceWithVarkaSilenos extends Quest {
             case 21328:
             case 21329:
                 if (cond == 1) {
-                    st.dropItems(7226, 1, 100, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7226, 1, 100, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 2) {
-                    st.dropItems(7226, 1, 200, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7226, 1, 200, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 3 || cond == 4) {
-                    st.dropItems(7226, 1, 300, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7226, 1, 300, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 5)
-                    st.dropItems(7226, 1, 400, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7226, 1, 400, CHANCES.get(npcId));
                 break;
             case 21331:
             case 21332:
@@ -290,19 +290,19 @@ public class Q611_AllianceWithVarkaSilenos extends Quest {
             case 21343:
             case 21344:
                 if (cond == 2) {
-                    st.dropItems(7227, 1, 100, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7227, 1, 100, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 3) {
-                    st.dropItems(7227, 1, 200, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7227, 1, 200, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 4) {
-                    st.dropItems(7227, 1, 300, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7227, 1, 300, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 5)
-                    st.dropItems(7227, 1, 400, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7227, 1, 400, CHANCES.get(npcId));
                 break;
             case 21339:
             case 21340:
@@ -313,11 +313,11 @@ public class Q611_AllianceWithVarkaSilenos extends Quest {
             case 21348:
             case 21349:
                 if (cond == 3) {
-                    st.dropItems(7228, 1, 100, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7228, 1, 100, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 4 || cond == 5)
-                    st.dropItems(7228, 1, 200, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7228, 1, 200, CHANCES.get(npcId));
                 break;
         }
         return null;

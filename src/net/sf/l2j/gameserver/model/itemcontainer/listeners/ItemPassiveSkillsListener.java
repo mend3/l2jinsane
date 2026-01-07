@@ -42,7 +42,7 @@ public class ItemPassiveSkillsListener implements OnEquipListener {
                     if (itemSkill != null) {
                         player.addSkill(itemSkill, false);
                         if (itemSkill.isActive()) {
-                            if (!player.getReuseTimeStamp().containsKey(Integer.valueOf(itemSkill.getReuseHashCode()))) {
+                            if (!player.getReuseTimeStamp().containsKey(itemSkill.getReuseHashCode())) {
                                 int equipDelay = itemSkill.getEquipDelay();
                                 if (equipDelay > 0) {
                                     player.addTimeStamp(itemSkill, equipDelay);

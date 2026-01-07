@@ -73,13 +73,13 @@ public class OlympiadManager {
     }
 
     private final boolean isRegistered(Player player, boolean showMessage) {
-        Integer objId = Integer.valueOf(player.getObjectId());
+        Integer objId = player.getObjectId();
         if (this._nonClassBasedRegisters.contains(objId)) {
             if (showMessage)
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_ARE_ALREADY_ON_THE_WAITING_LIST_FOR_ALL_CLASSES_WAITING_TO_PARTICIPATE_IN_THE_GAME));
             return true;
         }
-        List<Integer> classed = this._classBasedRegisters.get(Integer.valueOf(player.getBaseClass()));
+        List<Integer> classed = this._classBasedRegisters.get(player.getBaseClass());
         if (classed != null && classed.contains(objId)) {
             if (showMessage)
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_ARE_ALREADY_ON_THE_WAITING_LIST_TO_PARTICIPATE_IN_THE_GAME_FOR_YOUR_CLASS));
@@ -106,20 +106,20 @@ public class OlympiadManager {
             case CLASSED:
                 if (!checkNoble(player))
                     return false;
-                classed = this._classBasedRegisters.get(Integer.valueOf(player.getBaseClass()));
+                classed = this._classBasedRegisters.get(player.getBaseClass());
                 if (classed != null) {
-                    classed.add(Integer.valueOf(player.getObjectId()));
+                    classed.add(player.getObjectId());
                 } else {
                     classed = new CopyOnWriteArrayList<>();
-                    classed.add(Integer.valueOf(player.getObjectId()));
-                    this._classBasedRegisters.put(Integer.valueOf(player.getBaseClass()), classed);
+                    classed.add(player.getObjectId());
+                    this._classBasedRegisters.put(player.getBaseClass(), classed);
                 }
                 player.sendPacket(SystemMessageId.YOU_HAVE_BEEN_REGISTERED_IN_A_WAITING_LIST_OF_CLASSIFIED_GAMES);
                 break;
             case NON_CLASSED:
                 if (!checkNoble(player))
                     return false;
-                this._nonClassBasedRegisters.add(Integer.valueOf(player.getObjectId()));
+                this._nonClassBasedRegisters.add(player.getObjectId());
                 player.sendPacket(SystemMessageId.YOU_HAVE_BEEN_REGISTERED_IN_A_WAITING_LIST_OF_NO_CLASS_GAMES);
                 break;
         }
@@ -141,15 +141,15 @@ public class OlympiadManager {
         }
         if (isInCompetition(player, false))
             return false;
-        Integer objectId = Integer.valueOf(player.getObjectId());
+        Integer objectId = player.getObjectId();
         if (this._nonClassBasedRegisters.remove(objectId)) {
             player.sendPacket(SystemMessageId.YOU_HAVE_BEEN_DELETED_FROM_THE_WAITING_LIST_OF_A_GAME);
             return true;
         }
-        List<Integer> classed = this._classBasedRegisters.get(Integer.valueOf(player.getBaseClass()));
+        List<Integer> classed = this._classBasedRegisters.get(player.getBaseClass());
         if (classed != null && classed.remove(objectId)) {
-            this._classBasedRegisters.remove(Integer.valueOf(player.getBaseClass()));
-            this._classBasedRegisters.put(Integer.valueOf(player.getBaseClass()), classed);
+            this._classBasedRegisters.remove(player.getBaseClass());
+            this._classBasedRegisters.put(player.getBaseClass(), classed);
             player.sendPacket(SystemMessageId.YOU_HAVE_BEEN_DELETED_FROM_THE_WAITING_LIST_OF_A_GAME);
             return true;
         }
@@ -160,10 +160,10 @@ public class OlympiadManager {
         OlympiadGameTask task = OlympiadGameManager.getInstance().getOlympiadTask(player.getOlympiadGameId());
         if (task != null && task.isGameStarted())
             task.getGame().handleDisconnect(player);
-        Integer objId = Integer.valueOf(player.getObjectId());
+        Integer objId = player.getObjectId();
         if (this._nonClassBasedRegisters.remove(objId))
             return;
-        List<Integer> classed = this._classBasedRegisters.get(Integer.valueOf(player.getBaseClass()));
+        List<Integer> classed = this._classBasedRegisters.get(player.getBaseClass());
         if (classed != null && classed.remove(objId)) {
         }
     }

@@ -149,11 +149,11 @@ public class EnterWorld extends L2GameClientPacket {
                 }
             }
         if (player.isSubClassActive())
-            if (player.getSubClasses().get(Integer.valueOf(player.getClassIndex())).getLevel() > Config.SUBCLASS_MAX_LEVEL - 1)
-                player.getSubClasses().get(Integer.valueOf(player.getClassIndex())).setLevel((byte) (Config.SUBCLASS_MAX_LEVEL - 1));
+            if (player.getSubClasses().get(player.getClassIndex()).getLevel() > Config.SUBCLASS_MAX_LEVEL - 1)
+                player.getSubClasses().get(player.getClassIndex()).setLevel((byte) (Config.SUBCLASS_MAX_LEVEL - 1));
         player.checkEquipmentXPvps();
         Hwid.enterlog(player, getClient());
-        if (DungeonManager.getInstance().getDungeonParticipants().contains(Integer.valueOf(player.getObjectId()))) {
+        if (DungeonManager.getInstance().getDungeonParticipants().contains(player.getObjectId())) {
             DungeonManager.getInstance().getDungeonParticipants().remove(Integer.valueOf(player.getObjectId()));
             player.teleportTo(82635, 148798, -3464, 25);
         }

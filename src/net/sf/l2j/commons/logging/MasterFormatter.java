@@ -12,7 +12,7 @@ public class MasterFormatter extends Formatter {
     protected static final String SPACE = "\t";
 
     protected static String getFormatedDate(long timestamp) {
-        return (new SimpleDateFormat("dd-MM-yyyy HH:mm:ss")).format(Long.valueOf(timestamp));
+        return (new SimpleDateFormat("dd-MM-yyyy HH:mm:ss")).format(timestamp);
     }
 
     public String format(LogRecord record) {

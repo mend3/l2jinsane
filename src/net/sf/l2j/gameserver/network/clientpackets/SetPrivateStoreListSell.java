@@ -96,14 +96,14 @@ public final class SetPrivateStoreListSell extends L2GameClientPacket {
     private record Item(int _itemId, int _count, int _price) {
 
         public boolean addToTradeList(TradeList list) {
-                if (Integer.MAX_VALUE / this._count < this._price)
-                    return false;
-                list.addItem(this._itemId, this._count, this._price);
-                return true;
-            }
-
-            public long getPrice() {
-                return ((long) this._count * this._price);
-            }
+            if (Integer.MAX_VALUE / this._count < this._price)
+                return false;
+            list.addItem(this._itemId, this._count, this._price);
+            return true;
         }
+
+        public long getPrice() {
+            return ((long) this._count * this._price);
+        }
+    }
 }

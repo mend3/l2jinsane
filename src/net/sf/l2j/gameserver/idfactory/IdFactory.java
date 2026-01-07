@@ -19,10 +19,9 @@ public class IdFactory {
     public static final int FIRST_OID = 268435456;
     public static final int LAST_OID = 2147483647;
     public static final int FREE_OBJECT_ID_SIZE = 1879048191;
-    private static final CLogger LOGGER = new CLogger(IdFactory.class.getName());
-    private BitSet _freeIds;
     protected static final IdFactory INSTANCE = new IdFactory();
-
+    private final CLogger LOGGER = new CLogger(IdFactory.class.getName());
+    private BitSet _freeIds;
     private AtomicInteger _freeIdCount;
 
     private AtomicInteger _nextFreeId;
@@ -38,42 +37,11 @@ public class IdFactory {
         }, 30000L, 30000L);
     }
 
-    private static void setAllCharacterOffline() {
-        try {
-            Connection con = ConnectionPool.getConnection();
-            try {
-                PreparedStatement ps = con.prepareStatement("UPDATE characters SET online = 0");
-                try {
-                    ps.executeUpdate();
-                    if (ps != null)
-                        ps.close();
-                } catch (Throwable throwable) {
-                    if (ps != null)
-                        try {
-                            ps.close();
-                        } catch (Throwable throwable1) {
-                            throwable.addSuppressed(throwable1);
-                        }
-                    throw throwable;
-                }
-                if (con != null)
-                    con.close();
-            } catch (Throwable throwable) {
-                if (con != null)
-                    try {
-                        con.close();
-                    } catch (Throwable throwable1) {
-                        throwable.addSuppressed(throwable1);
-                    }
-                throw throwable;
-            }
-        } catch (Exception e) {
-            LOGGER.warn("Couldn't set characters offline.", e);
-        }
-        LOGGER.info("Updated characters online status.");
+    public static IdFactory getInstance() {
+        return INSTANCE;
     }
 
-    private static void cleanUpDB() {
+    private void cleanUpDB() {
         int cleanCount = 0;
         try {
             Connection con = ConnectionPool.getConnection();
@@ -147,10 +115,10 @@ public class IdFactory {
         } catch (Exception e) {
             LOGGER.warn("Couldn't cleanup database.", e);
         }
-        LOGGER.info("Cleaned {} elements from database.", Integer.valueOf(cleanCount));
+        LOGGER.info("Cleaned {} elements from database.", cleanCount);
     }
 
-    private static void cleanUpTimeStamps() {
+    private void cleanUpTimeStamps() {
         int cleanCount = 0;
         try {
             Connection con = ConnectionPool.getConnection();
@@ -184,11 +152,42 @@ public class IdFactory {
         } catch (Exception e) {
             LOGGER.warn("Couldn't cleanup timestamps.", e);
         }
-        LOGGER.info("Cleaned {} expired timestamps from database.", Integer.valueOf(cleanCount));
+        LOGGER.info("Cleaned {} expired timestamps from database.", cleanCount);
     }
 
-    public static IdFactory getInstance() {
-        return INSTANCE;
+    private void setAllCharacterOffline() {
+        try {
+            Connection con = ConnectionPool.getConnection();
+            try {
+                PreparedStatement ps = con.prepareStatement("UPDATE characters SET online = 0");
+                try {
+                    ps.executeUpdate();
+                    if (ps != null)
+                        ps.close();
+                } catch (Throwable throwable) {
+                    if (ps != null)
+                        try {
+                            ps.close();
+                        } catch (Throwable throwable1) {
+                            throwable.addSuppressed(throwable1);
+                        }
+                    throw throwable;
+                }
+                if (con != null)
+                    con.close();
+            } catch (Throwable throwable) {
+                if (con != null)
+                    try {
+                        con.close();
+                    } catch (Throwable throwable1) {
+                        throwable.addSuppressed(throwable1);
+                    }
+                throw throwable;
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Couldn't set characters offline.", e);
+        }
+        LOGGER.info("Updated characters online status.");
     }
 
     private void initialize() {
@@ -203,7 +202,7 @@ public class IdFactory {
                     ResultSet rs = st.executeQuery("SELECT obj_Id FROM characters");
                     try {
                         while (rs.next())
-                            usedObjectIds.add(Integer.valueOf(rs.getInt(1)));
+                            usedObjectIds.add(rs.getInt(1));
                         if (rs != null)
                             rs.close();
                     } catch (Throwable throwable) {
@@ -218,7 +217,7 @@ public class IdFactory {
                     rs = st.executeQuery("SELECT object_id FROM items");
                     try {
                         while (rs.next())
-                            usedObjectIds.add(Integer.valueOf(rs.getInt(1)));
+                            usedObjectIds.add(rs.getInt(1));
                         if (rs != null)
                             rs.close();
                     } catch (Throwable throwable) {
@@ -233,7 +232,7 @@ public class IdFactory {
                     rs = st.executeQuery("SELECT clan_id FROM clan_data");
                     try {
                         while (rs.next())
-                            usedObjectIds.add(Integer.valueOf(rs.getInt(1)));
+                            usedObjectIds.add(rs.getInt(1));
                         if (rs != null)
                             rs.close();
                     } catch (Throwable throwable) {
@@ -248,7 +247,7 @@ public class IdFactory {
                     rs = st.executeQuery("SELECT object_id FROM items_on_ground");
                     try {
                         while (rs.next())
-                            usedObjectIds.add(Integer.valueOf(rs.getInt(1)));
+                            usedObjectIds.add(rs.getInt(1));
                         if (rs != null)
                             rs.close();
                     } catch (Throwable throwable) {
@@ -263,7 +262,7 @@ public class IdFactory {
                     rs = st.executeQuery("SELECT id FROM mods_wedding");
                     try {
                         while (rs.next())
-                            usedObjectIds.add(Integer.valueOf(rs.getInt(1)));
+                            usedObjectIds.add(rs.getInt(1));
                         if (rs != null)
                             rs.close();
                     } catch (Throwable throwable) {
@@ -304,14 +303,14 @@ public class IdFactory {
             int usedObjectId = iterator.next();
             int objectId = usedObjectId - 268435456;
             if (objectId < 0) {
-                LOGGER.warn("Found invalid objectId {}. It is less than minimum of {}.", Integer.valueOf(usedObjectId), Integer.valueOf(268435456));
+                LOGGER.warn("Found invalid objectId {}. It is less than minimum of {}.", usedObjectId, 268435456);
                 continue;
             }
             this._freeIds.set(objectId);
             this._freeIdCount.decrementAndGet();
         }
         this._nextFreeId = new AtomicInteger(this._freeIds.nextClearBit(0));
-        LOGGER.info("Initializing {} objectIds pool, with {} used ids.", Integer.valueOf(this._freeIds.size()), Integer.valueOf(usedObjectIds.size()));
+        LOGGER.info("Initializing {} objectIds pool, with {} used ids.", this._freeIds.size(), usedObjectIds.size());
     }
 
     public synchronized void releaseId(int objectID) {
@@ -319,7 +318,7 @@ public class IdFactory {
             this._freeIds.clear(objectID - 268435456);
             this._freeIdCount.incrementAndGet();
         } else {
-            LOGGER.warn("Release objectId {} failed (< {}).", Integer.valueOf(objectID), Integer.valueOf(268435456));
+            LOGGER.warn("Release objectId {} failed (< {}).", objectID, 268435456);
         }
     }
 

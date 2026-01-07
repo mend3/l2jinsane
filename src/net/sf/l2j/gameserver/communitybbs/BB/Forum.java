@@ -95,7 +95,7 @@ public class Forum {
                         try {
                             while (rs2.next()) {
                                 Topic topic = new Topic(TopicType.RESTORE, rs2.getInt("topic_id"), rs2.getInt("topic_forum_id"), rs2.getString("topic_name"), rs2.getLong("topic_date"), rs2.getString("topic_ownername"), rs2.getInt("topic_ownerid"), rs2.getInt("topic_type"), rs2.getInt("topic_reply"));
-                                this._topics.put(Integer.valueOf(topic.getID()), topic);
+                                this._topics.put(topic.getID(), topic);
                                 if (topic.getID() > TopicBBSManager.getInstance().getMaxID(this))
                                     TopicBBSManager.getInstance().setMaxID(topic.getID(), this);
                             }
@@ -144,7 +144,7 @@ public class Forum {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't load forums with id {}.", e, Integer.valueOf(this._forumId));
+            LOGGER.error("Couldn't load forums with id {}.", e, this._forumId);
         }
     }
 
@@ -196,7 +196,7 @@ public class Forum {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't load children forum for parentId {}.", e, Integer.valueOf(this._forumId));
+            LOGGER.error("Couldn't load children forum for parentId {}.", e, this._forumId);
         }
     }
 
@@ -207,12 +207,12 @@ public class Forum {
 
     public Topic getTopic(int id) {
         vload();
-        return this._topics.get(Integer.valueOf(id));
+        return this._topics.get(id);
     }
 
     public void addTopic(Topic topic) {
         vload();
-        this._topics.put(Integer.valueOf(topic.getID()), topic);
+        this._topics.put(topic.getID(), topic);
     }
 
     public int getId() {
@@ -235,7 +235,7 @@ public class Forum {
     }
 
     public void removeTopic(int id) {
-        this._topics.remove(Integer.valueOf(id));
+        this._topics.remove(id);
     }
 
     public void insertIntoDb() {

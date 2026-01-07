@@ -8,7 +8,7 @@ import net.sf.l2j.gameserver.data.manager.CastleManager;
 import net.sf.l2j.gameserver.data.manager.ClanHallManager;
 import net.sf.l2j.gameserver.data.sql.PlayerInfoTable;
 import net.sf.l2j.gameserver.data.xml.NpcData;
-import net.sf.l2j.gameserver.data.xml.PlayerData;
+import net.sf.l2j.gameserver.data.xml.PlayerClassData;
 import net.sf.l2j.gameserver.enums.actors.ClassId;
 import net.sf.l2j.gameserver.enums.actors.Sex;
 import net.sf.l2j.gameserver.handler.IAdminCommandHandler;
@@ -104,7 +104,7 @@ public class AdminEditChar implements IAdminCommandHandler {
         html.replace("%class%", player.getTemplate().getClassName());
         html.replace("%ordinal%", player.getClassId().ordinal());
         html.replace("%classid%", player.getClassId().toString());
-        html.replace("%baseclass%", PlayerData.getInstance().getClassNameById(player.getBaseClass()));
+        html.replace("%baseclass%", PlayerClassData.getInstance().getClassNameById(player.getBaseClass()));
         html.replace("%x%", player.getX());
         html.replace("%y%", player.getY());
         html.replace("%z%", player.getZ());

@@ -32,8 +32,8 @@ public class RaidBossInfoManager {
                     try {
                         while (rs.next()) {
                             int bossId = rs.getInt("boss_id");
-                            if (Config.LIST_RAID_BOSS_IDS.contains(Integer.valueOf(bossId)))
-                                this._raidBosses.put(Integer.valueOf(bossId), Long.valueOf(rs.getLong("respawn_time")));
+                            if (Config.LIST_RAID_BOSS_IDS.contains(bossId))
+                                this._raidBosses.put(bossId, rs.getLong("respawn_time"));
                         }
                         if (rs != null)
                             rs.close();
@@ -75,11 +75,11 @@ public class RaidBossInfoManager {
     }
 
     public void updateRaidBossInfo(int bossId, long respawnTime) {
-        this._raidBosses.put(Integer.valueOf(bossId), Long.valueOf(respawnTime));
+        this._raidBosses.put(bossId, respawnTime);
     }
 
     public long getRaidBossRespawnTime(int bossId) {
-        return this._raidBosses.get(Integer.valueOf(bossId));
+        return this._raidBosses.get(bossId);
     }
 
     private static class SingletonHolder {

@@ -17,9 +17,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class AdminData implements IXmlReader {
-    private final TreeMap<Integer, AccessLevel> _accessLevels = new TreeMap();
-    private final Map<String, Integer> _adminCommandAccessRights = new HashMap();
-    private final Map<Player, Boolean> _gmList = new ConcurrentHashMap();
+    private final TreeMap<Integer, AccessLevel> _accessLevels = new TreeMap<>();
+    private final Map<String, Integer> _adminCommandAccessRights = new HashMap<>();
+    private final Map<Player, Boolean> _gmList = new ConcurrentHashMap<>();
 
     private AdminData() {
     }
@@ -78,29 +78,27 @@ public final class AdminData implements IXmlReader {
     }
 
     public List<Player> getAllGms(boolean includeHidden) {
-        List<Player> list = new ArrayList();
-        Iterator var3 = this._gmList.entrySet().iterator();
+        List<Player> list = new ArrayList<>();
+        Iterator<Entry<Player, Boolean>> var3 = this._gmList.entrySet().iterator();
 
         while (true) {
-            Entry entry;
+            Entry<Player, Boolean> entry;
             do {
                 if (!var3.hasNext()) {
                     return list;
                 }
 
-                entry = (Entry) var3.next();
-            } while (!includeHidden && (Boolean) entry.getValue());
+                entry = var3.next();
+            } while (!includeHidden && entry.getValue());
 
-            list.add((Player) entry.getKey());
+            list.add(entry.getKey());
         }
     }
 
     public List<String> getAllGmNames(boolean includeHidden) {
-        List<String> list = new ArrayList();
-        Iterator var3 = this._gmList.entrySet().iterator();
+        List<String> list = new ArrayList<>();
 
-        while (var3.hasNext()) {
-            Entry<Player, Boolean> entry = (Entry) var3.next();
+        for (Entry<Player, Boolean> entry : this._gmList.entrySet()) {
             if (!(Boolean) entry.getValue()) {
                 list.add(entry.getKey().getName());
             } else if (includeHidden) {
@@ -120,22 +118,20 @@ public final class AdminData implements IXmlReader {
     }
 
     public boolean showOrHideGm(Player player) {
-        return this._gmList.computeIfPresent(player, (k, v) -> {
-            return !v;
-        });
+        return Boolean.TRUE.equals(this._gmList.computeIfPresent(player, (k, v) -> !v));
     }
 
     public boolean isGmOnline(boolean includeHidden) {
-        Iterator var2 = this._gmList.entrySet().iterator();
+        Iterator<Entry<Player, Boolean>> var2 = this._gmList.entrySet().iterator();
 
-        Entry entry;
+        Entry<Player, Boolean> entry;
         do {
             if (!var2.hasNext()) {
                 return false;
             }
 
-            entry = (Entry) var2.next();
-        } while (!includeHidden && (Boolean) entry.getValue());
+            entry = var2.next();
+        } while (!includeHidden && entry.getValue());
 
         return true;
     }
@@ -147,10 +143,8 @@ public final class AdminData implements IXmlReader {
     public void sendListToPlayer(Player player) {
         if (this.isGmOnline(player.isGM())) {
             player.sendPacket(SystemMessageId.GM_LIST);
-            Iterator var2 = this.getAllGmNames(player.isGM()).iterator();
 
-            while (var2.hasNext()) {
-                String name = (String) var2.next();
+            for (String name : this.getAllGmNames(player.isGM())) {
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.GM_S1).addString(name));
             }
         } else {
@@ -161,23 +155,15 @@ public final class AdminData implements IXmlReader {
     }
 
     public void broadcastToGMs(L2GameServerPacket packet) {
-        Iterator var2 = this.getAllGms(true).iterator();
-
-        while (var2.hasNext()) {
-            Player gm = (Player) var2.next();
+        for (Player gm : this.getAllGms(true)) {
             gm.sendPacket(packet);
         }
-
     }
 
     public void broadcastMessageToGMs(String message) {
-        Iterator var2 = this.getAllGms(true).iterator();
-
-        while (var2.hasNext()) {
-            Player gm = (Player) var2.next();
+        for (Player gm : this.getAllGms(true)) {
             gm.sendMessage(message);
         }
-
     }
 
     private static class SingletonHolder {

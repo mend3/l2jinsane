@@ -23,13 +23,13 @@ public class MotherTreeZone extends ZoneType {
 
     public void setParameter(String name, String value) {
         if (name.equals("enterMsgId")) {
-            this._enterMsg = Integer.valueOf(value);
+            this._enterMsg = Integer.parseInt(value);
         } else if (name.equals("leaveMsgId")) {
-            this._leaveMsg = Integer.valueOf(value);
+            this._leaveMsg = Integer.parseInt(value);
         } else if (name.equals("MpRegenBonus")) {
-            this._mpRegen = Integer.valueOf(value);
+            this._mpRegen = Integer.parseInt(value);
         } else if (name.equals("HpRegenBonus")) {
-            this._hpRegen = Integer.valueOf(value);
+            this._hpRegen = Integer.parseInt(value);
         } else if (name.equals("affectedRace")) {
             this._race = Integer.parseInt(value);
         } else {

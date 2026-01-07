@@ -92,8 +92,7 @@ public class FriendsBBSManager extends BaseBBSManager {
         if (content == null)
             return;
         StringBuilder sb = new StringBuilder();
-        for (Iterator<Integer> iterator = player.getSelectedFriendList().iterator(); iterator.hasNext(); ) {
-            int id = iterator.next();
+        for (int id : player.getSelectedFriendList()) {
             String friendName = PlayerInfoTable.getInstance().getPlayerName(id);
             if (friendName == null)
                 continue;
@@ -119,10 +118,10 @@ public class FriendsBBSManager extends BaseBBSManager {
             st.nextToken();
             String action = st.nextToken();
             if (action.equals("select")) {
-                player.selectFriend(Integer.valueOf(st.hasMoreTokens() ? Integer.valueOf(st.nextToken()) : 0));
+                player.selectFriend(st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 0);
                 showFriendsList(player, false);
             } else if (action.equals("deselect")) {
-                player.deselectFriend(Integer.valueOf(st.hasMoreTokens() ? Integer.valueOf(st.nextToken()) : 0));
+                player.deselectFriend(st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 0);
                 showFriendsList(player, false);
             } else if (action.equals("delall")) {
                 try {
@@ -182,8 +181,7 @@ public class FriendsBBSManager extends BaseBBSManager {
                         try {
                             ps.setInt(1, player.getObjectId());
                             ps.setInt(4, player.getObjectId());
-                            for (Iterator<Integer> iterator = player.getSelectedFriendList().iterator(); iterator.hasNext(); ) {
-                                int friendId = iterator.next();
+                            for (int friendId : player.getSelectedFriendList()) {
                                 ps.setInt(2, friendId);
                                 ps.setInt(3, friendId);
                                 ps.addBatch();
@@ -232,26 +230,29 @@ public class FriendsBBSManager extends BaseBBSManager {
             StringTokenizer st = new StringTokenizer(command, ";");
             st.nextToken();
             String action = st.nextToken();
-            if (action.equals("select")) {
-                player.selectBlock(Integer.valueOf(st.hasMoreTokens() ? Integer.valueOf(st.nextToken()) : 0));
-                showBlockList(player, false);
-            } else if (action.equals("deselect")) {
-                player.deselectBlock(Integer.valueOf(st.hasMoreTokens() ? Integer.valueOf(st.nextToken()) : 0));
-                showBlockList(player, false);
-            } else if (action.equals("delall")) {
-                List<Integer> list = new ArrayList<>();
-                list.addAll(player.getBlockList().getBlockList());
-                for (Integer blockId : list)
-                    BlockList.removeFromBlockList(player, blockId);
-                player.getSelectedBlocksList().clear();
-                showBlockList(player, false);
-            } else if (action.equals("delconfirm")) {
-                showBlockList(player, true);
-            } else if (action.equals("del")) {
-                for (Integer blockId : player.getSelectedBlocksList())
-                    BlockList.removeFromBlockList(player, blockId);
-                player.getSelectedBlocksList().clear();
-                showBlockList(player, false);
+            switch (action) {
+                case "select" -> {
+                    player.selectBlock(st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 0);
+                    showBlockList(player, false);
+                }
+                case "deselect" -> {
+                    player.deselectBlock(st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 0);
+                    showBlockList(player, false);
+                }
+                case "delall" -> {
+                    List<Integer> list = new ArrayList<>(player.getBlockList().getBlockList());
+                    for (Integer blockId : list)
+                        BlockList.removeFromBlockList(player, blockId);
+                    player.getSelectedBlocksList().clear();
+                    showBlockList(player, false);
+                }
+                case "delconfirm" -> showBlockList(player, true);
+                case "del" -> {
+                    for (Integer blockId : player.getSelectedBlocksList())
+                        BlockList.removeFromBlockList(player, blockId);
+                    player.getSelectedBlocksList().clear();
+                    showBlockList(player, false);
+                }
             }
         } else {
             super.parseCmd(command, player);

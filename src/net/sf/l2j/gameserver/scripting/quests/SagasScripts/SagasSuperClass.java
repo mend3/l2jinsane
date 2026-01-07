@@ -82,7 +82,7 @@ public class SagasSuperClass extends Quest {
     }
 
     public void AddSpawn(QuestState st, Npc mob) {
-        this._SpawnList.put(mob, Integer.valueOf(st.getPlayer().getObjectId()));
+        this._SpawnList.put(mob, st.getPlayer().getObjectId());
     }
 
     public void DeleteSpawn(QuestState st, Npc npc) {

@@ -130,7 +130,7 @@ public class AutofarmPlayerRoutine {
     }
 
     private void attack() {
-        Boolean shortcutsContainAttack = Boolean.valueOf(shotcutsContainAttack());
+        Boolean shortcutsContainAttack = shotcutsContainAttack();
         if (shortcutsContainAttack)
             physicalAttack();
     }
@@ -138,17 +138,17 @@ public class AutofarmPlayerRoutine {
     private void useAppropriateSpell() {
         L2Skill chanceSkill = nextAvailableSkill(getChanceSpells(), AutofarmSpellType.Chance);
         if (chanceSkill != null) {
-            useMagicSkill(chanceSkill, Boolean.valueOf(false));
+            useMagicSkill(chanceSkill, Boolean.FALSE);
             return;
         }
         L2Skill lowLifeSkill = nextAvailableSkill(getLowLifeSpells(), AutofarmSpellType.LowLife);
         if (lowLifeSkill != null) {
-            useMagicSkill(lowLifeSkill, Boolean.valueOf(true));
+            useMagicSkill(lowLifeSkill, Boolean.TRUE);
             return;
         }
         L2Skill attackSkill = nextAvailableSkill(getAttackSpells(), AutofarmSpellType.Attack);
         if (attackSkill != null) {
-            useMagicSkill(attackSkill, Boolean.valueOf(false));
+            useMagicSkill(attackSkill, Boolean.FALSE);
         }
     }
 
@@ -183,20 +183,20 @@ public class AutofarmPlayerRoutine {
             L2Skill sweeper = this.player.getSkill(42);
             if (sweeper == null)
                 return;
-            useMagicSkill(sweeper, Boolean.valueOf(false));
+            useMagicSkill(sweeper, Boolean.FALSE);
         }
     }
 
     private Double getHpPercentage() {
-        return Double.valueOf(this.player.getCurrentHp() * 100.0D / this.player.getMaxHp());
+        return this.player.getCurrentHp() * 100.0D / this.player.getMaxHp();
     }
 
     private Double percentageMpIsLessThan() {
-        return Double.valueOf(this.player.getCurrentMp() * 100.0D / this.player.getMaxMp());
+        return this.player.getCurrentMp() * 100.0D / this.player.getMaxMp();
     }
 
     private Double percentageHpIsLessThan() {
-        return Double.valueOf(this.player.getCurrentHp() * 100.0D / this.player.getMaxHp());
+        return this.player.getCurrentHp() * 100.0D / this.player.getMaxHp();
     }
 
     private List<Integer> getAttackSpells() {
@@ -204,7 +204,7 @@ public class AutofarmPlayerRoutine {
     }
 
     private List<Integer> getSpellsInSlots(List<Integer> attackSlots) {
-        return Arrays.stream(this.player.getShortcutList().getShortcuts()).filter(shortcut -> (shortcut.getPage() == this.player.getPage() && shortcut.getType() == ShortcutType.SKILL && attackSlots.contains(Integer.valueOf(shortcut.getSlot())))).map(Shortcut::getId).collect(Collectors.toList());
+        return Arrays.stream(this.player.getShortcutList().getShortcuts()).filter(shortcut -> (shortcut.getPage() == this.player.getPage() && shortcut.getType() == ShortcutType.SKILL && attackSlots.contains(shortcut.getSlot()))).map(Shortcut::getId).collect(Collectors.toList());
     }
 
     private List<Integer> getChanceSpells() {
@@ -300,7 +300,7 @@ public class AutofarmPlayerRoutine {
         }
         if (this.committedTarget instanceof Summon)
             return;
-        List<Monster> targets = getKnownMonstersInRadius(this.player, this.player.getRadius(), creature -> Boolean.valueOf((GeoEngine.getInstance().canMoveToTarget(this.player.getX(), this.player.getY(), this.player.getZ(), creature.getX(), creature.getY(), creature.getZ()) && !this.player.ignoredMonsterContain(creature.getNpcId()) && !creature.isMinion() && !creature.isRaidBoss() && !creature.isDead() && !(creature instanceof net.sf.l2j.gameserver.model.actor.instance.Chest) && (!this.player.isAntiKsProtected() || creature.getTarget() == null || creature.getTarget() == this.player || creature.getTarget() == this.player.getSummon()))));
+        List<Monster> targets = getKnownMonstersInRadius(this.player, this.player.getRadius(), creature -> GeoEngine.getInstance().canMoveToTarget(this.player.getX(), this.player.getY(), this.player.getZ(), creature.getX(), creature.getY(), creature.getZ()) && !this.player.ignoredMonsterContain(creature.getNpcId()) && !creature.isMinion() && !creature.isRaidBoss() && !creature.isDead() && !(creature instanceof net.sf.l2j.gameserver.model.actor.instance.Chest) && (!this.player.isAntiKsProtected() || creature.getTarget() == null || creature.getTarget() == this.player || creature.getTarget() == this.player.getSummon()));
         if (targets.isEmpty())
             return;
         Monster closestTarget = targets.stream().min((o1, o2) -> Integer.compare((int) Math.sqrt(this.player.getDistanceSq(o1)), (int) Math.sqrt(this.player.getDistanceSq(o2)))).get();
@@ -309,7 +309,7 @@ public class AutofarmPlayerRoutine {
     }
 
     private void selectNewTarget() {
-        List<Monster> targets = getKnownMonstersInRadius(this.player, this.player.getRadius(), creature -> Boolean.valueOf((GeoEngine.getInstance().canMoveToTarget(this.player.getX(), this.player.getY(), this.player.getZ(), creature.getX(), creature.getY(), creature.getZ()) && !this.player.ignoredMonsterContain(creature.getNpcId()) && !creature.isMinion() && !creature.isRaidBoss() && !creature.isDead() && !(creature instanceof net.sf.l2j.gameserver.model.actor.instance.Chest) && (!this.player.isAntiKsProtected() || creature.getTarget() == null || creature.getTarget() == this.player || creature.getTarget() == this.player.getSummon()))));
+        List<Monster> targets = getKnownMonstersInRadius(this.player, this.player.getRadius(), creature -> GeoEngine.getInstance().canMoveToTarget(this.player.getX(), this.player.getY(), this.player.getZ(), creature.getX(), creature.getY(), creature.getZ()) && !this.player.ignoredMonsterContain(creature.getNpcId()) && !creature.isMinion() && !creature.isRaidBoss() && !creature.isDead() && !(creature instanceof net.sf.l2j.gameserver.model.actor.instance.Chest) && (!this.player.isAntiKsProtected() || creature.getTarget() == null || creature.getTarget() == this.player || creature.getTarget() == this.player.getSummon()));
         if (targets.isEmpty())
             return;
         Monster closestTarget = targets.stream().min((o1, o2) -> Integer.compare((int) Math.sqrt(this.player.getDistanceSq(o1)), (int) Math.sqrt(this.player.getDistanceSq(o2)))).get();

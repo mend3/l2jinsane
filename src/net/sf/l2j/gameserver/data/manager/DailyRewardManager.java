@@ -211,7 +211,7 @@ public class DailyRewardManager {
         return Stream.generate(() -> {
             try {
                 if (rs.next()) {
-                    Integer hwid = Integer.valueOf(rs.getInt("obj_Id"));
+                    Integer hwid = rs.getInt("obj_Id");
                     LocalDate fecha = rs.getDate("fecha").toLocalDate();
                     return new TestMapRow(hwid, fecha);
                 }
@@ -302,7 +302,6 @@ public class DailyRewardManager {
     public void load() {
         cleanOldDatesDataBase();
         loadData();
-        DailyRewardData.getInstance().load();
     }
 
     public void loadData() {
@@ -373,13 +372,13 @@ public class DailyRewardManager {
     public String getReceivedStatus(Player player, DailyReward dr) {
         LocalDate fechaActual = LocalDate.now();
         int diaDelMes = fechaActual.getDayOfMonth();
-        if (!getPlayersReceivdList().containsKey(Integer.valueOf(player.getObjectId())))
-            getPlayersReceivdList().put(Integer.valueOf(player.getObjectId()), new ArrayList<>());
+        if (!getPlayersReceivdList().containsKey(player.getObjectId()))
+            getPlayersReceivdList().put(player.getObjectId(), new ArrayList<>());
         if (!getHwidReceivedList().containsKey(player.getHWID()))
             getHwidReceivedList().put(player.getHWID(), new ArrayList<>());
         ArrayList<Integer> diasDelMes = getPlayersReceivdList().values().stream().flatMap(Collection::stream).map(LocalDate::getDayOfMonth).collect(Collectors.toCollection(ArrayList::new));
         ArrayList<Integer> diasDelMesHWID = getHwidReceivedList().values().stream().flatMap(Collection::stream).map(LocalDate::getDayOfMonth).collect(Collectors.toCollection(ArrayList::new));
-        return (diasDelMes.contains(Integer.valueOf(dr.getDay())) && diasDelMesHWID.contains(Integer.valueOf(dr.getDay())) && dr.getDay() <= diaDelMes) ? ("<button  action=\"\" width=32 height=32 back=\"icon.skill0000\" fore=\"" +
+        return (diasDelMes.contains(dr.getDay()) && diasDelMesHWID.contains(dr.getDay()) && dr.getDay() <= diaDelMes) ? ("<button  action=\"\" width=32 height=32 back=\"icon.skill0000\" fore=\"" +
 
                 dr.getIcon() + "\"><font color=00ffff>(Received)</font><br>") : (
 
@@ -413,7 +412,7 @@ public class DailyRewardManager {
     public void tryToGetDailyReward(Player player, DailyReward dr) {
         LocalDate fechaActual = LocalDate.now();
         int diaDelMes = fechaActual.getDayOfMonth();
-        if (!getPlayersReceivdList().get(Integer.valueOf(player.getObjectId())).contains(fechaActual)) {
+        if (!getPlayersReceivdList().get(player.getObjectId()).contains(fechaActual)) {
             if (getHwidReceivedList().get(player.getHWID()).contains(fechaActual)) {
                 player.sendMessage("You Already received this reward in another character.");
                 return;
@@ -421,7 +420,7 @@ public class DailyRewardManager {
             if (dr.getDay() == diaDelMes) {
                 addReward(player, dr);
                 player.sendMessage("Congratulations, you received Day " + dr.getDay() + " reward!");
-                agregarNuevoRegistroAlMap(getPlayersReceivdList(), Integer.valueOf(player.getObjectId()), fechaActual);
+                agregarNuevoRegistroAlMap(getPlayersReceivdList(), player.getObjectId(), fechaActual);
                 agregarNuevoRegistroAlMapHID(getHwidReceivedList(), player.getHWID(), fechaActual);
             } else {
                 player.sendMessage("Reward not available yet!");

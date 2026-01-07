@@ -19,12 +19,12 @@ public class SoulShots implements IItemHandler {
         ItemInstance weaponInst = player.getActiveWeaponInstance();
         Weapon weaponItem = player.getActiveWeaponItem();
         if (weaponInst == null || weaponItem.getSoulShotCount() == 0) {
-            if (!player.getAutoSoulShot().contains(Integer.valueOf(item.getItemId())))
+            if (!player.getAutoSoulShot().contains(item.getItemId()))
                 player.sendPacket(SystemMessageId.CANNOT_USE_SOULSHOTS);
             return;
         }
         if (weaponItem.getCrystalType() != item.getItem().getCrystalType()) {
-            if (!player.getAutoSoulShot().contains(Integer.valueOf(item.getItemId())))
+            if (!player.getAutoSoulShot().contains(item.getItemId()))
                 player.sendPacket(SystemMessageId.SOULSHOTS_GRADE_MISMATCH);
             return;
         }

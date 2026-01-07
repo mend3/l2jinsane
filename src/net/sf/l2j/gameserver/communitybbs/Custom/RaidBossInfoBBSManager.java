@@ -26,7 +26,7 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
         st.nextToken();
         if (command.startsWith("_bbsRBinfo")) {
             int pageId = Integer.parseInt(st.nextToken());
-            this._lastPage.put(Integer.valueOf(player.getObjectId()), Integer.valueOf(pageId));
+            this._lastPage.put(player.getObjectId(), pageId);
             showRaidBossInfo(player, pageId);
         } else if (command.startsWith("_bbsRBdrop")) {
             int bossId = Integer.parseInt(st.nextToken());
@@ -34,7 +34,7 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
             showRaidBossDrop(player, bossId, pageId);
         } else if (command.startsWith("_friend") || command.startsWith("_block")) {
             int pageId = 1;
-            this._lastPage.put(Integer.valueOf(player.getObjectId()), Integer.valueOf(pageId));
+            this._lastPage.put(player.getObjectId(), pageId);
             showRaidBossInfo(player, pageId);
         } else {
             super.parseCmd(command, player);
@@ -118,7 +118,7 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
             return;
         List<Integer> drops = new ArrayList<>();
         for (DropData drop : template.getAllDropData())
-            drops.add(Integer.valueOf(drop.getItemId()));
+            drops.add(drop.getItemId());
         int limit = Config.RAID_BOSS_DROP_PAGE_LIMIT;
         int max = drops.size() / limit + ((drops.size() % limit == 0) ? 0 : 1);
         drops = drops.subList((pageId - 1) * limit, Math.min(pageId * limit, drops.size()));
@@ -158,7 +158,7 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
         sb.append("<br>");
         sb.append("<table width=\"160\" cellspacing=\"2\">");
         sb.append("<tr>");
-        sb.append("<td width=\"160\" align=\"center\"><a action=\"bypass _bbsRBinfo " + this._lastPage.get(Integer.valueOf(player.getObjectId())) + "\">Return</a></td>");
+        sb.append("<td width=\"160\" align=\"center\"><a action=\"bypass _bbsRBinfo " + this._lastPage.get(player.getObjectId()) + "\">Return</a></td>");
         sb.append("</tr>");
         sb.append("</table>");
         sb.append("<br>");

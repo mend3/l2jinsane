@@ -11,7 +11,7 @@ public class ServerStatus extends ClientBasePacket {
 
     public ServerStatus(byte[] decrypt, int serverId) {
         super(decrypt);
-        GameServerInfo gsi = GameServerManager.getInstance().getRegisteredGameServers().get(Integer.valueOf(serverId));
+        GameServerInfo gsi = GameServerManager.getInstance().getRegisteredGameServers().get(serverId);
         if (gsi != null) {
             int size = readD();
             for (int i = 0; i < size; i++) {

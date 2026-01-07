@@ -72,15 +72,15 @@ public class AdminSpawn implements IAdminCommandHandler {
     private static void showMonsters(Player activeChar, int level, int from) {
         List<NpcTemplate> mobs = NpcData.getInstance().getTemplates(t -> (t.isType("Monster") && t.getLevel() == level));
         StringBuilder sb = new StringBuilder(200 + mobs.size() * 100);
-        StringUtil.append(sb, "<html><title>Spawn Monster:</title><body><p> Level : ", Integer.valueOf(level), "<br>Total Npc's : ", Integer.valueOf(mobs.size()), "<br>");
+        StringUtil.append(sb, "<html><title>Spawn Monster:</title><body><p> Level : ", level, "<br>Total Npc's : ", mobs.size(), "<br>");
         int i = from;
         for (int j = 0; i < mobs.size() && j < 50; i++, j++) {
-            StringUtil.append(sb, "<a action=\"bypass -h admin_spawn ", Integer.valueOf(mobs.get(i).getNpcId()), "\">", mobs.get(i).getName(), "</a><br1>");
+            StringUtil.append(sb, "<a action=\"bypass -h admin_spawn ", mobs.get(i).getNpcId(), "\">", mobs.get(i).getName(), "</a><br1>");
         }
         if (i == mobs.size()) {
             sb.append("<br><center><button value=\"Back\" action=\"bypass -h admin_show_spawns\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></center></body></html>");
         } else {
-            StringUtil.append(sb, "<br><center><button value=\"Next\" action=\"bypass -h admin_spawn_index ", Integer.valueOf(level), " ", Integer.valueOf(i), "\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"><button value=\"Back\" action=\"bypass -h admin_show_spawns\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></center></body></html>");
+            StringUtil.append(sb, "<br><center><button value=\"Next\" action=\"bypass -h admin_spawn_index ", level, " ", i, "\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"><button value=\"Back\" action=\"bypass -h admin_show_spawns\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></center></body></html>");
         }
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setHtml(sb.toString());
@@ -90,15 +90,15 @@ public class AdminSpawn implements IAdminCommandHandler {
     private static void showNpcs(Player activeChar, String starting, int from) {
         List<NpcTemplate> mobs = NpcData.getInstance().getTemplates(t -> (t.isType("Folk") && t.getName().startsWith(starting)));
         StringBuilder sb = new StringBuilder(200 + mobs.size() * 100);
-        StringUtil.append(sb, "<html><title>Spawn Monster:</title><body><p> There are ", Integer.valueOf(mobs.size()), " Npcs whose name starts with ", starting, ":<br>");
+        StringUtil.append(sb, "<html><title>Spawn Monster:</title><body><p> There are ", mobs.size(), " Npcs whose name starts with ", starting, ":<br>");
         int i = from;
         for (int j = 0; i < mobs.size() && j < 50; i++, j++) {
-            StringUtil.append(sb, "<a action=\"bypass -h admin_spawn ", Integer.valueOf(mobs.get(i).getNpcId()), "\">", mobs.get(i).getName(), "</a><br1>");
+            StringUtil.append(sb, "<a action=\"bypass -h admin_spawn ", mobs.get(i).getNpcId(), "\">", mobs.get(i).getName(), "</a><br1>");
         }
         if (i == mobs.size()) {
             sb.append("<br><center><button value=\"Back\" action=\"bypass -h admin_show_npcs\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></center></body></html>");
         } else {
-            StringUtil.append(sb, "<br><center><button value=\"Next\" action=\"bypass -h admin_npc_index ", starting, " ", Integer.valueOf(i), "\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"><button value=\"Back\" action=\"bypass -h admin_show_npcs\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></center></body></html>");
+            StringUtil.append(sb, "<br><center><button value=\"Next\" action=\"bypass -h admin_npc_index ", starting, " ", i, "\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"><button value=\"Back\" action=\"bypass -h admin_show_npcs\" width=40 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></center></body></html>");
         }
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setHtml(sb.toString());
@@ -155,8 +155,8 @@ public class AdminSpawn implements IAdminCommandHandler {
                         y = spawn.getLocY();
                         z = spawn.getLocZ();
                     }
-                    StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_move_to ", Integer.valueOf(x), " ", Integer.valueOf(y), " ", Integer.valueOf(z), "\">", Integer.valueOf(index), " - (", Integer.valueOf(x),
-                            " ", Integer.valueOf(y), " ", Integer.valueOf(z), ")", "</a></td></tr>");
+                    StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_move_to ", x, " ", y, " ", z, "\">", index, " - (", x,
+                            " ", y, " ", z, ")", "</a></td></tr>");
                 }
             }
             if (index == 0) {

@@ -31,10 +31,10 @@ public final class GameTimeTaskManager implements Runnable {
 
     private GameTimeTaskManager() {
         Calendar cal = Calendar.getInstance();
-        cal.set(11, 0);
-        cal.set(12, 0);
-        cal.set(13, 0);
-        cal.set(14, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         this._time = (int) (System.currentTimeMillis() - cal.getTimeInMillis()) / 10000;
         this._isNight = isNight();
         ThreadPool.scheduleAtFixedRate(this, 10000L, 10000L);
@@ -67,7 +67,7 @@ public final class GameTimeTaskManager implements Runnable {
             }
             if (this._time >= entry.getValue()) {
                 player.sendPacket(SystemMessageId.PLAYING_FOR_LONG_TIME);
-                entry.setValue(Integer.valueOf(this._time + 720));
+                entry.setValue(this._time + 720);
             }
         }
     }
@@ -95,7 +95,7 @@ public final class GameTimeTaskManager implements Runnable {
     }
 
     public String getGameTimeFormated() {
-        return String.format("%02d:%02d", Integer.valueOf(getGameHour()), Integer.valueOf(getGameMinute()));
+        return String.format("%02d:%02d", getGameHour(), getGameMinute());
     }
 
     public boolean isNight() {
@@ -103,7 +103,7 @@ public final class GameTimeTaskManager implements Runnable {
     }
 
     public void add(Player player) {
-        this._players.put(player, Integer.valueOf(this._time + 720));
+        this._players.put(player, this._time + 720);
     }
 
     public void remove(Creature player) {

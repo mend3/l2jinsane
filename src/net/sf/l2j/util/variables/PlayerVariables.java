@@ -14,18 +14,18 @@ public class PlayerVariables {
             return;
         }
         getVarObject(player, name).setValue(value);
-        MariaDB.set("UPDATE character_memo_alt SET value=? WHERE obj_id=? AND name=?", value, Integer.valueOf(player.getObjectId()), name);
+        MariaDB.set("UPDATE character_memo_alt SET value=? WHERE obj_id=? AND name=?", value, player.getObjectId(), name);
     }
 
     public static void setVar(Player player, String name, String value, long expirationTime) {
         if (player.getVariables().containsKey(name))
             getVarObject(player, name).stopExpireTask();
         player.getVariables().put(name, new PlayerVar(player, name, value, expirationTime));
-        MariaDB.set("REPLACE INTO character_memo_alt (obj_id, name, value, expire_time) VALUES (?,?,?,?)", Integer.valueOf(player.getObjectId()), name, value, Long.valueOf(expirationTime));
+        MariaDB.set("REPLACE INTO character_memo_alt (obj_id, name, value, expire_time) VALUES (?,?,?,?)", player.getObjectId(), name, value, expirationTime);
     }
 
     public static void setVar(int objId, String name, String value, long expirationTime) {
-        MariaDB.set("REPLACE INTO character_memo_alt (obj_id, name, value, expire_time) VALUES (?,?,?,?)", Integer.valueOf(objId), name, value, Long.valueOf(expirationTime));
+        MariaDB.set("REPLACE INTO character_memo_alt (obj_id, name, value, expire_time) VALUES (?,?,?,?)", objId, name, value, expirationTime);
     }
 
     public static void setVar(Player player, String name, int value, long expirationTime) {
@@ -57,7 +57,7 @@ public class PlayerVariables {
                 pv.getOwner().broadcastCharInfo();
                 pv.getOwner().broadcastUserInfo();
             }
-            MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", Integer.valueOf(pv.getOwner().getObjectId()), name);
+            MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", pv.getOwner().getObjectId(), name);
             pv.stopExpireTask();
         }
     }
@@ -65,7 +65,7 @@ public class PlayerVariables {
     public static void deleteExpiredVar(Player player, String name, String value) {
         if (name == null)
             return;
-        MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", Integer.valueOf(player.getObjectId()), name);
+        MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", player.getObjectId(), name);
     }
 
     public static String getVar(Player player, String name) {

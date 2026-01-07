@@ -12,8 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DressMe implements IVoicedCommandHandler, ICustomByPassHandler {
-    static SimpleDateFormat sdf;
     private static final String[] _voicedCommands;
+    static SimpleDateFormat sdf;
 
     static {
         _voicedCommands = new String[]{Config.DRESS_ME_COMMAND};

@@ -44,42 +44,42 @@ public class Q605_AllianceWithKetraOrcs extends Quest {
 
     public Q605_AllianceWithKetraOrcs() {
         super(605, "Alliance with Ketra Orcs");
-        CHANCES.put(Integer.valueOf(21350), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21351), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21353), Integer.valueOf(509000));
-        CHANCES.put(Integer.valueOf(21354), Integer.valueOf(521000));
-        CHANCES.put(Integer.valueOf(21355), Integer.valueOf(519000));
-        CHANCES.put(Integer.valueOf(21357), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21358), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21360), Integer.valueOf(509000));
-        CHANCES.put(Integer.valueOf(21361), Integer.valueOf(518000));
-        CHANCES.put(Integer.valueOf(21362), Integer.valueOf(518000));
-        CHANCES.put(Integer.valueOf(21364), Integer.valueOf(527000));
-        CHANCES.put(Integer.valueOf(21365), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21366), Integer.valueOf(500000));
-        CHANCES.put(Integer.valueOf(21368), Integer.valueOf(508000));
-        CHANCES.put(Integer.valueOf(21369), Integer.valueOf(628000));
-        CHANCES.put(Integer.valueOf(21370), Integer.valueOf(604000));
-        CHANCES.put(Integer.valueOf(21371), Integer.valueOf(627000));
-        CHANCES.put(Integer.valueOf(21372), Integer.valueOf(604000));
-        CHANCES.put(Integer.valueOf(21373), Integer.valueOf(649000));
-        CHANCES.put(Integer.valueOf(21374), Integer.valueOf(626000));
-        CHANCES.put(Integer.valueOf(21375), Integer.valueOf(626000));
-        CHANCES_MANE.put(Integer.valueOf(21350), Integer.valueOf(500000));
-        CHANCES_MANE.put(Integer.valueOf(21353), Integer.valueOf(510000));
-        CHANCES_MANE.put(Integer.valueOf(21354), Integer.valueOf(522000));
-        CHANCES_MANE.put(Integer.valueOf(21355), Integer.valueOf(519000));
-        CHANCES_MANE.put(Integer.valueOf(21357), Integer.valueOf(529000));
-        CHANCES_MANE.put(Integer.valueOf(21358), Integer.valueOf(529000));
-        CHANCES_MANE.put(Integer.valueOf(21360), Integer.valueOf(539000));
-        CHANCES_MANE.put(Integer.valueOf(21362), Integer.valueOf(548000));
-        CHANCES_MANE.put(Integer.valueOf(21364), Integer.valueOf(558000));
-        CHANCES_MANE.put(Integer.valueOf(21365), Integer.valueOf(568000));
-        CHANCES_MANE.put(Integer.valueOf(21366), Integer.valueOf(568000));
-        CHANCES_MANE.put(Integer.valueOf(21368), Integer.valueOf(568000));
-        CHANCES_MANE.put(Integer.valueOf(21369), Integer.valueOf(664000));
-        CHANCES_MANE.put(Integer.valueOf(21371), Integer.valueOf(713000));
-        CHANCES_MANE.put(Integer.valueOf(21373), Integer.valueOf(738000));
+        CHANCES.put(21350, 500000);
+        CHANCES.put(21351, 500000);
+        CHANCES.put(21353, 509000);
+        CHANCES.put(21354, 521000);
+        CHANCES.put(21355, 519000);
+        CHANCES.put(21357, 500000);
+        CHANCES.put(21358, 500000);
+        CHANCES.put(21360, 509000);
+        CHANCES.put(21361, 518000);
+        CHANCES.put(21362, 518000);
+        CHANCES.put(21364, 527000);
+        CHANCES.put(21365, 500000);
+        CHANCES.put(21366, 500000);
+        CHANCES.put(21368, 508000);
+        CHANCES.put(21369, 628000);
+        CHANCES.put(21370, 604000);
+        CHANCES.put(21371, 627000);
+        CHANCES.put(21372, 604000);
+        CHANCES.put(21373, 649000);
+        CHANCES.put(21374, 626000);
+        CHANCES.put(21375, 626000);
+        CHANCES_MANE.put(21350, 500000);
+        CHANCES_MANE.put(21353, 510000);
+        CHANCES_MANE.put(21354, 522000);
+        CHANCES_MANE.put(21355, 519000);
+        CHANCES_MANE.put(21357, 529000);
+        CHANCES_MANE.put(21358, 529000);
+        CHANCES_MANE.put(21360, 539000);
+        CHANCES_MANE.put(21362, 548000);
+        CHANCES_MANE.put(21364, 558000);
+        CHANCES_MANE.put(21365, 568000);
+        CHANCES_MANE.put(21366, 568000);
+        CHANCES_MANE.put(21368, 568000);
+        CHANCES_MANE.put(21369, 664000);
+        CHANCES_MANE.put(21371, 713000);
+        CHANCES_MANE.put(21373, 738000);
         setItemsIds(7216, 7217, 7218);
         addStartNpc(31371);
         addTalkId(31371);
@@ -253,8 +253,8 @@ public class Q605_AllianceWithKetraOrcs extends Quest {
             return null;
         int npcId = npc.getNpcId();
         QuestState st2 = st.getPlayer().getQuestState("Q606_WarWithVarkaSilenos");
-        if (st2 != null && Rnd.nextBoolean() && CHANCES_MANE.containsKey(Integer.valueOf(npcId))) {
-            st2.dropItems(7233, 1, 0, CHANCES_MANE.get(Integer.valueOf(npcId)));
+        if (st2 != null && Rnd.nextBoolean() && CHANCES_MANE.containsKey(npcId)) {
+            st2.dropItems(7233, 1, 0, CHANCES_MANE.get(npcId));
             return null;
         }
         int cond = st.getInt("cond");
@@ -267,19 +267,19 @@ public class Q605_AllianceWithKetraOrcs extends Quest {
             case 21354:
             case 21355:
                 if (cond == 1) {
-                    st.dropItems(7216, 1, 100, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7216, 1, 100, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 2) {
-                    st.dropItems(7216, 1, 200, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7216, 1, 200, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 3 || cond == 4) {
-                    st.dropItems(7216, 1, 300, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7216, 1, 300, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 5)
-                    st.dropItems(7216, 1, 400, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7216, 1, 400, CHANCES.get(npcId));
                 break;
             case 21357:
             case 21358:
@@ -290,19 +290,19 @@ public class Q605_AllianceWithKetraOrcs extends Quest {
             case 21369:
             case 21370:
                 if (cond == 2) {
-                    st.dropItems(7217, 1, 100, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7217, 1, 100, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 3) {
-                    st.dropItems(7217, 1, 200, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7217, 1, 200, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 4) {
-                    st.dropItems(7217, 1, 300, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7217, 1, 300, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 5)
-                    st.dropItems(7217, 1, 400, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7217, 1, 400, CHANCES.get(npcId));
                 break;
             case 21365:
             case 21366:
@@ -313,11 +313,11 @@ public class Q605_AllianceWithKetraOrcs extends Quest {
             case 21374:
             case 21375:
                 if (cond == 3) {
-                    st.dropItems(7218, 1, 100, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7218, 1, 100, CHANCES.get(npcId));
                     break;
                 }
                 if (cond == 4 || cond == 5)
-                    st.dropItems(7218, 1, 200, CHANCES.get(Integer.valueOf(npcId)));
+                    st.dropItems(7218, 1, 200, CHANCES.get(npcId));
                 break;
         }
         return null;

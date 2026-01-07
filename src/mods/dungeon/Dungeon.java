@@ -26,12 +26,12 @@ public class Dungeon {
 
     private final List<Player> players;
     private final Instance instance;
+    private final List<DungeonMob> mobs = new CopyOnWriteArrayList<>();
     private ScheduledFuture<?> dungeonCancelTask = null;
     private ScheduledFuture<?> nextTask = null;
     private ScheduledFuture<?> timerTask = null;
     private DungeonStage currentStage = null;
     private long stageBeginTime = 0L;
-    private final List<DungeonMob> mobs = new CopyOnWriteArrayList<>();
 
     public Dungeon(DungeonTemplate template, List<Player> players) {
         this.template = template;
@@ -68,7 +68,7 @@ public class Dungeon {
             getNextStage();
             if (this.currentStage == null) {
                 rewardPlayers();
-                if (this.template.getRewardHtm().equals("NULL")) {
+                if (this.template.rewardHtm().equals("NULL")) {
                     broadcastScreenMessage("You have completed the dungeon!", 5);
                     teleToTown();
                 } else {
@@ -77,7 +77,7 @@ public class Dungeon {
                 InstanceManager.getInstance().deleteInstance(this.instance.getId());
                 DungeonManager.getInstance().removeDungeon(this);
             } else {
-                broadcastScreenMessage("You have completed stage " + (this.currentStage.getOrder() - 1) + "! Next stage begins in 10 seconds.", 5);
+                broadcastScreenMessage("You have completed stage " + (this.currentStage.order() - 1) + "! Next stage begins in 10 seconds.", 5);
                 ThreadPool.schedule(() -> teleToStage(), 5000L);
                 this.nextTask = ThreadPool.schedule(() -> beginStage(), 10000L);
             }
@@ -88,13 +88,13 @@ public class Dungeon {
         for (Player player : this.players) {
             if (player != null) {
                 DungeonMemo.setVar(player, "dungeon_atleast1time", "true", -1L);
-                for (Map.Entry<Integer, Integer> itemId : this.template.getRewards().entrySet())
+                for (Map.Entry<Integer, Integer> itemId : this.template.rewards().entrySet())
                     player.addItem("dungeon reward", itemId.getKey(), itemId.getValue(), player, true);
             }
         }
-        if (!this.template.getRewardHtm().equals("NULL")) {
+        if (!this.template.rewardHtm().equals("NULL")) {
             NpcHtmlMessage htm = new NpcHtmlMessage(0);
-            htm.setFile(this.template.getRewardHtm());
+            htm.setFile(this.template.rewardHtm());
             for (Player player : this.players)
                 player.sendPacket(htm);
         } else {
@@ -109,7 +109,7 @@ public class Dungeon {
         if (!this.currentStage.teleport())
             return;
         for (Player player : this.players)
-            player.teleportTo(this.currentStage.getLocation(), 25);
+            player.teleportTo(this.currentStage.location(), 25);
     }
 
     private void teleToTown() {
@@ -154,15 +154,15 @@ public class Dungeon {
     }
 
     private void beginStage() {
-        for (Iterator<Integer> iterator = this.currentStage.getMobs().keySet().iterator(); iterator.hasNext(); ) {
+        for (Iterator<Integer> iterator = this.currentStage.mobs().keySet().iterator(); iterator.hasNext(); ) {
             int mobId = iterator.next();
-            spawnMob(mobId, this.currentStage.getMobs().get(Integer.valueOf(mobId)));
+            spawnMob(mobId, this.currentStage.mobs().get(mobId));
         }
         this.stageBeginTime = System.currentTimeMillis();
         this.timerTask = ThreadPool.scheduleAtFixedRate(() -> broadcastTimer(), 5000L, 1000L);
         this.nextTask = null;
-        this.dungeonCancelTask = ThreadPool.schedule(() -> cancelDungeon(), (60000L * this.currentStage.getMinutes()));
-        broadcastScreenMessage("You have " + this.currentStage.getMinutes() + " minutes to finish stage " + this.currentStage.getOrder() + "!", 5);
+        this.dungeonCancelTask = ThreadPool.schedule(() -> cancelDungeon(), (60000L * this.currentStage.minutes()));
+        broadcastScreenMessage("You have " + this.currentStage.minutes() + " minutes to finish stage " + this.currentStage.order() + "!", 5);
     }
 
     private void spawnMob(int mobId, List<Location> locations) {
@@ -190,7 +190,7 @@ public class Dungeon {
             player.setDungeon(this);
         }
         teleToStage();
-        broadcastScreenMessage("Stage " + this.currentStage.getOrder() + " begins in 10 seconds!", 5);
+        broadcastScreenMessage("Stage " + this.currentStage.order() + " begins in 10 seconds!", 5);
         this.nextTask = ThreadPool.schedule(() -> beginStage(), 10000L);
     }
 
@@ -204,14 +204,14 @@ public class Dungeon {
     }
 
     private void getNextStage() {
-        this.currentStage = (this.currentStage == null) ? this.template.getStages().get(Integer.valueOf(1)) : this.template.getStages().get(Integer.valueOf(this.currentStage.getOrder() + 1));
+        this.currentStage = (this.currentStage == null) ? this.template.stages().get(1) : this.template.stages().get(this.currentStage.order() + 1);
     }
 
     private void broadcastTimer() {
-        int secondsLeft = (int) ((this.stageBeginTime + (60000 * this.currentStage.getMinutes()) - System.currentTimeMillis()) / 1000L);
+        int secondsLeft = (int) ((this.stageBeginTime + (60000 * this.currentStage.minutes()) - System.currentTimeMillis()) / 1000L);
         int minutes = secondsLeft / 60;
         int seconds = secondsLeft % 60;
-        ExShowScreenMessage packet = new ExShowScreenMessage(String.format("%02d:%02d", Integer.valueOf(minutes), Integer.valueOf(seconds)), 1010, ExShowScreenMessage.SMPOS.BOTTOM_RIGHT, false);
+        ExShowScreenMessage packet = new ExShowScreenMessage(String.format("%02d:%02d", minutes, seconds), 1010, ExShowScreenMessage.SMPOS.BOTTOM_RIGHT, false);
         for (Player player : this.players)
             player.sendPacket(packet);
     }

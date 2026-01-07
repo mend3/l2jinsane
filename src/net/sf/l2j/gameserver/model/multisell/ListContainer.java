@@ -43,11 +43,11 @@ public class ListContainer {
     public void allowNpc(int npcId) {
         if (this._npcsAllowed == null)
             this._npcsAllowed = new HashSet<>();
-        this._npcsAllowed.add(Integer.valueOf(npcId));
+        this._npcsAllowed.add(npcId);
     }
 
     public boolean isNpcAllowed(int npcId) {
-        return (this._npcsAllowed == null || this._npcsAllowed.contains(Integer.valueOf(npcId)));
+        return (this._npcsAllowed == null || this._npcsAllowed.contains(npcId));
     }
 
     public boolean isNpcOnly() {

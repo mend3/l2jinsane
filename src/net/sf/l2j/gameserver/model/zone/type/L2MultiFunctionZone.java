@@ -79,7 +79,7 @@ public class L2MultiFunctionZone extends SpawnZoneType {
 
     protected void onEnter(Creature character) {
         if (character instanceof Player activeChar) {
-            ((Player) character).sendPacket(SystemMessageId.ENTERED_COMBAT_ZONE);
+            activeChar.sendPacket(SystemMessageId.ENTERED_COMBAT_ZONE);
             if (Config.CLASSES != null && Config.CLASSES.contains(activeChar.getClassId().getId())) {
                 activeChar.teleToLocation(new Location(83597, 147888, -3405));
                 activeChar.sendMessage("Your class is not allowed in the MultiFunction zone.");
@@ -122,7 +122,7 @@ public class L2MultiFunctionZone extends SpawnZoneType {
         character.setInsideZone(ZoneId.NO_SUMMON_FRIEND, false);
         character.setInsideZone(ZoneId.MULTI_FUNCTION, false);
         if (character instanceof Player activeChar) {
-            ((Player) character).sendPacket(SystemMessageId.LEFT_COMBAT_ZONE);
+            activeChar.sendPacket(SystemMessageId.LEFT_COMBAT_ZONE);
             activeChar.sendMessage("You left from a MultiFunction zone.");
             if (Config.PVP_ENABLED) {
                 activeChar.updatePvPFlag(0);

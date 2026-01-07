@@ -30,11 +30,11 @@ public class UserCommandHandler {
 
     private void registerHandler(IUserCommandHandler handler) {
         for (int id : handler.getUserCommandList())
-            this._entries.put(Integer.valueOf(id), handler);
+            this._entries.put(id, handler);
     }
 
     public IUserCommandHandler getHandler(int userCommand) {
-        return this._entries.get(Integer.valueOf(userCommand));
+        return this._entries.get(userCommand);
     }
 
     public int size() {

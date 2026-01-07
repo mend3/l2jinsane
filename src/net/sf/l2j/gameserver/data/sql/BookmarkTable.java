@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class BookmarkTable {
     private static final CLogger LOGGER = new CLogger(BookmarkTable.class.getName());
-    private final List<Bookmark> _bks = new ArrayList();
+    private final List<Bookmark> _bks = new ArrayList<>();
 
     protected BookmarkTable() {
     }

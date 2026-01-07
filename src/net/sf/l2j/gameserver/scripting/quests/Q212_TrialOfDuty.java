@@ -79,7 +79,7 @@ public class Q212_TrialOfDuty extends Quest {
             st.playSound("ItemSound.quest_accept");
             if (!player.getMemos().getBool("secondClassChange35", false)) {
                 htmltext = "30109-04a.htm";
-                st.giveItems(7562, DF_REWARD_35.get(Integer.valueOf(player.getClassId().getId())));
+                st.giveItems(7562, DF_REWARD_35.get(player.getClassId().getId()));
                 player.getMemos().set("secondClassChange35", true);
             }
         } else if (event.equalsIgnoreCase("30116-05.htm")) {

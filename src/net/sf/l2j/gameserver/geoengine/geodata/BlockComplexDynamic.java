@@ -40,51 +40,51 @@ public final class BlockComplexDynamic extends BlockComplex implements IBlockDyn
         this._objects = new LinkedList();
     }
 
-    public final short getHeightNearestOriginal(int geoX, int geoY, int worldZ) {
+    public short getHeightNearestOriginal(int geoX, int geoY, int worldZ) {
         int index = (geoX % 8 * 8 + geoY % 8) * 3;
         return (short) (this._original[index + 1] & 255 | this._original[index + 2] << 8);
     }
 
-    public final byte getNsweNearestOriginal(int geoX, int geoY, int worldZ) {
+    public byte getNsweNearestOriginal(int geoX, int geoY, int worldZ) {
         int index = (geoX % 8 * 8 + geoY % 8) * 3;
         return this._original[index];
     }
 
-    public final int getIndexAboveOriginal(int geoX, int geoY, int worldZ) {
+    public int getIndexAboveOriginal(int geoX, int geoY, int worldZ) {
         int index = (geoX % 8 * 8 + geoY % 8) * 3;
         int height = this._original[index + 1] & 255 | this._original[index + 2] << 8;
         return height > worldZ ? index : -1;
     }
 
-    public final int getIndexBelowOriginal(int geoX, int geoY, int worldZ) {
+    public int getIndexBelowOriginal(int geoX, int geoY, int worldZ) {
         int index = (geoX % 8 * 8 + geoY % 8) * 3;
         int height = this._original[index + 1] & 255 | this._original[index + 2] << 8;
         return height < worldZ ? index : -1;
     }
 
-    public final short getHeightOriginal(int index) {
+    public short getHeightOriginal(int index) {
         return (short) (this._original[index + 1] & 255 | this._original[index + 2] << 8);
     }
 
-    public final byte getNsweOriginal(int index) {
+    public byte getNsweOriginal(int index) {
         return this._original[index];
     }
 
-    public final synchronized void addGeoObject(IGeoObject object) {
+    public synchronized void addGeoObject(IGeoObject object) {
         if (this._objects.add(object)) {
             this.update();
         }
 
     }
 
-    public final synchronized void removeGeoObject(IGeoObject object) {
+    public synchronized void removeGeoObject(IGeoObject object) {
         if (this._objects.remove(object)) {
             this.update();
         }
 
     }
 
-    private final void update() {
+    private void update() {
         System.arraycopy(this._original, 0, this._buffer, 0, 192);
         int minBX = this._bx * 8;
         int minBY = this._by * 8;

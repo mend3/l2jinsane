@@ -78,7 +78,7 @@ public class ShortcutList {
                     break;
             }
         }
-        Shortcut oldShortcut = this._shortcuts.put(Integer.valueOf(shortcut.getSlot() + shortcut.getPage() * 12), shortcut);
+        Shortcut oldShortcut = this._shortcuts.put(shortcut.getSlot() + shortcut.getPage() * 12, shortcut);
         if (oldShortcut != null)
             deleteShortCutFromDb(oldShortcut);
         try {
@@ -123,7 +123,7 @@ public class ShortcutList {
 
     public void deleteShortcut(int slot, int page) {
         slot += page * 12;
-        Shortcut oldShortcut = this._shortcuts.remove(Integer.valueOf(slot));
+        Shortcut oldShortcut = this._shortcuts.remove(slot);
         if (oldShortcut == null || this._owner == null)
             return;
         deleteShortCutFromDb(oldShortcut);
@@ -200,7 +200,7 @@ public class ShortcutList {
                                 if (item.isEtcItem())
                                     shortcut.setSharedReuseGroup(item.getEtcItem().getSharedReuseGroup());
                             }
-                            this._shortcuts.put(Integer.valueOf(slot + page * 12), shortcut);
+                            this._shortcuts.put(slot + page * 12, shortcut);
                         }
                         if (rs != null)
                             rs.close();

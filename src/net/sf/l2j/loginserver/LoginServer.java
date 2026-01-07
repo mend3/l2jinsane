@@ -73,7 +73,7 @@ public class LoginServer {
         try {
             this._gameServerListener = new GameServerListener();
             this._gameServerListener.start();
-            LOGGER.info("Listening for gameservers on {}:{}.", Config.GAME_SERVER_LOGIN_HOST, Integer.valueOf(Config.GAME_SERVER_LOGIN_PORT));
+            LOGGER.info("Listening for gameservers on {}:{}.", Config.GAME_SERVER_LOGIN_HOST, Config.GAME_SERVER_LOGIN_PORT);
         } catch (IOException ioe) {
             LOGGER.error("Failed to start the gameserver listener.", ioe);
             System.exit(1);
@@ -85,7 +85,7 @@ public class LoginServer {
             System.exit(1);
         }
         this._selectorThread.start();
-        LOGGER.info("Loginserver ready on {}:{}.", (bindAddress == null) ? "*" : bindAddress.getHostAddress(), Integer.valueOf(Config.PORT_LOGIN));
+        LOGGER.info("Loginserver ready on {}:{}.", (bindAddress == null) ? "*" : bindAddress.getHostAddress(), Config.PORT_LOGIN);
         StringUtil.printSection("Waiting for gameserver answer");
     }
 
@@ -116,13 +116,13 @@ public class LoginServer {
                                 try {
                                     duration = Long.parseLong(parts[1]);
                                 } catch (NumberFormatException e) {
-                                    LOGGER.error("Incorrect ban duration ({}). Line: {}.", parts[1], Integer.valueOf(reader.getLineNumber()));
+                                    LOGGER.error("Incorrect ban duration ({}). Line: {}.", parts[1], reader.getLineNumber());
                                     continue;
                                 }
                             try {
                                 LoginController.getInstance().addBanForAddress(address, duration);
                             } catch (UnknownHostException e) {
-                                LOGGER.error("Invalid address ({}). Line: {}.", parts[0], Integer.valueOf(reader.getLineNumber()));
+                                LOGGER.error("Invalid address ({}). Line: {}.", parts[0], reader.getLineNumber());
                             }
                         }
                     }
@@ -138,7 +138,7 @@ public class LoginServer {
             } catch (IOException e) {
                 LOGGER.error("Error while reading banned_ips.properties.", e);
             }
-            LOGGER.info("Loaded {} banned IP(s).", Integer.valueOf(LoginController.getInstance().getBannedIps().size()));
+            LOGGER.info("Loaded {} banned IP(s).", LoginController.getInstance().getBannedIps().size());
         } else {
             LOGGER.warn("banned_ips.properties is missing. Ban listing is skipped.");
         }

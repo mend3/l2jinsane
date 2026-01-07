@@ -73,23 +73,23 @@ public final class AgathionData {
         String[] valueParts = value.split(";");
         int itemId = Integer.parseInt(key);
         int npcId = Integer.parseInt(valueParts[0]);
-        AGATHION_MAP.put(Integer.valueOf(itemId), Integer.valueOf(npcId));
+        AGATHION_MAP.put(itemId, npcId);
         if (valueParts.length > 1 && !valueParts[1].isEmpty()) {
             String[] buffData = valueParts[1].split(",");
             if (buffData.length == 2) {
                 int skillId = Integer.parseInt(buffData[0]);
                 int skillLevel = Integer.parseInt(buffData[1]);
-                AGATHION_BUFFS.put(Integer.valueOf(npcId), new int[]{skillId, skillLevel});
+                AGATHION_BUFFS.put(npcId, new int[]{skillId, skillLevel});
             }
         }
         if (valueParts.length > 2 && !valueParts[2].isEmpty()) {
             long duration = Long.parseLong(valueParts[2]);
-            AGATHION_TIMERS.put(Integer.valueOf(npcId), Long.valueOf(duration));
+            AGATHION_TIMERS.put(npcId, duration);
         }
     }
 
     public static int getNpcId(int itemId) {
-        return AGATHION_MAP.getOrDefault(Integer.valueOf(itemId), Integer.valueOf(-1));
+        return AGATHION_MAP.getOrDefault(itemId, -1);
     }
 
     public static Map<Integer, Integer> getAgathions() {
@@ -97,12 +97,12 @@ public final class AgathionData {
     }
 
     public static int[] getBuffForNpc(int npcId) {
-        int[] buff = AGATHION_BUFFS.get(Integer.valueOf(npcId));
+        int[] buff = AGATHION_BUFFS.get(npcId);
         return (buff != null) ? buff.clone() : null;
     }
 
     public static long getAgathionDuration(int npcId) {
-        return AGATHION_TIMERS.getOrDefault(Integer.valueOf(npcId), Long.valueOf(300000L));
+        return AGATHION_TIMERS.getOrDefault(npcId, 300000L);
     }
 
     public static AgathionData getInstance() {

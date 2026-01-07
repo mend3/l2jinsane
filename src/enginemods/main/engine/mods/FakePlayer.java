@@ -16,6 +16,7 @@ import net.sf.l2j.gameserver.data.sql.ClanTable;
 import net.sf.l2j.gameserver.data.sql.PlayerInfoTable;
 import net.sf.l2j.gameserver.data.xml.ArmorSetData;
 import net.sf.l2j.gameserver.data.xml.MapRegionData;
+import net.sf.l2j.gameserver.data.xml.PlayerClassData;
 import net.sf.l2j.gameserver.enums.ZoneId;
 import net.sf.l2j.gameserver.enums.actors.ClassType;
 import net.sf.l2j.gameserver.enums.actors.Sex;
@@ -109,7 +110,7 @@ public class FakePlayer extends AbstractMods {
         Sex sex = Sex.values()[Rnd.get(2)];
         byte hairStyle = (byte) (sex == Sex.MALE ? Rnd.get(5) : Rnd.get(7));
         byte face = (byte) Rnd.get(3);
-        PlayerTemplate template = net.sf.l2j.gameserver.data.xml.PlayerData.getInstance().getTemplate(templateId);
+        PlayerTemplate template = PlayerClassData.getInstance().getTemplate(templateId);
         List<Integer> items = new ArrayList();
         int chestId = template.getClassId().getType() != ClassType.FIGHTER ? FAKE_SET_MAGE[Rnd.get(FAKE_SET_MAGE.length - 1)] : FAKE_SET_WARRIOR[Rnd.get(FAKE_SET_WARRIOR.length - 1)];
         if (ArmorSetData.getInstance().getSet(chestId) != null) {

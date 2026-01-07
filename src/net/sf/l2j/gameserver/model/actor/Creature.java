@@ -38,7 +38,6 @@ import net.sf.l2j.gameserver.model.location.SpawnLocation;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.AbstractNpcInfo.NpcInfo;
 import net.sf.l2j.gameserver.network.serverpackets.*;
-import net.sf.l2j.gameserver.network.serverpackets.Attack.Hit;
 import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.skills.Calculator;
 import net.sf.l2j.gameserver.skills.Formulas;
@@ -2051,7 +2050,7 @@ public abstract class Creature extends WorldObject {
                     distance = verticalMovementOnly ? Math.abs(dz * dz) : Math.sqrt(dx * dx + dy * dy);
                 }
 
-                if (0.0 > 30.0D && distance < 2000.0D && !this.isAfraid() && (this instanceof Playable && !isInBoat || this.isMinion() || this.isInCombat())) {
+                if (false) {
                     newMd.geoPath = GeoEngine.getInstance().findPath(curX, curY, curZ, x, y, z, this instanceof Playable);
                     if (newMd.geoPath != null && newMd.geoPath.size() >= 2) {
                         newMd.onGeodataPathIndex = 0;
@@ -3466,14 +3465,14 @@ public abstract class Creature extends WorldObject {
                                       boolean _isShiftPressed) implements Runnable {
 
         public void run() {
-                try {
-                    this._player.useMagic(this._skill, this._isCtrlPressed, this._isShiftPressed);
-                } catch (Exception var2) {
-                    WorldObject.LOGGER.error("Couldn't process magic use for {}, skillId {}.", var2, this._player == null ? "noname" : this._player.getName(), this._skill == null ? "not found" : this._skill.getId());
-                }
-
+            try {
+                this._player.useMagic(this._skill, this._isCtrlPressed, this._isShiftPressed);
+            } catch (Exception var2) {
+                WorldObject.LOGGER.error("Couldn't process magic use for {}, skillId {}.", var2, this._player == null ? "noname" : this._player.getName(), this._skill == null ? "not found" : this._skill.getId());
             }
+
         }
+    }
 
     class HitTask implements Runnable {
         Creature _hitTarget;

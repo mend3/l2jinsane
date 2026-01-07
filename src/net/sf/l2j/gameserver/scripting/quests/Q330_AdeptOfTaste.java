@@ -101,12 +101,12 @@ public class Q330_AdeptOfTaste extends Quest {
 
     public Q330_AdeptOfTaste() {
         super(330, "Adept of Taste");
-        CHANCES.put(Integer.valueOf(20204), new int[]{92, 100});
-        CHANCES.put(Integer.valueOf(20229), new int[]{80, 95});
-        CHANCES.put(Integer.valueOf(20223), new int[]{70, 77});
-        CHANCES.put(Integer.valueOf(20154), new int[]{70, 77});
-        CHANCES.put(Integer.valueOf(20155), new int[]{87, 96});
-        CHANCES.put(Integer.valueOf(20156), new int[]{77, 85});
+        CHANCES.put(20204, new int[]{92, 100});
+        CHANCES.put(20229, new int[]{80, 95});
+        CHANCES.put(20223, new int[]{70, 77});
+        CHANCES.put(20154, new int[]{70, 77});
+        CHANCES.put(20155, new int[]{87, 96});
+        CHANCES.put(20156, new int[]{77, 85});
         setItemsIds(1420, 1424, 1425, 1429, 1430, 1433, 1437, 1438, 1441, 1447,
                 1448, 1449, 1450, 1451, 1442, 1443, 1444, 1445, 1446, 1421,
                 1422, 1423, 1426, 1427, 1428, 1431, 1432, 1434, 1435, 1436,
@@ -428,7 +428,7 @@ public class Q330_AdeptOfTaste extends Quest {
             case 20229:
                 if (st.hasQuestItems(1426)) {
                     int random = Rnd.get(100);
-                    int[] chances = CHANCES.get(Integer.valueOf(npcId));
+                    int[] chances = CHANCES.get(npcId);
                     if (random < chances[0]) {
                         st.dropItemsAlways(1427, 1, 20);
                         break;
@@ -443,7 +443,7 @@ public class Q330_AdeptOfTaste extends Quest {
             case 20223:
                 if (st.hasQuestItems(1421)) {
                     int random = Rnd.get(100);
-                    int[] chances = CHANCES.get(Integer.valueOf(npcId));
+                    int[] chances = CHANCES.get(npcId);
                     if (random < chances[1])
                         st.dropItemsAlways((random < chances[0]) ? 1422 : 1423, 1, 40);
                 }

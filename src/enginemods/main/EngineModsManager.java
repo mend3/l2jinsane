@@ -2,10 +2,6 @@ package enginemods.main;
 
 import enginemods.main.data.*;
 import enginemods.main.engine.AbstractMods;
-import enginemods.main.engine.community.ClanCommunityBoard;
-import enginemods.main.engine.community.FavoriteCommunityBoard;
-import enginemods.main.engine.community.MemoCommunityBoard;
-import enginemods.main.engine.community.RegionComunityBoard;
 import enginemods.main.engine.events.BonusWeekend;
 import enginemods.main.engine.events.Champions;
 import enginemods.main.engine.events.CityElpys;
@@ -17,82 +13,94 @@ import enginemods.main.engine.npc.NpcRanking;
 import enginemods.main.engine.npc.NpcTeleporter;
 import enginemods.main.instances.NpcDropsInstance;
 import enginemods.main.instances.NpcExpInstance;
+import mods.achievement.AchievementsManager;
+import mods.combineItem.CombineItem;
+import mods.dressme.DressMeData;
+import mods.dungeon.DungeonManager;
+import mods.instance.InstanceManager;
+import mods.pvpZone.RandomZoneManager;
+import mods.teleportInterface.TeleportLocationDataGK;
+import net.sf.l2j.Config;
+import net.sf.l2j.commons.lang.StringUtil;
+import net.sf.l2j.commons.pool.ThreadPool;
+import net.sf.l2j.gameserver.PcBang;
+import net.sf.l2j.gameserver.data.*;
+import net.sf.l2j.gameserver.data.manager.DailyLoginRewardManager;
+import net.sf.l2j.gameserver.data.manager.DailyRewardManager;
+import net.sf.l2j.gameserver.data.xml.FakePcsTable;
+import net.sf.l2j.gameserver.data.xml.IconsTable;
 import net.sf.l2j.gameserver.enums.skills.Stats;
+import net.sf.l2j.gameserver.events.bossevent.BossEvent;
+import net.sf.l2j.gameserver.events.eventengine.manager.CtfEventManager;
+import net.sf.l2j.gameserver.events.eventengine.manager.DmEventManager;
+import net.sf.l2j.gameserver.events.eventengine.manager.TvTEventManager;
+import net.sf.l2j.gameserver.events.partyfarm.InitialPartyFarm;
+import net.sf.l2j.gameserver.events.partyfarm.PartyFarm;
+import net.sf.l2j.gameserver.events.pvpevent.PvPEventManager;
+import net.sf.l2j.gameserver.events.soloboss.SoloBossData;
+import net.sf.l2j.gameserver.events.soloboss.SoloBossManager;
+import net.sf.l2j.gameserver.events.tournament.ArenaEvent;
+import net.sf.l2j.gameserver.events.tournament.ArenaTask;
+import net.sf.l2j.gameserver.events.tournament.arenas.Arena2x2;
+import net.sf.l2j.gameserver.events.tournament.arenas.Arena4x4;
+import net.sf.l2j.gameserver.events.tournament.arenas.Arena9x9;
 import net.sf.l2j.gameserver.model.WorldObject;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Npc;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.instance.Monster;
+import net.sf.l2j.gameserver.model.partymatching.PartyMatchRoomList;
+import net.sf.l2j.gameserver.model.partymatching.PartyMatchWaitingList;
 import net.sf.l2j.gameserver.model.zone.ZoneType;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EngineModsManager {
-    private static final Logger LOG = Logger.getLogger(AbstractMods.class.getName());
-    private static final Map<Integer, AbstractMods> ENGINES_MODS = new LinkedHashMap();
+    private static final Logger LOG = Logger.getLogger(EngineModsManager.class.getName());
+    private static final Map<Integer, AbstractMods> ENGINES_MODS = new LinkedHashMap<>();
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void init() {
-        try {
-            ModsData.load();
-        } catch (Exception var7) {
-            var7.printStackTrace();
-        }
+        ConfigData.load();
+        IconsTable.load();
+        ModsData.load();
+        PlayerData.load();
+        SkillData.load();
+        DressMeData.getInstance().load();
+        CombineDataXML.getInstance().load();
+        CombineItem.getInstance().load();
+        DollsData.getInstance().load();
+        AgathionData.getInstance().load();
+        AchievementsManager.getInstance().load();
 
-        try {
-            PlayerData.load();
-        } catch (Exception var6) {
-            var6.printStackTrace();
-        }
+        FakePlayerData.load();
+        FakePlayer.getInstance();
+        FakePcsTable.getInstance().load();
 
-        try {
-            IconData.load();
-        } catch (Exception var5) {
-            var5.printStackTrace();
-        }
+        SchemeBuffData.load();
+        NpcBufferScheme.getInstance();
 
-        try {
-            SkillData.load();
-        } catch (Exception var4) {
-            var4.printStackTrace();
-        }
+        NpcRanking.getInstance();
+        NpcClassMaster.getInstance();
 
-        try {
-            ConfigData.load();
-        } catch (Exception var3) {
-            var3.printStackTrace();
-        }
+        NpcTeleporter.getInstance();
+        TeleportLocationDataGK.getInstance().load();
 
-        try {
-            FakePlayerData.load();
-        } catch (Exception var2) {
-            var2.printStackTrace();
-        }
+        DailyRewardData.getInstance().load();
+        DailyLoginRewardManager.getInstance().load();
+        DailyRewardManager.getInstance().load();
 
-        try {
-            SchemeBuffData.load();
-        } catch (Exception var1) {
-            var1.printStackTrace();
-        }
-
-        LOG.config("-----------------------------------------------------------");
-        loadModsAndEvents();
-    }
-
-    private static void loadModsAndEvents() {
         ColorAccordingAmountPvPorPk.getInstance();
+        SubClassAcumulatives.getInstance();
+        NewCharacterCreated.getInstance();
         EnchantAbnormalEffectArmor.getInstance();
         SpreeKills.getInstance();
-        SubClassAcumulatives.getInstance();
         PvpReward.getInstance();
-        AnnounceKillBoss.getInstance();
         SellBuffs.getInstance();
         AntiBot.getInstance();
-        NewCharacterCreated.getInstance();
         SystemAio.getInstance();
         SystemVip.getInstance();
         OfflineShop.getInstance();
@@ -100,15 +108,75 @@ public class EngineModsManager {
         Champions.getInstance();
         RandomBossSpawn.getInstance();
         CityElpys.getInstance();
-        FakePlayer.getInstance();
-        NpcRanking.getInstance();
-        NpcClassMaster.getInstance();
-        NpcTeleporter.getInstance();
-        NpcBufferScheme.getInstance();
-        RegionComunityBoard.getInstance();
-        FavoriteCommunityBoard.getInstance();
-        ClanCommunityBoard.getInstance();
-        MemoCommunityBoard.getInstance();
+        PartyMatchWaitingList.getInstance();
+        PartyMatchRoomList.getInstance();
+        if (Config.PCB_ENABLE) {
+            CouponsManager.getInstance().load();
+            ThreadPool.scheduleAtFixedRate(PcBang.getInstance(), Config.PCB_INTERVAL * 1000L, Config.PCB_INTERVAL * 1000L);
+            LOG.info("PcBang Enabled");
+        } else {
+            LOG.info("PcBang is disabled.");
+        }
+
+        StringUtil.printSection("Dungeon Manager");
+        InstanceManager.getInstance();
+        DungeonManager.getInstance().load();
+
+        StringUtil.printSection("Event Engine TvT - CTF - DM");
+        CtfEventManager.getInstance().load();
+        TvTEventManager.getInstance().load();
+        DmEventManager.getInstance().load();
+        StringUtil.printSection("Solo Boss Event");
+        if (Config.SOLOBOSS_EVENT_ENABLE) {
+            SoloBossData.getInstance().load();
+            SoloBossManager.getInstance().scheduleEvents();
+        } else {
+            LOG.info("Solo Boss Event: is disabled.");
+        }
+
+        StringUtil.printSection("Kill The Boss Event");
+        AnnounceKillBoss.getInstance();
+        BossEvent.getInstance().load();
+        if (Config.TOURNAMENT_EVENT_TIME) {
+            StringUtil.printSection("Tournament 2x2 4x4 9x9");
+            ThreadPool.schedule(Arena2x2.getInstance(), 5000L);
+            ThreadPool.schedule(Arena9x9.getInstance(), 5000L);
+            ThreadPool.schedule(Arena4x4.getInstance(), 5000L);
+            ArenaEvent.getInstance().StartCalculationOfNextEventTime();
+            LOG.info("Tournament Event is enabled.");
+        } else if (Config.TOURNAMENT_EVENT_START) {
+            ArenaTask.spawnNpc1();
+            LOG.info("Tournament Event is enabled.");
+        } else {
+            LOG.info("Tournament Event is disabled");
+        }
+
+        StringUtil.printSection("Party Farm Event");
+        if (Config.PARTY_FARM_BY_TIME_OF_DAY && !Config.START_PARTY) {
+            InitialPartyFarm.getInstance().load();
+            LOG.info("[Party Farm Time]: Enabled");
+        } else if (Config.START_PARTY && !Config.PARTY_FARM_BY_TIME_OF_DAY) {
+            ThreadPool.schedule(new PartyFarmSpawn(), Config.NPC_SERVER_DELAY * 1000L);
+            LOG.info("[Party Farm Spawn]: Enabled");
+        }
+
+        StringUtil.printSection("PvP Event");
+        if (Config.PVP_EVENT_ENABLED) {
+            PvPEventManager.getInstance().load();
+            LOG.info("PvP Event: is Started.");
+        } else {
+            LOG.info("PvP Event: is disabled.");
+        }
+
+        StringUtil.printSection("Auto Pvp Zones");
+        if (Config.ENABLE_AUTO_PVP_ZONE) {
+            RandomZoneManager.getInstance().load();
+            LOG.info("Auto Pvp Zones - Random Zone is active.");
+        } else {
+            LOG.info("Auto Pvp Zones - Random Zone is disabled.");
+        }
+
+        LOG.info(String.format("Loaded %s Mod engines.", getAllMods().size()));
     }
 
     public static void registerMod(AbstractMods type) {
@@ -124,18 +192,10 @@ public class EngineModsManager {
     }
 
     public static synchronized boolean onCommunityBoard(Player player, String command) {
-        Iterator var2 = ENGINES_MODS.values().iterator();
 
-        while (var2.hasNext()) {
-            AbstractMods mod = (AbstractMods) var2.next();
-
-            try {
-                if (mod.isStarting() && mod.onCommunityBoard(player, command)) {
-                    return true;
-                }
-            } catch (Exception var5) {
-                LOG.log(Level.SEVERE, var5.getMessage());
-                var5.printStackTrace();
+        for (AbstractMods mod : ENGINES_MODS.values()) {
+            if (mod.isStarting() && mod.onCommunityBoard(player, command)) {
+                return true;
             }
         }
 
@@ -143,35 +203,19 @@ public class EngineModsManager {
     }
 
     public static synchronized void onShutDown() {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onShutDown();
-                mod.endMod();
-                mod.cancelScheduledState();
-            } catch (Exception var2) {
-                LOG.log(Level.SEVERE, var2.getMessage());
-                var2.printStackTrace();
-            }
-
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> {
+            mod.onShutDown();
+            mod.endMod();
+            mod.cancelScheduledState();
         });
     }
 
     public static synchronized boolean onExitWorld(Player player) {
         boolean exitPlayer = false;
-        Iterator var2 = ENGINES_MODS.values().iterator();
 
-        while (var2.hasNext()) {
-            AbstractMods mod = (AbstractMods) var2.next();
-
-            try {
-                if (mod.isStarting() && mod.onExitWorld(player)) {
-                    exitPlayer = true;
-                }
-            } catch (Exception var5) {
-                LOG.log(Level.SEVERE, var5.getMessage());
-                var5.printStackTrace();
+        for (AbstractMods mod : ENGINES_MODS.values()) {
+            if (mod.isStarting() && mod.onExitWorld(player)) {
+                exitPlayer = true;
             }
         }
 
@@ -187,18 +231,9 @@ public class EngineModsManager {
                 return false;
             } else {
                 NpcExpInstance instance = new NpcExpInstance();
-                Iterator var4 = ENGINES_MODS.values().iterator();
-
-                while (var4.hasNext()) {
-                    AbstractMods mod = (AbstractMods) var4.next();
-
-                    try {
-                        if (mod.isStarting()) {
-                            mod.onNpcExpSp(killer, npc, instance);
-                        }
-                    } catch (Exception var7) {
-                        LOG.log(Level.SEVERE, var7.getMessage());
-                        var7.printStackTrace();
+                for (AbstractMods mod : ENGINES_MODS.values()) {
+                    if (mod.isStarting()) {
+                        mod.onNpcExpSp(killer, npc, instance);
                     }
                 }
 
@@ -221,18 +256,9 @@ public class EngineModsManager {
                 return false;
             } else {
                 NpcDropsInstance instance = new NpcDropsInstance();
-                Iterator var4 = ENGINES_MODS.values().iterator();
-
-                while (var4.hasNext()) {
-                    AbstractMods mod = (AbstractMods) var4.next();
-
-                    try {
-                        if (mod.isStarting()) {
-                            mod.onNpcDrop(killer, npc, instance);
-                        }
-                    } catch (Exception var7) {
-                        LOG.log(Level.SEVERE, var7.getMessage());
-                        var7.printStackTrace();
+                for (AbstractMods mod : ENGINES_MODS.values()) {
+                    if (mod.isStarting()) {
+                        mod.onNpcDrop(killer, npc, instance);
                     }
                 }
 
@@ -247,72 +273,34 @@ public class EngineModsManager {
     }
 
     public static synchronized void onEnterZone(Creature player, ZoneType zone) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onEnterZone(player, zone);
-            } catch (Exception var4) {
-                LOG.log(Level.SEVERE, var4.getMessage());
-                var4.printStackTrace();
-            }
-
-        });
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onEnterZone(player, zone));
     }
 
     public static synchronized void onExitZone(Creature player, ZoneType zone) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onExitZone(player, zone);
-            } catch (Exception var4) {
-                LOG.log(Level.SEVERE, var4.getMessage());
-                var4.printStackTrace();
-            }
-
-        });
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onExitZone(player, zone));
     }
 
     public static synchronized void onCreateCharacter(Player player) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onCreateCharacter(player);
-            } catch (Exception var3) {
-                LOG.log(Level.SEVERE, var3.getMessage());
-                var3.printStackTrace();
-            }
-
-        });
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onCreateCharacter(player));
     }
 
     public static synchronized boolean onVoiced(Player player, String chat) {
-        Iterator var2 = ENGINES_MODS.values().iterator();
-
-        while (var2.hasNext()) {
-            AbstractMods mod = (AbstractMods) var2.next();
+        for (AbstractMods mod : ENGINES_MODS.values()) {
             if (mod.isStarting()) {
-                try {
-                    if (chat.startsWith("admin_")) {
-                        if (player.getAccessLevel().getLevel() < 1) {
-                            return false;
-                        }
+                if (chat.startsWith("admin_")) {
+                    if (player.getAccessLevel().getLevel() < 1) {
+                        return false;
+                    }
 
-                        if (mod.onAdminCommand(player, chat.replace("admin_", ""))) {
-                            return true;
-                        }
-                    } else if (chat.startsWith(".")) {
-                        if (mod.onVoicedCommand(player, chat.replace(".", ""))) {
-                            return true;
-                        }
-                    } else if (mod.onChat(player, chat)) {
+                    if (mod.onAdminCommand(player, chat.replace("admin_", ""))) {
                         return true;
                     }
-                } catch (Exception var5) {
-                    LOG.log(Level.SEVERE, var5.getMessage());
-                    var5.printStackTrace();
+                } else if (chat.startsWith(".")) {
+                    if (mod.onVoicedCommand(player, chat.replace(".", ""))) {
+                        return true;
+                    }
+                } else if (mod.onChat(player, chat)) {
+                    return true;
                 }
             }
         }
@@ -321,18 +309,10 @@ public class EngineModsManager {
     }
 
     public static synchronized boolean onInteract(Player player, Creature character) {
-        Iterator var2 = ENGINES_MODS.values().iterator();
-
-        while (var2.hasNext()) {
-            AbstractMods mod = (AbstractMods) var2.next();
+        for (AbstractMods mod : ENGINES_MODS.values()) {
             if (mod.isStarting()) {
-                try {
-                    if (mod.onInteract(player, character)) {
-                        return true;
-                    }
-                } catch (Exception var5) {
-                    LOG.log(Level.SEVERE, var5.getMessage());
-                    var5.printStackTrace();
+                if (mod.onInteract(player, character)) {
+                    return true;
                 }
             }
         }
@@ -341,19 +321,11 @@ public class EngineModsManager {
     }
 
     public static synchronized void onEvent(Player player, String command) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return command.startsWith(mod.getClass().getSimpleName()) && mod.isStarting();
-        }).forEach((mod) -> {
+        ENGINES_MODS.values().stream().filter((mod) -> command.startsWith(mod.getClass().getSimpleName()) && mod.isStarting()).forEach((mod) -> {
             WorldObject obj = player.getTarget();
             if (obj instanceof Creature) {
-                if (obj == null || player.isInsideRadius(obj, 150, false, false)) {
-                    try {
-                        mod.onEvent(player, (Creature) obj, command.replace(mod.getClass().getSimpleName() + " ", ""));
-                    } catch (Exception var5) {
-                        LOG.log(Level.SEVERE, var5.getMessage());
-                        var5.printStackTrace();
-                    }
-
+                if (player.isInsideRadius(obj, 150, false, false)) {
+                    mod.onEvent(player, (Creature) obj, command.replace(mod.getClass().getSimpleName() + " ", ""));
                 }
             }
         });
@@ -361,19 +333,11 @@ public class EngineModsManager {
 
     public static synchronized String onSeeNpcTitle(int objectId) {
         String title = null;
-        Iterator var2 = ENGINES_MODS.values().iterator();
-
-        while (var2.hasNext()) {
-            AbstractMods mod = (AbstractMods) var2.next();
+        for (AbstractMods mod : ENGINES_MODS.values()) {
             if (mod.isStarting()) {
-                try {
-                    String aux = mod.onSeeNpcTitle(objectId);
-                    if (aux != null) {
-                        title = aux;
-                    }
-                } catch (Exception var5) {
-                    LOG.log(Level.SEVERE, var5.getMessage());
-                    var5.printStackTrace();
+                String aux = mod.onSeeNpcTitle(objectId);
+                if (aux != null) {
+                    title = aux;
                 }
             }
         }
@@ -382,133 +346,56 @@ public class EngineModsManager {
     }
 
     public static synchronized void onSpawn(Npc obj) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onSpawn(obj);
-            } catch (Exception var3) {
-                LOG.log(Level.SEVERE, var3.getMessage());
-                var3.printStackTrace();
-            }
-
-        });
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onSpawn(obj));
     }
 
     public static synchronized void onEnterWorld(Player player) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onEnterWorld(player);
-            } catch (Exception var3) {
-                LOG.log(Level.SEVERE, var3.getMessage());
-                var3.printStackTrace();
-            }
-
-        });
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onEnterWorld(player));
     }
 
     public static synchronized void onKill(Creature killer, Creature victim, boolean isPet) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onKill(killer, victim, isPet);
-            } catch (Exception var5) {
-                LOG.log(Level.SEVERE, var5.getMessage());
-                var5.printStackTrace();
-            }
-
-        });
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onKill(killer, victim, isPet));
     }
 
     public static synchronized void onDeath(Creature player) {
-        try {
-            ENGINES_MODS.values().stream().filter((mod) -> {
-                return mod.isStarting();
-            }).forEach((mod) -> {
-                mod.onDeath(player);
-            });
-        } catch (Exception var2) {
-            LOG.log(Level.SEVERE, var2.getMessage());
-            var2.printStackTrace();
-        }
-
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onDeath(player));
     }
 
     public static synchronized void onEnchant(Creature player) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onEnchant(player);
-            } catch (Exception var3) {
-                LOG.log(Level.SEVERE, var3.getMessage());
-                var3.printStackTrace();
-            }
-
-        });
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onEnchant(player));
     }
 
     public static synchronized void onEquip(Creature player) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onEquip(player);
-            } catch (Exception var3) {
-                LOG.log(Level.SEVERE, var3.getMessage());
-                var3.printStackTrace();
-            }
-
-        });
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onEquip(player));
     }
 
     public static synchronized void onUnequip(Creature player) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onUnequip(player);
-            } catch (Exception var3) {
-                LOG.log(Level.SEVERE, var3.getMessage());
-                var3.printStackTrace();
-            }
-
-        });
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onUnequip(player));
     }
 
-    public static synchronized boolean onRestoreSkills(Player player) {
-        ENGINES_MODS.values().stream().filter((mod) -> {
-            return mod.isStarting();
-        }).forEach((mod) -> {
-            try {
-                mod.onRestoreSkills(player);
-            } catch (Exception var3) {
-                LOG.log(Level.SEVERE, var3.getMessage());
-                var3.printStackTrace();
-            }
-
-        });
-        return false;
+    public static synchronized void onRestoreSkills(Player player) {
+        ENGINES_MODS.values().stream().filter(AbstractMods::isStarting).forEach((mod) -> mod.onRestoreSkills(player));
     }
 
     public static synchronized double onStats(Stats stat, Creature character, double value) {
-        Iterator var4 = ENGINES_MODS.values().iterator();
 
-        while (var4.hasNext()) {
-            AbstractMods mod = (AbstractMods) var4.next();
+        for (AbstractMods mod : ENGINES_MODS.values()) {
             if (mod.isStarting() && character != null) {
-                try {
-                    value += mod.onStats(stat, character, value) - value;
-                } catch (Exception var7) {
-                    LOG.log(Level.SEVERE, var7.getMessage());
-                    var7.printStackTrace();
-                }
+                value += mod.onStats(stat, character, value) - value;
             }
         }
 
         return value;
+    }
+
+    public static class PartyFarmSpawn implements Runnable {
+        public PartyFarmSpawn() {
+        }
+
+        public void run() {
+            PartyFarm._aborted = false;
+            PartyFarm._started = true;
+            PartyFarm.spawnMonsters();
+        }
     }
 }

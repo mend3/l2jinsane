@@ -73,7 +73,7 @@ public class CTF extends AbstractEvent {
         super.increaseScore(player, count);
         for (Iterator<Integer> iterator = Config.CTF_ON_SCORE_REWARDS.keySet().iterator(); iterator.hasNext(); ) {
             int itemId = iterator.next();
-            player.addItem("Event reward.", itemId, Config.CTF_ON_SCORE_REWARDS.get(Integer.valueOf(itemId)), null, true);
+            player.addItem("Event reward.", itemId, Config.CTF_ON_SCORE_REWARDS.get(itemId), null, true);
         }
         this.eventInfo.addReplacement("%team1Score%", this.teams.get(0).getName().equals(Config.TVT_TEAM_1_NAME) ? this.teams.get(0).getScore() : this.teams.get(1).getScore());
         this.eventInfo.addReplacement("%team2Score%", this.teams.get(0).getName().equals(Config.TVT_TEAM_2_NAME) ? this.teams.get(0).getScore() : this.teams.get(1).getScore());

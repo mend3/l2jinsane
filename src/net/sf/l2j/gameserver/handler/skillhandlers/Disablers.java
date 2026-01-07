@@ -104,7 +104,7 @@ public class Disablers implements ISkillHandler {
                                 break;
                             case AGGDAMAGE:
                                 if (target instanceof Attackable)
-                                    target.getAI().notifyEvent(AiEventType.AGGRESSION, activeChar, Integer.valueOf((int) (150.0D * skill.getPower() / (target.getLevel() + 7))));
+                                    target.getAI().notifyEvent(AiEventType.AGGRESSION, activeChar, (int) (150.0D * skill.getPower() / (target.getLevel() + 7)));
                                 skill.getEffects(activeChar, target, new Env(shld, ss, sps, bsps));
                                 break;
                             case AGGREDUCE:

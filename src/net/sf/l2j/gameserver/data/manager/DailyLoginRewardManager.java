@@ -21,21 +21,23 @@ import java.util.Date;
 public class DailyLoginRewardManager {
     private static final CLogger LOGGER = new CLogger(DailyLoginRewardManager.class.getName());
 
+    private DailyLoginRewardManager() {
+        loadSystemThread();
+    }
+
     protected static void loadSystemThread() {
         long spawnMillis = 0L;
         Calendar c = Calendar.getInstance();
         String[] time = "24:00".split(":");
-        c.set(5, c.get(5) + 1);
-        c.set(11, Integer.parseInt(time[0]));
-        c.set(12, Integer.parseInt(time[1]));
-        c.set(13, 0);
+        c.set(Calendar.DATE, c.get(Calendar.DATE) + 1);
+        c.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time[0]));
+        c.set(Calendar.MINUTE, Integer.parseInt(time[1]));
+        c.set(Calendar.SECOND, 0);
         spawnMillis = c.getTimeInMillis() - System.currentTimeMillis();
-        ThreadPool.schedule(new Runnable() {
-            public void run() {
-                DailyLoginRewardManager.clearDBTable();
-                DailyLoginRewardManager.loadSystemThread();
-                LOGGER.info("[Daily Reward] Table cleaned and restart the thread.");
-            }
+        ThreadPool.schedule(() -> {
+            DailyLoginRewardManager.clearDBTable();
+            DailyLoginRewardManager.loadSystemThread();
+            LOGGER.info("[Daily Reward] Table cleaned and restart the thread.");
         }, spawnMillis);
     }
 
@@ -296,7 +298,6 @@ public class DailyLoginRewardManager {
     }
 
     public void load() {
-        loadSystemThread();
         LOGGER.info("Daily Reward Manager: Loaded");
     }
 

@@ -29,20 +29,20 @@ public class Q627_HeartInSearchOfPower extends Quest {
 
     public Q627_HeartInSearchOfPower() {
         super(627, "Heart in Search of Power");
-        CHANCES.put(Integer.valueOf(21520), Integer.valueOf(550000));
-        CHANCES.put(Integer.valueOf(21523), Integer.valueOf(584000));
-        CHANCES.put(Integer.valueOf(21524), Integer.valueOf(621000));
-        CHANCES.put(Integer.valueOf(21525), Integer.valueOf(621000));
-        CHANCES.put(Integer.valueOf(21526), Integer.valueOf(606000));
-        CHANCES.put(Integer.valueOf(21529), Integer.valueOf(625000));
-        CHANCES.put(Integer.valueOf(21530), Integer.valueOf(578000));
-        CHANCES.put(Integer.valueOf(21531), Integer.valueOf(690000));
-        CHANCES.put(Integer.valueOf(21532), Integer.valueOf(671000));
-        CHANCES.put(Integer.valueOf(21535), Integer.valueOf(693000));
-        CHANCES.put(Integer.valueOf(21536), Integer.valueOf(615000));
-        CHANCES.put(Integer.valueOf(21539), Integer.valueOf(762000));
-        CHANCES.put(Integer.valueOf(21540), Integer.valueOf(762000));
-        CHANCES.put(Integer.valueOf(21658), Integer.valueOf(690000));
+        CHANCES.put(21520, 550000);
+        CHANCES.put(21523, 584000);
+        CHANCES.put(21524, 621000);
+        CHANCES.put(21525, 621000);
+        CHANCES.put(21526, 606000);
+        CHANCES.put(21529, 625000);
+        CHANCES.put(21530, 578000);
+        CHANCES.put(21531, 690000);
+        CHANCES.put(21532, 671000);
+        CHANCES.put(21535, 693000);
+        CHANCES.put(21536, 615000);
+        CHANCES.put(21539, 762000);
+        CHANCES.put(21540, 762000);
+        CHANCES.put(21658, 690000);
         REWARDS.put("adena", new int[]{0, 0, 100000});
         REWARDS.put("asofe", new int[]{4043, 13, 6400});
         REWARDS.put("thon", new int[]{4044, 13, 6400});
@@ -148,7 +148,7 @@ public class Q627_HeartInSearchOfPower extends Quest {
         QuestState st = checkPlayerCondition(player, npc, "cond", "1");
         if (st == null)
             return null;
-        if (st.dropItems(7171, 1, 300, CHANCES.get(Integer.valueOf(npc.getNpcId()))))
+        if (st.dropItems(7171, 1, 300, CHANCES.get(npc.getNpcId())))
             st.set("cond", "2");
         return null;
     }

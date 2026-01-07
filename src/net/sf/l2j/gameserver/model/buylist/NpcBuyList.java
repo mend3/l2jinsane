@@ -32,11 +32,11 @@ public class NpcBuyList {
     }
 
     public Product getProductByItemId(int itemId) {
-        return this._products.get(Integer.valueOf(itemId));
+        return this._products.get(itemId);
     }
 
     public void addProduct(Product product) {
-        this._products.put(Integer.valueOf(product.getItemId()), product);
+        this._products.put(product.getItemId(), product);
     }
 
     public boolean isNpcAllowed(int npcId) {

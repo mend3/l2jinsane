@@ -25,32 +25,32 @@ public class Q633_InTheForgottenVillage extends Quest {
 
     public Q633_InTheForgottenVillage() {
         super(633, "In the Forgotten Village");
-        MOBS.put(Integer.valueOf(21557), Integer.valueOf(328000));
-        MOBS.put(Integer.valueOf(21558), Integer.valueOf(328000));
-        MOBS.put(Integer.valueOf(21559), Integer.valueOf(337000));
-        MOBS.put(Integer.valueOf(21560), Integer.valueOf(337000));
-        MOBS.put(Integer.valueOf(21563), Integer.valueOf(342000));
-        MOBS.put(Integer.valueOf(21564), Integer.valueOf(348000));
-        MOBS.put(Integer.valueOf(21565), Integer.valueOf(351000));
-        MOBS.put(Integer.valueOf(21566), Integer.valueOf(359000));
-        MOBS.put(Integer.valueOf(21567), Integer.valueOf(359000));
-        MOBS.put(Integer.valueOf(21572), Integer.valueOf(365000));
-        MOBS.put(Integer.valueOf(21574), Integer.valueOf(383000));
-        MOBS.put(Integer.valueOf(21575), Integer.valueOf(383000));
-        MOBS.put(Integer.valueOf(21580), Integer.valueOf(385000));
-        MOBS.put(Integer.valueOf(21581), Integer.valueOf(395000));
-        MOBS.put(Integer.valueOf(21583), Integer.valueOf(397000));
-        MOBS.put(Integer.valueOf(21584), Integer.valueOf(401000));
-        UNDEADS.put(Integer.valueOf(21553), Integer.valueOf(347000));
-        UNDEADS.put(Integer.valueOf(21554), Integer.valueOf(347000));
-        UNDEADS.put(Integer.valueOf(21561), Integer.valueOf(450000));
-        UNDEADS.put(Integer.valueOf(21578), Integer.valueOf(501000));
-        UNDEADS.put(Integer.valueOf(21596), Integer.valueOf(359000));
-        UNDEADS.put(Integer.valueOf(21597), Integer.valueOf(370000));
-        UNDEADS.put(Integer.valueOf(21598), Integer.valueOf(441000));
-        UNDEADS.put(Integer.valueOf(21599), Integer.valueOf(395000));
-        UNDEADS.put(Integer.valueOf(21600), Integer.valueOf(408000));
-        UNDEADS.put(Integer.valueOf(21601), Integer.valueOf(411000));
+        MOBS.put(21557, 328000);
+        MOBS.put(21558, 328000);
+        MOBS.put(21559, 337000);
+        MOBS.put(21560, 337000);
+        MOBS.put(21563, 342000);
+        MOBS.put(21564, 348000);
+        MOBS.put(21565, 351000);
+        MOBS.put(21566, 359000);
+        MOBS.put(21567, 359000);
+        MOBS.put(21572, 365000);
+        MOBS.put(21574, 383000);
+        MOBS.put(21575, 383000);
+        MOBS.put(21580, 385000);
+        MOBS.put(21581, 395000);
+        MOBS.put(21583, 397000);
+        MOBS.put(21584, 401000);
+        UNDEADS.put(21553, 347000);
+        UNDEADS.put(21554, 347000);
+        UNDEADS.put(21561, 450000);
+        UNDEADS.put(21578, 501000);
+        UNDEADS.put(21596, 359000);
+        UNDEADS.put(21597, 370000);
+        UNDEADS.put(21598, 441000);
+        UNDEADS.put(21599, 395000);
+        UNDEADS.put(21600, 408000);
+        UNDEADS.put(21601, 411000);
         setItemsIds(7544, 7545);
         addStartNpc(31388);
         addTalkId(31388);
@@ -117,16 +117,16 @@ public class Q633_InTheForgottenVillage extends Quest {
     public String onKill(Npc npc, Creature killer) {
         Player player = killer.getActingPlayer();
         int npcId = npc.getNpcId();
-        if (UNDEADS.containsKey(Integer.valueOf(npcId))) {
+        if (UNDEADS.containsKey(npcId)) {
             QuestState st = getRandomPartyMemberState(player, npc, (byte) 1);
             if (st == null)
                 return null;
-            st.dropItems(7545, 1, 0, UNDEADS.get(Integer.valueOf(npcId)));
-        } else if (MOBS.containsKey(Integer.valueOf(npcId))) {
+            st.dropItems(7545, 1, 0, UNDEADS.get(npcId));
+        } else if (MOBS.containsKey(npcId)) {
             QuestState st = getRandomPartyMember(player, npc, "1");
             if (st == null)
                 return null;
-            if (st.dropItems(7544, 1, 200, MOBS.get(Integer.valueOf(npcId))))
+            if (st.dropItems(7544, 1, 200, MOBS.get(npcId)))
                 st.set("cond", "2");
         }
         return null;

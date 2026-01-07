@@ -79,7 +79,7 @@ public final class Gatekeeper extends Folk {
             int price = list.getPrice();
             if (!list.isNoble()) {
                 Calendar cal = Calendar.getInstance();
-                if (cal.get(11) >= 20 && cal.get(11) <= 23 && (cal.get(7) == 1 || cal.get(7) == 7))
+                if (cal.get(Calendar.HOUR_OF_DAY) >= 20 && cal.get(Calendar.HOUR_OF_DAY) <= 23 && (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY))
                     price /= 2;
             }
             if (player.destroyItemByItemId("Teleport ", list.isNoble() ? 6651 : 57, price, this, true))
@@ -99,7 +99,7 @@ public final class Gatekeeper extends Folk {
             }
             if (val == 1) {
                 Calendar cal = Calendar.getInstance();
-                if (cal.get(11) >= 20 && cal.get(11) <= 23 && (cal.get(7) == 1 || cal.get(7) == 7)) {
+                if (cal.get(Calendar.HOUR_OF_DAY) >= 20 && cal.get(Calendar.HOUR_OF_DAY) <= 23 && (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
                     NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
                     String content = HtmCache.getInstance().getHtm("data/html/teleporter/half/" + getNpcId() + ".htm");
                     if (content == null)

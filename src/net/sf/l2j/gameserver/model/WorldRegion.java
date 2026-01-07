@@ -27,12 +27,9 @@ public final class WorldRegion {
     private final int _tileX;
 
     private final int _tileY;
-
-    private boolean _active;
-
     private final AtomicInteger _playersCount = new AtomicInteger();
-
     private final Instance _instance;
+    private boolean _active;
 
     public WorldRegion(int x, int y) {
         this._instance = InstanceManager.getInstance().getInstance(0);
@@ -166,7 +163,7 @@ public final class WorldRegion {
     public void addVisibleObject(WorldObject object) {
         if (object == null)
             return;
-        this._objects.put(Integer.valueOf(object.getObjectId()), object);
+        this._objects.put(object.getObjectId(), object);
         if (object instanceof net.sf.l2j.gameserver.model.actor.Player)
             this._playersCount.incrementAndGet();
     }
@@ -174,7 +171,7 @@ public final class WorldRegion {
     public void removeVisibleObject(WorldObject object) {
         if (object == null)
             return;
-        this._objects.remove(Integer.valueOf(object.getObjectId()));
+        this._objects.remove(object.getObjectId());
         if (object instanceof net.sf.l2j.gameserver.model.actor.Player)
             this._playersCount.decrementAndGet();
     }

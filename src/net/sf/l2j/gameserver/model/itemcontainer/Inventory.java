@@ -422,7 +422,7 @@ public abstract class Inventory extends ItemContainer {
                 pdollSlot = 0;
                 break;
             default:
-                LOGGER.warn("Slot type {} is unhandled.", Integer.valueOf(slot));
+                LOGGER.warn("Slot type {} is unhandled.", slot);
                 break;
         }
         if (pdollSlot >= 0) {
@@ -566,7 +566,7 @@ public abstract class Inventory extends ItemContainer {
                 setPaperdollItem(10, item);
                 return;
         }
-        LOGGER.warn("Unknown body slot {} for itemId {}.", Integer.valueOf(targetSlot), Integer.valueOf(item.getItemId()));
+        LOGGER.warn("Unknown body slot {} for itemId {}.", targetSlot, item.getItemId());
     }
 
     public void equipPetItem(ItemInstance item) {
@@ -679,7 +679,7 @@ public abstract class Inventory extends ItemContainer {
                 throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't restore inventory for {}.", e, Integer.valueOf(getOwnerId()));
+            LOGGER.error("Couldn't restore inventory for {}.", e, getOwnerId());
         }
         refreshWeight();
     }

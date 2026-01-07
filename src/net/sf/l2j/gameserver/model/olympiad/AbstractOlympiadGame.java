@@ -99,7 +99,7 @@ public abstract class AbstractOlympiadGame {
         player.abortCast();
         player.getAppearance().setVisible();
         if (player.isHero())
-            for (L2Skill skill : SkillTable.getInstance().getHeroSkills())
+            for (L2Skill skill : SkillTable.getHeroSkills())
                 player.removeSkill(skill.getId(), false);
         healPlayer(player);
         if (player.isMounted()) {
@@ -184,7 +184,7 @@ public abstract class AbstractOlympiadGame {
             healPlayer(player);
         }
         if (player.isHero())
-            for (L2Skill skill : SkillTable.getInstance().getHeroSkills())
+            for (L2Skill skill : SkillTable.getHeroSkills())
                 player.addSkill(skill, false);
         player.sendSkillList();
     }

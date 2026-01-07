@@ -59,7 +59,7 @@ public class GameServerRegister {
                     _choice = _scn.next();
                     try {
                         int id = Integer.parseInt(_choice);
-                        if (!GameServerManager.getInstance().getRegisteredGameServers().containsKey(Integer.valueOf(id))) {
+                        if (!GameServerManager.getInstance().getRegisteredGameServers().containsKey(id)) {
                             System.out.println("This server id isn't used.");
                             continue;
                         }
@@ -95,7 +95,7 @@ public class GameServerRegister {
                         } catch (Exception e) {
                             System.out.println("SQL error while cleaning registered server: " + e);
                         }
-                        GameServerManager.getInstance().getRegisteredGameServers().remove(Integer.valueOf(id));
+                        GameServerManager.getInstance().getRegisteredGameServers().remove(id);
                         System.out.println("You successfully dropped gameserver #" + id + ".");
                     } catch (NumberFormatException nfe) {
                         System.out.println("Type a valid server id.");
@@ -156,16 +156,16 @@ public class GameServerRegister {
                         continue;
                     }
                     int id = Integer.parseInt(_choice);
-                    if (GameServerManager.getInstance().getServerNames().get(Integer.valueOf(id)) == null) {
+                    if (GameServerManager.getInstance().getServerNames().get(id) == null) {
                         System.out.println("No name for server id: " + id + ".");
                         continue;
                     }
-                    if (GameServerManager.getInstance().getRegisteredGameServers().containsKey(Integer.valueOf(id))) {
+                    if (GameServerManager.getInstance().getRegisteredGameServers().containsKey(id)) {
                         System.out.println("This server id is already used.");
                         continue;
                     }
                     byte[] hexId = LoginServerThread.generateHex(16);
-                    GameServerManager.getInstance().getRegisteredGameServers().put(Integer.valueOf(id), new GameServerInfo(id, hexId));
+                    GameServerManager.getInstance().getRegisteredGameServers().put(id, new GameServerInfo(id, hexId));
                     GameServerManager.getInstance().registerServerOnDB(hexId, id, "");
                     Config.saveHexid(id, (new BigInteger(hexId)).toString(16), "hexid(server " + id + ").txt");
                     System.out.println("Server registered under 'hexid(server " + id + ").txt'.");
