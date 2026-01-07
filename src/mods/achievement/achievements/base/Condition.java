@@ -1,26 +1,22 @@
 package mods.achievement.achievements.base;
 
+import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.model.actor.Player;
 
 public abstract class Condition {
-    private final Object _value;
 
-    private String _name;
+    protected final StatSet _set;
 
-    public Condition(Object value) {
-        this._value = value;
+    public Condition(StatSet set) {
+        _set = set;
     }
 
     public Object getValue() {
-        return this._value;
+        return true;
     }
 
     public String getName() {
-        return this._name;
-    }
-
-    public void setName(String s) {
-        this._name = s;
+        return this._set.getString("name");
     }
 
     public abstract boolean meetConditionRequirements(Player paramPlayer);

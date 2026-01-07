@@ -31,16 +31,18 @@ public final class Seed {
     private final int _cropReferencePrice;
 
     public Seed(StatSet set) {
-        this._seedId = set.getInteger("id");
-        this._cropId = set.getInteger("cropId");
-        this._level = set.getInteger("level");
+
+        this._seedId = set.getInteger("seedId");
         this._matureId = set.getInteger("matureId");
+        this._level = set.getInteger("level");
         this._reward1 = set.getInteger("reward1");
         this._reward2 = set.getInteger("reward2");
-        this._castleId = set.getInteger("castleId");
         this._isAlternative = set.getBool("isAlternative");
-        this._limitCrops = set.getInteger("cropsLimit");
         this._limitSeeds = set.getInteger("seedsLimit");
+        this._limitCrops = set.getInteger("cropsLimit");
+
+        this._cropId = set.getInteger("cropId");
+        this._castleId = set.getInteger("castleId");
         Item item = ItemTable.getInstance().getTemplate(this._cropId);
         this._cropReferencePrice = (item != null) ? item.getReferencePrice() : 1;
         item = ItemTable.getInstance().getTemplate(this._seedId);

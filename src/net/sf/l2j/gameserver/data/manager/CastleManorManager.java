@@ -5,6 +5,7 @@ import net.sf.l2j.commons.data.xml.IXmlReader;
 import net.sf.l2j.commons.pool.ConnectionPool;
 import net.sf.l2j.commons.pool.ThreadPool;
 import net.sf.l2j.commons.random.Rnd;
+import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.data.sql.ClanTable;
 import net.sf.l2j.gameserver.enums.ManorStatus;
 import net.sf.l2j.gameserver.model.entity.Castle;
@@ -23,6 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class CastleManorManager implements IXmlReader {
@@ -143,145 +145,108 @@ public class CastleManorManager implements IXmlReader {
             return;
         }
 
-        parseFile("./data/xml/seeds.xml");
-        LOGGER.info("Loaded {} seeds.", Integer.valueOf(this._seeds.size()));
+        parseFile("./data/xml/manors.xml");
+        LOGGER.info("Loaded {} seeds.", this._seeds.size());
 
-        try {
-            Connection con = ConnectionPool.getConnection();
-            try {
-                PreparedStatement stProduction = con.prepareStatement("SELECT * FROM castle_manor_production WHERE castle_id=?");
-                try {
-                    PreparedStatement stProcure = con.prepareStatement("SELECT * FROM castle_manor_procure WHERE castle_id=?");
-                    try {
-                        for (Castle castle : CastleManager.getInstance().getCastles()) {
-                            int castleId = castle.getCastleId();
-                            List<SeedProduction> pCurrent = new ArrayList<>();
-                            List<SeedProduction> pNext = new ArrayList<>();
-                            stProduction.clearParameters();
-                            stProduction.setInt(1, castleId);
-                            ResultSet rs = stProduction.executeQuery();
-                            try {
-                                while (rs.next()) {
-                                    SeedProduction sp = new SeedProduction(rs.getInt("seed_id"), rs.getInt("amount"), rs.getInt("price"), rs.getInt("start_amount"));
-                                    if (rs.getBoolean("next_period")) {
-                                        pNext.add(sp);
-                                        continue;
-                                    }
-                                    pCurrent.add(sp);
-                                }
-                                if (rs != null)
-                                    rs.close();
-                            } catch (Throwable throwable) {
-                                if (rs != null)
-                                    try {
-                                        rs.close();
-                                    } catch (Throwable throwable1) {
-                                        throwable.addSuppressed(throwable1);
-                                    }
-                                throw throwable;
-                            }
-                            this._production.put(Integer.valueOf(castleId), pCurrent);
-                            this._productionNext.put(Integer.valueOf(castleId), pNext);
-                            List<CropProcure> current = new ArrayList<>();
-                            List<CropProcure> next = new ArrayList<>();
-                            stProcure.clearParameters();
-                            stProcure.setInt(1, castleId);
-                            ResultSet resultSet1 = stProcure.executeQuery();
-                            try {
-                                while (resultSet1.next()) {
-                                    CropProcure cp = new CropProcure(resultSet1.getInt("crop_id"), resultSet1.getInt("amount"), resultSet1.getInt("reward_type"), resultSet1.getInt("start_amount"), resultSet1.getInt("price"));
-                                    if (resultSet1.getBoolean("next_period")) {
-                                        next.add(cp);
-                                        continue;
-                                    }
-                                    current.add(cp);
-                                }
-                                if (resultSet1 != null)
-                                    resultSet1.close();
-                            } catch (Throwable throwable) {
-                                if (resultSet1 != null)
-                                    try {
-                                        resultSet1.close();
-                                    } catch (Throwable throwable1) {
-                                        throwable.addSuppressed(throwable1);
-                                    }
-                                throw throwable;
-                            }
-                            this._procure.put(Integer.valueOf(castleId), current);
-                            this._procureNext.put(Integer.valueOf(castleId), next);
-                        }
-                        if (stProcure != null)
-                            stProcure.close();
-                    } catch (Throwable throwable) {
-                        if (stProcure != null)
-                            try {
-                                stProcure.close();
-                            } catch (Throwable throwable1) {
-                                throwable.addSuppressed(throwable1);
-                            }
-                        throw throwable;
+
+        // Load dynamic data.
+        try (Connection con = ConnectionPool.getConnection();
+             PreparedStatement stProduction = con.prepareStatement(LOAD_PRODUCTION);
+             PreparedStatement stProcure = con.prepareStatement(LOAD_PROCURE)) {
+            for (Castle castle : CastleManager.getInstance().getCastles()) {
+                // Seed production
+                final List<SeedProduction> pCurrent = new ArrayList<>();
+                final List<SeedProduction> pNext = new ArrayList<>();
+
+                stProduction.clearParameters();
+                stProduction.setInt(1, castle.getId());
+
+                try (ResultSet rs = stProduction.executeQuery()) {
+                    while (rs.next()) {
+                        final SeedProduction sp = new SeedProduction(rs.getInt("seed_id"), rs.getInt("amount"), rs.getInt("price"), rs.getInt("start_amount"));
+                        if (rs.getBoolean("next_period"))
+                            pNext.add(sp);
+                        else
+                            pCurrent.add(sp);
                     }
-                    if (stProduction != null)
-                        stProduction.close();
-                } catch (Throwable throwable) {
-                    if (stProduction != null)
-                        try {
-                            stProduction.close();
-                        } catch (Throwable throwable1) {
-                            throwable.addSuppressed(throwable1);
-                        }
-                    throw throwable;
                 }
-                if (con != null)
-                    con.close();
-            } catch (Throwable throwable) {
-                if (con != null)
-                    try {
-                        con.close();
-                    } catch (Throwable throwable1) {
-                        throwable.addSuppressed(throwable1);
+                _production.put(castle.getId(), pCurrent);
+                _productionNext.put(castle.getId(), pNext);
+
+                // Seed procure
+                final List<CropProcure> current = new ArrayList<>();
+                final List<CropProcure> next = new ArrayList<>();
+
+                stProcure.clearParameters();
+                stProcure.setInt(1, castle.getId());
+
+                try (ResultSet rs = stProcure.executeQuery()) {
+                    while (rs.next()) {
+                        final CropProcure cp = new CropProcure(rs.getInt("crop_id"), rs.getInt("amount"), rs.getInt("reward_type"), rs.getInt("start_amount"), rs.getInt("price"));
+                        if (rs.getBoolean("next_period"))
+                            next.add(cp);
+                        else
+                            current.add(cp);
                     }
-                throw throwable;
+                }
+                _procure.put(castle.getId(), current);
+                _procureNext.put(castle.getId(), next);
             }
         } catch (Exception e) {
             LOGGER.error("Error restoring manor data.", e);
         }
-        Calendar currentTime = Calendar.getInstance();
-        int hour = currentTime.get(11);
-        int min = currentTime.get(12);
-        int maintenanceMin = Config.ALT_MANOR_REFRESH_MIN + Config.ALT_MANOR_MAINTENANCE_MIN;
-        if ((hour >= Config.ALT_MANOR_REFRESH_TIME && min >= maintenanceMin) || hour < Config.ALT_MANOR_APPROVE_TIME || (hour == Config.ALT_MANOR_APPROVE_TIME && min <= Config.ALT_MANOR_APPROVE_MIN)) {
-            this._mode = ManorStatus.MODIFIABLE;
-        } else if (hour == Config.ALT_MANOR_REFRESH_TIME && min >= Config.ALT_MANOR_REFRESH_MIN && min < maintenanceMin) {
-            this._mode = ManorStatus.MAINTENANCE;
-        }
+
+        // Set mode and start timer
+        final Calendar currentTime = Calendar.getInstance();
+        final int hour = currentTime.get(Calendar.HOUR_OF_DAY);
+        final int min = currentTime.get(Calendar.MINUTE);
+        final int maintenanceMin = Config.ALT_MANOR_REFRESH_MIN + Config.ALT_MANOR_MAINTENANCE_MIN;
+
+        if ((hour >= Config.ALT_MANOR_REFRESH_TIME && min >= maintenanceMin) || hour < Config.ALT_MANOR_APPROVE_TIME || (hour == Config.ALT_MANOR_APPROVE_TIME && min <= Config.ALT_MANOR_APPROVE_MIN))
+            _mode = ManorStatus.MODIFIABLE;
+        else if (hour == Config.ALT_MANOR_REFRESH_TIME && (min >= Config.ALT_MANOR_REFRESH_MIN && min < maintenanceMin))
+            _mode = ManorStatus.MAINTENANCE;
+
+        // Schedule mode change
+        scheduleModeChange();
         scheduleModeChange();
         ThreadPool.scheduleAtFixedRate(this::storeMe, Config.ALT_MANOR_SAVE_PERIOD_RATE, Config.ALT_MANOR_SAVE_PERIOD_RATE);
         LOGGER.debug("Current Manor mode is: {}.", this._mode.toString());
     }
 
     public void parseDocument(Document doc, Path path) {
-        forEach(doc, "list", listNode -> forEach(listNode, "seed", nnn -> {
+        AtomicInteger cropId = new AtomicInteger();
+        forEach(doc, "list", listNode -> forEach(listNode, "manor", manorNode ->
+        {
+            final int castleId = parseInteger(manorNode.getAttributes(), "id");
+            forEach(manorNode, "crop", cropNode ->
+            {
+                final StatSet set = parseAttributes(cropNode);
+                set.set("castleId", castleId);
+                set.set("cropId", cropId.incrementAndGet());
+
+                _seeds.put(set.getInteger("seedId"), new Seed(set));
+            });
         }));
     }
 
     private final void scheduleModeChange() {
         this._nextModeChange = Calendar.getInstance();
-        this._nextModeChange.set(13, 0);
+        this._nextModeChange.set(Calendar.SECOND, 0);
         switch (this._mode) {
             case MODIFIABLE:
-                this._nextModeChange.set(11, Config.ALT_MANOR_APPROVE_TIME);
-                this._nextModeChange.set(12, Config.ALT_MANOR_APPROVE_MIN);
+                this._nextModeChange.set(Calendar.HOUR_OF_DAY, Config.ALT_MANOR_APPROVE_TIME);
+                this._nextModeChange.set(Calendar.MINUTE, Config.ALT_MANOR_APPROVE_MIN);
                 if (this._nextModeChange.before(Calendar.getInstance()))
-                    this._nextModeChange.add(5, 1);
+                    this._nextModeChange.add(Calendar.DATE, 1);
                 break;
             case MAINTENANCE:
-                this._nextModeChange.set(11, Config.ALT_MANOR_REFRESH_TIME);
-                this._nextModeChange.set(12, Config.ALT_MANOR_REFRESH_MIN + Config.ALT_MANOR_MAINTENANCE_MIN);
+                this._nextModeChange.set(Calendar.HOUR_OF_DAY, Config.ALT_MANOR_REFRESH_TIME);
+                this._nextModeChange.set(Calendar.MINUTE, Config.ALT_MANOR_REFRESH_MIN + Config.ALT_MANOR_MAINTENANCE_MIN);
                 break;
             case APPROVED:
-                this._nextModeChange.set(11, Config.ALT_MANOR_REFRESH_TIME);
-                this._nextModeChange.set(12, Config.ALT_MANOR_REFRESH_MIN);
+                this._nextModeChange.set(Calendar.HOUR_OF_DAY, Config.ALT_MANOR_REFRESH_TIME);
+                this._nextModeChange.set(Calendar.MINUTE, Config.ALT_MANOR_REFRESH_MIN);
                 break;
         }
         ThreadPool.schedule(this::changeMode, this._nextModeChange.getTimeInMillis() - System.currentTimeMillis());
@@ -297,7 +262,7 @@ public class CastleManorManager implements IXmlReader {
                         continue;
                     int castleId = castle.getCastleId();
                     ItemContainer cwh = owner.getWarehouse();
-                    for (CropProcure crop : this._procure.get(Integer.valueOf(castleId))) {
+                    for (CropProcure crop : this._procure.get(castleId)) {
                         if (crop.getStartAmount() > 0) {
                             if (crop.getStartAmount() != crop.getAmount()) {
                                 int count = (int) ((crop.getStartAmount() - crop.getAmount()) * 0.9D);
@@ -310,23 +275,23 @@ public class CastleManorManager implements IXmlReader {
                                 castle.addToTreasuryNoTax(((long) crop.getAmount() * crop.getPrice()));
                         }
                     }
-                    List<SeedProduction> _nextProduction = this._productionNext.get(Integer.valueOf(castleId));
-                    List<CropProcure> _nextProcure = this._procureNext.get(Integer.valueOf(castleId));
-                    this._production.put(Integer.valueOf(castleId), _nextProduction);
-                    this._procure.put(Integer.valueOf(castleId), _nextProcure);
+                    List<SeedProduction> _nextProduction = this._productionNext.get(castleId);
+                    List<CropProcure> _nextProcure = this._procureNext.get(castleId);
+                    this._production.put(castleId, _nextProduction);
+                    this._procure.put(castleId, _nextProcure);
                     if (castle.getTreasury() < getManorCost(castleId, false)) {
-                        this._productionNext.put(Integer.valueOf(castleId), Collections.emptyList());
-                        this._procureNext.put(Integer.valueOf(castleId), Collections.emptyList());
+                        this._productionNext.put(castleId, Collections.emptyList());
+                        this._procureNext.put(castleId, Collections.emptyList());
                         continue;
                     }
                     List<SeedProduction> production = new ArrayList<>(_nextProduction);
                     for (SeedProduction s : production)
                         s.setAmount(s.getStartAmount());
-                    this._productionNext.put(Integer.valueOf(castleId), production);
+                    this._productionNext.put(castleId, production);
                     List<CropProcure> procure = new ArrayList<>(_nextProcure);
                     for (CropProcure cr : procure)
                         cr.setAmount(cr.getStartAmount());
-                    this._procureNext.put(Integer.valueOf(castleId), procure);
+                    this._procureNext.put(castleId, procure);
                 }
                 storeMe();
                 break;
@@ -350,14 +315,14 @@ public class CastleManorManager implements IXmlReader {
                     int slots = 0;
                     int castleId = castle.getCastleId();
                     ItemContainer cwh = owner.getWarehouse();
-                    for (CropProcure crop : this._procureNext.get(Integer.valueOf(castleId))) {
+                    for (CropProcure crop : this._procureNext.get(castleId)) {
                         if (crop.getStartAmount() > 0 && cwh.getItemsByItemId(getSeedByCrop(crop.getId()).getMatureId()) == null)
                             slots++;
                     }
                     long manorCost = getManorCost(castleId, true);
                     if (!cwh.validateCapacity(slots) && castle.getTreasury() < manorCost) {
-                        this._productionNext.get(Integer.valueOf(castleId)).clear();
-                        this._procureNext.get(Integer.valueOf(castleId)).clear();
+                        this._productionNext.get(castleId).clear();
+                        this._procureNext.get(castleId).clear();
                         ClanMember clanLeader = owner.getLeader();
                         if (clanLeader != null && clanLeader.isOnline())
                             clanLeader.getPlayerInstance().sendPacket(SystemMessageId.THE_AMOUNT_IS_NOT_SUFFICIENT_AND_SO_THE_MANOR_IS_NOT_IN_OPERATION);
@@ -372,15 +337,15 @@ public class CastleManorManager implements IXmlReader {
     }
 
     public final void setNextSeedProduction(List<SeedProduction> list, int castleId) {
-        this._productionNext.put(Integer.valueOf(castleId), list);
+        this._productionNext.put(castleId, list);
     }
 
     public final void setNextCropProcure(List<CropProcure> list, int castleId) {
-        this._procureNext.put(Integer.valueOf(castleId), list);
+        this._procureNext.put(castleId, list);
     }
 
     public final List<SeedProduction> getSeedProduction(int castleId, boolean nextPeriod) {
-        return nextPeriod ? this._productionNext.get(Integer.valueOf(castleId)) : this._production.get(Integer.valueOf(castleId));
+        return nextPeriod ? this._productionNext.get(castleId) : this._production.get(castleId);
     }
 
     public final SeedProduction getSeedProduct(int castleId, int seedId, boolean nextPeriod) {
@@ -392,7 +357,7 @@ public class CastleManorManager implements IXmlReader {
     }
 
     public final List<CropProcure> getCropProcure(int castleId, boolean nextPeriod) {
-        return nextPeriod ? this._procureNext.get(Integer.valueOf(castleId)) : this._procure.get(Integer.valueOf(castleId));
+        return nextPeriod ? this._procureNext.get(castleId) : this._procure.get(castleId);
     }
 
     public final CropProcure getCropProcure(int castleId, int cropId, boolean nextPeriod) {
@@ -544,10 +509,10 @@ public class CastleManorManager implements IXmlReader {
     public final void resetManorData(int castleId) {
         if (this._mode == ManorStatus.DISABLED)
             return;
-        this._procure.get(Integer.valueOf(castleId)).clear();
-        this._procureNext.get(Integer.valueOf(castleId)).clear();
-        this._production.get(Integer.valueOf(castleId)).clear();
-        this._productionNext.get(Integer.valueOf(castleId)).clear();
+        this._procure.get(castleId).clear();
+        this._procureNext.get(castleId).clear();
+        this._production.get(castleId).clear();
+        this._productionNext.get(castleId).clear();
     }
 
     public final boolean isUnderMaintenance() {
@@ -574,9 +539,9 @@ public class CastleManorManager implements IXmlReader {
         List<Seed> seeds = new ArrayList<>();
         List<Integer> cropIds = new ArrayList<>();
         for (Seed seed : this._seeds.values()) {
-            if (!cropIds.contains(Integer.valueOf(seed.getCropId()))) {
+            if (!cropIds.contains(seed.getCropId())) {
                 seeds.add(seed);
-                cropIds.add(Integer.valueOf(seed.getCropId()));
+                cropIds.add(seed.getCropId());
             }
         }
         cropIds.clear();
@@ -596,7 +561,7 @@ public class CastleManorManager implements IXmlReader {
     }
 
     public final Seed getSeed(int seedId) {
-        return this._seeds.get(Integer.valueOf(seedId));
+        return this._seeds.get(seedId);
     }
 
     public final Seed getSeedByCrop(int cropId, int castleId) {

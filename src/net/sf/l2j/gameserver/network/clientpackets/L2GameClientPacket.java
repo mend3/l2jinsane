@@ -48,6 +48,7 @@ public abstract class L2GameClientPacket extends ReceivablePacket<GameClient> {
         } catch (Throwable t) {
             if (getClient() != null) {
                 LOGGER.log(new LogRecord(Level.SEVERE, "Client: " + getClient() + " - Failed reading: " + getType() + " ; " + t));
+                t.printStackTrace();
             } else {
                 LOGGER.log(new LogRecord(Level.SEVERE, " - Failed reading: " + getType() + " ; " + t));
             }

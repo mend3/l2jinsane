@@ -1,14 +1,19 @@
 package mods.achievement.achievements;
 
 import mods.achievement.achievements.base.Condition;
+import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.model.actor.Player;
 
 import java.util.concurrent.TimeUnit;
 
 public class OnlineTime extends Condition {
-    public OnlineTime(Object value) {
+    public OnlineTime(StatSet value) {
         super(value);
-        setName("Online Time");
+    }
+
+    @Override
+    public Integer getValue() {
+        return _set.getInteger("minOnlineTime", 1000);
     }
 
     public String getStatus(Player player) {

@@ -6,6 +6,7 @@ import net.sf.l2j.gameserver.model.buylist.NpcBuyList;
 import net.sf.l2j.gameserver.model.buylist.Product;
 import net.sf.l2j.gameserver.taskmanager.BuyListTaskManager;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -29,58 +30,20 @@ public class BuyListManager implements IXmlReader {
     public void load() {
         parseFile("./data/xml/buyLists.xml");
         LOGGER.info("Loaded {} buyLists.", Integer.valueOf(this._buyLists.size()));
-        try {
-            Connection con = ConnectionPool.getConnection();
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT * FROM `buylists`");
-                try {
-                    ResultSet rs = ps.executeQuery();
-                    try {
-                        while (rs.next()) {
-                            int buyListId = rs.getInt("buylist_id");
-                            int itemId = rs.getInt("item_id");
-                            int count = rs.getInt("count");
-                            long nextRestockTime = rs.getLong("next_restock_time");
-                            NpcBuyList buyList = this._buyLists.get(Integer.valueOf(buyListId));
-                            if (buyList == null)
-                                continue;
-                            Product product = buyList.getProductByItemId(itemId);
-                            if (product == null)
-                                continue;
-                            BuyListTaskManager.getInstance().test(product, count, nextRestockTime);
-                        }
-                        if (rs != null)
-                            rs.close();
-                    } catch (Throwable throwable) {
-                        if (rs != null)
-                            try {
-                                rs.close();
-                            } catch (Throwable throwable1) {
-                                throwable.addSuppressed(throwable1);
-                            }
-                        throw throwable;
-                    }
-                    if (ps != null)
-                        ps.close();
-                } catch (Throwable throwable) {
-                    if (ps != null)
-                        try {
-                            ps.close();
-                        } catch (Throwable throwable1) {
-                            throwable.addSuppressed(throwable1);
-                        }
-                    throw throwable;
-                }
-                if (con != null)
-                    con.close();
-            } catch (Throwable throwable) {
-                if (con != null)
-                    try {
-                        con.close();
-                    } catch (Throwable throwable1) {
-                        throwable.addSuppressed(throwable1);
-                    }
-                throw throwable;
+
+        try (Connection con = ConnectionPool.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT * FROM `buylists`");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                final NpcBuyList buyList = _buyLists.get(rs.getInt("buylist_id"));
+                if (buyList == null)
+                    continue;
+
+                final Product product = buyList.getProductByItemId(rs.getInt("item_id"));
+                if (product == null)
+                    continue;
+
+                BuyListTaskManager.getInstance().test(product, rs.getInt("count"), rs.getLong("next_restock_time"));
             }
         } catch (Exception e) {
             LOGGER.error("Failed to load buyList data from database.", e);
@@ -88,7 +51,13 @@ public class BuyListManager implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        forEach(doc, "list", listNode -> forEach(listNode, "buyList", nnn -> {
+        forEach(doc, "list", listNode -> forEach(listNode, "buyList", buyListNode -> {
+            final NamedNodeMap attrs = buyListNode.getAttributes();
+            final int buyListId = parseInteger(attrs, "id");
+            final NpcBuyList buyList = new NpcBuyList(buyListId);
+            buyList.setNpcId(parseInteger(attrs, "npcId"));
+            forEach(buyListNode, "product", productNode -> buyList.addProduct(new Product(buyListId, parseAttributes(productNode))));
+            _buyLists.put(buyListId, buyList);
         }));
     }
 

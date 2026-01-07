@@ -1,12 +1,12 @@
 package mods.achievement.achievements;
 
 import mods.achievement.achievements.base.Condition;
+import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.model.actor.Player;
 
 public class Noble extends Condition {
-    public Noble(Object value) {
+    public Noble(StatSet value) {
         super(value);
-        setName("Noble");
     }
 
     public String getStatus(Player player) {

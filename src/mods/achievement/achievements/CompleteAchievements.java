@@ -1,12 +1,17 @@
 package mods.achievement.achievements;
 
 import mods.achievement.achievements.base.Condition;
+import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.model.actor.Player;
 
 public class CompleteAchievements extends Condition {
-    public CompleteAchievements(Object value) {
+    public CompleteAchievements(StatSet value) {
         super(value);
-        setName("Complete Achievements");
+    }
+
+    @Override
+    public Integer getValue() {
+        return _set.getInteger("total", 10);
     }
 
     public String getStatus(Player player) {

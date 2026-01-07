@@ -1,17 +1,22 @@
 package mods.achievement.achievements;
 
 import mods.achievement.achievements.base.Condition;
+import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.Player;
 
 public class SkillEnchant extends Condition {
-    public SkillEnchant(Object value) {
+    public SkillEnchant(StatSet value) {
         super(value);
-        setName("Skill Enchant");
     }
 
     public String getStatus(Player player) {
         return "null";
+    }
+
+    @Override
+    public Integer getValue() {
+        return _set.getInteger("minSkillEnchant", 10);
     }
 
     public boolean meetConditionRequirements(Player player) {

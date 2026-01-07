@@ -1,16 +1,20 @@
 package mods.achievement.achievements;
 
 import mods.achievement.achievements.base.Condition;
+import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.data.manager.RaidPointManager;
 import net.sf.l2j.gameserver.model.actor.Player;
 
-import java.util.Iterator;
 import java.util.Map;
 
 public class RaidKill extends Condition {
-    public RaidKill(Object value) {
+    public RaidKill(StatSet value) {
         super(value);
-        setName("Raid Kill");
+    }
+
+    @Override
+    public String getValue() {
+        return _set.getString("minRaidPoints", null);
     }
 
     public String getStatus(Player player) {
@@ -20,15 +24,13 @@ public class RaidKill extends Condition {
     public boolean meetConditionRequirements(Player player) {
         if (getValue() == null)
             return false;
-        int val = Integer.parseInt(getValue().toString());
+        int val = Integer.parseInt(getValue());
         Map<Integer, Integer> list = RaidPointManager.getInstance().getList(player);
-        if (list != null)
-            for (Iterator<Integer> iterator = list.keySet().iterator(); iterator.hasNext(); ) {
-                int bid = iterator.next();
-                if (bid == val)
-                    if (RaidPointManager.getInstance().getList(player).get(Integer.valueOf(bid)) > 0)
-                        return true;
-            }
+        for (int bid : list.keySet()) {
+            if (bid == val)
+                if (RaidPointManager.getInstance().getList(player).get(bid) > 0)
+                    return true;
+        }
         return false;
     }
 }

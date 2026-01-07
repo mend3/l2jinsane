@@ -4,8 +4,10 @@ import net.sf.l2j.Config;
 import net.sf.l2j.commons.data.xml.IXmlReader;
 import net.sf.l2j.commons.lang.StringUtil;
 import net.sf.l2j.commons.pool.ConnectionPool;
+import net.sf.l2j.gameserver.data.SkillTable;
 import net.sf.l2j.gameserver.model.holder.BuffSkillHolder;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -35,57 +37,27 @@ public class BufferManager implements IXmlReader {
     public void load() {
         parseFile("./data/xml/bufferSkills.xml");
         LOGGER.info("Loaded {} available buffs.", Integer.valueOf(this._availableBuffs.size()));
-        try {
-            Connection con = ConnectionPool.getConnection();
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT * FROM buffer_schemes");
-                try {
-                    ResultSet rs = ps.executeQuery();
-                    try {
-                        while (rs.next()) {
-                            ArrayList<Integer> schemeList = new ArrayList<>();
-                            String[] skills = rs.getString("skills").split(",");
-                            for (String skill : skills) {
-                                if (skill.isEmpty())
-                                    break;
-                                int skillId = Integer.valueOf(skill);
-                                if (this._availableBuffs.containsKey(Integer.valueOf(skillId)))
-                                    schemeList.add(Integer.valueOf(skillId));
-                            }
-                            setScheme(rs.getInt("object_id"), rs.getString("scheme_name"), schemeList);
-                        }
-                        if (rs != null)
-                            rs.close();
-                    } catch (Throwable throwable) {
-                        if (rs != null)
-                            try {
-                                rs.close();
-                            } catch (Throwable throwable1) {
-                                throwable.addSuppressed(throwable1);
-                            }
-                        throw throwable;
-                    }
-                    if (ps != null)
-                        ps.close();
-                } catch (Throwable throwable) {
-                    if (ps != null)
-                        try {
-                            ps.close();
-                        } catch (Throwable throwable1) {
-                            throwable.addSuppressed(throwable1);
-                        }
-                    throw throwable;
+
+        try (Connection con = ConnectionPool.getConnection();
+             PreparedStatement ps = con.prepareStatement(LOAD_SCHEMES);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                final ArrayList<Integer> schemeList = new ArrayList<>();
+
+                final String[] skills = rs.getString("skills").split(",");
+                for (String skill : skills) {
+                    // Don't feed the skills list if the list is empty.
+                    if (skill.isEmpty())
+                        break;
+
+                    final int skillId = Integer.parseInt(skill);
+
+                    // Integrity check to see if the skillId is available as a buff.
+                    if (_availableBuffs.containsKey(skillId))
+                        schemeList.add(skillId);
                 }
-                if (con != null)
-                    con.close();
-            } catch (Throwable throwable) {
-                if (con != null)
-                    try {
-                        con.close();
-                    } catch (Throwable throwable1) {
-                        throwable.addSuppressed(throwable1);
-                    }
-                throw throwable;
+
+                setScheme(rs.getInt("object_id"), rs.getString("scheme_name"), schemeList);
             }
         } catch (Exception e) {
             LOGGER.error("Failed to load schemes data.", e);
@@ -93,7 +65,19 @@ public class BufferManager implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        forEach(doc, "list", listNode -> forEach(listNode, "category", nnn -> {
+        forEach(doc, "list", listNode -> forEach(listNode, "category", categoryNode ->
+        {
+            final String category = parseString(categoryNode.getAttributes(), "type");
+            forEach(categoryNode, "buff", buffNode ->
+            {
+                final NamedNodeMap attrs = buffNode.getAttributes();
+                final int skillId = parseInteger(attrs, "id");
+                final int skillLvl = parseInteger(attrs, "level", SkillTable.getInstance().getMaxLevel(skillId));
+                final int price = parseInteger(attrs, "price", 0);
+                final String desc = parseString(attrs, "desc", "");
+
+                _availableBuffs.put(skillId, new BuffSkillHolder(skillId, price, category, desc));
+            });
         }));
     }
 

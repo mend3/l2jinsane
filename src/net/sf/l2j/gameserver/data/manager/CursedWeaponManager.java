@@ -2,6 +2,7 @@ package net.sf.l2j.gameserver.data.manager;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.commons.data.xml.IXmlReader;
+import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.model.actor.Attackable;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Player;
@@ -19,9 +20,6 @@ public class CursedWeaponManager implements IXmlReader {
     private final Map<Integer, CursedWeapon> _cursedWeapons = new HashMap<>();
 
     public CursedWeaponManager() {
-        if (!Config.ALLOW_CURSED_WEAPONS) {
-            LOGGER.info("Cursed weapons loading is skipped.");
-        }
     }
 
     public static CursedWeaponManager getInstance() {
@@ -29,12 +27,19 @@ public class CursedWeaponManager implements IXmlReader {
     }
 
     public void load() {
+        if (!Config.ALLOW_CURSED_WEAPONS) {
+            LOGGER.info("Cursed weapons loading is skipped.");
+            return;
+        }
         parseFile("./data/xml/cursedWeapons.xml");
         LOGGER.info("Loaded {} cursed weapons.", Integer.valueOf(this._cursedWeapons.size()));
     }
 
     public void parseDocument(Document doc, Path path) {
-        forEach(doc, "list", listNode -> forEach(listNode, "item", nnn -> {
+        forEach(doc, "list", listNode -> forEach(listNode, "item", itemNode ->
+        {
+            final StatSet set = parseAttributes(itemNode);
+            _cursedWeapons.put(set.getInteger("id"), new CursedWeapon(set));
         }));
     }
 

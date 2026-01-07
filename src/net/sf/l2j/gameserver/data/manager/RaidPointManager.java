@@ -38,11 +38,11 @@ public class RaidPointManager {
                             int objectId = rs.getInt("char_id");
                             int bossId = rs.getInt("boss_id");
                             int points = rs.getInt("points");
-                            Map<Integer, Integer> playerData = this._entries.get(Integer.valueOf(objectId));
+                            Map<Integer, Integer> playerData = this._entries.get(objectId);
                             if (playerData == null)
                                 playerData = new HashMap<>();
-                            playerData.put(Integer.valueOf(bossId), Integer.valueOf(points));
-                            this._entries.put(Integer.valueOf(objectId), playerData);
+                            playerData.put(bossId, points);
+                            this._entries.put(objectId, playerData);
                         }
                         if (rs != null)
                             rs.close();
@@ -80,21 +80,17 @@ public class RaidPointManager {
         } catch (Exception e) {
             LOGGER.error("Couldn't load RaidPoints entries.", e);
         }
-        LOGGER.info("Loaded {} RaidPoints entries.", Integer.valueOf(this._entries.size()));
+        LOGGER.info("Loaded {} RaidPoints entries.", this._entries.size());
     }
 
     public final Map<Integer, Integer> getList(Player player) {
-        return this._entries.get(Integer.valueOf(player.getObjectId()));
+        return this._entries.get(player.getObjectId());
     }
 
     public final void addPoints(Player player, int bossId, int points) {
         int objectId = player.getObjectId();
-        Map<Integer, Integer> playerData = this._entries.get(Integer.valueOf(objectId));
-        if (playerData == null) {
-            playerData = new HashMap<>();
-            this._entries.put(Integer.valueOf(objectId), playerData);
-        }
-        playerData.merge(Integer.valueOf(bossId), Integer.valueOf(points), Integer::sum);
+        Map<Integer, Integer> playerData = this._entries.computeIfAbsent(objectId, k -> new HashMap<>());
+        playerData.merge(bossId, points, Integer::sum);
         try {
             Connection con = ConnectionPool.getConnection();
             try {
@@ -132,7 +128,7 @@ public class RaidPointManager {
     }
 
     public final int getPointsByOwnerId(int objectId) {
-        Map<Integer, Integer> playerData = this._entries.get(Integer.valueOf(objectId));
+        Map<Integer, Integer> playerData = this._entries.get(objectId);
         if (playerData == null || playerData.isEmpty())
             return 0;
         return playerData.values().stream().mapToInt(Number::intValue).sum();
@@ -179,12 +175,12 @@ public class RaidPointManager {
             int ownerId = iterator.next();
             int points = getPointsByOwnerId(ownerId);
             if (points > 0)
-                playersData.put(Integer.valueOf(ownerId), Integer.valueOf(points));
+                playersData.put(ownerId, points);
         }
         AtomicInteger counter = new AtomicInteger(1);
         Map<Integer, Integer> rankMap = new LinkedHashMap<>();
-        playersData.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).forEachOrdered(e -> rankMap.put(e.getKey(), Integer.valueOf(counter.getAndIncrement())));
-        Integer rank = rankMap.get(Integer.valueOf(objectId));
+        playersData.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).forEachOrdered(e -> rankMap.put(e.getKey(), counter.getAndIncrement()));
+        Integer rank = rankMap.get(objectId);
         return (rank == null) ? 0 : rank;
     }
 
@@ -194,11 +190,11 @@ public class RaidPointManager {
             int objectId = iterator.next();
             int points = getPointsByOwnerId(objectId);
             if (points > 0)
-                playersData.put(Integer.valueOf(objectId), Integer.valueOf(points));
+                playersData.put(objectId, points);
         }
         AtomicInteger counter = new AtomicInteger(1);
         Map<Integer, Integer> rankMap = new LinkedHashMap<>();
-        playersData.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).limit(100L).forEachOrdered(e -> rankMap.put(e.getKey(), Integer.valueOf(counter.getAndIncrement())));
+        playersData.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue())).limit(100L).forEachOrdered(e -> rankMap.put(e.getKey(), counter.getAndIncrement()));
         return rankMap;
     }
 

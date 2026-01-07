@@ -1,53 +1,64 @@
 package mods.achievement.achievements.base;
 
+import net.sf.l2j.commons.util.StatSet;
+import net.sf.l2j.gameserver.data.ItemTable;
 import net.sf.l2j.gameserver.model.actor.Player;
+import net.sf.l2j.gameserver.model.item.kind.Item;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Achievement {
     private static final Logger _log = Logger.getLogger(Achievement.class.getName());
+    protected final StatSet _set;
     private final int _id;
     private final String _name;
     private final String _reward;
-    private String _description = "No Description!";
-    private final HashMap<Integer, Long> _rewardList;
-    private final ArrayList<Condition> _conditions;
+    private final List<RewardHolder> _rewardList = new ArrayList<>();
+    private final String _template;
+    private final String _description;
+    private final Condition _condition;
 
-    public Achievement(int id, String name, String description, String reward, ArrayList<Condition> conditions) {
-        this._rewardList = new HashMap<>();
-        this._id = id;
-        this._name = name;
-        this._description = description;
-        this._reward = reward;
-        this._conditions = conditions;
+    public Achievement(StatSet set) {
+        _set = set;
+        this._id = set.getInteger("id");
+        this._name = set.getString("name");
+        this._description = set.getString("description");
+        this._reward = set.getString("reward");
+        this._template = set.getString("template");
+        try {
+            this._condition = makeCondition();
+        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
+                 InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
         createRewardList();
     }
 
     private void createRewardList() {
         for (String s : this._reward.split(";")) {
-            if (s != null && !s.isEmpty()) {
+            if (!s.isEmpty()) {
                 String[] split = s.split(",");
-                Integer item = Integer.valueOf(0);
-                Long count = Long.valueOf(0L);
+                int item = 0;
+                long count = 0L;
                 try {
-                    item = Integer.valueOf(split[0]);
-                    count = Long.valueOf(split[1]);
+                    item = Integer.parseInt(split[0]);
+                    count = Long.parseLong(split[1]);
                 } catch (NumberFormatException nfe) {
                     _log.warning("Achievements Error: Wrong reward " + nfe);
                 }
-                this._rewardList.put(item, count);
+                RewardHolder holder = new RewardHolder(item, count);
+                this._rewardList.add(holder);
             }
         }
     }
 
     public boolean meetAchievementRequirements(Player player) {
-        for (Condition c : getConditions()) {
-            if (!c.meetConditionRequirements(player))
-                return false;
-        }
-        return true;
+        return getCondition() != null && getCondition().meetConditionRequirements(player);
     }
 
     public int getID() {
@@ -66,11 +77,27 @@ public class Achievement {
         return this._reward;
     }
 
-    public HashMap<Integer, Long> getRewardList() {
+    public List<RewardHolder> getRewardList() {
         return this._rewardList;
     }
 
-    public ArrayList<Condition> getConditions() {
-        return this._conditions;
+    public Condition getCondition() {
+        return this._condition;
+    }
+
+    public boolean meetConditionRequirements(Player player) {
+        return this.getCondition() != null && this.getCondition().meetConditionRequirements(player);
+    }
+
+    private Condition makeCondition() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Class<?> clazz = Class.forName("mods.achievement.achievements." + this._template);
+        Constructor<?> _constructor = clazz.getConstructor(StatSet.class);
+        return (Condition) _constructor.newInstance(this._set);
+    }
+
+    public record RewardHolder(Item _item, long _count) {
+        public RewardHolder(int _item, long _count) {
+            this(ItemTable.getInstance().getTemplate(_item), _count);
+        }
     }
 }

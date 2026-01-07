@@ -1,13 +1,13 @@
 package mods.achievement.achievements;
 
 import mods.achievement.achievements.base.Condition;
+import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.data.manager.CastleManager;
 import net.sf.l2j.gameserver.model.actor.Player;
 
 public class Castle extends Condition {
-    public Castle(Object value) {
+    public Castle(StatSet value) {
         super(value);
-        setName("Have Castle");
     }
 
     public String getStatus(Player player) {
@@ -20,8 +20,6 @@ public class Castle extends Condition {
     }
 
     public boolean meetConditionRequirements(Player player) {
-        if (getValue() == null)
-            return false;
         if (player.getClan() != null)
             return player.getClan().getCastleId() > 0;
         return false;

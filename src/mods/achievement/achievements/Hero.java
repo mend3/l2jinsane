@@ -1,12 +1,12 @@
 package mods.achievement.achievements;
 
 import mods.achievement.achievements.base.Condition;
+import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.model.actor.Player;
 
 public class Hero extends Condition {
-    public Hero(Object value) {
+    public Hero(StatSet value) {
         super(value);
-        setName("Hero");
     }
 
     public String getStatus(Player player) {

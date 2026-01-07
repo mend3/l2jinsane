@@ -149,24 +149,19 @@ public final class RequestBypassToServer extends L2GameClientPacket {
         boolean hasMore = false;
         int itemId = 0;
         StringBuilder sb = new StringBuilder();
-        List<SkinPackage> tempList = null;
-        switch (type.toLowerCase()) {
-            case "armor":
-                tempList = DressMeData.getInstance().getArmorSkinOptions().values().stream().filter(s -> !player.hasArmorSkin(s.getId())).collect(Collectors.toList());
-                break;
-            case "weapon":
-                tempList = DressMeData.getInstance().getWeaponSkinOptions().values().stream().filter(s -> !player.hasWeaponSkin(s.getId())).collect(Collectors.toList());
-                break;
-            case "hair":
-                tempList = DressMeData.getInstance().getHairSkinOptions().values().stream().filter(s -> !player.hasHairSkin(s.getId())).collect(Collectors.toList());
-                break;
-            case "face":
-                tempList = DressMeData.getInstance().getFaceSkinOptions().values().stream().filter(s -> !player.hasFaceSkin(s.getId())).collect(Collectors.toList());
-                break;
-            case "shield":
-                tempList = DressMeData.getInstance().getShieldSkinOptions().values().stream().filter(s -> !player.hasShieldSkin(s.getId())).collect(Collectors.toList());
-                break;
-        }
+        List<SkinPackage> tempList = switch (type.toLowerCase()) {
+            case "armor" ->
+                    DressMeData.getInstance().getArmorSkinOptions().values().stream().filter(s -> !player.hasArmorSkin(s.getId())).collect(Collectors.toList());
+            case "weapon" ->
+                    DressMeData.getInstance().getWeaponSkinOptions().values().stream().filter(s -> !player.hasWeaponSkin(s.getId())).collect(Collectors.toList());
+            case "hair" ->
+                    DressMeData.getInstance().getHairSkinOptions().values().stream().filter(s -> !player.hasHairSkin(s.getId())).collect(Collectors.toList());
+            case "face" ->
+                    DressMeData.getInstance().getFaceSkinOptions().values().stream().filter(s -> !player.hasFaceSkin(s.getId())).collect(Collectors.toList());
+            case "shield" ->
+                    DressMeData.getInstance().getShieldSkinOptions().values().stream().filter(s -> !player.hasShieldSkin(s.getId())).collect(Collectors.toList());
+            default -> null;
+        };
         if (tempList != null && !tempList.isEmpty())
             for (SkinPackage sp : tempList) {
                 if (sp == null)
@@ -187,36 +182,27 @@ public final class RequestBypassToServer extends L2GameClientPacket {
                     hasMore = true;
                     break;
                 }
-                switch (type.toLowerCase()) {
-                    case "armor":
-                        itemId = sp.getChestId();
-                        break;
-                    case "weapon":
-                        itemId = sp.getWeaponId();
-                        break;
-                    case "hair":
-                        itemId = sp.getHairId();
-                        break;
-                    case "face":
-                        itemId = sp.getFaceId();
-                        break;
-                    case "shield":
-                        itemId = sp.getShieldId();
-                        break;
-                }
+                itemId = switch (type.toLowerCase()) {
+                    case "armor" -> sp.getChestId();
+                    case "weapon" -> sp.getWeaponId();
+                    case "hair" -> sp.getHairId();
+                    case "face" -> sp.getFaceId();
+                    case "shield" -> sp.getShieldId();
+                    default -> itemId;
+                };
                 sb.append("<table border=0 cellspacing=0 cellpadding=2 height=36><tr>");
-                sb.append("<td width=32 align=center><button width=32 height=32 back=" + Item.getItemIcon(itemId) + " fore=" + Item.getItemIcon(itemId) + "></td>");
-                sb.append("<td width=124>" + sp.getName() + "<br1> <font color=999999>Price:</font> <font color=339966>" + Item.getItemNameById(sp.getPriceId()) + "</font> (<font color=LEVEL>" + sp.getPriceCount() + "</font>)</td>");
-                sb.append("<td align=center width=65><button value=\"Buy\" action=\"bypass -h dressme " + page + " buyskin  " + sp.getId() + " " + type + " " + itemId + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2></td>");
-                sb.append("<td align=center width=65><button value=\"Try\" action=\"bypass -h dressme " + page + " tryskin  " + sp.getId() + " " + type + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2></td>");
+                sb.append("<td width=32 align=center><button width=32 height=32 back=").append(Item.getItemIcon(itemId)).append(" fore=").append(Item.getItemIcon(itemId)).append("></td>");
+                sb.append("<td width=124>").append(sp.getName()).append("<br1> <font color=999999>Price:</font> <font color=339966>").append(Item.getItemNameById(sp.getPriceId())).append("</font> (<font color=LEVEL>").append(sp.getPriceCount()).append("</font>)</td>");
+                sb.append("<td align=center width=65><button value=\"Buy\" action=\"bypass -h dressme ").append(page).append(" buyskin  ").append(sp.getId()).append(" ").append(type).append(" ").append(itemId).append("\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2></td>");
+                sb.append("<td align=center width=65><button value=\"Try\" action=\"bypass -h dressme ").append(page).append(" tryskin  ").append(sp.getId()).append(" ").append(type).append("\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2></td>");
                 sb.append("</tr></table>");
                 sb.append("<img src=\"L2UI.Squaregray\" width=\"300\" height=\"1\">");
                 shown++;
             }
         sb.append("<table width=300><tr>");
-        sb.append("<td align=center width=70>" + ((page > 1) ? ("<button value=\"< PREV\" action=\"bypass -h dressme " + (page - 1) + " skinlist " + type + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "") + "</td>");
-        sb.append("<td align=center width=140>Page: " + page + "</td>");
-        sb.append("<td align=center width=70>" + (hasMore ? ("<button value=\"NEXT >\" action=\"bypass -h dressme " + page + 1 + " skinlist " + type + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "") + "</td>");
+        sb.append("<td align=center width=70>").append((page > 1) ? ("<button value=\"< PREV\" action=\"bypass -h dressme " + (page - 1) + " skinlist " + type + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "").append("</td>");
+        sb.append("<td align=center width=140>Page: ").append(page).append("</td>");
+        sb.append("<td align=center width=70>").append(hasMore ? ("<button value=\"NEXT >\" action=\"bypass -h dressme " + page + 1 + " skinlist " + type + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "").append("</td>");
         sb.append("</tr></table>");
         html.replace("%showList%", sb.toString());
         player.sendPacket(html);
@@ -234,14 +220,13 @@ public final class RequestBypassToServer extends L2GameClientPacket {
         int shown = 0;
         boolean hasMore = false;
         StringBuilder sb = new StringBuilder();
-        List<SkinPackage> armors = DressMeData.getInstance().getArmorSkinOptions().values().stream().filter(s -> player.hasArmorSkin(s.getId())).collect(Collectors.toList());
-        List<SkinPackage> weapons = DressMeData.getInstance().getWeaponSkinOptions().values().stream().filter(s -> player.hasWeaponSkin(s.getId())).collect(Collectors.toList());
-        List<SkinPackage> hairs = DressMeData.getInstance().getHairSkinOptions().values().stream().filter(s -> player.hasHairSkin(s.getId())).collect(Collectors.toList());
-        List<SkinPackage> shield = DressMeData.getInstance().getShieldSkinOptions().values().stream().filter(s -> player.hasShieldSkin(s.getId())).collect(Collectors.toList());
-        List<SkinPackage> list = Stream.concat(armors.stream(), weapons.stream()).collect(Collectors.toList());
-        shield.stream().collect(Collectors.toList());
-        List<SkinPackage> list2 = Stream.concat(hairs.stream(), shield.stream()).collect(Collectors.toList());
-        List<SkinPackage> allLists = Stream.concat(list.stream(), list2.stream()).collect(Collectors.toList());
+        List<SkinPackage> armors = DressMeData.getInstance().getArmorSkinOptions().values().stream().filter(s -> player.hasArmorSkin(s.getId())).toList();
+        List<SkinPackage> weapons = DressMeData.getInstance().getWeaponSkinOptions().values().stream().filter(s -> player.hasWeaponSkin(s.getId())).toList();
+        List<SkinPackage> hairs = DressMeData.getInstance().getHairSkinOptions().values().stream().filter(s -> player.hasHairSkin(s.getId())).toList();
+        List<SkinPackage> shield = DressMeData.getInstance().getShieldSkinOptions().values().stream().filter(s -> player.hasShieldSkin(s.getId())).toList();
+        List<SkinPackage> list = Stream.concat(armors.stream(), weapons.stream()).toList();
+        List<SkinPackage> list2 = Stream.concat(hairs.stream(), shield.stream()).toList();
+        List<SkinPackage> allLists = Stream.concat(list.stream(), list2.stream()).toList();
         if (!allLists.isEmpty())
             for (SkinPackage sp : allLists) {
                 if (sp == null)
@@ -262,36 +247,27 @@ public final class RequestBypassToServer extends L2GameClientPacket {
                     hasMore = true;
                     break;
                 }
-                switch (sp.getType().toLowerCase()) {
-                    case "armor":
-                        itemId = sp.getChestId();
-                        break;
-                    case "weapon":
-                        itemId = sp.getWeaponId();
-                        break;
-                    case "hair":
-                        itemId = sp.getHairId();
-                        break;
-                    case "face":
-                        itemId = sp.getFaceId();
-                        break;
-                    case "shield":
-                        itemId = sp.getShieldId();
-                        break;
-                }
+                itemId = switch (sp.getType().toLowerCase()) {
+                    case "armor" -> sp.getChestId();
+                    case "weapon" -> sp.getWeaponId();
+                    case "hair" -> sp.getHairId();
+                    case "face" -> sp.getFaceId();
+                    case "shield" -> sp.getShieldId();
+                    default -> itemId;
+                };
                 sb.append("<table border=0 cellspacing=0 cellpadding=2 height=36><tr>");
-                sb.append("<td width=32 align=center><button width=32 height=32 back=" + Item.getItemIcon(itemId) + " fore=" + Item.getItemIcon(itemId) + "></td>");
-                sb.append("<td width=124>" + sp.getName() + "</td>");
-                sb.append("<td align=center width=65><button value=\"Equip\" action=\"bypass -h dressme " + page + " setskin " + sp.getId() + " " + sp.getType() + " " + itemId + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2></td>");
-                sb.append("<td align=center width=65><button value=\"Remove\" action=\"bypass -h dressme " + page + " clean " + sp.getType() + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2></td>");
+                sb.append("<td width=32 align=center><button width=32 height=32 back=").append(Item.getItemIcon(itemId)).append(" fore=").append(Item.getItemIcon(itemId)).append("></td>");
+                sb.append("<td width=124>").append(sp.getName()).append("</td>");
+                sb.append("<td align=center width=65><button value=\"Equip\" action=\"bypass -h dressme ").append(page).append(" setskin ").append(sp.getId()).append(" ").append(sp.getType()).append(" ").append(itemId).append("\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2></td>");
+                sb.append("<td align=center width=65><button value=\"Remove\" action=\"bypass -h dressme ").append(page).append(" clean ").append(sp.getType()).append("\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2></td>");
                 sb.append("</tr></table>");
                 sb.append("<img src=\"L2UI.Squaregray\" width=\"300\" height=\"1\">");
                 shown++;
             }
         sb.append("<table width=300><tr>");
-        sb.append("<td align=center width=70>" + ((page > 1) ? ("<button value=\"< PREV\" action=\"bypass -h dressme " + (page - 1) + " myskinlist\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "") + "</td>");
-        sb.append("<td align=center width=140>Page: " + page + "</td>");
-        sb.append("<td align=center width=70>" + (hasMore ? ("<button value=\"NEXT >\" action=\"bypass -h dressme " + page + 1 + " myskinlist\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "") + "</td>");
+        sb.append("<td align=center width=70>").append((page > 1) ? ("<button value=\"< PREV\" action=\"bypass -h dressme " + (page - 1) + " myskinlist\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "").append("</td>");
+        sb.append("<td align=center width=140>Page: ").append(page).append("</td>");
+        sb.append("<td align=center width=70>").append(hasMore ? ("<button value=\"NEXT >\" action=\"bypass -h dressme " + page + 1 + " myskinlist\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "").append("</td>");
         sb.append("</tr></table>");
         html.replace("%showList%", sb.toString());
         player.sendPacket(html);

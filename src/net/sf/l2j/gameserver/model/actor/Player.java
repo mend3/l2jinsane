@@ -114,6 +114,7 @@ import net.sf.l2j.gameserver.taskmanager.*;
 import net.sf.l2j.util.variables.PlayerVar;
 
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
@@ -8912,99 +8913,44 @@ public final class Player extends Playable {
         return !this._completedAchievements.isEmpty();
     }
 
-    public void getAchievemntData() {
+    public void getAchievementData() {
+        this._completedAchievements.clear();
         try {
             Connection con = ConnectionPool.getConnection();
 
-            try {
-                PreparedStatement statement = con.prepareStatement("SELECT * from achievements WHERE owner_id = " + this.getObjectId());
+            PreparedStatement statement = con.prepareStatement("SELECT * from character_achievements WHERE owner_id = ? AND achieved_at IS NOT NULL");
+            statement.setInt(1, this.getObjectId());
 
-                try {
-                    int ilosc = AchievementsManager.getInstance().getAchievementList().size();
-                    ResultSet rs = statement.executeQuery();
-
-                    try {
-                        if (rs.next()) {
-                            this._completedAchievements.clear();
-
-                            for (int i = 1; i <= ilosc; ++i) {
-                                int a = rs.getInt("a" + i);
-                                if (!this._completedAchievements.contains(i) && (a == 1 || String.valueOf(a).startsWith("1"))) {
-                                    this._completedAchievements.add(i);
-                                }
-                            }
-                        } else {
-                            String values = "owner_id";
-                            String in = Integer.toString(this.getObjectId());
-                            String questionMarks = in;
-
-                            for (int i = 1; i <= ilosc; ++i) {
-                                values = values + ", a" + i;
-                                questionMarks = questionMarks + ", 0";
-                            }
-
-                            String s = "INSERT INTO achievements(" + values + ") VALUES (" + questionMarks + ")";
-                            PreparedStatement insertStatement = con.prepareStatement(s);
-
-                            try {
-                                insertStatement.execute();
-                            } catch (Throwable var16) {
-                                if (insertStatement != null) {
-                                    try {
-                                        insertStatement.close();
-                                    } catch (Throwable var15) {
-                                        var16.addSuppressed(var15);
-                                    }
-                                }
-
-                                throw var16;
-                            }
-
-                            if (insertStatement != null) {
-                                insertStatement.close();
-                            }
-                        }
-                    } catch (Throwable var17) {
-                        if (rs != null) {
-                            try {
-                                rs.close();
-                            } catch (Throwable var14) {
-                                var17.addSuppressed(var14);
-                            }
-                        }
-
-                        throw var17;
-                    }
-
-                    if (rs != null) {
-                        rs.close();
-                    }
-                } catch (Throwable var18) {
-                    if (statement != null) {
-                        try {
-                            statement.close();
-                        } catch (Throwable var13) {
-                            var18.addSuppressed(var13);
-                        }
-                    }
-
-                    throw var18;
+            ResultSet rs = statement.executeQuery();
+            List<Integer> knownAchievements = new ArrayList<>();
+            while (rs.next()) {
+                int id = rs.getInt("achievement_id");
+                knownAchievements.add(id);
+                if (!this._completedAchievements.contains(id)) {
+                    this._completedAchievements.add(id);
                 }
-
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (Throwable var19) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var12) {
-                        var19.addSuppressed(var12);
-                    }
-                }
-
-                throw var19;
             }
+            if (rs != null) {
+                rs.close();
+            }
+
+            List<Integer> mustReplace = new ArrayList<>();
+            for (int id : AchievementsManager.getInstance().getAchievementList().keySet()) {
+                if (!knownAchievements.contains(id)) {
+                    mustReplace.add(id);
+                }
+            }
+
+            if (!mustReplace.isEmpty()) {
+                for (int aid : mustReplace) {
+                    statement = con.prepareStatement("REPLACE INTO character_achievements VALUES (?,?,?)");
+                    statement.setInt(1, this.getObjectId());
+                    statement.setInt(2, aid);
+                    statement.setObject(3, null);
+                    statement.execute();
+                }
+            }
+            statement.close();
 
             if (con != null) {
                 con.close();
@@ -9015,48 +8961,17 @@ public final class Player extends Playable {
 
     }
 
-    public void saveAchievementData(int achievementID, int objid) {
+    public void saveAchievementData(int achievementID) {
         try {
             Connection con = ConnectionPool.getConnection();
+            PreparedStatement statement = con.prepareStatement("REPLACE INTO character_achievements VALUES (?,?,?)");
+            statement.setInt(1, this.getObjectId());
+            statement.setInt(2, achievementID);
+            statement.setDate(3, new Date(Calendar.getInstance().getTimeInMillis()));
+            statement.execute();
 
-            try {
-                Statement statement = con.createStatement();
-
-                try {
-                    if (achievementID != 7 && achievementID != 8 && achievementID != 12) {
-                        statement.executeUpdate("UPDATE achievements SET a" + achievementID + "=1 WHERE owner_id=" + this.getObjectId());
-                    } else {
-                        statement.executeUpdate("UPDATE achievements SET a" + achievementID + "=1" + objid + " WHERE owner_id=" + this.getObjectId());
-                    }
-
-                    if (!this._completedAchievements.contains(achievementID)) {
-                        this._completedAchievements.add(achievementID);
-                    }
-                } catch (Throwable var9) {
-                    if (statement != null) {
-                        try {
-                            statement.close();
-                        } catch (Throwable var8) {
-                            var9.addSuppressed(var8);
-                        }
-                    }
-
-                    throw var9;
-                }
-
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (Throwable var10) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var7) {
-                        var10.addSuppressed(var7);
-                    }
-                }
-
-                throw var10;
+            if (statement != null) {
+                statement.close();
             }
 
             if (con != null) {
