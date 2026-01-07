@@ -1,0 +1,251 @@
+package net.sf.l2j.gameserver.handler.admincommandhandlers;
+
+import net.sf.l2j.commons.lang.StringUtil;
+import net.sf.l2j.gameserver.data.ItemTable;
+import net.sf.l2j.gameserver.data.manager.BuyListManager;
+import net.sf.l2j.gameserver.data.xml.NpcData;
+import net.sf.l2j.gameserver.enums.ScriptEventType;
+import net.sf.l2j.gameserver.enums.skills.L2SkillType;
+import net.sf.l2j.gameserver.handler.IAdminCommandHandler;
+import net.sf.l2j.gameserver.model.L2Skill;
+import net.sf.l2j.gameserver.model.WorldObject;
+import net.sf.l2j.gameserver.model.actor.Npc;
+import net.sf.l2j.gameserver.model.actor.Player;
+import net.sf.l2j.gameserver.model.actor.instance.Monster;
+import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
+import net.sf.l2j.gameserver.model.buylist.NpcBuyList;
+import net.sf.l2j.gameserver.model.buylist.Product;
+import net.sf.l2j.gameserver.model.item.DropCategory;
+import net.sf.l2j.gameserver.model.item.DropData;
+import net.sf.l2j.gameserver.network.SystemMessageId;
+import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
+import net.sf.l2j.gameserver.scripting.Quest;
+
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+public class AdminEditNpc implements IAdminCommandHandler {
+    private static final int PAGE_LIMIT = 20;
+
+    private static final String[] ADMIN_COMMANDS = new String[]{"admin_show_droplist", "admin_show_minion", "admin_show_scripts", "admin_show_shop", "admin_show_shoplist", "admin_show_skilllist"};
+
+    private static void showShopList(Player activeChar, int listId) {
+        NpcBuyList buyList = BuyListManager.getInstance().getBuyList(listId);
+        if (buyList == null) {
+            activeChar.sendMessage("BuyList template is unknown for id: " + listId + ".");
+            return;
+        }
+        StringBuilder sb = new StringBuilder(500);
+        StringUtil.append(sb, "<html><body><center><font color=\"LEVEL\">", NpcData.getInstance().getTemplate(buyList.getNpcId()).getName(), " (", Integer.valueOf(buyList.getNpcId()), ") buylist id: ", Integer.valueOf(buyList.getListId()), "</font></center><br><table width=\"100%\"><tr><td width=200>Item</td><td width=80>Price</td></tr>");
+        for (Product product : buyList.getProducts()) {
+            StringUtil.append(sb, "<tr><td>", product.getItem().getName(), "</td><td>", Integer.valueOf(product.getPrice()), "</td></tr>");
+        }
+        sb.append("</table></body></html>");
+        NpcHtmlMessage html = new NpcHtmlMessage(0);
+        html.setHtml(sb.toString());
+        activeChar.sendPacket(html);
+    }
+
+    private static void showShop(Player activeChar, int npcId) {
+        List<NpcBuyList> buyLists = BuyListManager.getInstance().getBuyListsByNpcId(npcId);
+        if (buyLists.isEmpty()) {
+            activeChar.sendMessage("No buyLists found for id: " + npcId + ".");
+            return;
+        }
+        StringBuilder sb = new StringBuilder(500);
+        StringUtil.append(sb, "<html><title>Merchant Shop Lists</title><body>");
+        if (activeChar.getTarget() instanceof net.sf.l2j.gameserver.model.actor.instance.Merchant merchant) {
+            int taxRate = merchant.getCastle().getTaxPercent();
+            StringUtil.append(sb, "<center><font color=\"LEVEL\">", merchant.getName(), " (", Integer.valueOf(npcId), ")</font></center><br>Tax rate: ", Integer.valueOf(taxRate), "%");
+        }
+        StringUtil.append(sb, "<table width=\"100%\">");
+        for (NpcBuyList buyList : buyLists) {
+            StringUtil.append(sb, "<tr><td><a action=\"bypass -h admin_show_shoplist ", Integer.valueOf(buyList.getListId()), " 1\">Buylist id: ", Integer.valueOf(buyList.getListId()), "</a></td></tr>");
+        }
+        StringUtil.append(sb, "</table></body></html>");
+        NpcHtmlMessage html = new NpcHtmlMessage(0);
+        html.setHtml(sb.toString());
+        activeChar.sendPacket(html);
+    }
+
+    private static void showNpcDropList(Player activeChar, int npcId, int page) {
+        NpcTemplate npcData = NpcData.getInstance().getTemplate(npcId);
+        if (npcData == null) {
+            activeChar.sendMessage("Npc template is unknown for id: " + npcId + ".");
+            return;
+        }
+        StringBuilder sb = new StringBuilder(2000);
+        StringUtil.append(sb, "<html><title>Show droplist page ", Integer.valueOf(page), "</title><body><center><font color=\"LEVEL\">", npcData.getName(), " (", Integer.valueOf(npcId), ")</font></center><br>");
+        if (!npcData.getDropData().isEmpty()) {
+            sb.append("Drop type legend: <font color=\"3BB9FF\">Drop</font> | <font color=\"00ff00\">Sweep</font><br><table><tr><td width=25>cat.</td><td width=255>item</td></tr>");
+            int myPage = 1;
+            int i = 0;
+            int shown = 0;
+            boolean hasMore = false;
+            for (DropCategory cat : npcData.getDropData()) {
+                if (shown == 20) {
+                    hasMore = true;
+                    break;
+                }
+                for (DropData drop : cat.getAllDrops()) {
+                    if (myPage != page) {
+                        i++;
+                        if (i == 20) {
+                            myPage++;
+                            i = 0;
+                        }
+                        continue;
+                    }
+                    if (shown == 20) {
+                        hasMore = true;
+                        break;
+                    }
+                    StringUtil.append(sb, "<tr><td><font color=\"", cat.isSweep() ? "00FF00" : "3BB9FF", "\">", Integer.valueOf(cat.getCategoryType()), "</td><td>", ItemTable.getInstance().getTemplate(drop.getItemId()).getName(), " (", Integer.valueOf(drop.getItemId()), ")</td></tr>");
+                    shown++;
+                }
+            }
+            sb.append("</table><table width=\"100%\" bgcolor=666666><tr>");
+            if (page > 1) {
+                StringUtil.append(sb, "<td width=120><a action=\"bypass -h admin_show_droplist ", Integer.valueOf(npcId), " ", Integer.valueOf(page - 1), "\">Prev Page</a></td>");
+                if (!hasMore)
+                    StringUtil.append(sb, "<td width=100>Page ", Integer.valueOf(page), "</td><td width=70></td></tr>");
+            }
+            if (hasMore) {
+                if (page <= 1)
+                    sb.append("<td width=120></td>");
+                StringUtil.append(sb, "<td width=100>Page ", Integer.valueOf(page), "</td><td width=70><a action=\"bypass -h admin_show_droplist ", Integer.valueOf(npcId), " ", Integer.valueOf(page + 1), "\">Next Page</a></td></tr>");
+            }
+            sb.append("</table>");
+        } else {
+            sb.append("This NPC has no drops.");
+        }
+        sb.append("</body></html>");
+        NpcHtmlMessage html = new NpcHtmlMessage(0);
+        html.setHtml(sb.toString());
+        activeChar.sendPacket(html);
+    }
+
+    private static void showNpcSkillList(Player activeChar, int npcId) {
+        NpcTemplate npcData = NpcData.getInstance().getTemplate(npcId);
+        if (npcData == null) {
+            activeChar.sendMessage("Npc template is unknown for id: " + npcId + ".");
+            return;
+        }
+        StringBuilder sb = new StringBuilder(500);
+        StringUtil.append(sb, "<html><body><center><font color=\"LEVEL\">", npcData.getName(), " (", Integer.valueOf(npcId), ") skills</font></center><br>");
+        if (!npcData.getSkills().isEmpty()) {
+            NpcTemplate.SkillType type = null;
+            for (Map.Entry<NpcTemplate.SkillType, List<L2Skill>> entry : npcData.getSkills().entrySet()) {
+                if (type != entry.getKey()) {
+                    type = entry.getKey();
+                    StringUtil.append(sb, "<br><font color=\"LEVEL\">", type.name(), "</font><br1>");
+                }
+                for (L2Skill skill : entry.getValue()) {
+                    StringUtil.append(sb, (skill.getSkillType() == L2SkillType.NOTDONE) ? ("<font color=\"777777\">" + skill.getName() + "</font>") : skill.getName(), " [", Integer.valueOf(skill.getId()), "-", Integer.valueOf(skill.getLevel()), "]<br1>");
+                }
+            }
+        } else {
+            sb.append("This NPC doesn't hold any skill.");
+        }
+        sb.append("</body></html>");
+        NpcHtmlMessage html = new NpcHtmlMessage(0);
+        html.setHtml(sb.toString());
+        activeChar.sendPacket(html);
+    }
+
+    private static void showScriptsList(Player activeChar, int npcId) {
+        NpcTemplate npcData = NpcData.getInstance().getTemplate(npcId);
+        if (npcData == null) {
+            activeChar.sendMessage("Npc template is unknown for id: " + npcId + ".");
+            return;
+        }
+        StringBuilder sb = new StringBuilder(500);
+        StringUtil.append(sb, "<html><body><center><font color=\"LEVEL\">", npcData.getName(), " (", Integer.valueOf(npcId), ")</font></center><br>");
+        if (!npcData.getEventQuests().isEmpty()) {
+            ScriptEventType type = null;
+            for (Map.Entry<ScriptEventType, List<Quest>> entry : npcData.getEventQuests().entrySet()) {
+                if (type != entry.getKey()) {
+                    type = entry.getKey();
+                    StringUtil.append(sb, "<br><font color=\"LEVEL\">", type.name(), "</font><br1>");
+                }
+                for (Quest quest : entry.getValue()) {
+                    StringUtil.append(sb, quest.getName(), "<br1>");
+                }
+            }
+        } else {
+            sb.append("This NPC isn't affected by scripts.");
+        }
+        sb.append("</body></html>");
+        NpcHtmlMessage html = new NpcHtmlMessage(0);
+        html.setHtml(sb.toString());
+        activeChar.sendPacket(html);
+    }
+
+    public boolean useAdminCommand(String command, Player activeChar) {
+        StringTokenizer st = new StringTokenizer(command, " ");
+        st.nextToken();
+        if (command.startsWith("admin_show_minion")) {
+            WorldObject target = activeChar.getTarget();
+            if (!(target instanceof Monster monster)) {
+                activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
+                return false;
+            }
+            NpcHtmlMessage html = new NpcHtmlMessage(0);
+            html.setFile("data/html/admin/minion.htm");
+            html.replace("%target%", target.getName());
+            StringBuilder sb = new StringBuilder();
+            Monster master = monster.getMaster();
+            if (master != null) {
+                html.replace("%type%", "minion");
+                StringUtil.append(sb, "<tr><td>", Integer.valueOf(master.getNpcId()), "</td><td>", master.getName(), " (", master.isDead() ? "Dead" : "Alive", ")</td></tr>");
+            } else if (monster.hasMinions()) {
+                html.replace("%type%", "master");
+                for (Map.Entry<Monster, Boolean> data : monster.getMinionList().getMinions().entrySet()) {
+                    StringUtil.append(sb, "<tr><td>", Integer.valueOf(data.getKey().getNpcId()), "</td><td>", data.getKey().toString(), " (", data.getValue() ? "Alive" : "Dead", ")</td></tr>");
+                }
+            } else {
+                html.replace("%type%", "regular monster");
+            }
+            html.replace("%minion%", sb.toString());
+            activeChar.sendPacket(html);
+        } else if (command.startsWith("admin_show_shoplist")) {
+            try {
+                showShopList(activeChar, Integer.parseInt(st.nextToken()));
+            } catch (Exception e) {
+                activeChar.sendMessage("Usage: //show_shoplist <list_id>");
+            }
+        } else if (command.startsWith("admin_show_shop")) {
+            try {
+                showShop(activeChar, Integer.parseInt(st.nextToken()));
+            } catch (Exception e) {
+                activeChar.sendMessage("Usage: //show_shop <npc_id>");
+            }
+        } else if (command.startsWith("admin_show_droplist")) {
+            try {
+                int npcId = Integer.parseInt(st.nextToken());
+                int page = st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 1;
+                showNpcDropList(activeChar, npcId, page);
+            } catch (Exception e) {
+                activeChar.sendMessage("Usage: //show_droplist <npc_id> [<page>]");
+            }
+        } else if (command.startsWith("admin_show_skilllist")) {
+            try {
+                showNpcSkillList(activeChar, Integer.parseInt(st.nextToken()));
+            } catch (Exception e) {
+                activeChar.sendMessage("Usage: //show_skilllist <npc_id>");
+            }
+        } else if (command.startsWith("admin_show_scripts")) {
+            try {
+                showScriptsList(activeChar, Integer.parseInt(st.nextToken()));
+            } catch (Exception e) {
+                activeChar.sendMessage("Usage: //show_scripts <npc_id>");
+            }
+        }
+        return true;
+    }
+
+    public String[] getAdminCommandList() {
+        return ADMIN_COMMANDS;
+    }
+}

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="l2jserver:jar">
+    <output-path>$PROJECT_DIR$/libs</output-path>
+    <root id="archive" name="l2jserver.jar">
+      <element id="module-output" name="l2jserver" />
+    </root>
+  </artifact>
+</component>

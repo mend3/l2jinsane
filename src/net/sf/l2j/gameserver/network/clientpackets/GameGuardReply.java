@@ -1,0 +1,15 @@
+package net.sf.l2j.gameserver.network.clientpackets;
+
+import net.sf.l2j.gameserver.model.actor.Player;
+
+public class GameGuardReply extends L2GameClientPacket {
+    protected void readImpl() {
+    }
+
+    protected void runImpl() {
+        Player activeChar = getClient().getPlayer();
+        if (activeChar == null)
+            return;
+        getClient().setGameGuardOk(true);
+    }
+}

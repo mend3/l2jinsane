@@ -1,0 +1,68 @@
+package net.sf.l2j.gameserver.scripting.quests;
+
+import net.sf.l2j.gameserver.model.actor.Npc;
+import net.sf.l2j.gameserver.model.actor.Player;
+import net.sf.l2j.gameserver.scripting.Quest;
+import net.sf.l2j.gameserver.scripting.QuestState;
+
+public class Q110_ToThePrimevalIsle extends Quest {
+    private static final String qn = "Q110_ToThePrimevalIsle";
+
+    private static final int ANTON = 31338;
+
+    private static final int MARQUEZ = 32113;
+
+    private static final int ANCIENT_BOOK = 8777;
+
+    public Q110_ToThePrimevalIsle() {
+        super(110, "To the Primeval Isle");
+        setItemsIds(8777);
+        addStartNpc(31338);
+        addTalkId(31338, 32113);
+    }
+
+    public String onAdvEvent(String event, Npc npc, Player player) {
+        String htmltext = event;
+        QuestState st = player.getQuestState("Q110_ToThePrimevalIsle");
+        if (st == null)
+            return htmltext;
+        if (event.equalsIgnoreCase("31338-02.htm")) {
+            st.setState((byte) 1);
+            st.set("cond", "1");
+            st.playSound("ItemSound.quest_accept");
+            st.giveItems(8777, 1);
+        } else if (event.equalsIgnoreCase("32113-03.htm") && st.hasQuestItems(8777)) {
+            st.takeItems(8777, 1);
+            st.rewardItems(57, 169380);
+            st.playSound("ItemSound.quest_finish");
+            st.exitQuest(false);
+        }
+        return htmltext;
+    }
+
+    public String onTalk(Npc npc, Player player) {
+        QuestState st = player.getQuestState("Q110_ToThePrimevalIsle");
+        String htmltext = getNoQuestMsg();
+        if (st == null)
+            return htmltext;
+        switch (st.getState()) {
+            case 0:
+                htmltext = (player.getLevel() < 75) ? "31338-00.htm" : "31338-01.htm";
+                break;
+            case 1:
+                switch (npc.getNpcId()) {
+                    case 31338:
+                        htmltext = "31338-01c.htm";
+                        break;
+                    case 32113:
+                        htmltext = "32113-01.htm";
+                        break;
+                }
+                break;
+            case 2:
+                htmltext = getAlreadyCompletedMsg();
+                break;
+        }
+        return htmltext;
+    }
+}

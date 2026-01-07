@@ -1,0 +1,16 @@
+{
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-21",
+            "path": "F:\\dev\\.bin\\jdk21",
+            "default": true
+        }
+    ],
+    "java.project.sourcePaths": [
+        "src"
+    ],
+    "java.project.referencedLibraries": [
+        "libs/mariadb-java-client-3.1.4.jar"
+    ],
+    "java.project.outputPath": "out"
+}

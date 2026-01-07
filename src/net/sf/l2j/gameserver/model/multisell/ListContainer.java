@@ -1,0 +1,56 @@
+package net.sf.l2j.gameserver.model.multisell;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class ListContainer {
+    private final int _id;
+    protected List<Entry> _entries = new ArrayList<>();
+    protected Set<Integer> _npcsAllowed;
+    private boolean _applyTaxes;
+    private boolean _maintainEnchantment;
+
+    public ListContainer(int id) {
+        this._id = id;
+    }
+
+    public final List<Entry> getEntries() {
+        return this._entries;
+    }
+
+    public final int getId() {
+        return this._id;
+    }
+
+    public final boolean getApplyTaxes() {
+        return this._applyTaxes;
+    }
+
+    public final void setApplyTaxes(boolean applyTaxes) {
+        this._applyTaxes = applyTaxes;
+    }
+
+    public final boolean getMaintainEnchantment() {
+        return this._maintainEnchantment;
+    }
+
+    public final void setMaintainEnchantment(boolean maintainEnchantment) {
+        this._maintainEnchantment = maintainEnchantment;
+    }
+
+    public void allowNpc(int npcId) {
+        if (this._npcsAllowed == null)
+            this._npcsAllowed = new HashSet<>();
+        this._npcsAllowed.add(Integer.valueOf(npcId));
+    }
+
+    public boolean isNpcAllowed(int npcId) {
+        return (this._npcsAllowed == null || this._npcsAllowed.contains(Integer.valueOf(npcId)));
+    }
+
+    public boolean isNpcOnly() {
+        return (this._npcsAllowed != null);
+    }
+}

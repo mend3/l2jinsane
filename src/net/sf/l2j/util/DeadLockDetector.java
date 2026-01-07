@@ -1,0 +1,77 @@
+package net.sf.l2j.util;
+
+import net.sf.l2j.Config;
+import net.sf.l2j.commons.logging.CLogger;
+import net.sf.l2j.gameserver.Shutdown;
+import net.sf.l2j.gameserver.model.World;
+
+import java.lang.management.*;
+
+public class DeadLockDetector extends Thread {
+    private static final CLogger LOGGER = new CLogger(DeadLockDetector.class.getName());
+
+    private static final int SLEEP_TIME = Config.DEADLOCK_CHECK_INTERVAL * 1000;
+
+    private final ThreadMXBean tmx;
+
+    public DeadLockDetector() {
+        super("DeadLockDetector");
+        this.tmx = ManagementFactory.getThreadMXBean();
+    }
+
+    public final void run() {
+        boolean deadlock = false;
+        while (!deadlock) {
+            try {
+                long[] ids = this.tmx.findDeadlockedThreads();
+                if (ids != null) {
+                    deadlock = true;
+                    ThreadInfo[] tis = this.tmx.getThreadInfo(ids, true, true);
+                    StringBuilder info = new StringBuilder();
+                    info.append("DeadLock Found!\n");
+                    for (ThreadInfo ti : tis)
+                        info.append(ti.toString());
+                    for (ThreadInfo ti : tis) {
+                        LockInfo[] locks = ti.getLockedSynchronizers();
+                        MonitorInfo[] monitors = ti.getLockedMonitors();
+                        if (locks.length != 0 || monitors.length != 0) {
+                            ThreadInfo dl = ti;
+                            info.append("Java-level deadlock:\n");
+                            info.append("\t");
+                            info.append(dl.getThreadName());
+                            info.append(" is waiting to lock ");
+                            info.append(dl.getLockInfo().toString());
+                            info.append(" which is held by ");
+                            info.append(dl.getLockOwnerName());
+                            info.append("\n");
+                            while (true) {
+                                if ((dl = this.tmx.getThreadInfo(new long[]{dl
+
+                                        .getLockOwnerId()}, true, true)[0])
+                                        .getThreadId() != ti.getThreadId()) {
+                                    info.append("\t");
+                                    info.append(dl.getThreadName());
+                                    info.append(" is waiting to lock ");
+                                    info.append(dl.getLockInfo().toString());
+                                    info.append(" which is held by ");
+                                    info.append(dl.getLockOwnerName());
+                                    info.append("\n");
+                                    continue;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    LOGGER.warn(info.toString());
+                    if (Config.RESTART_ON_DEADLOCK) {
+                        World.announceToOnlinePlayers("Server has stability issues - restarting now.");
+                        Shutdown.getInstance().startShutdown(null, "DeadLockDetector - Auto Restart", 60, true);
+                    }
+                }
+                Thread.sleep(SLEEP_TIME);
+            } catch (Exception e) {
+                LOGGER.warn("The DeadLockDetector encountered a problem.", e);
+            }
+        }
+    }
+}

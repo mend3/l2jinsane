@@ -1,0 +1,199 @@
+# L2Extalia Server - Cursor Rules
+
+## Project Overview
+
+This is a **Lineage 2 Interlude (C6) private server emulator** written in Java. It's a PvP-focused datapack based on L2J with extensive custom modifications.
+
+- **Chronicle:** Interlude (C6)
+- **Java Version:** JDK 21+
+- **Database:** MariaDB (via XAMPP recommended)
+- **Build System:** Makefile
+
+## Project Structure
+
+```
+l2jserver/
+├── src/                    # Java source code
+│   ├── net/sf/l2j/        # Core L2J packages
+│   │   ├── gameserver/    # Game server (main gameplay logic)
+│   │   ├── loginserver/   # Login/authentication server
+│   │   ├── commons/       # Shared utilities
+│   │   └── Config.java    # Main configuration loader
+│   ├── mods/              # Custom gameplay modifications
+│   └── enginemods/        # Engine-level modifications (Fissban)
+├── config/                 # Properties configuration files
+│   ├── engine/            # Engine mod configs (AIO, VIP, Champions, etc.)
+│   └── events/            # Event configurations
+├── data/
+│   ├── xml/               # Game data (skills, items, NPCs, zones)
+│   ├── html/              # NPC dialogs and HTML interfaces
+│   └── geodata/           # Pathfinding/collision data
+├── sql/                    # Database schema files
+└── tools/                  # Server management scripts
+```
+
+## Key Files
+
+- `src/net/sf/l2j/Config.java` - Main configuration loader (loads all .properties)
+- `config/server.properties` - Core server settings (DB, rates, features)
+- `config/custom.properties` - Custom PvP features and modifications
+- `config/engine/*.properties` - Engine mod configurations
+- `data/xml/skills/*.xml` - Skill definitions
+- `data/xml/npcs/*.xml` - NPC definitions
+- `data/xml/items/*.xml` - Item definitions
+
+## Coding Conventions
+
+### Java Code
+
+1. **Package naming:** `net.sf.l2j.*` for core, `mods.*` for custom mods
+2. **Use existing patterns:** Follow L2J coding style already in the codebase
+3. **Configuration:** Add new config options to `Config.java` and corresponding `.properties` files
+4. **Handlers:** Use handler pattern for admin commands, user commands, item handlers, skill handlers
+5. **Data loading:** Use XML parsers in `data/` classes, follow existing `XMLDocument` patterns
+6. **Thread safety:** Use proper synchronization for game world modifications
+7. **Avoid:** Creating new abstraction layers unless absolutely necessary
+
+### XML Data Files
+
+1. **Skills:** Located in `data/xml/skills/` organized by ID ranges (e.g., `0000-0099.xml`)
+2. **NPCs:** Located in `data/xml/npcs/` organized by ID ranges
+3. **Items:** Located in `data/xml/items/`
+4. **Custom content:** Use high IDs (50000+) for custom NPCs, skills, items to avoid conflicts
+
+### HTML Templates
+
+1. **Location:** `data/html/`
+2. **Bypass format:** `<a action="bypass -h npc_%objectId%_ActionName">Link</a>`
+3. **Variables:** `%variable%` syntax for dynamic content
+4. **Keep HTML simple:** Interlude client has limited HTML support
+
+### Configuration
+
+1. **Properties format:** `key = value` in `.properties` files
+2. **Load in Config.java:** Add static field and load in appropriate section
+3. **Document:** Add comments explaining the config option
+4. **Defaults:** Always provide sensible defaults
+
+## Common Tasks
+
+### Adding a New Config Option
+
+1. Add property to appropriate `.properties` file with comment
+2. Add static field in `Config.java`
+3. Load value in the corresponding `load*()` method
+4. Use `Config.FIELD_NAME` throughout code
+
+### Adding a New NPC
+
+1. Create XML entry in `data/xml/npcs/custom/` or appropriate file
+2. Add HTML dialogs in `data/html/` if needed
+3. Create handler class if special behavior required
+4. Add spawn in `data/xml/spawnlist.xml` or via SQL
+
+### Adding a New Skill
+
+1. Add skill XML in `data/xml/skills/` (use custom ID range 7100+)
+2. Implement effect class in `src/net/sf/l2j/gameserver/skills/effects/` if new effect type
+3. Register effect type if needed
+
+### Adding a New Event
+
+1. Create event class in `src/net/sf/l2j/gameserver/events/`
+2. Add configuration in `config/events/`
+3. Load config in `Config.java`
+4. Register event in appropriate manager
+
+## Important Notes
+
+### Do NOT Modify
+
+- Geodata binary files (`.l2j` files in `data/geodata/`)
+- Client-side data (handled separately)
+- Core MMOCore networking layer unless critical bug fix
+
+### Database
+
+- Schema files in `sql/` - run these to set up database
+- Use `L2DatabaseFactory` for database connections
+- Prepared statements required for all queries (SQL injection prevention)
+
+### Testing
+
+- Test changes on local server before committing
+- Use GM commands for testing (//spawn, //admin, etc.)
+- Check server console for errors and exceptions
+
+### Events & Zones
+
+- Dynamic PvP zones use `MultifunctionZone` combined with zone rotation
+- Events are configured in `config/events/*.properties`
+- Zone behaviors defined in `data/xml/zones/`
+
+## Mods System
+
+Custom modifications are organized in:
+
+| Directory | Purpose |
+|-----------|---------|
+| `src/mods/achievement/` | Achievement system |
+| `src/mods/autofarm/` | AutoFarm functionality |
+| `src/mods/balancer/` | Class/skill balancing |
+| `src/mods/combineItem/` | Item combination |
+| `src/mods/dressme/` | Cosmetic skins |
+| `src/mods/dungeon/` | Instance dungeons |
+| `src/mods/newbies/` | New player experience |
+| `src/mods/pvpZone/` | PvP zone management |
+
+## Engine Mods (Fissban)
+
+Located in `src/enginemods/` - these are lower-level modifications:
+- AIO Buffer system
+- VIP/Premium system
+- Champion mobs
+- Fake players
+- Offline trade
+
+Configuration in `config/engine/*.properties`
+
+## Commands Reference
+
+### Player Commands
+- `.pvpevent` / `.pvpEvent` - PvP event ranking
+- `.bossevent` - Boss event registration
+- `.register` / `.leave` - TvT/CTF/DM registration
+- `.sellbuff` / `.cancelsellbuff` - Buff selling
+
+### GM Commands
+- `//admin` - Admin panel
+- `//spawn <npcId>` - Spawn NPC
+- `//reload <type>` - Reload configs/data
+
+## Build & Run Commands
+
+```bash
+# Server Execution
+make run-login              # Start the Login Server
+make run-game               # Start the Game Server
+make run-login-bg           # Start Login Server in background (Linux/WSL)
+make run-game-bg            # Start Game Server in background (Linux/WSL)
+
+# Build & Metadata
+make build                  # Generate build.properties with metadata
+make clean                  # Remove build artifacts
+
+# Utilities
+make debug                  # Show current configuration
+make check-java             # Verify Java installation
+make help                   # Show available commands
+
+# Custom JDK Path
+make JAVA_HOME=/path/to/jdk run-login   # Use custom JDK
+```
+
+## Documentation
+
+- Keep `README.md` updated with project changes
+- Document new features in appropriate section
+- Add comments for complex logic
+
