@@ -15,7 +15,7 @@ public final class Manager {
     private static final String _logFile = "Manager";
     private static final String _logMainFile = "hwid_logs";
     private static final ScheduledFuture<?> _GGTask = null;
-    private static final ConcurrentHashMap<String, Manager.InfoSet> _objects = new ConcurrentHashMap();
+    private static final ConcurrentHashMap<String, Manager.InfoSet> _objects = new ConcurrentHashMap<>();
     private static Manager _instance;
 
     public static Manager getInstance() {
@@ -40,10 +40,8 @@ public final class Manager {
 
     public static int getCountByHWID(String HWID) {
         int result = 0;
-        Iterator var3 = _objects.values().iterator();
 
-        while (var3.hasNext()) {
-            Manager.InfoSet object = (Manager.InfoSet) var3.next();
+        for (InfoSet object : _objects.values()) {
             if (object._HWID.equals(HWID)) {
                 ++result;
             }

@@ -29,29 +29,33 @@ public class WeddingManagerNpc extends Folk {
         partner.broadcastPacket(new MagicSkillUse(partner, partner, 2230, 1, 1, 0));
         requester.doCast(SkillTable.FrequentSkill.LARGE_FIREWORK.getSkill());
         partner.doCast(SkillTable.FrequentSkill.LARGE_FIREWORK.getSkill());
-        World.announceToOnlinePlayers("Congratulations to " + requester.getName() + " and " + partner.getName() + "! They have been married.");
+        String var10000 = requester.getName();
+        World.announceToOnlinePlayers("Congratulations to " + var10000 + " and " + partner.getName() + "! They have been married.");
     }
 
     public void onAction(Player player) {
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (!canInteract(player)) {
+        } else if (!this.canInteract(player)) {
             player.getAI().setIntention(IntentionType.INTERACT, this);
         } else {
-            if (player.isMoving() || player.isInCombat())
+            if (player.isMoving() || player.isInCombat()) {
                 player.getAI().setIntention(IntentionType.IDLE);
+            }
+
             player.sendPacket(new MoveToPawn(player, this, 150));
             player.sendPacket(ActionFailed.STATIC_PACKET);
             if (!Config.ALLOW_WEDDING) {
-                sendHtmlMessage(player, "data/html/mods/wedding/disabled.htm");
+                this.sendHtmlMessage(player, "data/html/mods/wedding/disabled.htm");
             } else if (player.getCoupleId() > 0) {
-                sendHtmlMessage(player, "data/html/mods/wedding/start2.htm");
+                this.sendHtmlMessage(player, "data/html/mods/wedding/start2.htm");
             } else if (player.isUnderMarryRequest()) {
-                sendHtmlMessage(player, "data/html/mods/wedding/waitforpartner.htm");
+                this.sendHtmlMessage(player, "data/html/mods/wedding/waitforpartner.htm");
             } else {
-                sendHtmlMessage(player, "data/html/mods/wedding/start.htm");
+                this.sendHtmlMessage(player, "data/html/mods/wedding/start.htm");
             }
         }
+
     }
 
     public void onBypassFeedback(Player player, String command) {
@@ -61,17 +65,20 @@ public class WeddingManagerNpc extends Folk {
             if (st.hasMoreTokens()) {
                 Player partner = World.getInstance().getPlayer(st.nextToken());
                 if (partner == null) {
-                    sendHtmlMessage(player, "data/html/mods/wedding/notfound.htm");
+                    this.sendHtmlMessage(player, "data/html/mods/wedding/notfound.htm");
                     return;
                 }
-                if (!weddingConditions(player, partner))
+
+                if (!this.weddingConditions(player, partner)) {
                     return;
+                }
+
                 player.setUnderMarryRequest(true);
                 partner.setUnderMarryRequest(true);
                 partner.setRequesterId(player.getObjectId());
                 partner.sendPacket((new ConfirmDlg(1983)).addString(player.getName() + " asked you to marry. Do you want to start a new relationship ?"));
             } else {
-                sendHtmlMessage(player, "data/html/mods/wedding/notfound.htm");
+                this.sendHtmlMessage(player, "data/html/mods/wedding/notfound.htm");
             }
         } else if (command.startsWith("Divorce")) {
             CoupleManager.getInstance().deleteCouple(player.getCoupleId());
@@ -81,55 +88,58 @@ public class WeddingManagerNpc extends Folk {
                 player.sendMessage("Your partner can't be found.");
                 return;
             }
+
             Player partner = World.getInstance().getPlayer(partnerId);
             if (partner == null) {
                 player.sendMessage("Your partner is not online.");
                 return;
             }
-            if (partner.isInJail() || partner.isInOlympiadMode() || partner.isInDuel() || partner.isFestivalParticipant() || (partner.isInParty() && partner.getParty().isInDimensionalRift()) || partner.isInObserverMode()) {
+
+            if (partner.isInJail() || partner.isInOlympiadMode() || partner.isInDuel() || partner.isFestivalParticipant() || partner.isInParty() && partner.getParty().isInDimensionalRift() || partner.isInObserverMode()) {
                 player.sendMessage("Due to the current partner's status, the teleportation failed.");
                 return;
             }
+
             if (partner.getClan() != null && CastleManager.getInstance().getCastleByOwner(partner.getClan()) != null && CastleManager.getInstance().getCastleByOwner(partner.getClan()).getSiege().isInProgress()) {
                 player.sendMessage("As your partner is in siege, you can't go to him/her.");
                 return;
             }
+
             player.teleportTo(partner.getX(), partner.getY(), partner.getZ(), 20);
         }
+
     }
 
     private boolean weddingConditions(Player requester, Player partner) {
         if (partner.getObjectId() == requester.getObjectId()) {
-            sendHtmlMessage(requester, "data/html/mods/wedding/error_wrongtarget.htm");
+            this.sendHtmlMessage(requester, "data/html/mods/wedding/error_wrongtarget.htm");
+            return false;
+        } else if (!Config.WEDDING_SAMESEX && partner.getAppearance().getSex() == requester.getAppearance().getSex()) {
+            this.sendHtmlMessage(requester, "data/html/mods/wedding/error_sex.htm");
+            return false;
+        } else if (!requester.getFriendList().contains(partner.getObjectId())) {
+            this.sendHtmlMessage(requester, "data/html/mods/wedding/error_friendlist.htm");
+            return false;
+        } else if (partner.getCoupleId() > 0) {
+            this.sendHtmlMessage(requester, "data/html/mods/wedding/error_alreadymarried.htm");
+            return false;
+        } else if (!Config.WEDDING_FORMALWEAR || requester.isWearingFormalWear() && partner.isWearingFormalWear()) {
+            if (requester.getAdena() >= Config.WEDDING_PRICE && partner.getAdena() >= Config.WEDDING_PRICE) {
+                return true;
+            } else {
+                this.sendHtmlMessage(requester, "data/html/mods/wedding/error_adena.htm");
+                return false;
+            }
+        } else {
+            this.sendHtmlMessage(requester, "data/html/mods/wedding/error_noformal.htm");
             return false;
         }
-        if (!Config.WEDDING_SAMESEX && partner.getAppearance().getSex() == requester.getAppearance().getSex()) {
-            sendHtmlMessage(requester, "data/html/mods/wedding/error_sex.htm");
-            return false;
-        }
-        if (!requester.getFriendList().contains(partner.getObjectId())) {
-            sendHtmlMessage(requester, "data/html/mods/wedding/error_friendlist.htm");
-            return false;
-        }
-        if (partner.getCoupleId() > 0) {
-            sendHtmlMessage(requester, "data/html/mods/wedding/error_alreadymarried.htm");
-            return false;
-        }
-        if (Config.WEDDING_FORMALWEAR && (!requester.isWearingFormalWear() || !partner.isWearingFormalWear())) {
-            sendHtmlMessage(requester, "data/html/mods/wedding/error_noformal.htm");
-            return false;
-        }
-        if (requester.getAdena() < Config.WEDDING_PRICE || partner.getAdena() < Config.WEDDING_PRICE) {
-            sendHtmlMessage(requester, "data/html/mods/wedding/error_adena.htm");
-            return false;
-        }
-        return true;
     }
 
     private void sendHtmlMessage(Player player, String file) {
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile(file);
-        html.replace("%objectId%", getObjectId());
+        html.replace("%objectId%", this.getObjectId());
         html.replace("%adenasCost%", StringUtil.formatNumber(Config.WEDDING_PRICE));
         html.replace("%needOrNot%", Config.WEDDING_FORMALWEAR ? "will" : "won't");
         player.sendPacket(html);

@@ -12,7 +12,6 @@ import java.util.List;
 
 public abstract class AbstractGroup {
     private Player _leader;
-
     private int _level;
 
     public AbstractGroup(Player leader) {
@@ -23,11 +22,11 @@ public abstract class AbstractGroup {
 
     public abstract int getMembersCount();
 
-    public abstract boolean containsPlayer(WorldObject paramWorldObject);
+    public abstract boolean containsPlayer(WorldObject var1);
 
-    public abstract void broadcastPacket(L2GameServerPacket paramL2GameServerPacket);
+    public abstract void broadcastPacket(L2GameServerPacket var1);
 
-    public abstract void broadcastCreatureSay(CreatureSay paramCreatureSay, Player paramPlayer);
+    public abstract void broadcastCreatureSay(CreatureSay var1, Player var2);
 
     public abstract void recalculateLevel();
 
@@ -54,18 +53,18 @@ public abstract class AbstractGroup {
     }
 
     public boolean isLeader(Player player) {
-        return (this._leader.getObjectId() == player.getObjectId());
+        return this._leader.getObjectId() == player.getObjectId();
     }
 
     public void broadcastMessage(SystemMessageId message) {
-        broadcastPacket(SystemMessage.getSystemMessage(message));
+        this.broadcastPacket(SystemMessage.getSystemMessage(message));
     }
 
     public void broadcastString(String text) {
-        broadcastPacket(SystemMessage.sendString(text));
+        this.broadcastPacket(SystemMessage.sendString(text));
     }
 
     public Player getRandomPlayer() {
-        return Rnd.get(getMembers());
+        return Rnd.get(this.getMembers());
     }
 }

@@ -13,6 +13,7 @@ public class L2SkillDefault extends L2Skill {
 
     public void useSkill(Creature caster, WorldObject[] targets) {
         caster.sendPacket(ActionFailed.STATIC_PACKET);
-        caster.sendMessage("Skill " + getId() + " [" + getSkillType() + "] isn't implemented.");
+        int var10001 = this.getId();
+        caster.sendMessage("Skill " + var10001 + " [" + this.getSkillType() + "] isn't implemented.");
     }
 }

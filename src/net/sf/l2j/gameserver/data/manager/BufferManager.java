@@ -83,75 +83,47 @@ public class BufferManager implements IXmlReader {
 
     public void saveSchemes() {
         StringBuilder sb = new StringBuilder();
-        try {
-            Connection con = ConnectionPool.getConnection();
-            try {
-                PreparedStatement ps = con.prepareStatement("TRUNCATE TABLE buffer_schemes");
-                try {
-                    ps.execute();
-                    if (ps != null)
-                        ps.close();
-                } catch (Throwable throwable) {
-                    if (ps != null)
-                        try {
-                            ps.close();
-                        } catch (Throwable throwable1) {
-                            throwable.addSuppressed(throwable1);
+
+        try (Connection con = ConnectionPool.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("TRUNCATE TABLE buffer_schemes")) {
+                ps.execute();
+            }
+
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO buffer_schemes (object_id, scheme_name, skills) VALUES (?,?,?)")) {
+                for (Map.Entry<Integer, HashMap<String, ArrayList<Integer>>> player : this._schemesTable.entrySet()) {
+                    for (Map.Entry<String, ArrayList<Integer>> scheme : (player.getValue()).entrySet()) {
+                        for (int skillId : scheme.getValue()) {
+                            StringUtil.append(sb, new Object[]{skillId, ","});
                         }
-                    throw throwable;
-                }
-                ps = con.prepareStatement("INSERT INTO buffer_schemes (object_id, scheme_name, skills) VALUES (?,?,?)");
-                try {
-                    for (Map.Entry<Integer, HashMap<String, ArrayList<Integer>>> player : this._schemesTable.entrySet()) {
-                        for (Map.Entry<String, ArrayList<Integer>> scheme : (Iterable<Map.Entry<String, ArrayList<Integer>>>) ((HashMap) player.getValue()).entrySet()) {
-                            for (Iterator<Integer> iterator = ((ArrayList) scheme.getValue()).iterator(); iterator.hasNext(); ) {
-                                int skillId = iterator.next();
-                                StringUtil.append(sb, skillId, ",");
-                            }
-                            if (sb.length() > 0)
-                                sb.setLength(sb.length() - 1);
-                            ps.setInt(1, (Integer) player.getKey());
-                            ps.setString(2, scheme.getKey());
-                            ps.setString(3, sb.toString());
-                            ps.addBatch();
-                            sb.setLength(0);
+
+                        if (!sb.isEmpty()) {
+                            sb.setLength(sb.length() - 1);
                         }
+
+                        ps.setInt(1, (Integer) player.getKey());
+                        ps.setString(2, (String) scheme.getKey());
+                        ps.setString(3, sb.toString());
+                        ps.addBatch();
+                        sb.setLength(0);
                     }
-                    ps.executeBatch();
-                    if (ps != null)
-                        ps.close();
-                } catch (Throwable throwable) {
-                    if (ps != null)
-                        try {
-                            ps.close();
-                        } catch (Throwable throwable1) {
-                            throwable.addSuppressed(throwable1);
-                        }
-                    throw throwable;
                 }
-                if (con != null)
-                    con.close();
-            } catch (Throwable throwable) {
-                if (con != null)
-                    try {
-                        con.close();
-                    } catch (Throwable throwable1) {
-                        throwable.addSuppressed(throwable1);
-                    }
-                throw throwable;
+
+                ps.executeBatch();
             }
         } catch (Exception e) {
             LOGGER.error("Failed to save schemes data.", e);
         }
+
     }
 
     public void setScheme(int playerId, String schemeName, ArrayList<Integer> list) {
         if (!this._schemesTable.containsKey(playerId)) {
             this._schemesTable.put(playerId, new HashMap<>());
-        } else if (this._schemesTable.get(playerId).size() >= Config.BUFFER_MAX_SCHEMES) {
+        } else if ((this._schemesTable.get(playerId)).size() >= Config.BUFFER_MAX_SCHEMES) {
             return;
         }
-        this._schemesTable.get(playerId).put(schemeName, list);
+
+        (this._schemesTable.get(playerId)).put(schemeName, list);
     }
 
     public Map<String, ArrayList<Integer>> getPlayerSchemes(int playerId) {
@@ -159,38 +131,45 @@ public class BufferManager implements IXmlReader {
     }
 
     public List<Integer> getScheme(int playerId, String schemeName) {
-        if (this._schemesTable.get(playerId) == null || ((HashMap) this._schemesTable.get(playerId)).get(schemeName) == null)
-            return Collections.emptyList();
-        return (List<Integer>) ((HashMap) this._schemesTable.get(playerId)).get(schemeName);
+        return this._schemesTable.get(playerId) != null && (this._schemesTable.get(playerId)).get(schemeName) != null ? (this._schemesTable.get(playerId)).get(schemeName) : Collections.emptyList();
     }
 
     public boolean getSchemeContainsSkill(int playerId, String schemeName, int skillId) {
-        List<Integer> skills = getScheme(playerId, schemeName);
-        if (skills.isEmpty())
+        List<Integer> skills = this.getScheme(playerId, schemeName);
+        if (skills.isEmpty()) {
             return false;
-        for (Iterator<Integer> iterator = skills.iterator(); iterator.hasNext(); ) {
-            int id = iterator.next();
-            if (id == skillId)
-                return true;
+        } else {
+            for (int id : skills) {
+                if (id == skillId) {
+                    return true;
+                }
+            }
+
+            return false;
         }
-        return false;
     }
 
     public List<Integer> getSkillsIdsByType(String groupType) {
         List<Integer> skills = new ArrayList<>();
+
         for (BuffSkillHolder skill : this._availableBuffs.values()) {
-            if (skill.getType().equalsIgnoreCase(groupType))
+            if (skill.getType().equalsIgnoreCase(groupType)) {
                 skills.add(skill.getId());
+            }
         }
+
         return skills;
     }
 
     public List<String> getSkillTypes() {
         List<String> skillTypes = new ArrayList<>();
+
         for (BuffSkillHolder skill : this._availableBuffs.values()) {
-            if (!skillTypes.contains(skill.getType()))
+            if (!skillTypes.contains(skill.getType())) {
                 skillTypes.add(skill.getType());
+            }
         }
+
         return skillTypes;
     }
 

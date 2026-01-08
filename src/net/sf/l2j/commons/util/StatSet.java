@@ -565,7 +565,7 @@ public class StatSet extends HashMap<String, Object> {
                     return List.of(new IntIntHolder(Integer.parseInt(entries[0]), Integer.parseInt(entries[1])));
                 } else {
                     entries = string.split(";");
-                    List<IntIntHolder> list = new ArrayList(entries.length);
+                    List<IntIntHolder> list = new ArrayList<>(entries.length);
                     String[] var6 = entries;
                     int var7 = entries.length;
 

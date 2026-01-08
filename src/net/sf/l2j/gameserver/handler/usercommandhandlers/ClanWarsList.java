@@ -94,7 +94,7 @@ public class ClanWarsList implements IUserCommandHandler {
                     }
                 throw throwable;
             }
-        } catch (Exception exception) {
+        } catch (Exception ignored) {
         }
         return true;
     }

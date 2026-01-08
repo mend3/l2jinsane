@@ -4,9 +4,7 @@ import net.sf.l2j.gameserver.model.actor.Creature;
 
 public final class AggroInfo {
     private final Creature _attacker;
-
     private int _hate;
-
     private int _damage;
 
     public AggroInfo(Creature attacker) {
@@ -22,13 +20,15 @@ public final class AggroInfo {
     }
 
     public int checkHate(Creature owner) {
-        if (this._attacker.isAlikeDead() || !this._attacker.isVisible() || !owner.getKnownType(Creature.class).contains(this._attacker))
+        if (this._attacker.isAlikeDead() || !this._attacker.isVisible() || !owner.getKnownType(Creature.class).contains(this._attacker)) {
             this._hate = 0;
+        }
+
         return this._hate;
     }
 
     public void addHate(int value) {
-        this._hate = (int) Math.min(this._hate + value, 999999999L);
+        this._hate = (int) Math.min((long) this._hate + (long) value, 999999999L);
     }
 
     public void stopHate() {
@@ -40,15 +40,17 @@ public final class AggroInfo {
     }
 
     public void addDamage(int value) {
-        this._damage = (int) Math.min(this._damage + value, 999999999L);
+        this._damage = (int) Math.min((long) this._damage + (long) value, 999999999L);
     }
 
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj instanceof AggroInfo)
-            return (((AggroInfo) obj).getAttacker() == this._attacker);
-        return false;
+        } else if (obj instanceof AggroInfo) {
+            return ((AggroInfo) obj).getAttacker() == this._attacker;
+        } else {
+            return false;
+        }
     }
 
     public int hashCode() {

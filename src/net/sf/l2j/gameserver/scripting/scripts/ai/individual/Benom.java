@@ -28,7 +28,7 @@ public class Benom extends L2AttackableAIScript {
     private final Siege _siege = this.addSiegeNotify(8);
     private Npc _benom;
     private boolean _isPrisonOpened;
-    private final List<Player> _targets = new ArrayList();
+    private final List<Player> _targets = new ArrayList<>();
 
     public Benom() {
         super("ai/individual");
@@ -154,10 +154,8 @@ public class Benom extends L2AttackableAIScript {
                 teleportTarget(player);
                 ((Attackable) npc).stopHating(player);
                 if (!this._targets.isEmpty()) {
-                    Iterator var4 = this._targets.iterator();
 
-                    while (var4.hasNext()) {
-                        Player target = (Player) var4.next();
+                    for (Player target : this._targets) {
                         long x = player.getX() - target.getX();
                         long y = player.getY() - target.getY();
                         long z = player.getZ() - target.getZ();

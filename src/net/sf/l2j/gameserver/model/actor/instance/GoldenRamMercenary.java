@@ -12,9 +12,7 @@ import java.util.StringTokenizer;
 
 public class GoldenRamMercenary extends Folk {
     private static final String qn = "Q628_HuntOfTheGoldenRamMercenaryForce";
-
     private static final int[][] data = new int[][]{{4404, 2, 2}, {4405, 2, 2}, {4393, 3, 3}, {4400, 2, 3}, {4397, 1, 3}, {4399, 2, 3}, {4401, 1, 6}, {4402, 2, 6}};
-
     private static final int GOLDEN_RAM = 7251;
 
     public GoldenRamMercenary(int objectId, NpcTemplate template) {
@@ -22,7 +20,7 @@ public class GoldenRamMercenary extends Folk {
     }
 
     public void showChatWindow(Player player, int val) {
-        int npcId = getNpcId();
+        int npcId = this.getNpcId();
         String filename = "data/html/default/" + npcId + ".htm";
         QuestState st = player.getQuestState("Q628_HuntOfTheGoldenRamMercenaryForce");
         if (st != null) {
@@ -30,23 +28,23 @@ public class GoldenRamMercenary extends Folk {
             switch (npcId) {
                 case 31553:
                 case 31554:
-                    if (cond >= 2)
+                    if (cond >= 2) {
                         filename = "data/html/default/" + npcId + "-1.htm";
+                    }
                     break;
                 case 31555:
                 case 31556:
                     if (cond == 2) {
                         filename = "data/html/default/" + npcId + "-1.htm";
-                        break;
-                    }
-                    if (cond == 3)
+                    } else if (cond == 3) {
                         filename = "data/html/default/" + npcId + "-2.htm";
-                    break;
+                    }
             }
         }
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile(filename);
-        html.replace("%objectId%", getObjectId());
+        html.replace("%objectId%", this.getObjectId());
         player.sendPacket(html);
         player.sendPacket(ActionFailed.STATIC_PACKET);
     }
@@ -57,24 +55,28 @@ public class GoldenRamMercenary extends Folk {
         String actualCommand = st.nextToken();
         if (actualCommand.contains("buff")) {
             if (qs != null && qs.getInt("cond") == 3) {
-                int[] buffData = data[Integer.parseInt(st.nextToken())];
+                int[] buffData = data[Integer.valueOf(st.nextToken())];
                 int coins = buffData[2];
                 int val = 3;
                 if (qs.getQuestItemsCount(7251) >= coins) {
                     qs.takeItems(7251, coins);
-                    setTarget(player);
-                    doCast(SkillTable.getInstance().getInfo(buffData[0], buffData[1]));
+                    this.setTarget(player);
+                    this.doCast(SkillTable.getInstance().getInfo(buffData[0], buffData[1]));
                     val = 4;
                 }
-                NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+
+                NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
                 html.setFile("data/html/default/31556-" + val + ".htm");
                 player.sendPacket(html);
+                return;
             }
         } else if (command.startsWith("gmultisell")) {
-            if (qs != null && qs.getInt("cond") == 3)
+            if (qs != null && qs.getInt("cond") == 3) {
                 MultisellData.getInstance().separateAndSend(command.substring(10).trim(), player, this, false);
+            }
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 }

@@ -59,7 +59,7 @@ public final class ThreadPool {
     public static void execute(Runnable r) {
         try {
             getPool(_instantPools).execute(new TaskWrapper(r));
-        } catch (Exception exception) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -124,7 +124,6 @@ public final class ThreadPool {
             try {
                 this._runnable.run();
             } catch (RuntimeException e) {
-                LOGGER.error("Exception in a ThreadPool task execution.", e);
                 e.printStackTrace();
             }
         }

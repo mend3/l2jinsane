@@ -14,23 +14,27 @@ public class PenaltyMonster extends Monster {
     }
 
     public Creature getMostHated() {
-        if (this._ptk != null)
-            return this._ptk;
-        return super.getMostHated();
+        return (this._ptk != null ? this._ptk : super.getMostHated());
     }
 
     public void setPlayerToKill(Player ptk) {
-        if (Rnd.get(100) <= 80)
-            broadcastNpcSay("Your bait was too delicious! Now, I will kill you!");
+        if (Rnd.get(100) <= 80) {
+            this.broadcastNpcSay("Your bait was too delicious! Now, I will kill you!");
+        }
+
         this._ptk = ptk;
-        getAI().notifyEvent(AiEventType.AGGRESSION, this._ptk, Rnd.get(1, 100));
+        this.getAI().notifyEvent(AiEventType.AGGRESSION, this._ptk, Rnd.get(1, 100));
     }
 
     public boolean doDie(Creature killer) {
-        if (!super.doDie(killer))
+        if (!super.doDie(killer)) {
             return false;
-        if (Rnd.get(100) <= 75)
-            broadcastNpcSay("I will tell fish not to take your bait!");
-        return true;
+        } else {
+            if (Rnd.get(100) <= 75) {
+                this.broadcastNpcSay("I will tell fish not to take your bait!");
+            }
+
+            return true;
+        }
     }
 }

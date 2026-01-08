@@ -12,7 +12,7 @@ public class AdminGmChat implements IAdminCommandHandler {
         if (command.startsWith("admin_gmchat")) {
             try {
                 AdminData.getInstance().broadcastToGMs(new CreatureSay(0, 9, activeChar.getName(), command.substring(command.startsWith("admin_gmchat_menu") ? 18 : 13)));
-            } catch (StringIndexOutOfBoundsException stringIndexOutOfBoundsException) {
+            } catch (StringIndexOutOfBoundsException ignored) {
             }
             if (command.startsWith("admin_gmchat_menu"))
                 AdminHelpPage.showHelpPage(activeChar, "main_menu.htm");

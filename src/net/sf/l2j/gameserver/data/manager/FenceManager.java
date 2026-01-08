@@ -10,7 +10,7 @@ import java.util.List;
 
 public class FenceManager {
     private static final CLogger LOGGER = new CLogger(FenceManager.class.getName());
-    private final List<Fence> _fences = new ArrayList();
+    private final List<Fence> _fences = new ArrayList<>();
 
     protected FenceManager() {
     }

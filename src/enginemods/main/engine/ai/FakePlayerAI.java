@@ -32,7 +32,7 @@ import java.util.*;
 import java.util.concurrent.Future;
 
 public class FakePlayerAI extends CreatureAI implements Runnable {
-    private static final List<Npc> _lastTalk = new ArrayList(5);
+    private static List<Npc> _lastTalk = new ArrayList<>(5);
     protected Future<?> _aiTask = null;
     private boolean _thinking = false;
     private Desire _nextIntention = null;
@@ -45,6 +45,7 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
     public FakePlayerAI(Player player) {
         super(player);
         this.startTasks();
+        System.out.println("FakePlayerAI");
     }
 
     public static void toSelfAndKnownPlayersInRadius(Playable character, L2GameServerPacket mov, int radius) {
@@ -56,10 +57,7 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
             character.sendPacket(mov);
         }
 
-        Iterator var3 = character.getKnownTypeInRadius(Player.class, radius).iterator();
-
-        while (var3.hasNext()) {
-            Player player = (Player) var3.next();
+        for (Player player : character.getKnownTypeInRadius(Player.class, radius)) {
             player.sendPacket(mov);
         }
 
@@ -88,32 +86,25 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
                     this.getActor().getAI().setIntention(IntentionType.ACTIVE);
                 }
 
-            }, Rnd.get(10, 30) * 1000L);
-        } catch (Exception var2) {
-            var2.printStackTrace();
+            }, Rnd.get(10, 30) * 1000);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
 
     private void attackTarget() {
-        if (this.getActor().getCurrentMp() < (double) this.getActor().getMaxMp() * 0.5D) {
+        if (this.getActor().getCurrentMp() < (double) this.getActor().getMaxMp() * (double) 0.5F) {
             this.getActor().setCurrentMp(this.getActor().getMaxMp());
         }
 
         if (this.getActor().isMageClass()) {
             int skillId = -1;
             switch (this.getActor().getRace()) {
-                case HUMAN:
-                    skillId = 1230;
-                    break;
-                case DARK_ELF:
-                    skillId = 1239;
-                    break;
-                case ELF:
-                    skillId = 1235;
-                    break;
-                case ORC:
-                    skillId = 1245;
+                case HUMAN -> skillId = 1230;
+                case DARK_ELF -> skillId = 1239;
+                case ELF -> skillId = 1235;
+                case ORC -> skillId = 1245;
             }
 
             if (skillId != -1) {
@@ -134,23 +125,12 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
                 CrystalType bow = this.getActor().getActiveWeaponItem().getCrystalType();
                 int arrowId = 17;
                 switch (bow) {
-                    case S:
-                        arrowId = 1345;
-                        break;
-                    case A:
-                        arrowId = 1344;
-                        break;
-                    case B:
-                        arrowId = 1343;
-                        break;
-                    case C:
-                        arrowId = 1342;
-                        break;
-                    case D:
-                        arrowId = 1341;
-                        break;
-                    case NONE:
-                        arrowId = 17;
+                    case S -> arrowId = 1345;
+                    case A -> arrowId = 1344;
+                    case B -> arrowId = 1343;
+                    case C -> arrowId = 1342;
+                    case D -> arrowId = 1341;
+                    case NONE -> arrowId = 17;
                 }
 
                 if (this.getActor().getInventory().getInventoryItemCount(arrowId, -1) < 10) {
@@ -164,40 +144,28 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
     }
 
     private Creature searchNextAttack() {
-        Iterator var1 = this.getActor().getKnownTypeInRadius(Player.class, 1000).iterator();
+        for (Player player : this.getActor().getKnownTypeInRadius(Player.class, 1000)) {
+            if (player.getKarma() > 0 || player.getPvpFlag() > 0) {
+                return player;
+            }
+        }
 
-        Player player = null;
-        do {
-            if (!var1.hasNext()) {
-                Map<Double, Monster> listAttack = new TreeMap();
-                Iterator var7 = this.getActor().getKnownTypeInRadius(Monster.class, 2000).iterator();
+        Map<Double, Monster> listAttack = new TreeMap<>();
 
-                Monster monster;
-                while (var7.hasNext()) {
-                    monster = (Monster) var7.next();
-                    if (GeoEngine.getInstance().canMoveToTarget(this.getActor().getX(), this.getActor().getY(), this.getActor().getZ(), monster.getX(), monster.getY(), monster.getZ()) && GeoEngine.getInstance().canSeeTarget(this.getActor(), monster)) {
-                        double distance = MathUtil.calculateDistance(this.getActor(), monster, false);
-                        listAttack.put(distance, monster);
-                    }
-                }
+        for (Monster monster : this.getActor().getKnownTypeInRadius(Monster.class, 2000)) {
+            if (GeoEngine.getInstance().canMoveToTarget(this.getActor().getX(), this.getActor().getY(), this.getActor().getZ(), monster.getX(), monster.getY(), monster.getZ()) && GeoEngine.getInstance().canSeeTarget(this.getActor(), monster)) {
+                double distance = MathUtil.calculateDistance(this.getActor(), monster, false);
+                listAttack.put(distance, monster);
+            }
+        }
 
-                var7 = listAttack.values().iterator();
-
-                do {
-                    if (!var7.hasNext()) {
-                        return null;
-                    }
-
-                    monster = (Monster) var7.next();
-                } while (monster == null || monster.isDead());
-
+        for (Monster monster : listAttack.values()) {
+            if (monster != null && !monster.isDead()) {
                 return monster;
             }
+        }
 
-            player = (Player) var1.next();
-        } while (player.getKarma() <= 0 && player.getPvpFlag() <= 0);
-
-        return player;
+        return null;
     }
 
     private synchronized void searchCityRandomLoc() {
@@ -362,23 +330,12 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
 
                 try {
                     switch (this.getActor().getAI().getDesire().getIntention()) {
-                        case IDLE:
-                            this.thinkIdle();
-                            break;
-                        case ACTIVE:
-                            this.thinkActive();
-                            break;
-                        case ATTACK:
-                            this.thinkAttack();
-                            break;
-                        case CAST:
-                            this.thinkCast();
-                            break;
-                        case PICK_UP:
-                            this.thinkPickUp();
-                            break;
-                        case INTERACT:
-                            this.thinkInteract();
+                        case IDLE -> this.thinkIdle();
+                        case ACTIVE -> this.thinkActive();
+                        case ATTACK -> this.thinkAttack();
+                        case CAST -> this.thinkCast();
+                        case PICK_UP -> this.thinkPickUp();
+                        case INTERACT -> this.thinkInteract();
                     }
                 } finally {
                     this._thinking = false;
@@ -425,9 +382,9 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
     protected void thinkIdle() {
         if (this._randomWalkTime <= 0) {
             if (this.isInsideCity() && this._isNeedBackToFarm) {
-                Iterator var1 = this.getActor().getKnownTypeInRadius(Gatekeeper.class, 2000).iterator();
+                Iterator<Gatekeeper> var1 = this.getActor().getKnownTypeInRadius(Gatekeeper.class, 2000).iterator();
                 if (var1.hasNext()) {
-                    Gatekeeper teleport = (Gatekeeper) var1.next();
+                    Gatekeeper teleport = var1.next();
                     this.setIntention(IntentionType.MOVE_TO, new Location(teleport.getX(), teleport.getY(), teleport.getZ()));
                     this._isNeedBackToFarm = false;
                     return;
@@ -441,10 +398,7 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
 
             Npc target = null;
             if (Rnd.nextBoolean()) {
-                Iterator var2 = this.getActor().getKnownType(Npc.class).iterator();
-
-                while (var2.hasNext()) {
-                    Npc npc = (Npc) var2.next();
+                for (Npc npc : this.getActor().getKnownType(Npc.class)) {
                     if (npc != null && !(npc instanceof Monster) && Rnd.get(5) == 0 && GeoEngine.getInstance().canSeeTarget(this.getActor(), npc) && !GeoEngine.getInstance().canMoveToTarget(this.getActor().getX(), this.getActor().getY(), this.getActor().getZ(), npc.getX(), npc.getY(), npc.getZ()) && !_lastTalk.contains(npc)) {
                         if (_lastTalk.size() > 5) {
                             _lastTalk.clear();
@@ -476,13 +430,11 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
             this.getActor().teleportTo(TeleportType.TOWN);
             this.getActor().doRevive();
         }, 5000L);
+        ThreadPool.schedule(() -> this.searchCityRandomLoc(), 8000L);
         ThreadPool.schedule(() -> {
-            this.searchCityRandomLoc();
-        }, 8000L);
-        ThreadPool.schedule(() -> {
-            Iterator var1 = this.getActor().getKnownTypeInRadius(Gatekeeper.class, 1000).iterator();
+            Iterator<Gatekeeper> var1 = this.getActor().getKnownTypeInRadius(Gatekeeper.class, 1000).iterator();
             if (var1.hasNext()) {
-                Gatekeeper teleport = (Gatekeeper) var1.next();
+                Gatekeeper teleport = var1.next();
                 this.setIntention(IntentionType.MOVE_TO, new Location(teleport.getX(), teleport.getY(), teleport.getZ()));
             }
 
@@ -535,8 +487,7 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
         return MapRegionData.getTown(this.getActor().getX(), this.getActor().getY(), this.getActor().getZ()) != null;
     }
 
-    public enum CityTimeType {
-        SEARCH_NEXT_POS
-
+    public static enum CityTimeType {
+        SEARCH_NEXT_POS;
     }
 }

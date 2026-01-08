@@ -67,10 +67,8 @@ public class AdminEditChar implements IAdminCommandHandler {
 
         html.replace("%pages%", sb.toString());
         sb.setLength(0);
-        Iterator var9 = players.iterator();
 
-        while (var9.hasNext()) {
-            Player player = (Player) var9.next();
+        for (Player player : players) {
             StringUtil.append(sb, "<tr><td width=80><a action=\"bypass -h admin_character_info ", player.getName(), "\">", player.getName(), "</a></td><td width=110>", player.getTemplate().getClassName(), "</td><td width=40>", player.getLevel(), "</td></tr>");
         }
 
@@ -163,10 +161,8 @@ public class AdminEditChar implements IAdminCommandHandler {
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setFile("data/html/admin/charfind.htm");
         StringBuilder sb = new StringBuilder();
-        Iterator var5 = World.getInstance().getPlayers().iterator();
 
-        while (var5.hasNext()) {
-            Player player = (Player) var5.next();
+        for (Player player : World.getInstance().getPlayers()) {
             String name = player.getName();
             if (name.toLowerCase().contains(characterToFind.toLowerCase())) {
                 ++charactersFound;
@@ -209,10 +205,8 @@ public class AdminEditChar implements IAdminCommandHandler {
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setFile("data/html/admin/ipfind.htm");
         StringBuilder sb = new StringBuilder(1000);
-        Iterator var7 = World.getInstance().getPlayers().iterator();
 
-        while (var7.hasNext()) {
-            Player player = (Player) var7.next();
+        for (Player player : World.getInstance().getPlayers()) {
             GameClient client = player.getClient();
             if (client.isDetached()) {
                 if (!findDisconnected) {
@@ -274,10 +268,8 @@ public class AdminEditChar implements IAdminCommandHandler {
         Map<String, List<Player>> ipMap = new HashMap<>();
         String ip = "0.0.0.0";
         final Map<String, Integer> dualboxIPs = new HashMap<>();
-        Iterator var5 = World.getInstance().getPlayers().iterator();
 
-        while (var5.hasNext()) {
-            Player player = (Player) var5.next();
+        for (Player player : World.getInstance().getPlayers()) {
             GameClient client = player.getClient();
             if (client != null && !client.isDetached()) {
                 ip = client.getConnection().getInetAddress().getHostAddress();
@@ -308,10 +300,8 @@ public class AdminEditChar implements IAdminCommandHandler {
         });
         Collections.reverse(keys);
         StringBuilder sb = new StringBuilder();
-        Iterator var12 = keys.iterator();
 
-        while (var12.hasNext()) {
-            String dualboxIP = (String) var12.next();
+        for (String dualboxIP : keys) {
             StringUtil.append(sb, "<a action=\"bypass -h admin_find_ip ", dualboxIP, "\">", dualboxIP, " (", dualboxIPs.get(dualboxIP), ")</a><br1>");
         }
 
@@ -425,7 +415,7 @@ public class AdminEditChar implements IAdminCommandHandler {
                             if (con != null) {
                                 con.close();
                             }
-                        } catch (Exception var35) {
+                        } catch (Exception ignored) {
                         }
                     }
                 }
@@ -473,7 +463,7 @@ public class AdminEditChar implements IAdminCommandHandler {
                             activeChar.sendMessage("Usage: //find_dualbox [number > 0]");
                             return false;
                         }
-                    } catch (Exception var27) {
+                    } catch (Exception ignored) {
                     }
 
                     findDualbox(activeChar, multibox);
@@ -619,7 +609,7 @@ public class AdminEditChar implements IAdminCommandHandler {
                                 st = new StringTokenizer(command, " ");
                                 st.nextToken();
                                 sex = Enum.valueOf(Sex.class, st.nextToken().toUpperCase());
-                            } catch (Exception var22) {
+                            } catch (Exception ignored) {
                             }
 
                             if (sex != player.getAppearance().getSex()) {
@@ -711,7 +701,7 @@ public class AdminEditChar implements IAdminCommandHandler {
                                             } else if (oldExp < newExp) {
                                                 pet.getStat().addExp(newExp - oldExp);
                                             }
-                                        } catch (Exception var19) {
+                                        } catch (Exception ignored) {
                                         }
                                     } else {
                                         activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
@@ -760,10 +750,8 @@ public class AdminEditChar implements IAdminCommandHandler {
                                         }
 
                                         StringBuilder sb = new StringBuilder(400);
-                                        Iterator var59 = party.getMembers().iterator();
 
-                                        while (var59.hasNext()) {
-                                            Player member = (Player) var59.next();
+                                        for (Player member : party.getMembers()) {
                                             if (!party.isLeader(member)) {
                                                 StringUtil.append(sb, "<tr><td width=150><a action=\"bypass -h admin_character_info ", member.getName(), "\">", member.getName(), " (", member.getLevel(), ")</a></td><td width=120 align=right>", member.getClassId().toString(), "</td></tr>");
                                             } else {
@@ -855,7 +843,7 @@ public class AdminEditChar implements IAdminCommandHandler {
                                                     if (con != null) {
                                                         con.close();
                                                     }
-                                                } catch (Exception var39) {
+                                                } catch (Exception ignored) {
                                                 }
                                             } else if (changeCreateExpiryTime) {
                                                 player.setClanCreateExpiryTime(0L);

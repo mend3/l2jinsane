@@ -5,9 +5,7 @@ import net.sf.l2j.gameserver.enums.IntentionType;
 
 public class NextAction {
     private final AiEventType _event;
-
     private final IntentionType _intention;
-
     private final Runnable _runnable;
 
     public NextAction(AiEventType event, IntentionType intention, Runnable runnable) {

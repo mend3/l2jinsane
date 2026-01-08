@@ -6,9 +6,4 @@ public enum EventState {
     REGISTERING,
     TELEPORTING,
     RUNNING;
-
-    // $FF: synthetic method
-    private static EventState[] $values() {
-        return new EventState[]{INACTIVE, REGISTERING, TELEPORTING, RUNNING};
-    }
 }

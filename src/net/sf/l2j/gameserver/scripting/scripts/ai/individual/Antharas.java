@@ -37,7 +37,7 @@ public class Antharas extends L2AttackableAIScript {
     public static final byte DEAD = 3;
     private static final BossZone ANTHARAS_LAIR = ZoneManager.getInstance().getZoneById(110001, BossZone.class);
     private static final int[] ANTHARAS_IDS = new int[]{29066, 29067, 29068};
-    private final List<Npc> _monsters = new CopyOnWriteArrayList();
+    private final List<Npc> _monsters = new CopyOnWriteArrayList<>();
     private long _timeTracker = 0L;
     private Player _actualVictim;
     private int _antharasId;
@@ -374,10 +374,8 @@ public class Antharas extends L2AttackableAIScript {
         this.cancelQuestTimer("regen_task", npc, null);
         this.cancelQuestTimer("skill_task", npc, null);
         this.cancelQuestTimer("minions_spawn", npc, null);
-        Iterator var2 = this._monsters.iterator();
 
-        while (var2.hasNext()) {
-            Npc mob = (Npc) var2.next();
+        for (Npc mob : this._monsters) {
             this.cancelQuestTimer("self_destruct", mob, null);
             mob.deleteMe();
         }

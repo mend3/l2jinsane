@@ -37,9 +37,9 @@ public class LoginController {
     private static final String ACCOUNT_LAST_SERVER_UPDATE = "UPDATE accounts SET lastServer = ? WHERE login = ?";
     private static final String ACCOUNT_ACCESS_LEVEL_UPDATE = "UPDATE accounts SET access_level = ? WHERE login = ?";
     private static final int BLOWFISH_KEYS = 20;
-    private final Map<InetAddress, Long> _bannedIps = new ConcurrentHashMap();
-    private final Map<InetAddress, Integer> _failedAttempts = new ConcurrentHashMap();
-    protected Map<String, LoginClient> _clients = new ConcurrentHashMap();
+    private final Map<InetAddress, Long> _bannedIps = new ConcurrentHashMap<>();
+    private final Map<InetAddress, Integer> _failedAttempts = new ConcurrentHashMap<>();
+    protected Map<String, LoginClient> _clients = new ConcurrentHashMap<>();
     protected ScrambledKeyPair[] _keyPairs = new ScrambledKeyPair[10];
     protected byte[][] _blowfishKeys;
 
@@ -415,7 +415,7 @@ public class LoginController {
     }
 
     public boolean isAccountInAnyGameServer(String account) {
-        Iterator var2 = GameServerManager.getInstance().getRegisteredGameServers().values().iterator();
+        Iterator<GameServerInfo> var2 = GameServerManager.getInstance().getRegisteredGameServers().values().iterator();
 
         GameServerThread gst;
         do {
@@ -423,7 +423,7 @@ public class LoginController {
                 return false;
             }
 
-            GameServerInfo gsi = (GameServerInfo) var2.next();
+            GameServerInfo gsi = var2.next();
             gst = gsi.getGameServerThread();
         } while (gst == null || !gst.hasAccountOnGameServer(account));
 
@@ -431,7 +431,7 @@ public class LoginController {
     }
 
     public GameServerInfo getAccountOnGameServer(String account) {
-        Iterator var2 = GameServerManager.getInstance().getRegisteredGameServers().values().iterator();
+        Iterator<GameServerInfo> var2 = GameServerManager.getInstance().getRegisteredGameServers().values().iterator();
 
         GameServerInfo gsi;
         GameServerThread gst;
@@ -440,7 +440,7 @@ public class LoginController {
                 return null;
             }
 
-            gsi = (GameServerInfo) var2.next();
+            gsi = var2.next();
             gst = gsi.getGameServerThread();
         } while (gst == null || !gst.hasAccountOnGameServer(account));
 
@@ -578,10 +578,8 @@ public class LoginController {
 
         public void run() {
             while (!this.isInterrupted()) {
-                Iterator var1 = LoginController.this._clients.values().iterator();
 
-                while (var1.hasNext()) {
-                    LoginClient client = (LoginClient) var1.next();
+                for (LoginClient client : LoginController.this._clients.values()) {
                     if (client.getConnectionStartTime() + 60000L < System.currentTimeMillis()) {
                         client.close(LoginFail.REASON_ACCESS_FAILED);
                     }

@@ -48,28 +48,17 @@ public class GameServer {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public GameServer() throws Exception {
-        (new File("./log")).mkdir();
-        (new File("./log/chat")).mkdir();
-        (new File("./log/console")).mkdir();
-        (new File("./log/error")).mkdir();
-        (new File("./log/gmaudit")).mkdir();
-        (new File("./log/item")).mkdir();
+        (new File("./log/chat")).mkdirs();
+        (new File("./log/console")).mkdirs();
+        (new File("./log/error")).mkdirs();
+        (new File("./log/gmaudit")).mkdirs();
+        (new File("./log/item")).mkdirs();
         (new File("./data/crests")).mkdirs();
-        FileInputStream is = new FileInputStream("config/logging.properties");
 
-        try {
+        try (FileInputStream is = new FileInputStream("config/logging.properties")) {
             LogManager.getLogManager().readConfiguration(is);
-        } catch (Throwable var8) {
-            try {
-                is.close();
-            } catch (Throwable var5) {
-                var8.addSuppressed(var5);
-            }
-
-            throw var8;
         }
 
-        is.close();
         StringUtil.printSection("aCis");
         Config.loadGameServer();
         StringUtil.printSection("Poolers");
@@ -87,10 +76,10 @@ public class GameServer {
         HtmCache.getInstance();
 
         StringUtil.printSection("World");
-        World.getInstance().init();
+        World.getInstance();
         MapRegionData.getInstance().load();
         AnnouncementData.getInstance().load();
-        ServerMemoTable.getInstance().load();
+        ServerMemoTable.getInstance();
         ZoneManager.getInstance().load();
         GeoEngine.getInstance();
 

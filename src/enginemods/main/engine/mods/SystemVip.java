@@ -24,7 +24,7 @@ import java.util.StringTokenizer;
 
 public class SystemVip extends AbstractMods {
     public SystemVip() {
-        registerMod(true);
+        this.registerMod(true);
     }
 
     public static void informeExpireVip(Player player) {
@@ -45,14 +45,14 @@ public class SystemVip extends AbstractMods {
         hb.append("<table fixwidth=264>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>EXP:</font></td>");
-        hb.append("<td fixwidth=164 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_XP * 100.0D, "%</font></td>");
+        hb.append("<td fixwidth=164 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_XP * (double) 100.0F, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
         hb.append("<table fixwidth=264>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>SP:</font></td>");
-        hb.append("<td fixwidth=164 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_SP * 100.0D, "%</font></td>");
+        hb.append("<td fixwidth=164 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_SP * (double) 100.0F, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
@@ -69,32 +69,32 @@ public class SystemVip extends AbstractMods {
         hb.append("<table fixwidth=264 border=0 cellspacing=0 cellpadding=0>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>Normal:</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_NORMAL_AMOUNT * 100.0D, "%</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_NORMAL_AMOUNT * 100.0D, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_NORMAL_AMOUNT * (double) 100.0F, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_NORMAL_AMOUNT * (double) 100.0F, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
         hb.append("<table fixwidth=264 border=0 cellspacing=0 cellpadding=0>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>Spoil:</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SPOIL_AMOUNT * 100.0D, "%</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SPOIL_CHANCE * 100.0D, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SPOIL_AMOUNT * (double) 100.0F, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SPOIL_CHANCE * (double) 100.0F, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
         hb.append("<table fixwidth=264 border=0 cellspacing=0 cellpadding=0>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>Seed:</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SEED_AMOUNT * 100.0D, "%</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SEED_AMOUNT * 100.0D, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SEED_AMOUNT * (double) 100.0F, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_SEED_AMOUNT * (double) 100.0F, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
         hb.append("<table fixwidth=264 border=0 cellspacing=0 cellpadding=0>");
         hb.append("<tr>");
         hb.append("<td fixwidth=100 align=center><font color=3366FF>Herb:</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_HERB_AMOUNT * 100.0D, "%</font></td>");
-        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_HERB_AMOUNT * 100.0D, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_HERB_AMOUNT * (double) 100.0F, "%</font></td>");
+        hb.append("<td fixwidth=82 align=center><font color=LEVEL>", ConfigData.VIP_BONUS_DROP_HERB_AMOUNT * (double) 100.0F, "%</font></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
@@ -124,96 +124,97 @@ public class SystemVip extends AbstractMods {
         if (ph.getTarget() == null) {
             ph.sendMessage("this command need target");
             return false;
-        }
-        if (!Util.areObjectType(Player.class, ph.getTarget())) {
+        } else if (!Util.areObjectType(Player.class, ph.getTarget())) {
             ph.sendMessage("this command need player target");
             return false;
+        } else {
+            return true;
         }
-        return true;
     }
 
     public static SystemVip getInstance() {
-        return SingletonHolder.INSTANCE;
+        return SystemVip.SingletonHolder.INSTANCE;
     }
 
     public void onModState() {
-        switch (getState()) {
+        switch (this.getState()) {
             case START:
-                readAllVips();
-                break;
+                this.readAllVips();
+            case END:
+            default:
         }
     }
 
     public void onNpcExpSp(Player killer, Attackable npc, NpcExpInstance instance) {
-        if (!PlayerData.get(killer).isVip())
-            return;
-        instance.increaseRate(ExpSpType.EXP, ConfigData.VIP_BONUS_XP);
-        instance.increaseRate(ExpSpType.SP, ConfigData.VIP_BONUS_SP);
+        if (PlayerData.get(killer).isVip()) {
+            instance.increaseRate(ExpSpType.EXP, ConfigData.VIP_BONUS_XP);
+            instance.increaseRate(ExpSpType.SP, ConfigData.VIP_BONUS_SP);
+        }
     }
 
     public void onNpcDrop(Player killer, Attackable npc, NpcDropsInstance instance) {
-        if (!PlayerData.get(killer).isVip())
-            return;
-        instance.increaseDrop(ItemDropType.NORMAL, ConfigData.VIP_BONUS_DROP_NORMAL_AMOUNT, ConfigData.VIP_BONUS_DROP_NORMAL_CHANCE);
-        instance.increaseDrop(ItemDropType.SPOIL, ConfigData.VIP_BONUS_DROP_SPOIL_AMOUNT, ConfigData.VIP_BONUS_DROP_SPOIL_CHANCE);
-        instance.increaseDrop(ItemDropType.HERB, ConfigData.VIP_BONUS_DROP_HERB_AMOUNT, ConfigData.VIP_BONUS_DROP_HERB_CHANCE);
-        instance.increaseDrop(ItemDropType.SEED, ConfigData.VIP_BONUS_DROP_SEED_AMOUNT, ConfigData.VIP_BONUS_DROP_SEED_CHANCE);
+        if (PlayerData.get(killer).isVip()) {
+            instance.increaseDrop(ItemDropType.NORMAL, ConfigData.VIP_BONUS_DROP_NORMAL_AMOUNT, ConfigData.VIP_BONUS_DROP_NORMAL_CHANCE);
+            instance.increaseDrop(ItemDropType.SPOIL, ConfigData.VIP_BONUS_DROP_SPOIL_AMOUNT, ConfigData.VIP_BONUS_DROP_SPOIL_CHANCE);
+            instance.increaseDrop(ItemDropType.HERB, ConfigData.VIP_BONUS_DROP_HERB_AMOUNT, ConfigData.VIP_BONUS_DROP_HERB_CHANCE);
+            instance.increaseDrop(ItemDropType.SEED, ConfigData.VIP_BONUS_DROP_SEED_AMOUNT, ConfigData.VIP_BONUS_DROP_SEED_CHANCE);
+        }
     }
 
     public void onEvent(Player player, Creature npc, String command) {
         StringTokenizer st = new StringTokenizer(command, " ");
-        String event = st.nextToken();
-        switch (event) {
+        switch (st.nextToken()) {
             case "allVip":
-                if (player.getAccessLevel().getLevel() < 1)
-                    break;
-                getAllPlayerVips(player, Integer.parseInt(st.nextToken()));
-                break;
+                if (player.getAccessLevel().getLevel() >= 1) {
+                    this.getAllPlayerVips(player, Integer.parseInt(st.nextToken()));
+                }
+            default:
         }
     }
 
     public boolean onAdminCommand(Player player, String chat) {
-        String days;
-        Player vip;
-        Calendar time;
         StringTokenizer st = new StringTokenizer(chat, " ");
-        String command = st.nextToken().toLowerCase();
-        switch (command) {
+        switch (st.nextToken().toLowerCase()) {
             case "allvip":
-                getAllPlayerVips(player, 1);
+                this.getAllPlayerVips(player, 1);
                 return true;
             case "removevip":
-                if (!checkTarget(player))
+                if (!checkTarget(player)) {
                     return true;
+                }
+
                 removeVip((Player) player.getTarget());
                 return true;
             case "setvip":
-                if (!checkTarget(player))
+                if (!checkTarget(player)) {
                     return true;
-                if (!st.hasMoreTokens()) {
+                } else if (!st.hasMoreTokens()) {
                     player.sendMessage("Correct command:");
                     player.sendMessage(".setVip days");
                     return true;
-                }
-                days = st.nextToken();
-                if (!Util.isNumber(days)) {
-                    player.sendMessage("Correct command:");
-                    player.sendMessage(".setVip days");
+                } else {
+                    String days = st.nextToken();
+                    if (!Util.isNumber(days)) {
+                        player.sendMessage("Correct command:");
+                        player.sendMessage(".setVip days");
+                        return true;
+                    }
+
+                    Player vip = (Player) player.getTarget();
+                    Calendar time = new GregorianCalendar();
+                    time.add(Calendar.DAY_OF_YEAR, Integer.parseInt(days));
+                    this.setValueDB(vip, "vip", "" + time.getTimeInMillis());
+                    PlayerData.get(vip).setVip(true);
+                    PlayerData.get(vip).setVipExpireDate(time.getTimeInMillis());
+                    this.addVip(vip, time.getTimeInMillis());
+                    player.sendPacket(new ExShowScreenMessage("player: " + vip.getName() + " is Vip now", 10000, ExShowScreenMessage.SMPOS.TOP_CENTER, false));
+                    vip.sendPacket(new ExShowScreenMessage("player: " + vip.getName() + " is Vip now", 10000, ExShowScreenMessage.SMPOS.TOP_CENTER, false));
+                    informeExpireVip(vip);
                     return true;
                 }
-                vip = (Player) player.getTarget();
-                time = new GregorianCalendar();
-                time.add(Calendar.DAY_OF_YEAR, Integer.parseInt(days));
-                setValueDB(vip, "vip", "" + time.getTimeInMillis());
-                PlayerData.get(vip).setVip(true);
-                PlayerData.get(vip).setVipExpireDate(time.getTimeInMillis());
-                addVip(vip, time.getTimeInMillis());
-                player.sendPacket(new ExShowScreenMessage("player: " + vip.getName() + " is Vip now", 10000, ExShowScreenMessage.SMPOS.TOP_CENTER, false));
-                vip.sendPacket(new ExShowScreenMessage("player: " + vip.getName() + " is Vip now", 10000, ExShowScreenMessage.SMPOS.TOP_CENTER, false));
-                informeExpireVip(vip);
-                return true;
+            default:
+                return false;
         }
-        return false;
     }
 
     public void onEnterWorld(Player player) {
@@ -222,34 +223,38 @@ public class SystemVip extends AbstractMods {
                 removeVip(player);
                 return;
             }
-            addVip(player, PlayerData.get(player).getVipExpireDate());
+
+            this.addVip(player, PlayerData.get(player).getVipExpireDate());
             informeExpireVip(player);
         }
+
     }
 
     public double onStats(Stats stat, Creature character, double value) {
-        if (!Util.areObjectType(Player.class, character))
+        if (!Util.areObjectType(Player.class, character)) {
             return value;
-        if (!PlayerData.get(character.getObjectId()).isVip())
+        } else if (!PlayerData.get(character.getObjectId()).isVip()) {
             return value;
-        if (ConfigData.VIP_STATS.containsKey(stat))
-            return value *= ConfigData.VIP_STATS.get(stat);
-        return value;
+        } else {
+            return ConfigData.VIP_STATS.containsKey(stat) ? value * ConfigData.VIP_STATS.get(stat) : value;
+        }
     }
 
     public void addVip(Player player, long dayTime) {
         ThreadPool.schedule(() -> {
-            if (player == null)
-                return;
-            informeExpireVip(player);
-            removeVip(player);
-        }, dayTime -
-
-                System.currentTimeMillis());
-        if (ConfigData.ALLOW_VIP_NCOLOR)
+            if (player != null) {
+                informeExpireVip(player);
+                removeVip(player);
+            }
+        }, dayTime - System.currentTimeMillis());
+        if (ConfigData.ALLOW_VIP_NCOLOR) {
             player.getAppearance().setNameColor(ConfigData.VIP_NCOLOR);
-        if (ConfigData.ALLOW_VIP_TCOLOR)
+        }
+
+        if (ConfigData.ALLOW_VIP_TCOLOR) {
             player.getAppearance().setTitleColor(ConfigData.VIP_TCOLOR);
+        }
+
         player.broadcastUserInfo();
     }
 
@@ -268,34 +273,36 @@ public class SystemVip extends AbstractMods {
         int searchPage = MAX_PER_PAGE * (page + 100);
         int count = 0;
         int countVip = 0;
+
         for (PlayerHolder ph : PlayerData.getAllPlayers()) {
             if (ph.isVip()) {
-                countVip++;
+                ++countVip;
                 if (count < searchPage) {
-                    count++;
-                    continue;
+                    ++count;
+                } else if (count < searchPage + MAX_PER_PAGE) {
+                    hb.append("<table", count % 2 == 0 ? " bgcolor=000000>" : ">");
+                    hb.append("<tr>");
+                    hb.append("<td width=64>" + ph.getName(), "</td><td width=200>" + ph.getVipExpireDateFormat(), "</td>");
+                    hb.append("</tr>");
+                    hb.append("</table>");
+                    ++count;
                 }
-                if (count >= searchPage + MAX_PER_PAGE)
-                    continue;
-                hb.append("<table", (count % 2 == 0) ? " bgcolor=000000>" : ">");
-                hb.append("<tr>");
-                hb.append("<td width=64>" + ph.getName(), "</td><td width=200>" + ph.getVipExpireDateFormat(), "</td>");
-                hb.append("</tr>");
-                hb.append("</table>");
-                count++;
             }
         }
+
         hb.append("<center>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
         hb.append("<table bgcolor=CC99FF>");
         hb.append("<tr>");
         int currentPage = 1;
-        for (int i = 0; i < countVip; i++) {
+
+        for (int i = 0; i < countVip; ++i) {
             if (i % MAX_PER_PAGE == 0) {
                 hb.append("<td width=18><center><a action=\"bypass -h Engine SystemVip allVip ", currentPage, "\">" + currentPage, "</center></a></td>");
-                currentPage++;
+                ++currentPage;
             }
         }
+
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("<img src=L2UI.SquareGray width=264 height=1>");
@@ -306,15 +313,16 @@ public class SystemVip extends AbstractMods {
 
     private void readAllVips() {
         for (PlayerHolder ph : PlayerData.getAllPlayers()) {
-            String timeInMillis = getValueDB(ph.getObjectId(), "vip");
-            if (timeInMillis == null)
-                continue;
-            long dayTime = Long.parseLong(timeInMillis);
-            if (dayTime < System.currentTimeMillis())
-                continue;
-            PlayerData.get(ph.getObjectId()).setVip(true);
-            PlayerData.get(ph.getObjectId()).setVipExpireDate(dayTime);
+            String timeInMillis = this.getValueDB(ph.getObjectId(), "vip");
+            if (timeInMillis != null) {
+                long dayTime = Long.parseLong(timeInMillis);
+                if (dayTime >= System.currentTimeMillis()) {
+                    PlayerData.get(ph.getObjectId()).setVip(true);
+                    PlayerData.get(ph.getObjectId()).setVipExpireDate(dayTime);
+                }
+            }
         }
+
     }
 
     private static class SingletonHolder {

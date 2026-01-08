@@ -24,7 +24,7 @@ public class Core extends L2AttackableAIScript {
     private static final int SUSCEPTOR = 29011;
     private static final byte ALIVE = 0;
     private static final byte DEAD = 1;
-    private final List<Monster> _minions = new ArrayList();
+    private final List<Monster> _minions = new ArrayList<>();
 
     public Core() {
         super("ai/individual");

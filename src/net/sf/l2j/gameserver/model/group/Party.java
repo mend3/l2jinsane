@@ -26,16 +26,15 @@ import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 
 public class Party extends AbstractGroup {
-    private static final double[] BONUS_EXP_SP = new double[]{1.0D, 1.0D, 1.3D, 1.39D, 1.5D, 1.54D, 1.58D, 1.63D, 1.67D, 1.71D};
+    private static final double[] BONUS_EXP_SP = new double[]{(double) 1.0F, (double) 1.0F, 1.3, 1.39, (double) 1.5F, 1.54, 1.58, 1.63, 1.67, 1.71};
     private static final int PARTY_POSITION_BROADCAST = 12000;
-    private final List<Player> _members = new CopyOnWriteArrayList();
+    private final List<Player> _members = new CopyOnWriteArrayList<>();
     private final LootRule _lootRule;
     protected PartyMemberPosition _positionPacket;
     private boolean _pendingInvitation;
@@ -57,22 +56,20 @@ public class Party extends AbstractGroup {
         leader.sendPacket(new PartySmallWindowAdd(target, this));
         target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_JOINED_S1_PARTY).addCharName(leader));
         leader.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_JOINED_PARTY).addCharName(target));
-        Iterator var4 = this._members.iterator();
 
-        while (var4.hasNext()) {
-            Player member = (Player) var4.next();
+        for (Player member : this._members) {
             member.updateEffectIcons(true);
             member.broadcastUserInfo();
         }
 
-        this._positionBroadcastTask = ThreadPool.scheduleAtFixedRate(new Party.PositionBroadcast(), 6000L, 12000L);
+        this._positionBroadcastTask = ThreadPool.scheduleAtFixedRate(new PositionBroadcast(), 6000L, 12000L);
     }
 
     public boolean equals(Object obj) {
         if (!(obj instanceof Party)) {
             return false;
         } else {
-            return obj == this || this.isLeader(((Party) obj).getLeader());
+            return obj == this ? true : this.isLeader(((Party) obj).getLeader());
         }
     }
 
@@ -89,20 +86,14 @@ public class Party extends AbstractGroup {
     }
 
     public void broadcastPacket(L2GameServerPacket packet) {
-        Iterator var2 = this._members.iterator();
-
-        while (var2.hasNext()) {
-            Player member = (Player) var2.next();
+        for (Player member : this._members) {
             member.sendPacket(packet);
         }
 
     }
 
     public void broadcastCreatureSay(CreatureSay msg, Player broadcaster) {
-        Iterator var3 = this._members.iterator();
-
-        while (var3.hasNext()) {
-            Player member = (Player) var3.next();
+        for (Player member : this._members) {
             if (!BlockList.isBlocked(member, broadcaster)) {
                 member.sendPacket(msg);
             }
@@ -112,10 +103,8 @@ public class Party extends AbstractGroup {
 
     public void recalculateLevel() {
         int newLevel = 0;
-        Iterator var2 = this._members.iterator();
 
-        while (var2.hasNext()) {
-            Player member = (Player) var2.next();
+        for (Player member : this._members) {
             if (member.getLevel() > newLevel) {
                 newLevel = member.getLevel();
             }
@@ -136,10 +125,7 @@ public class Party extends AbstractGroup {
             }
         }
 
-        Iterator var1 = this._members.iterator();
-
-        while (var1.hasNext()) {
-            Player member = (Player) var1.next();
+        for (Player member : this._members) {
             member.setParty(null);
             member.sendPacket(PartySmallWindowDeleteAll.STATIC_PACKET);
             if (member.isFestivalParticipant()) {
@@ -150,10 +136,7 @@ public class Party extends AbstractGroup {
                 member.abortCast();
             }
 
-            Iterator var3 = member.getKnownType(Creature.class).iterator();
-
-            while (var3.hasNext()) {
-                Creature character = (Creature) var3.next();
+            for (Creature character : member.getKnownType(Creature.class)) {
                 if (character.getFusionSkill() != null && character.getFusionSkill().getTarget() == member) {
                     character.abortCast();
                 }
@@ -184,11 +167,9 @@ public class Party extends AbstractGroup {
     }
 
     private Player getRandomMember(int itemId, Creature target) {
-        List<Player> availableMembers = new ArrayList();
-        Iterator var4 = this._members.iterator();
+        List<Player> availableMembers = new ArrayList<>();
 
-        while (var4.hasNext()) {
-            Player member = (Player) var4.next();
+        for (Player member : this._members) {
             if (member.getInventory().validateCapacityByItemId(itemId) && MathUtil.checkIfInRange(Config.PARTY_RANGE, target, member, true)) {
                 availableMembers.add(member);
             }
@@ -237,10 +218,8 @@ public class Party extends AbstractGroup {
 
     public void broadcastNewLeaderStatus() {
         SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BECOME_A_PARTY_LEADER).addCharName(this.getLeader());
-        Iterator var2 = this._members.iterator();
 
-        while (var2.hasNext()) {
-            Player member = (Player) var2.next();
+        for (Player member : this._members) {
             member.sendPacket(PartySmallWindowDeleteAll.STATIC_PACKET);
             member.sendPacket(new PartySmallWindowAll(member, this));
             member.broadcastUserInfo();
@@ -250,10 +229,7 @@ public class Party extends AbstractGroup {
     }
 
     public void broadcastToPartyMembers(Player player, L2GameServerPacket msg) {
-        Iterator var3 = this._members.iterator();
-
-        while (var3.hasNext()) {
-            Player member = (Player) var3.next();
+        for (Player member : this._members) {
             if (member != null && !member.equals(player)) {
                 member.sendPacket(msg);
             }
@@ -275,10 +251,7 @@ public class Party extends AbstractGroup {
                 this.setLevel(player.getLevel());
             }
 
-            Iterator var2 = this._members.iterator();
-
-            while (var2.hasNext()) {
-                Player member = (Player) var2.next();
+            for (Player member : this._members) {
                 member.updateEffectIcons(true);
                 member.broadcastUserInfo();
             }
@@ -309,10 +282,7 @@ public class Party extends AbstractGroup {
                     player.abortCast();
                 }
 
-                Iterator var3 = player.getKnownType(Creature.class).iterator();
-
-                while (var3.hasNext()) {
-                    Creature character = (Creature) var3.next();
+                for (Creature character : player.getKnownType(Creature.class)) {
                     if (character.getFusionSkill() != null && character.getFusionSkill().getTarget() == player) {
                         character.abortCast();
                     }
@@ -364,18 +334,13 @@ public class Party extends AbstractGroup {
     }
 
     private Player getPlayerByName(String name) {
-        Iterator var2 = this._members.iterator();
-
-        Player member;
-        do {
-            if (!var2.hasNext()) {
-                return null;
+        for (Player member : this._members) {
+            if (member.getName().equalsIgnoreCase(name)) {
+                return member;
             }
+        }
 
-            member = (Player) var2.next();
-        } while (!member.getName().equalsIgnoreCase(name));
-
-        return member;
+        return null;
     }
 
     public void distributeItem(Player player, ItemInstance item) {
@@ -425,11 +390,9 @@ public class Party extends AbstractGroup {
     }
 
     public void distributeAdena(Player player, int adena, Creature target) {
-        List<Player> toReward = new ArrayList(this._members.size());
-        Iterator var5 = this._members.iterator();
+        List<Player> toReward = new ArrayList<>(this._members.size());
 
-        while (var5.hasNext()) {
-            Player member = (Player) var5.next();
+        for (Player member : this._members) {
             if (MathUtil.checkIfInRange(Config.PARTY_RANGE, target, member, true) && member.getAdena() != Integer.MAX_VALUE) {
                 toReward.add(member);
             }
@@ -437,10 +400,8 @@ public class Party extends AbstractGroup {
 
         if (!toReward.isEmpty()) {
             int count = adena / toReward.size();
-            Iterator var9 = toReward.iterator();
 
-            while (var9.hasNext()) {
-                Player member = (Player) var9.next();
+            for (Player member : toReward) {
                 member.addAdena("Party", count, player, true);
             }
 
@@ -448,52 +409,39 @@ public class Party extends AbstractGroup {
     }
 
     public void distributeXpAndSp(long xpReward, int spReward, List<Player> rewardedMembers, int topLvl, Map<Creature, RewardInfo> rewards) {
-        List<Player> validMembers = new ArrayList();
+        List<Player> validMembers = new ArrayList<>();
         if (Config.PARTY_XP_CUTOFF_METHOD.equalsIgnoreCase("level")) {
-            Iterator var8 = rewardedMembers.iterator();
-
-            while (var8.hasNext()) {
-                Player member = (Player) var8.next();
+            for (Player member : rewardedMembers) {
                 if (topLvl - member.getLevel() <= Config.PARTY_XP_CUTOFF_LEVEL) {
                     validMembers.add(member);
                 }
             }
-        } else {
-            Player member;
-            int sqLevelSum;
-            Iterator var22;
-            if (Config.PARTY_XP_CUTOFF_METHOD.equalsIgnoreCase("percentage")) {
-                sqLevelSum = 0;
+        } else if (Config.PARTY_XP_CUTOFF_METHOD.equalsIgnoreCase("percentage")) {
+            int sqLevelSum = 0;
 
-                for (var22 = rewardedMembers.iterator(); var22.hasNext(); sqLevelSum += member.getLevel() * member.getLevel()) {
-                    member = (Player) var22.next();
+            for (Player member : rewardedMembers) {
+                sqLevelSum += member.getLevel() * member.getLevel();
+            }
+
+            for (Player member : rewardedMembers) {
+                int sqLevel = member.getLevel() * member.getLevel();
+                if ((double) (sqLevel * 100) >= (double) sqLevelSum * Config.PARTY_XP_CUTOFF_PERCENT) {
+                    validMembers.add(member);
                 }
+            }
+        } else if (Config.PARTY_XP_CUTOFF_METHOD.equalsIgnoreCase("auto")) {
+            int sqLevelSum = 0;
 
-                var22 = rewardedMembers.iterator();
+            for (Player member : rewardedMembers) {
+                sqLevelSum += member.getLevel() * member.getLevel();
+            }
 
-                while (var22.hasNext()) {
-                    member = (Player) var22.next();
-                    int sqLevel = member.getLevel() * member.getLevel();
-                    if ((double) (sqLevel * 100) >= (double) sqLevelSum * Config.PARTY_XP_CUTOFF_PERCENT) {
-                        validMembers.add(member);
-                    }
-                }
-            } else if (Config.PARTY_XP_CUTOFF_METHOD.equalsIgnoreCase("auto")) {
-                sqLevelSum = 0;
+            int partySize = MathUtil.limit(rewardedMembers.size(), 1, 9);
 
-                for (var22 = rewardedMembers.iterator(); var22.hasNext(); sqLevelSum += member.getLevel() * member.getLevel()) {
-                    member = (Player) var22.next();
-                }
-
-                int partySize = MathUtil.limit(rewardedMembers.size(), 1, 9);
-                Iterator var25 = rewardedMembers.iterator();
-
-                while (var25.hasNext()) {
-                    member = (Player) var25.next();
-                    int sqLevel = member.getLevel() * member.getLevel();
-                    if ((double) sqLevel >= (double) sqLevelSum * (1.0D - 1.0D / (1.0D + BONUS_EXP_SP[partySize] - BONUS_EXP_SP[partySize - 1]))) {
-                        validMembers.add(member);
-                    }
+            for (Player member : rewardedMembers) {
+                int sqLevel = member.getLevel() * member.getLevel();
+                if ((double) sqLevel >= (double) sqLevelSum * ((double) 1.0F - (double) 1.0F / ((double) 1.0F + BONUS_EXP_SP[partySize] - BONUS_EXP_SP[partySize - 1]))) {
+                    validMembers.add(member);
                 }
             }
         }
@@ -503,16 +451,11 @@ public class Party extends AbstractGroup {
         spReward = (int) ((double) spReward * partyRate * Config.RATE_PARTY_SP);
         int sqLevelSum = 0;
 
-        Iterator var28;
-        Player member;
-        for (var28 = validMembers.iterator(); var28.hasNext(); sqLevelSum += member.getLevel() * member.getLevel()) {
-            member = (Player) var28.next();
+        for (Player member : validMembers) {
+            sqLevelSum += member.getLevel() * member.getLevel();
         }
 
-        var28 = rewardedMembers.iterator();
-
-        while (var28.hasNext()) {
-            member = (Player) var28.next();
+        for (Player member : rewardedMembers) {
             if (!member.isDead()) {
                 if (validMembers.contains(member)) {
                     float penalty = member.hasServitor() ? ((Servitor) member.getSummon()).getExpPenalty() : 0.0F;
@@ -559,18 +502,13 @@ public class Party extends AbstractGroup {
     }
 
     public boolean wipedOut() {
-        Iterator var1 = this._members.iterator();
-
-        Player member;
-        do {
-            if (!var1.hasNext()) {
-                return true;
+        for (Player member : this._members) {
+            if (!member.isDead()) {
+                return false;
             }
+        }
 
-            member = (Player) var1.next();
-        } while (member.isDead());
-
-        return false;
+        return true;
     }
 
     protected class PositionBroadcast implements Runnable {

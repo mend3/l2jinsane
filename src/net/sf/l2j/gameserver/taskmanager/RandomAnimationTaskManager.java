@@ -3,6 +3,7 @@ package net.sf.l2j.gameserver.taskmanager;
 import net.sf.l2j.commons.pool.ThreadPool;
 import net.sf.l2j.commons.random.Rnd;
 import net.sf.l2j.gameserver.enums.IntentionType;
+import net.sf.l2j.gameserver.model.actor.Attackable;
 import net.sf.l2j.gameserver.model.actor.Npc;
 
 import java.util.Map;
@@ -16,32 +17,36 @@ public final class RandomAnimationTaskManager implements Runnable {
     }
 
     public static RandomAnimationTaskManager getInstance() {
-        return SingletonHolder.INSTANCE;
+        return RandomAnimationTaskManager.SingletonHolder.INSTANCE;
     }
 
     public void run() {
-        if (this._characters.isEmpty())
-            return;
-        long time = System.currentTimeMillis();
-        for (Map.Entry<Npc, Long> entry : this._characters.entrySet()) {
-            Npc npc = entry.getKey();
-            if (!npc.isInActiveRegion() || npc.isDead() || (npc instanceof net.sf.l2j.gameserver.model.actor.Attackable && npc.getAI().getDesire().getIntention() != IntentionType.ACTIVE)) {
-                this._characters.remove(npc);
-                continue;
+        if (!this._characters.isEmpty()) {
+            long time = System.currentTimeMillis();
+
+            for (Map.Entry<Npc, Long> entry : this._characters.entrySet()) {
+                Npc npc = entry.getKey();
+                if (npc.isInActiveRegion() && !npc.isDead() && (!(npc instanceof Attackable) || npc.getAI().getDesire().getIntention() == IntentionType.ACTIVE)) {
+                    if (time >= entry.getValue()) {
+                        if (!npc.isStunned() && !npc.isSleeping() && !npc.isParalyzed()) {
+                            npc.onRandomAnimation(Rnd.get(2, 3));
+                        }
+
+                        this.add(npc, npc.calculateRandomAnimationTimer());
+                    }
+                } else {
+                    this._characters.remove(npc);
+                }
             }
-            if (time < entry.getValue())
-                continue;
-            if (!npc.isStunned() && !npc.isSleeping() && !npc.isParalyzed())
-                npc.onRandomAnimation(Rnd.get(2, 3));
-            add(npc, npc.calculateRandomAnimationTimer());
+
         }
     }
 
     public void add(Npc character, int interval) {
-        this._characters.put(character, System.currentTimeMillis() + (interval * 1000L));
+        this._characters.put(character, System.currentTimeMillis() + (long) (interval * 1000));
     }
 
     private static final class SingletonHolder {
-        private static final RandomAnimationTaskManager INSTANCE = new RandomAnimationTaskManager();
+        protected static final RandomAnimationTaskManager INSTANCE = new RandomAnimationTaskManager();
     }
 }

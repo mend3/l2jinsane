@@ -77,9 +77,9 @@ public class FestivalOfDarknessManager {
         FESTIVAL_DUSK_CHEST_SPAWNS = new int[][][]{{{-77016, 88726, -5183, -1, 18114}, {-77136, 88646, -5183, -1, 18114}, {-77247, 88646, -5183, -1, 18114}, {-77380, 88726, -5183, -1, 18114}, {-77512, 88883, -5183, -1, 18114}, {-77512, 89053, -5183, -1, 18114}, {-77378, 89287, -5183, -1, 18114}, {-77254, 89238, -5183, -1, 18114}, {-77095, 89238, -5183, -1, 18114}, {-76996, 89287, -5183, -1, 18114}, {-76901, 89025, -5183, -1, 18114}, {-76901, 88891, -5183, -1, 18114}}, {{-77128, 85553, -5183, -1, 18115}, {-77036, 85594, -5183, -1, 18115}, {-76919, 85594, -5183, -1, 18115}, {-76755, 85553, -5183, -1, 18115}, {-76635, 85392, -5183, -1, 18115}, {-76635, 85216, -5183, -1, 18115}, {-76761, 85025, -5183, -1, 18115}, {-76908, 85004, -5183, -1, 18115}, {-77041, 85004, -5183, -1, 18115}, {-77138, 85025, -5183, -1, 18115}, {-77268, 85219, -5183, -1, 18115}, {-77268, 85410, -5183, -1, 18115}}, {{-75150, 87303, -5183, -1, 18116}, {-75150, 87175, -5183, -1, 18116}, {-75150, 87175, -5183, -1, 18116}, {-75150, 87303, -5183, -1, 18116}, {-74943, 87433, -5183, -1, 18116}, {-74767, 87433, -5183, -1, 18116}, {-74556, 87306, -5183, -1, 18116}, {-74556, 87184, -5183, -1, 18116}, {-74556, 87184, -5183, -1, 18116}, {-74556, 87306, -5183, -1, 18116}, {-74757, 86830, -5183, -1, 18116}, {-74927, 86830, -5183, -1, 18116}}, {{-80010, 88128, -5183, -1, 18117}, {-80113, 88066, -5183, -1, 18117}, {-80220, 88066, -5183, -1, 18117}, {-80359, 88128, -5183, -1, 18117}, {-80467, 88267, -5183, -1, 18117}, {-80467, 88436, -5183, -1, 18117}, {-80381, 88639, -5183, -1, 18117}, {-80278, 88577, -5183, -1, 18117}, {-80142, 88577, -5183, -1, 18117}, {-80028, 88639, -5183, -1, 18117}, {-79915, 88466, -5183, -1, 18117}, {-79915, 88322, -5183, -1, 18117}}, {{-80153, 84947, -5183, -1, 18118}, {-80003, 84962, -5183, -1, 18118}, {-79848, 84962, -5183, -1, 18118}, {-79742, 84947, -5183, -1, 18118}, {-79668, 84772, -5183, -1, 18118}, {-79668, 84619, -5183, -1, 18118}, {-79772, 84471, -5183, -1, 18118}, {-79888, 84414, -5183, -1, 18118}, {-80023, 84414, -5183, -1, 18118}, {-80166, 84471, -5183, -1, 18118}, {-80253, 84600, -5183, -1, 18118}, {-80253, 84780, -5183, -1, 18118}}};
     }
 
-    private final Map<Integer, Integer> _dawnFestivalScores = new HashMap();
-    private final Map<Integer, Integer> _duskFestivalScores = new HashMap();
-    private final Map<Integer, Map<Integer, StatSet>> _festivalData = new HashMap();
+    private final Map<Integer, Integer> _dawnFestivalScores = new HashMap<>();
+    private final Map<Integer, Integer> _duskFestivalScores = new HashMap<>();
+    private final Map<Integer, Map<Integer, StatSet>> _festivalData = new HashMap<>();
     protected FestivalOfDarknessManager.FestivalManager _managerInstance;
     protected ScheduledFuture<?> _managerScheduledTask;
     protected int _signsCycle = SevenSignsManager.getInstance().getCurrentCycle();
@@ -88,11 +88,11 @@ public class FestivalOfDarknessManager {
     protected long _nextFestivalStart;
     protected boolean _festivalInitialized;
     protected boolean _festivalInProgress;
-    protected List<Integer> _accumulatedBonuses = new ArrayList();
-    protected Map<Integer, List<Integer>> _dawnFestivalParticipants = new HashMap();
-    protected Map<Integer, List<Integer>> _duskFestivalParticipants = new HashMap();
-    protected Map<Integer, List<Integer>> _dawnPreviousParticipants = new HashMap();
-    protected Map<Integer, List<Integer>> _duskPreviousParticipants = new HashMap();
+    protected List<Integer> _accumulatedBonuses = new ArrayList<>();
+    protected Map<Integer, List<Integer>> _dawnFestivalParticipants = new HashMap<>();
+    protected Map<Integer, List<Integer>> _duskFestivalParticipants = new HashMap<>();
+    protected Map<Integer, List<Integer>> _dawnPreviousParticipants = new HashMap<>();
+    protected Map<Integer, List<Integer>> _duskPreviousParticipants = new HashMap<>();
     boolean _noPartyRegister;
     private List<PeaceZone> _dawnPeace;
     private List<PeaceZone> _duskPeace;
@@ -253,7 +253,7 @@ public class FestivalOfDarknessManager {
 
                             Map<Integer, StatSet> map = this._festivalData.get(i);
                             if (map == null) {
-                                map = new HashMap();
+                                map = new HashMap<>();
                             }
 
                             ((Map) map).put(festivalId, set);
@@ -365,14 +365,9 @@ public class FestivalOfDarknessManager {
                     PreparedStatement ps2 = con.prepareStatement("INSERT INTO seven_signs_festival (festivalId, cabal, cycle, date, score, members) VALUES (?,?,?,?,?,?)");
 
                     try {
-                        Iterator var5 = this._festivalData.values().iterator();
 
-                        while (var5.hasNext()) {
-                            Map<Integer, StatSet> map = (Map) var5.next();
-                            Iterator var7 = map.values().iterator();
-
-                            while (var7.hasNext()) {
-                                StatSet set = (StatSet) var7.next();
+                        for (Map<Integer, StatSet> map : this._festivalData.values()) {
+                            for (StatSet set : map.values()) {
                                 int festivalCycle = set.getInteger("cycle");
                                 int festivalId = set.getInteger("festivalId");
                                 String cabal = set.getString("cabal");
@@ -479,7 +474,7 @@ public class FestivalOfDarknessManager {
         this._duskPreviousParticipants.clear();
         this._dawnFestivalScores.clear();
         this._duskFestivalScores.clear();
-        Map<Integer, StatSet> map = new HashMap();
+        Map<Integer, StatSet> map = new HashMap<>();
 
         for (int i = 0; i < 10; ++i) {
             int festivalId = i;
@@ -504,10 +499,8 @@ public class FestivalOfDarknessManager {
 
         this._festivalData.put(this._signsCycle, map);
         this.saveFestivalData(updateSettings);
-        Iterator var7 = World.getInstance().getPlayers().iterator();
 
-        while (var7.hasNext()) {
-            Player player = (Player) var7.next();
+        for (Player player : World.getInstance().getPlayers()) {
             ItemInstance bloodOfferings = player.getInventory().getItemByItemId(5901);
             if (bloodOfferings != null) {
                 player.destroyItem("SevenSigns", bloodOfferings, null, false);
@@ -578,7 +571,7 @@ public class FestivalOfDarknessManager {
         } else if (this._managerInstance == null) {
             return false;
         } else {
-            Iterator var2 = this._dawnFestivalParticipants.values().iterator();
+            Iterator<List<Integer>> var2 = this._dawnFestivalParticipants.values().iterator();
 
             List participants;
             do {
@@ -590,13 +583,13 @@ public class FestivalOfDarknessManager {
                             return false;
                         }
 
-                        participants = (List) var2.next();
+                        participants = var2.next();
                     } while (participants == null || !participants.contains(player.getObjectId()));
 
                     return true;
                 }
 
-                participants = (List) var2.next();
+                participants = var2.next();
             } while (participants == null || !participants.contains(player.getObjectId()));
 
             return true;
@@ -614,11 +607,9 @@ public class FestivalOfDarknessManager {
     public void setParticipants(CabalType oracle, int festivalId, Party festivalParty) {
         List<Integer> participants = null;
         if (festivalParty != null) {
-            participants = new ArrayList(festivalParty.getMembersCount());
-            Iterator var5 = festivalParty.getMembers().iterator();
+            participants = new ArrayList<>(festivalParty.getMembersCount());
 
-            while (var5.hasNext()) {
-                Player player = (Player) var5.next();
+            for (Player player : festivalParty.getMembers()) {
                 participants.add(player.getObjectId());
             }
         }
@@ -640,10 +631,8 @@ public class FestivalOfDarknessManager {
                 if (this._festivalInitialized) {
                     FestivalOfDarknessManager.L2DarknessFestival festivalInst = this._managerInstance.getFestivalInstance(oracle, festivalId);
                     if (festivalParty == null) {
-                        Iterator var7 = this.getParticipants(oracle, festivalId).iterator();
 
-                        while (var7.hasNext()) {
-                            int partyMemberObjId = (Integer) var7.next();
+                        for (int partyMemberObjId : this.getParticipants(oracle, festivalId)) {
                             Player partyMember = World.getInstance().getPlayer(partyMemberObjId);
                             if (partyMember != null) {
                                 festivalInst.relocatePlayer(partyMember, true);
@@ -684,14 +673,9 @@ public class FestivalOfDarknessManager {
     public final StatSet getOverallHighestScoreData(int festivalId) {
         StatSet set = null;
         int highestScore = 0;
-        Iterator var4 = this._festivalData.values().iterator();
 
-        while (var4.hasNext()) {
-            Map<Integer, StatSet> map = (Map) var4.next();
-            Iterator var6 = map.values().iterator();
-
-            while (var6.hasNext()) {
-                StatSet setToTest = (StatSet) var6.next();
+        for (Map<Integer, StatSet> map : this._festivalData.values()) {
+            for (StatSet setToTest : map.values()) {
                 int currFestID = setToTest.getInteger("festivalId");
                 int festivalScore = setToTest.getInteger("score");
                 if (currFestID == festivalId && festivalScore > highestScore) {
@@ -726,11 +710,9 @@ public class FestivalOfDarknessManager {
         } else if (thisCabalHighScore < otherCabalHighScore) {
             return false;
         } else {
-            List<String> partyMembers = new ArrayList();
-            Iterator var12 = this.getPreviousParticipants(oracle, festivalId).iterator();
+            List<String> partyMembers = new ArrayList<>();
 
-            while (var12.hasNext()) {
-                int partyMember = (Integer) var12.next();
+            for (int partyMember : this.getPreviousParticipants(oracle, festivalId)) {
                 partyMembers.add(PlayerInfoTable.getInstance().getPlayerName(partyMember));
             }
 
@@ -754,8 +736,8 @@ public class FestivalOfDarknessManager {
         int totalAccumBonus = 0;
 
         int accumBonus;
-        for (Iterator var2 = this._accumulatedBonuses.iterator(); var2.hasNext(); totalAccumBonus += accumBonus) {
-            accumBonus = (Integer) var2.next();
+        for (Iterator<Integer> var2 = this._accumulatedBonuses.iterator(); var2.hasNext(); totalAccumBonus += accumBonus) {
+            accumBonus = var2.next();
         }
 
         return totalAccumBonus;
@@ -788,10 +770,8 @@ public class FestivalOfDarknessManager {
             } else {
                 String playerName = player.getName();
                 int playerBonus = 0;
-                Iterator var5 = map.values().iterator();
 
-                while (var5.hasNext()) {
-                    StatSet set = (StatSet) var5.next();
+                for (StatSet set : map.values()) {
                     String members = set.getString("members");
                     if (members.indexOf(playerName) > -1) {
                         int festivalId = set.getInteger("festivalId");
@@ -815,7 +795,7 @@ public class FestivalOfDarknessManager {
     public void addPeaceZone(PeaceZone zone, boolean dawn) {
         if (dawn) {
             if (this._dawnPeace == null) {
-                this._dawnPeace = new ArrayList(2);
+                this._dawnPeace = new ArrayList<>(2);
             }
 
             if (!this._dawnPeace.contains(zone)) {
@@ -823,7 +803,7 @@ public class FestivalOfDarknessManager {
             }
         } else {
             if (this._duskPeace == null) {
-                this._duskPeace = new ArrayList(2);
+                this._duskPeace = new ArrayList<>(2);
             }
 
             if (!this._duskPeace.contains(zone)) {
@@ -891,7 +871,7 @@ public class FestivalOfDarknessManager {
     }
 
     private class FestivalManager implements Runnable {
-        protected Map<Integer, FestivalOfDarknessManager.L2DarknessFestival> _festivalInstances = new HashMap();
+        protected Map<Integer, FestivalOfDarknessManager.L2DarknessFestival> _festivalInstances = new HashMap<>();
 
         public FestivalManager() {
             FestivalOfDarknessManager.this._managerInstance = this;
@@ -909,16 +889,16 @@ public class FestivalOfDarknessManager {
 
                     try {
                         this.wait(FestivalOfDarknessManager.FESTIVAL_SIGNUP_TIME);
-                    } catch (InterruptedException var13) {
+                    } catch (InterruptedException ignored) {
                     }
 
                     FestivalOfDarknessManager.this._dawnPreviousParticipants.clear();
                     FestivalOfDarknessManager.this._duskPreviousParticipants.clear();
-                    Iterator var1 = this._festivalInstances.values().iterator();
+                    Iterator<L2DarknessFestival> var1 = this._festivalInstances.values().iterator();
 
                     FestivalOfDarknessManager.L2DarknessFestival festivalInst;
                     while (var1.hasNext()) {
-                        festivalInst = (FestivalOfDarknessManager.L2DarknessFestival) var1.next();
+                        festivalInst = var1.next();
                         festivalInst.unspawnMobs();
                     }
 
@@ -934,12 +914,12 @@ public class FestivalOfDarknessManager {
                                     var1 = this._festivalInstances.values().iterator();
 
                                     while (var1.hasNext()) {
-                                        festivalInst = (FestivalOfDarknessManager.L2DarknessFestival) var1.next();
+                                        festivalInst = var1.next();
                                         if (!festivalInst._npcInsts.isEmpty()) {
                                             festivalInst.unspawnMobs();
                                         }
                                     }
-                                } catch (InterruptedException var14) {
+                                } catch (InterruptedException ignored) {
                                 }
                             } else {
                                 FestivalOfDarknessManager.this._noPartyRegister = false;
@@ -964,42 +944,42 @@ public class FestivalOfDarknessManager {
 
                         try {
                             this.wait(Config.ALT_FESTIVAL_FIRST_SPAWN);
-                        } catch (InterruptedException var12) {
+                        } catch (InterruptedException ignored) {
                         }
 
                         elapsedTime = Config.ALT_FESTIVAL_FIRST_SPAWN;
                         FestivalOfDarknessManager.this._festivalInProgress = true;
-                        Iterator var16 = this._festivalInstances.values().iterator();
+                        Iterator<L2DarknessFestival> var16 = this._festivalInstances.values().iterator();
 
                         FestivalOfDarknessManager.L2DarknessFestival festivalInstx;
                         while (var16.hasNext()) {
-                            festivalInstx = (FestivalOfDarknessManager.L2DarknessFestival) var16.next();
+                            festivalInstx = var16.next();
                             festivalInstx.festivalStart();
                             festivalInstx.sendMessageToParticipants("The main event is now starting.");
                         }
 
                         try {
                             this.wait(Config.ALT_FESTIVAL_FIRST_SWARM - Config.ALT_FESTIVAL_FIRST_SPAWN);
-                        } catch (InterruptedException var11) {
+                        } catch (InterruptedException ignored) {
                         }
 
                         elapsedTime += Config.ALT_FESTIVAL_FIRST_SWARM - Config.ALT_FESTIVAL_FIRST_SPAWN;
                         var16 = this._festivalInstances.values().iterator();
 
                         while (var16.hasNext()) {
-                            festivalInstx = (FestivalOfDarknessManager.L2DarknessFestival) var16.next();
+                            festivalInstx = var16.next();
                             festivalInstx.moveMonstersToCenter();
                         }
 
                         try {
                             this.wait(Config.ALT_FESTIVAL_SECOND_SPAWN - Config.ALT_FESTIVAL_FIRST_SWARM);
-                        } catch (InterruptedException var10) {
+                        } catch (InterruptedException ignored) {
                         }
 
                         var16 = this._festivalInstances.values().iterator();
 
                         while (var16.hasNext()) {
-                            festivalInstx = (FestivalOfDarknessManager.L2DarknessFestival) var16.next();
+                            festivalInstx = var16.next();
                             festivalInstx.spawnFestivalMonsters(30, 2);
                             long end = (Config.ALT_FESTIVAL_LENGTH - Config.ALT_FESTIVAL_SECOND_SPAWN) / 60000L;
                             festivalInstx.sendMessageToParticipants("The Festival of Darkness will end in " + end + " minute(s).");
@@ -1009,13 +989,13 @@ public class FestivalOfDarknessManager {
 
                         try {
                             this.wait(Config.ALT_FESTIVAL_SECOND_SWARM - Config.ALT_FESTIVAL_SECOND_SPAWN);
-                        } catch (InterruptedException var9) {
+                        } catch (InterruptedException ignored) {
                         }
 
                         var16 = this._festivalInstances.values().iterator();
 
                         while (var16.hasNext()) {
-                            festivalInstx = (FestivalOfDarknessManager.L2DarknessFestival) var16.next();
+                            festivalInstx = var16.next();
                             festivalInstx.moveMonstersToCenter();
                         }
 
@@ -1023,13 +1003,13 @@ public class FestivalOfDarknessManager {
 
                         try {
                             this.wait(Config.ALT_FESTIVAL_CHEST_SPAWN - Config.ALT_FESTIVAL_SECOND_SWARM);
-                        } catch (InterruptedException var8) {
+                        } catch (InterruptedException ignored) {
                         }
 
                         var16 = this._festivalInstances.values().iterator();
 
                         while (var16.hasNext()) {
-                            festivalInstx = (FestivalOfDarknessManager.L2DarknessFestival) var16.next();
+                            festivalInstx = var16.next();
                             festivalInstx.spawnFestivalMonsters(60, 3);
                             festivalInstx.sendMessageToParticipants("The chests have spawned! Be quick, the festival will end soon.");
                         }
@@ -1038,14 +1018,14 @@ public class FestivalOfDarknessManager {
 
                         try {
                             this.wait(Config.ALT_FESTIVAL_LENGTH - elapsedTime);
-                        } catch (InterruptedException var7) {
+                        } catch (InterruptedException ignored) {
                         }
 
                         FestivalOfDarknessManager.this._festivalInProgress = false;
                         var16 = this._festivalInstances.values().iterator();
 
                         while (var16.hasNext()) {
-                            festivalInstx = (FestivalOfDarknessManager.L2DarknessFestival) var16.next();
+                            festivalInstx = var16.next();
                             festivalInstx.festivalEnd();
                         }
 
@@ -1083,8 +1063,8 @@ public class FestivalOfDarknessManager {
         protected L2DarknessFestival(CabalType cabal, int levelRange) {
             this._cabal = cabal;
             this._levelRange = levelRange;
-            this._originalLocations = new HashMap();
-            this._npcInsts = new ArrayList();
+            this._originalLocations = new HashMap<>();
+            this._npcInsts = new ArrayList<>();
             if (cabal == CabalType.DAWN) {
                 this._participants = FestivalOfDarknessManager.this._dawnFestivalParticipants.get(levelRange);
                 this._witchSpawn = new FestivalOfDarknessManager.FestivalSpawn(FestivalOfDarknessManager.FESTIVAL_DAWN_WITCH_SPAWNS[levelRange]);
@@ -1096,7 +1076,7 @@ public class FestivalOfDarknessManager {
             }
 
             if (this._participants == null) {
-                this._participants = new ArrayList();
+                this._participants = new ArrayList<>();
             }
 
             this.festivalInit();
@@ -1104,13 +1084,11 @@ public class FestivalOfDarknessManager {
 
         protected void festivalInit() {
             if (this._participants != null && !this._participants.isEmpty()) {
-                Iterator var2 = this._participants.iterator();
 
-                while (var2.hasNext()) {
-                    int participantObjId = (Integer) var2.next();
+                for (int participantObjId : this._participants) {
                     Player participant = World.getInstance().getPlayer(participantObjId);
                     if (participant != null) {
-                        this._originalLocations.put(participantObjId, new FestivalOfDarknessManager.FestivalSpawn(participant.getX(), participant.getY(), participant.getZ(), participant.getHeading()));
+                        this._originalLocations.put(participantObjId, new FestivalSpawn(participant.getX(), participant.getY(), participant.getZ(), participant.getHeading()));
                         int x = this._startLocation._x;
                         int y = this._startLocation._y;
                         boolean isPositive = Rnd.get(2) == 1;
@@ -1158,7 +1136,7 @@ public class FestivalOfDarknessManager {
         }
 
         protected void moveMonstersToCenter() {
-            Iterator var1 = this._npcInsts.iterator();
+            Iterator<FestivalMonster> var1 = this._npcInsts.iterator();
 
             while (true) {
                 FestivalMonster festivalMob;
@@ -1169,7 +1147,7 @@ public class FestivalOfDarknessManager {
                             return;
                         }
 
-                        festivalMob = (FestivalMonster) var1.next();
+                        festivalMob = var1.next();
                     } while (festivalMob.isDead());
 
                     currIntention = festivalMob.getAI().getDesire().getIntention();
@@ -1256,10 +1234,8 @@ public class FestivalOfDarknessManager {
 
         protected void festivalEnd() {
             if (this._participants != null && !this._participants.isEmpty()) {
-                Iterator var1 = this._participants.iterator();
 
-                while (var1.hasNext()) {
-                    int participantObjId = (Integer) var1.next();
+                for (int participantObjId : this._participants) {
                     Player participant = World.getInstance().getPlayer(participantObjId);
                     if (participant != null) {
                         this.relocatePlayer(participant, false);
@@ -1286,10 +1262,8 @@ public class FestivalOfDarknessManager {
             }
 
             if (this._npcInsts != null) {
-                Iterator var1 = this._npcInsts.iterator();
 
-                while (var1.hasNext()) {
-                    FestivalMonster monsterInst = (FestivalMonster) var1.next();
+                for (FestivalMonster monsterInst : this._npcInsts) {
                     if (monsterInst != null) {
                         monsterInst.getSpawn().setRespawnState(false);
                         monsterInst.deleteMe();

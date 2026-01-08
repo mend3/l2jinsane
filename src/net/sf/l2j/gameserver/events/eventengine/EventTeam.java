@@ -8,13 +8,9 @@ import java.util.List;
 
 public class EventTeam {
     private final String name;
-
     private final int color;
-
     private final Location location;
-
     private final List<Player> players;
-
     private int score = 0;
 
     public EventTeam(String name, int color, Location location) {
@@ -30,13 +26,17 @@ public class EventTeam {
     }
 
     public void reward(int id, int count) {
-        for (Player player : this.players)
+        for (Player player : this.players) {
             player.addItem("Event reward.", id, count, null, true);
+        }
+
     }
 
     public void teleportTeam() {
-        for (Player player : this.players)
+        for (Player player : this.players) {
             player.teleToLocation(this.location);
+        }
+
     }
 
     public Location getLocation() {

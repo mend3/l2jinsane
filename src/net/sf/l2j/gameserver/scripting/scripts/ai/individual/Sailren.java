@@ -38,7 +38,7 @@ public class Sailren extends L2AttackableAIScript {
     private static final long INTERVAL_CHECK = 600000L;
     private static final SpawnLocation SAILREN_LOC = new SpawnLocation(27549, -6638, -2008, 0);
     private static long _timeTracker = 0L;
-    private final List<Npc> _mobs = new CopyOnWriteArrayList();
+    private final List<Npc> _mobs = new CopyOnWriteArrayList<>();
 
     public Sailren() {
         super("ai/individual");
@@ -126,10 +126,9 @@ public class Sailren extends L2AttackableAIScript {
                 if (System.currentTimeMillis() - _timeTracker >= 600000L) {
                     GrandBossManager.getInstance().setBossStatus(29065, 0);
                     if (!this._mobs.isEmpty()) {
-                        Iterator var7 = this._mobs.iterator();
 
-                        while (var7.hasNext()) {
-                            mob = (Npc) var7.next();
+                        for (Npc value : this._mobs) {
+                            mob = value;
                             mob.deleteMe();
                         }
 

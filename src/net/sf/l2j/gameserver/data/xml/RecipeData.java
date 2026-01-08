@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RecipeData implements IXmlReader {
-    private final Map<Integer, Recipe> _recipes = new HashMap();
+    private final Map<Integer, Recipe> _recipes = new HashMap<>();
 
     protected RecipeData() {
     }

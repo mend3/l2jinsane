@@ -16,13 +16,13 @@ public interface Siegable {
 
     List<Clan> getDefenderClans();
 
-    boolean checkSide(Clan paramClan, SiegeSide paramSiegeSide);
+    boolean checkSide(Clan var1, SiegeSide var2);
 
-    boolean checkSides(Clan paramClan, SiegeSide... paramVarArgs);
+    boolean checkSides(Clan var1, SiegeSide... var2);
 
-    boolean checkSides(Clan paramClan);
+    boolean checkSides(Clan var1);
 
-    Npc getFlag(Clan paramClan);
+    Npc getFlag(Clan var1);
 
     Calendar getSiegeDate();
 }

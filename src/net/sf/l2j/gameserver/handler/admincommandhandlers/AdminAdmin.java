@@ -41,7 +41,7 @@ public class AdminAdmin implements IAdminCommandHandler {
         String filename = null;
         try {
             mode = Integer.parseInt(command.substring(11));
-        } catch (Exception exception) {
+        } catch (Exception ignored) {
         }
         switch (mode) {
             case 1:

@@ -7,17 +7,11 @@ import java.util.Map;
 
 public final class PetTemplate extends NpcTemplate {
     public static final int MAX_LOAD = 54510;
-
     private final int _food1;
-
     private final int _food2;
-
     private final double _autoFeedLimit;
-
     private final double _hungryLimit;
-
     private final double _unsummonLimit;
-
     private final Map<Integer, PetDataEntry> _dataEntries;
 
     public PetTemplate(StatSet set) {
@@ -55,6 +49,6 @@ public final class PetTemplate extends NpcTemplate {
     }
 
     public boolean canEatFood(int itemId) {
-        return (this._food1 == itemId || this._food2 == itemId);
+        return this._food1 == itemId || this._food2 == itemId;
     }
 }

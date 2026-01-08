@@ -15,29 +15,17 @@ import java.util.List;
 
 public class PlayerTemplate extends CreatureTemplate {
     private final ClassId _classId;
-
     private final int _fallingHeight;
-
     private final int _baseSwimSpd;
-
     private final double _collisionRadiusFemale;
-
     private final double _collisionHeightFemale;
-
     private final List<Location> _spawnLocations;
-
     private final int _classBaseLevel;
-
     private final double[] _hpTable;
-
     private final double[] _mpTable;
-
     private final double[] _cpTable;
-
     private final List<ItemTemplateHolder> _items;
-
     private final List<GeneralSkillNode> _skills;
-
     private final Weapon _fists;
 
     public PlayerTemplate(StatSet set) {
@@ -55,11 +43,6 @@ public class PlayerTemplate extends CreatureTemplate {
         this._items = set.getList("items");
         this._skills = set.getList("skills");
         this._fists = (Weapon) ItemTable.getInstance().getTemplate(set.getInteger("fists"));
-    }
-
-    @Override
-    public String toString() {
-        return _classId + " with " + _items.size() + " items";
     }
 
     public final ClassId getClassId() {
@@ -83,16 +66,16 @@ public class PlayerTemplate extends CreatureTemplate {
     }
 
     public double getCollisionRadiusBySex(Sex sex) {
-        return (sex == Sex.MALE) ? this._collisionRadius : this._collisionRadiusFemale;
+        return sex == Sex.MALE ? this._collisionRadius : this._collisionRadiusFemale;
     }
 
     public double getCollisionHeightBySex(Sex sex) {
-        return (sex == Sex.MALE) ? this._collisionHeight : this._collisionHeightFemale;
+        return sex == Sex.MALE ? this._collisionHeight : this._collisionHeightFemale;
     }
 
     public final Location getRandomSpawn() {
         Location loc = Rnd.get(this._spawnLocations);
-        return (loc == null) ? Location.DUMMY_LOC : loc;
+        return loc == null ? Location.DUMMY_LOC : loc;
     }
 
     public final int getClassBaseLevel() {
@@ -120,7 +103,7 @@ public class PlayerTemplate extends CreatureTemplate {
     }
 
     public GeneralSkillNode findSkill(int id, int level) {
-        return this._skills.stream().filter(s -> (s.getId() == id && s.getValue() == level)).findFirst().orElse(null);
+        return this._skills.stream().filter((s) -> s.getId() == id && s.getValue() == level).findFirst().orElse( null);
     }
 
     public final Weapon getFists() {

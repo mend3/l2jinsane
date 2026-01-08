@@ -4,13 +4,9 @@ import net.sf.l2j.gameserver.skills.Env;
 
 public abstract class Condition implements ConditionListener {
     private ConditionListener _listener;
-
     private String _msg;
-
     private int _msgId;
-
     private boolean _addName = false;
-
     private boolean _result;
 
     public final String getMessage() {
@@ -43,22 +39,25 @@ public abstract class Condition implements ConditionListener {
 
     void setListener(ConditionListener listener) {
         this._listener = listener;
-        notifyChanged();
+        this.notifyChanged();
     }
 
     public final boolean test(Env env) {
-        boolean res = testImpl(env);
+        boolean res = this.testImpl(env);
         if (this._listener != null && res != this._result) {
             this._result = res;
-            notifyChanged();
+            this.notifyChanged();
         }
+
         return res;
     }
 
-    abstract boolean testImpl(Env paramEnv);
+    abstract boolean testImpl(Env var1);
 
     public void notifyChanged() {
-        if (this._listener != null)
+        if (this._listener != null) {
             this._listener.notifyChanged();
+        }
+
     }
 }

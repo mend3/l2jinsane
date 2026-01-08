@@ -9,7 +9,9 @@ public class FuncBaseMul extends Func {
     }
 
     public void calc(Env env) {
-        if (this.cond == null || this.cond.test(env))
+        if (this.cond == null || this.cond.test(env)) {
             env.addValue(env.getBaseValue() * this._lambda.calc(env));
+        }
+
     }
 }

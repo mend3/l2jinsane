@@ -3,14 +3,17 @@ package net.sf.l2j.gameserver.model.actor.ai;
 import net.sf.l2j.gameserver.enums.IntentionType;
 
 public class Desire {
-    private IntentionType _intention = IntentionType.IDLE;
-
+    private IntentionType _intention;
     private Object _firstParameter;
-
     private Object _secondParameter;
 
+    public Desire() {
+        this._intention = IntentionType.IDLE;
+    }
+
     public String toString() {
-        return "Desire " + this._intention.toString() + ", with following parameters: " + this._firstParameter + " and " + this._secondParameter;
+        String var10000 = this._intention.toString();
+        return "Desire " + var10000 + ", with following parameters: " + String.valueOf(this._firstParameter) + " and " + String.valueOf(this._secondParameter);
     }
 
     public IntentionType getIntention() {
@@ -44,10 +47,10 @@ public class Desire {
     }
 
     public boolean isBlank() {
-        return (this._intention == IntentionType.IDLE && this._firstParameter == null && this._secondParameter == null);
+        return this._intention == IntentionType.IDLE && this._firstParameter == null && this._secondParameter == null;
     }
 
     public boolean equals(IntentionType intention, Object param1, Object param2) {
-        return (this._intention == intention && this._firstParameter == param1 && this._secondParameter == param2);
+        return this._intention == intention && this._firstParameter == param1 && this._secondParameter == param2;
     }
 }

@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 public class ClassBalanceManager implements IXmlReader {
     private static final Logger _log = Logger.getLogger(ClassBalanceManager.class.getName());
-    private final Map<String, ClassBalanceHolder> _classes = new ConcurrentHashMap();
+    private final Map<String, ClassBalanceHolder> _classes = new ConcurrentHashMap<>();
     private int _balanceSize = 0;
     private int _olyBalanceSize = 0;
     private boolean _hasModify = false;
@@ -74,17 +74,15 @@ public class ClassBalanceManager implements IXmlReader {
     }
 
     public Map<String, ClassBalanceHolder> getAllBalances() {
-        Map<String, ClassBalanceHolder> map = new TreeMap(new ClassComparator(this));
+        Map<String, ClassBalanceHolder> map = new TreeMap<>(new ClassComparator(this));
         map.putAll(this._classes);
         return map;
     }
 
     public List<ClassBalanceHolder> getClassBalances(int classId) {
-        List<ClassBalanceHolder> list = new ArrayList();
-        Iterator var3 = this._classes.entrySet().iterator();
+        List<ClassBalanceHolder> list = new ArrayList<>();
 
-        while (var3.hasNext()) {
-            Entry<String, ClassBalanceHolder> data = (Entry) var3.next();
+        for (Entry<String, ClassBalanceHolder> data : this._classes.entrySet()) {
             if (Integer.parseInt(data.getKey().split(";")[0]) == classId) {
                 list.add(data.getValue());
             }
@@ -97,8 +95,8 @@ public class ClassBalanceManager implements IXmlReader {
         int size = 0;
 
         ClassBalanceHolder data;
-        for (Iterator var4 = this.getClassBalances(classId).iterator(); var4.hasNext(); size += !olysize ? data.getNormalBalance().size() : data.getOlyBalance().size()) {
-            data = (ClassBalanceHolder) var4.next();
+        for (Iterator<ClassBalanceHolder> var4 = this.getClassBalances(classId).iterator(); var4.hasNext(); size += !olysize ? data.getNormalBalance().size() : data.getOlyBalance().size()) {
+            data = var4.next();
         }
 
         return size;
@@ -204,7 +202,7 @@ public class ClassBalanceManager implements IXmlReader {
                     try {
                         out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
                         out.write("<list>\n");
-                        Iterator var5 = this._classes.values().iterator();
+                        Iterator<ClassBalanceHolder> var5 = this._classes.values().iterator();
 
                         label84:
                         while (true) {
@@ -215,7 +213,7 @@ public class ClassBalanceManager implements IXmlReader {
                                     break label84;
                                 }
 
-                                cbh = (ClassBalanceHolder) var5.next();
+                                cbh = var5.next();
                             } while (cbh.getNormalBalance().isEmpty() && cbh.getOlyBalance().isEmpty());
 
                             int var10000 = cbh.getActiveClass();

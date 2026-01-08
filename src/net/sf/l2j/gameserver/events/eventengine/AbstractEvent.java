@@ -6,6 +6,9 @@ import net.sf.l2j.commons.random.Rnd;
 import net.sf.l2j.gameserver.data.sql.SpawnTable;
 import net.sf.l2j.gameserver.data.xml.NpcData;
 import net.sf.l2j.gameserver.enums.skills.AbnormalEffect;
+import net.sf.l2j.gameserver.events.eventengine.event.CTF;
+import net.sf.l2j.gameserver.events.eventengine.event.DM;
+import net.sf.l2j.gameserver.events.eventengine.event.TvT;
 import net.sf.l2j.gameserver.events.eventengine.manager.CtfEventManager;
 import net.sf.l2j.gameserver.events.eventengine.manager.DmEventManager;
 import net.sf.l2j.gameserver.events.eventengine.manager.TvTEventManager;
@@ -134,8 +137,7 @@ public abstract class AbstractEvent implements Runnable {
 
     protected void increaseScore(Player player, int count) {
         if (this.playerScores.containsKey(player)) {
-            int old = this.playerScores.get(player);
-            this.playerScores.put(player, old + count);
+            this.playerScores.compute(player, (k, old) -> old == null ? 0 : old + count);
         } else {
             this.playerScores.put(player, count);
         }
@@ -146,12 +148,12 @@ public abstract class AbstractEvent implements Runnable {
     protected void abort() {
         announce("The event was canceled due to lack of participation.", true);
         cleanUp();
-        if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.TvT) {
-            TvTEventManager.getInstance().onEventEnd(this);
-        } else if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.CTF) {
-            CtfEventManager.getInstance().onEventEnd(this);
-        } else if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.DM) {
-            DmEventManager.getInstance().onEventEnd(this);
+        switch (this) {
+            case TvT tvT -> TvTEventManager.getInstance().onEventEnd(this);
+            case CTF ctf -> CtfEventManager.getInstance().onEventEnd(this);
+            case DM dm -> DmEventManager.getInstance().onEventEnd(this);
+            default -> {
+            }
         }
     }
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ExEnchantSkillInfo extends L2GameServerPacket {
-    private final ArrayList<ExEnchantSkillInfo.Req> _reqs = new ArrayList();
+    private final ArrayList<ExEnchantSkillInfo.Req> _reqs = new ArrayList<>();
     private final int _id;
     private final int _level;
     private final int _spCost;
@@ -33,10 +33,8 @@ public class ExEnchantSkillInfo extends L2GameServerPacket {
         this.writeQ(this._xpCost);
         this.writeD(this._rate);
         this.writeD(this._reqs.size());
-        Iterator var1 = this._reqs.iterator();
 
-        while (var1.hasNext()) {
-            ExEnchantSkillInfo.Req temp = (ExEnchantSkillInfo.Req) var1.next();
+        for (Req temp : this._reqs) {
             this.writeD(temp.type);
             this.writeD(temp.id);
             this.writeD(temp.count);

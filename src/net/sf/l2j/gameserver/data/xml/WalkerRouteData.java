@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class WalkerRouteData implements IXmlReader {
-    private final Map<Integer, List<WalkerLocation>> _routes = new HashMap();
+    private final Map<Integer, List<WalkerLocation>> _routes = new HashMap<>();
 
     protected WalkerRouteData() {
     }
@@ -31,7 +31,7 @@ public class WalkerRouteData implements IXmlReader {
         this.forEach(doc, "list", (listNode) -> {
             this.forEach(listNode, "route", (routeNode) -> {
                 NamedNodeMap attrs = routeNode.getAttributes();
-                List<WalkerLocation> list = new ArrayList();
+                List<WalkerLocation> list = new ArrayList<>();
                 int npcId = this.parseInteger(attrs, "npcId");
                 boolean run = this.parseBoolean(attrs, "run");
                 this.forEach(routeNode, "node", (nodeNode) -> {

@@ -71,10 +71,10 @@ public class SevenSignsManager {
     private static Map<Integer, AutoSpawn> _preacherSpawns;
     private static Map<Integer, AutoSpawn> _marketeerSpawns;
     private final Calendar _nextPeriodChange = Calendar.getInstance();
-    private final Map<Integer, StatSet> _playersData = new HashMap();
-    private final Map<SealType, CabalType> _sealOwners = new HashMap();
-    private final Map<SealType, Integer> _duskScores = new HashMap();
-    private final Map<SealType, Integer> _dawnScores = new HashMap();
+    private final Map<Integer, StatSet> _playersData = new HashMap<>();
+    private final Map<SealType, CabalType> _sealOwners = new HashMap<>();
+    private final Map<SealType, Integer> _duskScores = new HashMap<>();
+    private final Map<SealType, Integer> _dawnScores = new HashMap<>();
     protected PeriodType _activePeriod;
     protected int _currentCycle;
     protected double _dawnStoneScore;
@@ -457,10 +457,8 @@ public class SevenSignsManager {
 
     public final int getTotalMembers(CabalType cabal) {
         int cabalMembers = 0;
-        Iterator var3 = this._playersData.values().iterator();
 
-        while (var3.hasNext()) {
-            StatSet set = (StatSet) var3.next();
+        for (StatSet set : this._playersData.values()) {
             if (set.getEnum("cabal", CabalType.class) == cabal) {
                 ++cabalMembers;
             }
@@ -634,10 +632,8 @@ public class SevenSignsManager {
                 PreparedStatement ps = con.prepareStatement("UPDATE seven_signs SET cabal=?, seal=?, red_stones=?, green_stones=?, blue_stones=?, ancient_adena_amount=?, contribution_score=? WHERE char_obj_id=?");
 
                 try {
-                    Iterator var3 = this._playersData.values().iterator();
 
-                    while (var3.hasNext()) {
-                        StatSet set = (StatSet) var3.next();
+                    for (StatSet set : this._playersData.values()) {
                         ps.setString(1, set.getString("cabal"));
                         ps.setString(2, set.getString("seal"));
                         ps.setInt(3, set.getInteger("red_stones"));
@@ -756,10 +752,8 @@ public class SevenSignsManager {
     }
 
     protected void resetPlayerData() {
-        Iterator var1 = this._playersData.values().iterator();
 
-        while (var1.hasNext()) {
-            StatSet set = (StatSet) var1.next();
+        for (StatSet set : this._playersData.values()) {
             set.set("cabal", CabalType.NORMAL);
             set.set("seal", SealType.NONE);
             set.set("contribution_score", 0);
@@ -890,10 +884,8 @@ public class SevenSignsManager {
     }
 
     protected void initializeSeals() {
-        Iterator var1 = this._sealOwners.entrySet().iterator();
 
-        while (var1.hasNext()) {
-            Entry<SealType, CabalType> sealEntry = (Entry) var1.next();
+        for (Entry<SealType, CabalType> sealEntry : this._sealOwners.entrySet()) {
             SealType currentSeal = sealEntry.getKey();
             CabalType sealOwner = sealEntry.getValue();
             if (sealOwner != CabalType.NORMAL) {
@@ -919,12 +911,11 @@ public class SevenSignsManager {
     }
 
     protected void calcNewSealOwners() {
-        Iterator var1 = this._dawnScores.keySet().iterator();
 
-        while (var1.hasNext()) {
+        for (SealType sealType : this._dawnScores.keySet()) {
             SealType seal;
             CabalType newSealOwner;
-            seal = (SealType) var1.next();
+            seal = sealType;
             CabalType prevSealOwner = this._sealOwners.get(seal);
             int dawnProportion = this.getSealProportion(seal, CabalType.DAWN);
             int totalDawnMembers = Math.max(1, this.getTotalMembers(CabalType.DAWN));
@@ -1021,7 +1012,7 @@ public class SevenSignsManager {
     }
 
     protected void teleLosingCabalFromDungeons(CabalType winningCabal) {
-        Iterator var2 = World.getInstance().getPlayers().iterator();
+        Iterator<Player> var2 = World.getInstance().getPlayers().iterator();
 
         while (true) {
             Player player = null;
@@ -1032,7 +1023,7 @@ public class SevenSignsManager {
                             return;
                         }
 
-                        player = (Player) var2.next();
+                        player = var2.next();
                     } while (player.isGM());
                 } while (!player.isIn7sDungeon());
 
@@ -1058,10 +1049,8 @@ public class SevenSignsManager {
     }
 
     public void giveSosEffect(CabalType strifeOwner) {
-        Iterator var2 = World.getInstance().getPlayers().iterator();
 
-        while (var2.hasNext()) {
-            Player player = (Player) var2.next();
+        for (Player player : World.getInstance().getPlayers()) {
             CabalType cabal = this.getPlayerCabal(player.getObjectId());
             if (cabal != CabalType.NORMAL) {
                 if (cabal == strifeOwner) {
@@ -1075,10 +1064,8 @@ public class SevenSignsManager {
     }
 
     public void removeSosEffect() {
-        Iterator var1 = World.getInstance().getPlayers().iterator();
 
-        while (var1.hasNext()) {
-            Player player = (Player) var1.next();
+        for (Player player : World.getInstance().getPlayers()) {
             player.removeSkill(FrequentSkill.THE_VICTOR_OF_WAR.getSkill().getId(), false);
             player.removeSkill(FrequentSkill.THE_VANQUISHED_OF_WAR.getSkill().getId(), false);
         }

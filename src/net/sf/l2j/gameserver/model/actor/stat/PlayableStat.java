@@ -16,103 +16,137 @@ public class PlayableStat extends CreatureStat {
     }
 
     public boolean addExp(long value) {
-        if (getExp() + value < 0L)
+        if (this.getExp() + value < 0L) {
             return true;
-        if (getExp() + value >= getExpForLevel(81))
-            value = getExpForLevel(81) - 1L - getExp();
-        setExp(getExp() + value);
-        byte level = 0;
-        for (level = 1; level <= 81; ) {
-            if (getExp() >= getExpForLevel(level)) {
-                level = (byte) (level + 1);
-                continue;
+        } else {
+            if (this.getExp() + value >= this.getExpForLevel(81)) {
+                value = this.getExpForLevel(81) - 1L - this.getExp();
             }
-            level = (byte) (level - 1);
+
+            this.setExp(this.getExp() + value);
+            byte level = 0;
+
+            for (level = 1; level <= 81; ++level) {
+                if (this.getExp() < this.getExpForLevel(level)) {
+                    --level;
+                    break;
+                }
+            }
+
+            if (level != this.getLevel()) {
+                this.addLevel((byte) (level - this.getLevel()));
+            }
+
+            return true;
         }
-        if (level != getLevel())
-            addLevel((byte) (level - getLevel()));
-        return true;
     }
 
     public boolean removeExp(long value) {
-        if (getExp() - value < 0L)
-            value = getExp() - 1L;
-        setExp(getExp() - value);
-        byte level = 0;
-        for (level = 1; level <= 81; ) {
-            if (getExp() >= getExpForLevel(level)) {
-                level = (byte) (level + 1);
-                continue;
-            }
-            level = (byte) (level - 1);
+        if (this.getExp() - value < 0L) {
+            value = this.getExp() - 1L;
         }
-        if (level != getLevel())
-            addLevel((byte) (level - getLevel()));
+
+        this.setExp(this.getExp() - value);
+        byte level = 0;
+
+        for (level = 1; level <= 81; ++level) {
+            if (this.getExp() < this.getExpForLevel(level)) {
+                --level;
+                break;
+            }
+        }
+
+        if (level != this.getLevel()) {
+            this.addLevel((byte) (level - this.getLevel()));
+        }
+
         return true;
     }
 
     public boolean addExpAndSp(long addToExp, int addToSp) {
         boolean expAdded = false;
         boolean spAdded = false;
-        if (addToExp >= 0L)
-            expAdded = addExp(addToExp);
-        if (addToSp >= 0)
-            spAdded = addSp(addToSp);
-        return (expAdded || spAdded);
+        if (addToExp >= 0L) {
+            expAdded = this.addExp(addToExp);
+        }
+
+        if (addToSp >= 0) {
+            spAdded = this.addSp(addToSp);
+        }
+
+        return expAdded || spAdded;
     }
 
     public boolean removeExpAndSp(long removeExp, int removeSp) {
         boolean expRemoved = false;
         boolean spRemoved = false;
-        if (removeExp > 0L)
-            expRemoved = removeExp(removeExp);
-        if (removeSp > 0)
-            spRemoved = removeSp(removeSp);
-        return (expRemoved || spRemoved);
+        if (removeExp > 0L) {
+            expRemoved = this.removeExp(removeExp);
+        }
+
+        if (removeSp > 0) {
+            spRemoved = this.removeSp(removeSp);
+        }
+
+        return expRemoved || spRemoved;
     }
 
     public boolean addLevel(byte value) {
-        if (getLevel() + value > 80)
-            if (getLevel() < 80) {
-                value = (byte) (80 - getLevel());
-            } else {
+        if (this.getLevel() + value > 80) {
+            if (this.getLevel() >= 80) {
                 return false;
             }
-        boolean levelIncreased = (getLevel() + value > getLevel());
-        value = (byte) (value + getLevel());
-        setLevel(value);
-        if (getExp() >= getExpForLevel(getLevel() + 1) || getExpForLevel(getLevel()) > getExp())
-            setExp(getExpForLevel(getLevel()));
-        if (!levelIncreased)
+
+            value = (byte) (80 - this.getLevel());
+        }
+
+        boolean levelIncreased = this.getLevel() + value > this.getLevel();
+        value = (byte) (value + this.getLevel());
+        this.setLevel(value);
+        if (this.getExp() >= this.getExpForLevel(this.getLevel() + 1) || this.getExpForLevel(this.getLevel()) > this.getExp()) {
+            this.setExp(this.getExpForLevel(this.getLevel()));
+        }
+
+        if (!levelIncreased) {
             return false;
-        getActiveChar().getStatus().setCurrentHpMp(getMaxHp(), getMaxMp());
-        if (Config.LEVEL_REWARDS_ENABLE)
-            if (Config.LEVEL_REWARDS.containsKey((int) value)) {
-                getActiveChar().sendMessage("You win a level reward. Good work !!.");
-                getActiveChar().sendPacket(new CreatureSay(0, 2, "", "You win a level reward. Good work !!."));
+        } else {
+            this.getActiveChar().getStatus().setCurrentHpMp(this.getMaxHp(), this.getMaxMp());
+            if (Config.LEVEL_REWARDS_ENABLE && Config.LEVEL_REWARDS.containsKey((int) value)) {
+                this.getActiveChar().sendMessage("You win a level reward. Good work !!.");
+                this.getActiveChar().sendPacket(new CreatureSay(0, 2, "", "You win a level reward. Good work !!."));
                 IntIntHolder rewardID = Config.LEVEL_REWARDS.get((int) value);
-                ((Player) getActiveChar()).addItem("Level Reward", rewardID.getId(), rewardID.getValue(), getActiveChar(), true);
+                ((Player) this.getActiveChar()).addItem("Level Reward", rewardID.getId(), rewardID.getValue(), this.getActiveChar(), true);
             }
-        return true;
+
+            return true;
+        }
     }
 
     public boolean addSp(int value) {
-        if (value < 0)
+        if (value < 0) {
             return false;
-        int currentSp = getSp();
-        if (currentSp == Integer.MAX_VALUE)
-            return false;
-        if (currentSp > Integer.MAX_VALUE - value)
-            value = Integer.MAX_VALUE - currentSp;
-        setSp(currentSp + value);
-        return true;
+        } else {
+            int currentSp = this.getSp();
+            if (currentSp == Integer.MAX_VALUE) {
+                return false;
+            } else {
+                if (currentSp > Integer.MAX_VALUE - value) {
+                    value = Integer.MAX_VALUE - currentSp;
+                }
+
+                this.setSp(currentSp + value);
+                return true;
+            }
+        }
     }
 
     public boolean removeSp(int value) {
-        int currentSp = getSp();
-        if (currentSp < value)
+        int currentSp = this.getSp();
+        if (currentSp < value) {
             value = currentSp;
-        setSp(getSp() - value);
+        }
+
+        this.setSp(this.getSp() - value);
         return true;
     }
 
@@ -121,13 +155,15 @@ public class PlayableStat extends CreatureStat {
     }
 
     public float getMoveSpeed() {
-        float baseValue = getBaseMoveSpeed();
-        if (getActiveChar().isInsideZone(ZoneId.SWAMP)) {
-            SwampZone zone = ZoneManager.getInstance().getZone(getActiveChar(), SwampZone.class);
-            if (zone != null)
-                baseValue = (float) (baseValue * (100 + zone.getMoveBonus()) / 100.0D);
+        float baseValue = (float) this.getBaseMoveSpeed();
+        if (this.getActiveChar().isInsideZone(ZoneId.SWAMP)) {
+            SwampZone zone = ZoneManager.getInstance().getZone(this.getActiveChar(), SwampZone.class);
+            if (zone != null) {
+                baseValue = (float) ((double) baseValue * ((double) (100 + zone.getMoveBonus()) / (double) 100.0F));
+            }
         }
-        return (float) calcStat(Stats.RUN_SPEED, baseValue, null, null);
+
+        return (float) this.calcStat(Stats.RUN_SPEED, baseValue, null, null);
     }
 
     public Playable getActiveChar() {

@@ -9,53 +9,37 @@ import net.sf.l2j.gameserver.model.actor.Player;
 
 public class StatsFake extends AbstractMods {
     public StatsFake() {
-        registerMod(true);
+        this.registerMod(true);
     }
 
     public static StatsFake getInstance() {
-        return SingletonHolder.INSTANCE;
+        return StatsFake.SingletonHolder.INSTANCE;
     }
 
     public void onModState() {
     }
 
     public double onStats(Stats stat, Creature character, double value) {
-        if (!Util.areObjectType(Player.class, character))
+        if (!Util.areObjectType(Player.class, character)) {
             return value;
-        if (PlayerData.get((Player) character).isFake())
-            switch (stat) {
-                case MAX_MP:
-                    value *= 10.0D;
-                    break;
-                case REGENERATE_MP_RATE:
-                    value *= 10.0D;
-                    break;
-                case REGENERATE_HP_RATE:
-                    value *= 10.0D;
-                    break;
-                case MAGIC_DEFENCE:
-                    value *= 4.0D;
-                    break;
-                case POWER_DEFENCE:
-                    value *= 4.0D;
-                    break;
-                case MAGIC_REUSE_RATE:
-                    value *= 0.8D;
-                    break;
-                case POWER_ATTACK_SPEED:
-                    value *= 3.0D;
-                    break;
-                case MAGIC_ATTACK_SPEED:
-                    value *= 3.0D;
-                    break;
-                case POWER_ATTACK:
-                    value *= 4.5D;
-                    break;
-                case MAGIC_ATTACK:
-                    value *= 4.5D;
-                    break;
+        } else {
+            if (PlayerData.get((Player) character).isFake()) {
+                switch (stat) {
+                    case MAX_MP -> value *= 10.0F;
+                    case REGENERATE_MP_RATE -> value *= 10.0F;
+                    case REGENERATE_HP_RATE -> value *= 10.0F;
+                    case MAGIC_DEFENCE -> value *= 4.0F;
+                    case POWER_DEFENCE -> value *= 4.0F;
+                    case MAGIC_REUSE_RATE -> value *= 0.8;
+                    case POWER_ATTACK_SPEED -> value *= 3.0F;
+                    case MAGIC_ATTACK_SPEED -> value *= 3.0F;
+                    case POWER_ATTACK -> value *= 4.5F;
+                    case MAGIC_ATTACK -> value *= 4.5F;
+                }
             }
-        return value;
+
+            return value;
+        }
     }
 
     private static class SingletonHolder {

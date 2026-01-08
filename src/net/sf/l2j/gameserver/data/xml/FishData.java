@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FishData implements IXmlReader {
-    private final List<Fish> _fish = new ArrayList();
+    private final List<Fish> _fish = new ArrayList<>();
 
     protected FishData() {
     }

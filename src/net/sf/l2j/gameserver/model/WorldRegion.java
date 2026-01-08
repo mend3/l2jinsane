@@ -6,8 +6,11 @@ import net.sf.l2j.gameserver.enums.IntentionType;
 import net.sf.l2j.gameserver.model.actor.Attackable;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Npc;
+import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.location.Location;
 import net.sf.l2j.gameserver.model.zone.ZoneType;
+import net.sf.l2j.gameserver.model.zone.type.DerbyTrackZone;
+import net.sf.l2j.gameserver.model.zone.type.PeaceZone;
 import net.sf.l2j.gameserver.model.zone.type.TownZone;
 
 import java.util.ArrayList;
@@ -19,20 +22,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class WorldRegion {
     private final Map<Integer, WorldObject> _objects = new ConcurrentHashMap<>();
-
     private final List<WorldRegion> _surroundingRegions = new ArrayList<>();
-
     private final List<ZoneType> _zones = new ArrayList<>();
-
     private final int _tileX;
-
     private final int _tileY;
     private final AtomicInteger _playersCount = new AtomicInteger();
-    private final Instance _instance;
+    private final Instance _instance = InstanceManager.getInstance().getInstance(0);
     private boolean _active;
 
     public WorldRegion(int x, int y) {
-        this._instance = InstanceManager.getInstance().getInstance(0);
         this._tileX = x;
         this._tileY = y;
     }
@@ -66,20 +64,22 @@ public final class WorldRegion {
     }
 
     public void revalidateZones(Creature character) {
-        if (character.isTeleporting())
-            return;
-        this._zones.forEach(z -> z.revalidateInZone(character));
+        if (!character.isTeleporting()) {
+            this._zones.forEach((z) -> z.revalidateInZone(character));
+        }
     }
 
     public void removeFromZones(Creature character) {
-        this._zones.forEach(z -> z.removeCharacter(character));
+        this._zones.forEach((z) -> z.removeCharacter(character));
     }
 
     public boolean containsZone(int zoneId) {
         for (ZoneType z : this._zones) {
-            if (z.getId() == zoneId)
+            if (z.getId() == zoneId) {
                 return true;
+            }
         }
+
         return false;
     }
 
@@ -89,29 +89,40 @@ public final class WorldRegion {
         int down = loc.getY() - range;
         int left = loc.getX() + range;
         int right = loc.getX() - range;
+
         for (ZoneType e : this._zones) {
-            if ((e instanceof TownZone && ((TownZone) e).isPeaceZone()) || e instanceof net.sf.l2j.gameserver.model.zone.type.DerbyTrackZone || e instanceof net.sf.l2j.gameserver.model.zone.type.PeaceZone) {
-                if (e.isInsideZone(loc.getX(), up, loc.getZ()))
+            if (e instanceof TownZone && ((TownZone) e).isPeaceZone() || e instanceof DerbyTrackZone || e instanceof PeaceZone) {
+                if (e.isInsideZone(loc.getX(), up, loc.getZ())) {
                     return false;
-                if (e.isInsideZone(loc.getX(), down, loc.getZ()))
+                }
+
+                if (e.isInsideZone(loc.getX(), down, loc.getZ())) {
                     return false;
-                if (e.isInsideZone(left, loc.getY(), loc.getZ()))
+                }
+
+                if (e.isInsideZone(left, loc.getY(), loc.getZ())) {
                     return false;
-                if (e.isInsideZone(right, loc.getY(), loc.getZ()))
+                }
+
+                if (e.isInsideZone(right, loc.getY(), loc.getZ())) {
                     return false;
-                if (e.isInsideZone(loc.getX(), loc.getY(), loc.getZ()))
+                }
+
+                if (e.isInsideZone(loc.getX(), loc.getY(), loc.getZ())) {
                     return false;
+                }
             }
         }
+
         return true;
     }
 
     public void onDeath(Creature character) {
-        this._zones.stream().filter(z -> z.isCharacterInZone(character)).forEach(z -> z.onDieInside(character));
+        this._zones.stream().filter((z) -> z.isCharacterInZone(character)).forEach((z) -> z.onDieInside(character));
     }
 
     public void onRevive(Creature character) {
-        this._zones.stream().filter(z -> z.isCharacterInZone(character)).forEach(z -> z.onReviveInside(character));
+        this._zones.stream().filter((z) -> z.isCharacterInZone(character)).forEach((z) -> z.onReviveInside(character));
     }
 
     public boolean isActive() {
@@ -119,32 +130,32 @@ public final class WorldRegion {
     }
 
     public void setActive(boolean value) {
-        if (this._active == value)
-            return;
-        this._active = value;
-        if (!value) {
-            for (WorldObject o : this._objects.values()) {
-                if (o instanceof Attackable mob) {
-                    mob.setTarget(null);
-                    mob.stopMove(null);
-                    mob.stopAllEffects();
-                    mob.getAggroList().clear();
-                    mob.getAttackByList().clear();
-                    if (mob.hasAI()) {
-                        mob.getAI().setIntention(IntentionType.IDLE);
-                        mob.getAI().stopAITask();
+        if (this._active != value) {
+            this._active = value;
+            if (!value) {
+                for (WorldObject o : this._objects.values()) {
+                    if (o instanceof Attackable mob) {
+                        mob.setTarget(null);
+                        mob.stopMove(null);
+                        mob.stopAllEffects();
+                        mob.getAggroList().clear();
+                        mob.getAttackByList().clear();
+                        if (mob.hasAI()) {
+                            mob.getAI().setIntention(IntentionType.IDLE);
+                            mob.getAI().stopAITask();
+                        }
+                    }
+                }
+            } else {
+                for (WorldObject o : this._objects.values()) {
+                    if (o instanceof Attackable) {
+                        ((Attackable) o).getStatus().startHpMpRegeneration();
+                    } else if (o instanceof Npc) {
+                        ((Npc) o).startRandomAnimationTimer();
                     }
                 }
             }
-        } else {
-            for (WorldObject o : this._objects.values()) {
-                if (o instanceof Attackable) {
-                    ((Attackable) o).getStatus().startHpMpRegeneration();
-                    continue;
-                }
-                if (o instanceof Npc)
-                    ((Npc) o).startRandomAnimationTimer();
-            }
+
         }
     }
 
@@ -154,26 +165,32 @@ public final class WorldRegion {
 
     public boolean isEmptyNeighborhood() {
         for (WorldRegion neighbor : this._surroundingRegions) {
-            if (neighbor.getPlayersCount() != 0)
+            if (neighbor.getPlayersCount() != 0) {
                 return false;
+            }
         }
+
         return true;
     }
 
     public void addVisibleObject(WorldObject object) {
-        if (object == null)
-            return;
-        this._objects.put(object.getObjectId(), object);
-        if (object instanceof net.sf.l2j.gameserver.model.actor.Player)
-            this._playersCount.incrementAndGet();
+        if (object != null) {
+            this._objects.put(object.getObjectId(), object);
+            if (object instanceof Player) {
+                this._playersCount.incrementAndGet();
+            }
+
+        }
     }
 
     public void removeVisibleObject(WorldObject object) {
-        if (object == null)
-            return;
-        this._objects.remove(object.getObjectId());
-        if (object instanceof net.sf.l2j.gameserver.model.actor.Player)
-            this._playersCount.decrementAndGet();
+        if (object != null) {
+            this._objects.remove(object.getObjectId());
+            if (object instanceof Player) {
+                this._playersCount.decrementAndGet();
+            }
+
+        }
     }
 
     public Instance getInstance() {

@@ -8,6 +8,6 @@ public class DoorStatus extends CreatureStatus {
     }
 
     public Door getActiveChar() {
-        return (Door) super.getActiveChar();
+        return (Door)super.getActiveChar();
     }
 }

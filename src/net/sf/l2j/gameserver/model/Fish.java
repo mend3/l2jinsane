@@ -5,23 +5,14 @@ import net.sf.l2j.gameserver.taskmanager.GameTimeTaskManager;
 
 public class Fish {
     private final int _id;
-
     private final int _level;
-
     private final int _hp;
-
     private final int _hpRegen;
-
     private final int _type;
-
     private final int _group;
-
     private final int _guts;
-
     private final int _gutsCheckTime;
-
     private final int _waitTime;
-
     private final int _combatTime;
 
     public Fish(StatSet set) {
@@ -58,9 +49,7 @@ public class Fish {
     }
 
     public int getType(boolean isLureNight) {
-        if (!GameTimeTaskManager.getInstance().isNight() && isLureNight)
-            return -1;
-        return this._type;
+        return !GameTimeTaskManager.getInstance().isNight() && isLureNight ? -1 : this._type;
     }
 
     public int getGroup() {

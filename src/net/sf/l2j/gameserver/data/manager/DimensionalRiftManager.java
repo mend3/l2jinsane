@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 public class DimensionalRiftManager implements IXmlReader {
     private static final int DIMENSIONAL_FRAGMENT = 7079;
-    private final Map<Byte, HashMap<Byte, DimensionalRiftRoom>> _rooms = new HashMap(7);
+    private final Map<Byte, HashMap<Byte, DimensionalRiftRoom>> _rooms = new HashMap<>(7);
 
     protected DimensionalRiftManager() {
     }
@@ -66,7 +66,7 @@ public class DimensionalRiftManager implements IXmlReader {
                 NamedNodeMap areaAttrs = areaNode.getAttributes();
                 byte type = Byte.parseByte(areaAttrs.getNamedItem("type").getNodeValue());
                 if (!this._rooms.containsKey(type)) {
-                    this._rooms.put(type, new HashMap(9));
+                    this._rooms.put(type, new HashMap<>(9));
                 }
 
                 this.forEach(areaNode, "room", (roomNode) -> {
@@ -101,14 +101,9 @@ public class DimensionalRiftManager implements IXmlReader {
     }
 
     public void reload() {
-        Iterator var1 = this._rooms.values().iterator();
 
-        while (var1.hasNext()) {
-            Map<Byte, DimensionalRiftRoom> area = (Map) var1.next();
-            Iterator var3 = area.values().iterator();
-
-            while (var3.hasNext()) {
-                DimensionalRiftRoom room = (DimensionalRiftRoom) var3.next();
+        for (Map<Byte, DimensionalRiftRoom> area : this._rooms.values()) {
+            for (DimensionalRiftRoom room : area.values()) {
                 room.getSpawns().clear();
             }
 
@@ -168,10 +163,8 @@ public class DimensionalRiftManager implements IXmlReader {
                     html.replace("%npc_name%", npc.getName());
                     player.sendPacket(html);
                 } else {
-                    Iterator var6 = party.getMembers().iterator();
 
-                    while (var6.hasNext()) {
-                        Player member = (Player) var6.next();
+                    for (Player member : party.getMembers()) {
                         if (!this.checkIfInPeaceZone(member.getX(), member.getY(), member.getZ())) {
                             this.showHtmlFile(player, "data/html/seven_signs/rift/NotInWaitingRoom.htm", npc);
                             return;
@@ -179,7 +172,7 @@ public class DimensionalRiftManager implements IXmlReader {
                     }
 
                     int count = getNeededItems(type);
-                    Iterator var14 = party.getMembers().iterator();
+                    Iterator<Player> var14 = party.getMembers().iterator();
 
                     ItemInstance item;
                     do {
@@ -188,7 +181,7 @@ public class DimensionalRiftManager implements IXmlReader {
                             var14 = party.getMembers().iterator();
 
                             while (var14.hasNext()) {
-                                member = (Player) var14.next();
+                                member = var14.next();
                                 member.destroyItemByItemId("RiftEntrance", 7079, count, null, true);
                             }
 
@@ -196,7 +189,7 @@ public class DimensionalRiftManager implements IXmlReader {
                             return;
                         }
 
-                        member = (Player) var14.next();
+                        member = var14.next();
                         item = member.getInventory().getItemByItemId(7079);
                     } while (item != null && item.getCount() >= getNeededItems(type));
 
@@ -227,10 +220,8 @@ public class DimensionalRiftManager implements IXmlReader {
         if (party != null) {
             DimensionalRift rift = party.getDimensionalRift();
             if (rift != null) {
-                Iterator var3 = party.getMembers().iterator();
 
-                while (var3.hasNext()) {
-                    Player member = (Player) var3.next();
+                for (Player member : party.getMembers()) {
                     this.teleportToWaitingRoom(member);
                 }
 

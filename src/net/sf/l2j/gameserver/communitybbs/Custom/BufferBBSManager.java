@@ -31,8 +31,6 @@ public class BufferBBSManager extends BaseBBSManager {
             306, 308, 1259, 1182, 1189, 1191, 4703, 4699, 1388, 1416,
             1323};
 
-    L2Skill noblesse = SkillTable.getInstance().getInfo(1323, 1);
-
     private static String getPlayerSchemes(Player player, String schemeName) {
         Map<String, ArrayList<Integer>> schemes = BufferManager.getInstance().getPlayerSchemes(player.getObjectId());
         if (schemes == null || schemes.isEmpty())
@@ -346,7 +344,7 @@ public class BufferBBSManager extends BaseBBSManager {
                             return;
                         }
                     }
-                    BufferManager.getInstance().setScheme(player.getObjectId(), schemeName.trim(), new ArrayList());
+                    BufferManager.getInstance().setScheme(player.getObjectId(), schemeName.trim(), new ArrayList<>());
                     showManageSchemeWindow(player);
                 } catch (Exception e) {
                     player.sendMessage("Scheme's name must contain up to 14 chars. Spaces are trimmed.");

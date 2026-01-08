@@ -5,7 +5,6 @@ import net.sf.l2j.gameserver.skills.Env;
 
 public final class LambdaRnd extends Lambda {
     private final Lambda _max;
-
     private final boolean _linear;
 
     public LambdaRnd(Lambda max, boolean linear) {

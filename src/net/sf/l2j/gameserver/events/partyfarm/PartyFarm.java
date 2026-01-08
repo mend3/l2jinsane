@@ -13,18 +13,12 @@ import java.util.ArrayList;
 
 public class PartyFarm {
     public static L2Spawn _monster;
-
     public static int _bossHeading = 0;
-
     public static String _eventName = "";
-
     public static boolean _started = false;
-
     public static boolean _aborted = false;
-
     protected static boolean _finish = false;
     protected static ArrayList<L2Spawn> monsters = new ArrayList<>();
-    static PartyFarm _instance;
 
     public static void bossSpawnMonster() {
         spawnMonsters();
@@ -32,9 +26,11 @@ public class PartyFarm {
         World.announceToOnlinePlayers("[Party Farm]: Duration: " + Config.EVENT_BEST_FARM_TIME + " minute(s)!");
         _aborted = false;
         _started = true;
-        waiter(((long) Config.EVENT_BEST_FARM_TIME * 60 * 1000));
-        if (!_aborted)
+        waiter((long) Config.EVENT_BEST_FARM_TIME * 60 * 1000);
+        if (!_aborted) {
             Finish_Event();
+        }
+
     }
 
     public static void Finish_Event() {
@@ -43,17 +39,19 @@ public class PartyFarm {
         _finish = true;
         World.announceToOnlinePlayers("[Party Farm]: Finished!");
         if (!AdminPartyFarm._bestfarm_manual) {
-            InitialPartyFarm.getInstance().load();
+            InitialPartyFarm.getInstance().StartCalculationOfNextEventTime();
         } else {
             AdminPartyFarm._bestfarm_manual = false;
         }
+
     }
 
     public static void spawnMonsters() {
-        for (int i = 0; i < Config.MONSTER_LOCS_COUNT; i++) {
+        for (int i = 0; i < Config.MONSTER_LOCS_COUNT; ++i) {
             int[] coord = Config.MONSTER_LOCS[i];
             monsters.add(spawnNPC(coord[0], coord[1], coord[2], Config.monsterId));
         }
+
     }
 
     public static boolean is_started() {
@@ -66,6 +64,7 @@ public class PartyFarm {
 
     protected static L2Spawn spawnNPC(int xPos, int yPos, int zPos, int npcId) {
         NpcTemplate template = NpcData.getInstance().getTemplate(npcId);
+
         try {
             L2Spawn spawn = new L2Spawn(template);
             spawn.setLoc(xPos, yPos, zPos, 0);
@@ -78,7 +77,7 @@ public class PartyFarm {
             spawn.getNpc().spawnMe(spawn.getNpc().getX(), spawn.getNpc().getY(), spawn.getNpc().getZ());
             spawn.getNpc().broadcastPacket(new MagicSkillUse(spawn.getNpc(), spawn.getNpc(), 1034, 1, 1, 1));
             return spawn;
-        } catch (Exception exception) {
+        } catch (Exception var6) {
             return null;
         }
     }
@@ -89,21 +88,30 @@ public class PartyFarm {
                 monsters.remove(s);
                 return;
             }
+
             s.getNpc().deleteMe();
             s.setRespawnState(false);
             SpawnTable.getInstance().deleteSpawn(s, true);
         }
+
     }
 
     protected static void waiter(long interval) {
         long startWaiterTime = System.currentTimeMillis();
         int seconds = (int) (interval / 1000L);
+
         while (startWaiterTime + interval > System.currentTimeMillis() && !_aborted) {
-            seconds--;
+            --seconds;
             switch (seconds) {
-                case 3600:
-                    if (_started)
-                        World.announceToOnlinePlayers("[Party Farm]: " + seconds / 60 / 60 + " hour(s) till event finish!");
+                case 1:
+                case 2:
+                case 3:
+                case 10:
+                case 15:
+                case 30:
+                    if (_started) {
+                        World.announceToOnlinePlayers("[Party Farm]: " + seconds + " second(s) till event finish!");
+                    }
                     break;
                 case 60:
                 case 120:
@@ -113,27 +121,26 @@ public class PartyFarm {
                 case 600:
                 case 900:
                 case 1800:
-                    if (_started)
+                    if (_started) {
                         World.announceToOnlinePlayers("[Party Farm]: " + seconds / 60 + " minute(s) till event finish!");
+                    }
                     break;
-                case 1:
-                case 2:
-                case 3:
-                case 10:
-                case 15:
-                case 30:
-                    if (_started)
-                        World.announceToOnlinePlayers("[Party Farm]: " + seconds + " second(s) till event finish!");
-                    break;
+                case 3600:
+                    if (_started) {
+                        World.announceToOnlinePlayers("[Party Farm]: " + seconds / 60 / 60 + " hour(s) till event finish!");
+                    }
             }
+
             long startOneSecondWaiterStartTime = System.currentTimeMillis();
+
             while (startOneSecondWaiterStartTime + 1000L > System.currentTimeMillis()) {
                 try {
                     Thread.sleep(1L);
-                } catch (InterruptedException ie) {
+                } catch (InterruptedException var8) {
                     Thread.currentThread().interrupt();
                 }
             }
         }
+
     }
 }

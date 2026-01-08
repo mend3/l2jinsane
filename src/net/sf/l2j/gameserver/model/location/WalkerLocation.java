@@ -3,9 +3,9 @@ package net.sf.l2j.gameserver.model.location;
 import net.sf.l2j.commons.util.StatSet;
 
 public class WalkerLocation extends Location {
+    private final String _chat;
     private final int _delay;
     private final boolean _run;
-    private final String _chat;
 
     public WalkerLocation(StatSet set, boolean run) {
         super(set.getInteger("X"), set.getInteger("Y"), set.getInteger("Z"));

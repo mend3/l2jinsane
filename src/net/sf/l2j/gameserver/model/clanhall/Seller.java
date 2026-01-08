@@ -5,9 +5,7 @@ import net.sf.l2j.gameserver.model.pledge.Clan;
 
 public class Seller {
     private final String _name;
-
     private final String _clanName;
-
     private int _bid;
 
     public Seller(String name, String clanName, int bid) {

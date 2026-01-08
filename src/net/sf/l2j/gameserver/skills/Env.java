@@ -8,27 +8,16 @@ import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 
 public final class Env {
     private Creature _character;
-
     private Cubic _cubic;
-
     private Creature _target;
-
     private ItemInstance _item;
-
     private L2Skill _skill;
-
     private double _value;
-
     private double _baseValue;
-
     private boolean _skillMastery = false;
-
     private byte _shield = 0;
-
     private boolean _soulShot = false;
-
     private boolean _spiritShot = false;
-
     private boolean _blessedSpiritShot = false;
 
     public Env() {
@@ -82,7 +71,7 @@ public final class Env {
     }
 
     public Player getPlayer() {
-        return (this._character == null) ? null : this._character.getActingPlayer();
+        return this._character == null ? null : this._character.getActingPlayer();
     }
 
     public double getValue() {

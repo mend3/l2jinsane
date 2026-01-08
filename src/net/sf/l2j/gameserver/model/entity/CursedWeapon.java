@@ -69,75 +69,24 @@ public class CursedWeapon {
         this._stageKills = set.getInteger("stageKills");
         this._skillMaxLevel = SkillTable.getInstance().getMaxLevel(this._skillId);
 
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM cursed_weapons WHERE itemId=?");) {
+            ps.setInt(1, this._itemId);
 
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT * FROM cursed_weapons WHERE itemId=?");
-
-                try {
-                    ps.setInt(1, this._itemId);
-                    ResultSet rs = ps.executeQuery();
-
-                    try {
-                        while (rs.next()) {
-                            this._playerId = rs.getInt("playerId");
-                            this._playerKarma = rs.getInt("playerKarma");
-                            this._playerPkKills = rs.getInt("playerPkKills");
-                            this._nbKills = rs.getInt("nbKills");
-                            this._currentStage = rs.getInt("currentStage");
-                            this._numberBeforeNextStage = rs.getInt("numberBeforeNextStage");
-                            this._hungryTime = rs.getInt("hungryTime");
-                            this._endTime = rs.getLong("endTime");
-                            this.reActivate(false);
-                        }
-                    } catch (Throwable var10) {
-                        if (rs != null) {
-                            try {
-                                rs.close();
-                            } catch (Throwable var9) {
-                                var10.addSuppressed(var9);
-                            }
-                        }
-
-                        throw var10;
-                    }
-
-                    if (rs != null) {
-                        rs.close();
-                    }
-                } catch (Throwable var11) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var8) {
-                            var11.addSuppressed(var8);
-                        }
-                    }
-
-                    throw var11;
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    this._playerId = rs.getInt("playerId");
+                    this._playerKarma = rs.getInt("playerKarma");
+                    this._playerPkKills = rs.getInt("playerPkKills");
+                    this._nbKills = rs.getInt("nbKills");
+                    this._currentStage = rs.getInt("currentStage");
+                    this._numberBeforeNextStage = rs.getInt("numberBeforeNextStage");
+                    this._hungryTime = rs.getInt("hungryTime");
+                    this._endTime = rs.getLong("endTime");
+                    this.reActivate(false);
                 }
-
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var12) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var7) {
-                        var12.addSuppressed(var7);
-                    }
-                }
-
-                throw var12;
             }
-
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var13) {
-            LOGGER.error("Couldn't restore cursed weapons data.", var13);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore cursed weapons data.", e);
         }
 
     }
@@ -229,7 +178,7 @@ public class CursedWeapon {
     public void endOfLife() {
         if (this._isActivated) {
             if (this._player != null && this._player.isOnline()) {
-                LOGGER.info("{} is being removed online.", this._name);
+                LOGGER.info("{} is being removed online.", new Object[]{this._name});
                 this._player.abortAttack();
                 this._player.setKarma(this._playerKarma);
                 this._player.setPkKills(this._playerPkKills);
@@ -240,79 +189,29 @@ public class CursedWeapon {
                 this._player.broadcastUserInfo();
                 this._player.store();
             } else {
-                LOGGER.info("{} is being removed offline.", this._name);
+                LOGGER.info("{} is being removed offline.", new Object[]{this._name});
 
-                try {
-                    Connection con = ConnectionPool.getConnection();
-
-                    try {
-                        PreparedStatement ps = con.prepareStatement("DELETE FROM items WHERE owner_id=? AND item_id=?");
-
-                        try {
-                            ps.setInt(1, this._playerId);
-                            ps.setInt(2, this._itemId);
-                        } catch (Throwable var9) {
-                            if (ps != null) {
-                                try {
-                                    ps.close();
-                                } catch (Throwable var7) {
-                                    var9.addSuppressed(var7);
-                                }
-                            }
-
-                            throw var9;
-                        }
-
-                        if (ps != null) {
-                            ps.close();
-                        }
-
-                        ps = con.prepareStatement("UPDATE characters SET karma=?, pkkills=? WHERE obj_id=?");
-
-                        try {
-                            ps.setInt(1, this._playerKarma);
-                            ps.setInt(2, this._playerPkKills);
-                            ps.setInt(3, this._playerId);
-                        } catch (Throwable var8) {
-                            if (ps != null) {
-                                try {
-                                    ps.close();
-                                } catch (Throwable var6) {
-                                    var8.addSuppressed(var6);
-                                }
-                            }
-
-                            throw var8;
-                        }
-
-                        if (ps != null) {
-                            ps.close();
-                        }
-                    } catch (Throwable var10) {
-                        if (con != null) {
-                            try {
-                                con.close();
-                            } catch (Throwable var5) {
-                                var10.addSuppressed(var5);
-                            }
-                        }
-
-                        throw var10;
+                try (Connection con = ConnectionPool.getConnection()) {
+                    try (PreparedStatement ps = con.prepareStatement("DELETE FROM items WHERE owner_id=? AND item_id=?")) {
+                        ps.setInt(1, this._playerId);
+                        ps.setInt(2, this._itemId);
                     }
 
-                    if (con != null) {
-                        con.close();
+                    try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET karma=?, pkkills=? WHERE obj_id=?")) {
+                        ps.setInt(1, this._playerKarma);
+                        ps.setInt(2, this._playerPkKills);
+                        ps.setInt(3, this._playerId);
                     }
-                } catch (Exception var11) {
-                    LOGGER.error("Couldn't cleanup {} from offline player {}.", var11, this._name, this._playerId);
+                } catch (Exception e) {
+                    LOGGER.error("Couldn't cleanup {} from offline player {}.", e, new Object[]{this._name, this._playerId});
                 }
             }
         } else if (this._player != null && this._player.getInventory().getItemByItemId(this._itemId) != null) {
             this._player.destroyItemByItemId("CW", this._itemId, 1, this._player, false);
-            LOGGER.info("{} has been assimilated.", this._name);
+            LOGGER.info("{} has been assimilated.", new Object[]{this._name});
         } else if (this._item != null) {
             this._item.decayMe();
-            LOGGER.info("{} has been removed from world.", this._name);
+            LOGGER.info("{} has been removed from world.", new Object[]{this._name});
         }
 
         this.cancelDailyTimer();
@@ -369,7 +268,7 @@ public class CursedWeapon {
         this._player.setCursedWeaponEquippedId(0);
         this.removeDemonicSkills();
         this.cancelDailyTimer();
-        this._dropTimer = ThreadPool.schedule(new CursedWeapon.DropTimer(), 3600000L);
+        this._dropTimer = ThreadPool.schedule(new DropTimer(), 3600000L);
         this._currentStage = 1;
         this.removeFromDb();
         World.toAllOnlinePlayers(SystemMessage.getSystemMessage(SystemMessageId.S2_WAS_DROPPED_IN_THE_S1_REGION).addZoneName(this._player.getPosition()).addItemName(this._itemId));
@@ -426,14 +325,14 @@ public class CursedWeapon {
         if (fromZero) {
             this._hungryTime = this._durationLost * 60;
             this._endTime = System.currentTimeMillis() + (long) this._duration * 3600000L;
-            this._overallTimer = ThreadPool.scheduleAtFixedRate(new CursedWeapon.OverallTimer(), 60000L, 60000L);
+            this._overallTimer = ThreadPool.scheduleAtFixedRate(new OverallTimer(), 60000L, 60000L);
         } else {
             this._isActivated = true;
             if (this._endTime - System.currentTimeMillis() <= 0L) {
                 this.endOfLife();
             } else {
-                this._dailyTimer = ThreadPool.scheduleAtFixedRate(new CursedWeapon.DailyTimer(), 60000L, 60000L);
-                this._overallTimer = ThreadPool.scheduleAtFixedRate(new CursedWeapon.OverallTimer(), 60000L, 60000L);
+                this._dailyTimer = ThreadPool.scheduleAtFixedRate(new DailyTimer(), 60000L, 60000L);
+                this._overallTimer = ThreadPool.scheduleAtFixedRate(new OverallTimer(), 60000L, 60000L);
             }
         }
 
@@ -443,8 +342,8 @@ public class CursedWeapon {
         if (Rnd.get(1000000) < this._dropRate) {
             this.dropFromMob(attackable, player);
             this._endTime = System.currentTimeMillis() + (long) this._duration * 3600000L;
-            this._overallTimer = ThreadPool.scheduleAtFixedRate(new CursedWeapon.OverallTimer(), 60000L, 60000L);
-            this._dropTimer = ThreadPool.schedule(new CursedWeapon.DropTimer(), 3600000L);
+            this._overallTimer = ThreadPool.scheduleAtFixedRate(new OverallTimer(), 60000L, 60000L);
+            this._dropTimer = ThreadPool.schedule(new DropTimer(), 3600000L);
             return true;
         } else {
             return false;
@@ -463,60 +362,24 @@ public class CursedWeapon {
             this._playerKarma = this._player.getKarma();
             this._playerPkKills = this._player.getPkKills();
             this._item = item;
-            this._numberBeforeNextStage = Rnd.get((int) Math.round((double) this._stageKills * 0.5D), (int) Math.round((double) this._stageKills * 1.5D));
+            this._numberBeforeNextStage = Rnd.get((int) Math.round((double) this._stageKills * (double) 0.5F), (int) Math.round((double) this._stageKills * (double) 1.5F));
             this._hungryTime = this._durationLost * 60;
-            this._dailyTimer = ThreadPool.scheduleAtFixedRate(new CursedWeapon.DailyTimer(), 60000L, 60000L);
+            this._dailyTimer = ThreadPool.scheduleAtFixedRate(new DailyTimer(), 60000L, 60000L);
             this.cancelDropTimer();
 
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
-                    PreparedStatement ps = con.prepareStatement("INSERT INTO cursed_weapons (itemId, playerId, playerKarma, playerPkKills, nbKills, currentStage, numberBeforeNextStage, hungryTime, endTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-                    try {
-                        ps.setInt(1, this._itemId);
-                        ps.setInt(2, this._playerId);
-                        ps.setInt(3, this._playerKarma);
-                        ps.setInt(4, this._playerPkKills);
-                        ps.setInt(5, this._nbKills);
-                        ps.setInt(6, this._currentStage);
-                        ps.setInt(7, this._numberBeforeNextStage);
-                        ps.setInt(8, this._hungryTime);
-                        ps.setLong(9, this._endTime);
-                        ps.executeUpdate();
-                    } catch (Throwable var9) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var8) {
-                                var9.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (Throwable var10) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
-                }
-
-                if (con != null) {
-                    con.close();
-                }
-            } catch (Exception var11) {
-                LOGGER.error("Failed to insert cursed weapon data.", var11);
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO cursed_weapons (itemId, playerId, playerKarma, playerPkKills, nbKills, currentStage, numberBeforeNextStage, hungryTime, endTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");) {
+                ps.setInt(1, this._itemId);
+                ps.setInt(2, this._playerId);
+                ps.setInt(3, this._playerKarma);
+                ps.setInt(4, this._playerPkKills);
+                ps.setInt(5, this._nbKills);
+                ps.setInt(6, this._currentStage);
+                ps.setInt(7, this._numberBeforeNextStage);
+                ps.setInt(8, this._hungryTime);
+                ps.setLong(9, this._endTime);
+                ps.executeUpdate();
+            } catch (Exception e) {
+                LOGGER.error("Failed to insert cursed weapon data.", e);
             }
 
             this._player.setCursedWeaponEquippedId(this._itemId);
@@ -526,11 +389,7 @@ public class CursedWeapon {
                 this._player.getParty().removePartyMember(this._player, MessageType.EXPELLED);
             }
 
-            L2Effect[] var12 = this._player.getAllEffects();
-            int var13 = var12.length;
-
-            for (int var5 = 0; var5 < var13; ++var5) {
-                L2Effect effect = var12[var5];
+            for (L2Effect effect : this._player.getAllEffects()) {
                 if (effect.getSkill().isToggle()) {
                     effect.exit();
                 }
@@ -546,47 +405,11 @@ public class CursedWeapon {
     }
 
     private void removeFromDb() {
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
-                PreparedStatement ps = con.prepareStatement("DELETE FROM cursed_weapons WHERE itemId = ?");
-
-                try {
-                    ps.setInt(1, this._itemId);
-                    ps.executeUpdate();
-                } catch (Throwable var7) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var6) {
-                            var7.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var7;
-                }
-
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var8) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var5) {
-                        var8.addSuppressed(var5);
-                    }
-                }
-
-                throw var8;
-            }
-
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var9) {
-            LOGGER.error("Failed to remove cursed weapon data.", var9);
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("DELETE FROM cursed_weapons WHERE itemId = ?");) {
+            ps.setInt(1, this._itemId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            LOGGER.error("Failed to remove cursed weapon data.", e);
         }
 
     }
@@ -608,7 +431,7 @@ public class CursedWeapon {
             this._player.sendPacket(new UserInfo(this._player));
             if (this._nbKills >= this._numberBeforeNextStage) {
                 this._nbKills = 0;
-                this._numberBeforeNextStage = Rnd.get((int) Math.round((double) this._stageKills * 0.5D), (int) Math.round((double) this._stageKills * 1.5D));
+                this._numberBeforeNextStage = Rnd.get((int) Math.round((double) this._stageKills * (double) 0.5F), (int) Math.round((double) this._stageKills * (double) 1.5F));
                 this.rankUp();
             }
         }
@@ -644,78 +467,6 @@ public class CursedWeapon {
         }
     }
 
-    private class DropTimer implements Runnable {
-        protected DropTimer() {
-        }
-
-        public void run() {
-            if (CursedWeapon.this.isDropped()) {
-                CursedWeapon.this.endOfLife();
-            }
-
-        }
-    }
-
-    private class OverallTimer implements Runnable {
-        protected OverallTimer() {
-        }
-
-        public void run() {
-            if (System.currentTimeMillis() >= CursedWeapon.this._endTime) {
-                CursedWeapon.this.endOfLife();
-            } else {
-                try {
-                    Connection con = ConnectionPool.getConnection();
-
-                    try {
-                        PreparedStatement ps = con.prepareStatement("UPDATE cursed_weapons SET nbKills=?, currentStage=?, numberBeforeNextStage=?, hungryTime=?, endTime=? WHERE itemId=?");
-
-                        try {
-                            ps.setInt(1, CursedWeapon.this._nbKills);
-                            ps.setInt(2, CursedWeapon.this._currentStage);
-                            ps.setInt(3, CursedWeapon.this._numberBeforeNextStage);
-                            ps.setInt(4, CursedWeapon.this._hungryTime);
-                            ps.setLong(5, CursedWeapon.this._endTime);
-                            ps.setInt(6, CursedWeapon.this._itemId);
-                            ps.executeUpdate();
-                        } catch (Throwable var7) {
-                            if (ps != null) {
-                                try {
-                                    ps.close();
-                                } catch (Throwable var6) {
-                                    var7.addSuppressed(var6);
-                                }
-                            }
-
-                            throw var7;
-                        }
-
-                        if (ps != null) {
-                            ps.close();
-                        }
-                    } catch (Throwable var8) {
-                        if (con != null) {
-                            try {
-                                con.close();
-                            } catch (Throwable var5) {
-                                var8.addSuppressed(var5);
-                            }
-                        }
-
-                        throw var8;
-                    }
-
-                    if (con != null) {
-                        con.close();
-                    }
-                } catch (Exception var9) {
-                    CursedWeapon.LOGGER.error("Failed to update cursed weapon data.", var9);
-                }
-            }
-
-        }
-    }
-
     private class DailyTimer implements Runnable {
         private int _timer = 0;
 
@@ -741,6 +492,42 @@ public class CursedWeapon {
                 }
 
                 CursedWeapon.this._player.sendPacket(msg);
+            }
+
+        }
+    }
+
+    private class OverallTimer implements Runnable {
+        protected OverallTimer() {
+        }
+
+        public void run() {
+            if (System.currentTimeMillis() >= CursedWeapon.this._endTime) {
+                CursedWeapon.this.endOfLife();
+            } else {
+                try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE cursed_weapons SET nbKills=?, currentStage=?, numberBeforeNextStage=?, hungryTime=?, endTime=? WHERE itemId=?");) {
+                    ps.setInt(1, CursedWeapon.this._nbKills);
+                    ps.setInt(2, CursedWeapon.this._currentStage);
+                    ps.setInt(3, CursedWeapon.this._numberBeforeNextStage);
+                    ps.setInt(4, CursedWeapon.this._hungryTime);
+                    ps.setLong(5, CursedWeapon.this._endTime);
+                    ps.setInt(6, CursedWeapon.this._itemId);
+                    ps.executeUpdate();
+                } catch (Exception e) {
+                    CursedWeapon.LOGGER.error("Failed to update cursed weapon data.", e);
+                }
+            }
+
+        }
+    }
+
+    private class DropTimer implements Runnable {
+        protected DropTimer() {
+        }
+
+        public void run() {
+            if (CursedWeapon.this.isDropped()) {
+                CursedWeapon.this.endOfLife();
             }
 
         }

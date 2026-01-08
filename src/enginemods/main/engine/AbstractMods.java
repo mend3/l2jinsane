@@ -85,9 +85,8 @@ public abstract class AbstractMods {
     }
 
     public void cancelScheduledState() {
-
-        for (Future<?> future : _sheduledStateMod) {
-            future.cancel(true);
+        for (Future<?> run : _sheduledStateMod) {
+            run.cancel(true);
         }
 
     }
@@ -129,7 +128,6 @@ public abstract class AbstractMods {
             timers.add(new ModTimerHolder(this, name, npc, player, time, repeating));
             this._eventTimers.put(name.hashCode(), timers);
         } else {
-
             for (ModTimerHolder timer : timers) {
                 if (timer != null && timer.equals(this, name, npc, player)) {
                     return;
@@ -152,18 +150,13 @@ public abstract class AbstractMods {
     public ModTimerHolder getTimer(String name, Npc npc, Player player) {
         List<ModTimerHolder> timers = this._eventTimers.get(name.hashCode());
         if (timers != null && !timers.isEmpty()) {
-            Iterator<ModTimerHolder> var5 = timers.iterator();
-
-            ModTimerHolder timer;
-            do {
-                if (!var5.hasNext()) {
-                    return null;
+            for (ModTimerHolder timer : timers) {
+                if (timer != null && timer.equals(this, name, npc, player)) {
+                    return timer;
                 }
+            }
 
-                timer = var5.next();
-            } while (timer == null || !timer.equals(this, name, npc, player));
-
-            return timer;
+            return null;
         } else {
             return null;
         }
@@ -180,7 +173,6 @@ public abstract class AbstractMods {
     public void cancelTimers(String name) {
         List<ModTimerHolder> timers = this._eventTimers.get(name.hashCode());
         if (timers != null && !timers.isEmpty()) {
-
             for (ModTimerHolder timer : timers) {
                 if (timer != null) {
                     timer.cancel();
@@ -249,7 +241,6 @@ public abstract class AbstractMods {
     public void registerMod(boolean config, List<WeekDayType> day) {
         EngineModsManager.registerMod(this);
         if (config) {
-
             for (WeekDayType d : day) {
                 this.registerMod(d);
             }
@@ -279,9 +270,9 @@ public abstract class AbstractMods {
             eventTime += weekToStartEvent * 7;
             time.add(Calendar.DAY_OF_YEAR, eventTime);
             long timeStart = time.getTimeInMillis() - System.currentTimeMillis();
-            _sheduledStateMod.add(ThreadPool.schedule(new AbstractMods.ScheduleStart(), Math.max(timeStart, 0L)));
+            _sheduledStateMod.add(ThreadPool.schedule(new ScheduleStart(), Math.max(timeStart, 0L)));
             time.add(Calendar.DAY_OF_YEAR, eventTime + 1);
-            _sheduledStateMod.add(ThreadPool.schedule(new AbstractMods.ScheduleEnd(), time.getTimeInMillis() - System.currentTimeMillis()));
+            _sheduledStateMod.add(ThreadPool.schedule(new ScheduleEnd(), time.getTimeInMillis() - System.currentTimeMillis()));
         }
 
     }
@@ -311,10 +302,13 @@ public abstract class AbstractMods {
                 if (timeStart.getTimeInMillis() >= timeEnd.getTimeInMillis()) {
                     LOG.warning("Event " + this.getClass().getSimpleName() + ": The start date of the event can not be greater than or equal to the end of the event");
                 } else {
-                    long time = Math.max(timeStart.getTimeInMillis() - hoy, 0L);
+                    long time = 0L;
+                    if (timeStart.getTimeInMillis() - hoy > 0L) {
+                        time = timeStart.getTimeInMillis() - hoy;
+                    }
 
-                    _sheduledStateMod.add(ThreadPool.schedule(new AbstractMods.ScheduleStart(), time));
-                    _sheduledStateMod.add(ThreadPool.schedule(new AbstractMods.ScheduleEnd(), timeEnd.getTimeInMillis() - hoy));
+                    _sheduledStateMod.add(ThreadPool.schedule(new ScheduleStart(), time));
+                    _sheduledStateMod.add(ThreadPool.schedule(new ScheduleEnd(), timeEnd.getTimeInMillis() - hoy));
                 }
             }
         } catch (Exception var16) {

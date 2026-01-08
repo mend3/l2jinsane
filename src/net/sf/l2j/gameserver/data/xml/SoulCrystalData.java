@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SoulCrystalData implements IXmlReader {
-    private final Map<Integer, SoulCrystal> _soulCrystals = new HashMap();
-    private final Map<Integer, LevelingInfo> _levelingInfos = new HashMap();
+    private final Map<Integer, SoulCrystal> _soulCrystals = new HashMap<>();
+    private final Map<Integer, LevelingInfo> _levelingInfos = new HashMap<>();
 
     protected SoulCrystalData() {
     }

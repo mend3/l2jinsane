@@ -4,7 +4,6 @@ import net.sf.l2j.gameserver.model.actor.Boat;
 
 public class BoatStat extends CreatureStat {
     private int _moveSpeed = 0;
-
     private int _rotationSpeed = 0;
 
     public BoatStat(Boat activeChar) {
@@ -12,7 +11,7 @@ public class BoatStat extends CreatureStat {
     }
 
     public float getMoveSpeed() {
-        return this._moveSpeed;
+        return (float) this._moveSpeed;
     }
 
     public final void setMoveSpeed(int speed) {

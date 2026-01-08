@@ -37,7 +37,7 @@ public class Baium extends L2AttackableAIScript {
     private static final int LIVE_BAIUM = 29020;
     private static final int ARCHANGEL = 29021;
     private static final SpawnLocation[] ANGEL_LOCATION = new SpawnLocation[]{new SpawnLocation(114239, 17168, 10080, 63544), new SpawnLocation(115780, 15564, 10080, 13620), new SpawnLocation(114880, 16236, 10080, 5400), new SpawnLocation(115168, 17200, 10080, 0), new SpawnLocation(115792, 16608, 10080, 0)};
-    private final List<Npc> _minions = new ArrayList(5);
+    private final List<Npc> _minions = new ArrayList<>(5);
     private Creature _actualVictim;
     private long _timeTracker = 0L;
 
@@ -102,8 +102,8 @@ public class Baium extends L2AttackableAIScript {
 
     private static Creature getRandomTarget(Npc npc) {
         int npcId = npc.getNpcId();
-        List<Creature> result = new ArrayList();
-        Iterator var3 = npc.getKnownType(Creature.class).iterator();
+        List<Creature> result = new ArrayList<>();
+        Iterator<Creature> var3 = npc.getKnownType(Creature.class).iterator();
 
         while (true) {
             Creature obj;
@@ -125,7 +125,7 @@ public class Baium extends L2AttackableAIScript {
                                                                 return result.isEmpty() ? null : Rnd.get(result);
                                                             }
 
-                                                            obj = (Creature) var3.next();
+                                                            obj = var3.next();
                                                         } while (!(obj instanceof Player));
                                                     } while (obj.isDead());
                                                 } while (!GeoEngine.getInstance().canSeeTarget(npc, obj));
@@ -138,7 +138,7 @@ public class Baium extends L2AttackableAIScript {
                                     return result.isEmpty() ? null : Rnd.get(result);
                                 }
 
-                                obj = (Creature) var3.next();
+                                obj = var3.next();
                             } while (!(obj instanceof Player));
                         } while (obj.isDead());
                     } while (!GeoEngine.getInstance().canSeeTarget(npc, obj));
@@ -247,10 +247,8 @@ public class Baium extends L2AttackableAIScript {
             } else if (event.equalsIgnoreCase("baium_despawn")) {
                 if (this._timeTracker + 1800000L < System.currentTimeMillis()) {
                     npc.deleteMe();
-                    Iterator var13 = this._minions.iterator();
 
-                    while (var13.hasNext()) {
-                        Npc minion = (Npc) var13.next();
+                    for (Npc minion : this._minions) {
                         minion.getSpawn().setRespawnState(false);
                         minion.deleteMe();
                     }
@@ -272,10 +270,8 @@ public class Baium extends L2AttackableAIScript {
             this.addSpawn(29025, 116033, 17447, 10104, 40188, false, 0L, false);
         } else if (event.equalsIgnoreCase("angels_aggro_reconsider")) {
             boolean updateTarget = false;
-            Iterator var5 = this._minions.iterator();
 
-            while (var5.hasNext()) {
-                Npc minion = (Npc) var5.next();
+            for (Npc minion : this._minions) {
                 if (minion != null) {
                     Attackable angel = (Attackable) minion;
                     Creature victim = angel.getMostHated();
@@ -365,10 +361,8 @@ public class Baium extends L2AttackableAIScript {
             StatSet info = GrandBossManager.getInstance().getStatsSet(29020);
             info.set("respawn_time", System.currentTimeMillis() + getRespawnInterval());
             GrandBossManager.getInstance().setStatsSet(29020, info);
-            Iterator var4 = this._minions.iterator();
 
-            while (var4.hasNext()) {
-                Npc minion = (Npc) var4.next();
+            for (Npc minion : this._minions) {
                 minion.getSpawn().setRespawnState(false);
                 minion.deleteMe();
             }
@@ -387,10 +381,8 @@ public class Baium extends L2AttackableAIScript {
             StatSet info = GrandBossManager.getInstance().getStatsSet(29020);
             info.set("respawn_time", System.currentTimeMillis() + respawnTime);
             GrandBossManager.getInstance().setStatsSet(29020, info);
-            Iterator var6 = this._minions.iterator();
 
-            while (var6.hasNext()) {
-                Npc minion = (Npc) var6.next();
+            for (Npc minion : this._minions) {
                 minion.getSpawn().setRespawnState(false);
                 minion.deleteMe();
             }

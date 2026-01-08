@@ -22,7 +22,6 @@ import net.sf.l2j.gameserver.skills.effects.EffectTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +48,7 @@ public abstract class L2Effect {
     public boolean preventExitUpdate;
     protected long _periodStartTime;
     protected int _periodFirstTime;
-    private L2Effect.EffectState _state;
+    private EffectState _state;
     private int _count;
     private boolean _isSelfEffect = false;
     private ScheduledFuture<?> _currentFuture;
@@ -101,7 +100,7 @@ public abstract class L2Effect {
 
     public void setFirstTime(int newFirstTime) {
         this._periodFirstTime = Math.min(newFirstTime, this._period);
-        this._periodStartTime = System.currentTimeMillis() - (this._periodFirstTime * 1000L);
+        this._periodStartTime = System.currentTimeMillis() - (long) (this._periodFirstTime * 1000);
     }
 
     public boolean getShowIcon() {
@@ -180,9 +179,9 @@ public abstract class L2Effect {
             this.stopEffectTask();
             int initialDelay = Math.max((this._period - this._periodFirstTime) * 1000, 5);
             if (this._count > 1) {
-                this._currentFuture = ThreadPool.scheduleAtFixedRate(new L2Effect.EffectTask(), initialDelay, this._period * 1000L);
+                this._currentFuture = ThreadPool.scheduleAtFixedRate(new EffectTask(), initialDelay, this._period * 1000);
             } else {
-                this._currentFuture = ThreadPool.schedule(new L2Effect.EffectTask(), initialDelay);
+                this._currentFuture = ThreadPool.schedule(new EffectTask(), initialDelay);
             }
         }
 
@@ -243,6 +242,7 @@ public abstract class L2Effect {
             this.scheduleEffect();
         } else if (this._period != 0) {
             this.startEffectTask();
+            return;
         }
 
     }
@@ -297,15 +297,13 @@ public abstract class L2Effect {
         if (this._funcTemplates == null) {
             return Collections.emptyList();
         } else {
-            List<Func> funcs = new ArrayList(this._funcTemplates.size());
+            List<Func> funcs = new ArrayList<>(this._funcTemplates.size());
             Env env = new Env();
             env.setCharacter(this.getEffector());
             env.setTarget(this.getEffected());
             env.setSkill(this.getSkill());
-            Iterator var3 = this._funcTemplates.iterator();
 
-            while (var3.hasNext()) {
-                FuncTemplate t = (FuncTemplate) var3.next();
+            for (FuncTemplate t : this._funcTemplates) {
                 Func f = t.getFunc(env, this);
                 if (f != null) {
                     funcs.add(f);
@@ -383,7 +381,7 @@ public abstract class L2Effect {
 
     public String toString() {
         String var10000 = String.valueOf(this._skill);
-        return "L2Effect [_skill=" + var10000 + ", _state=" + this._state + ", _period=" + this._period + "]";
+        return "L2Effect [_skill=" + var10000 + ", _state=" + String.valueOf(this._state) + ", _period=" + this._period + "]";
     }
 
     public boolean isSelfEffectType() {
@@ -394,15 +392,10 @@ public abstract class L2Effect {
         return true;
     }
 
-    public enum EffectState {
+    public static enum EffectState {
         CREATED,
         ACTING,
         FINISHING;
-
-        // $FF: synthetic method
-        private static L2Effect.EffectState[] $values() {
-            return new L2Effect.EffectState[]{CREATED, ACTING, FINISHING};
-        }
     }
 
     protected final class EffectTask implements Runnable {
@@ -411,8 +404,8 @@ public abstract class L2Effect {
                 L2Effect.this._periodFirstTime = 0;
                 L2Effect.this._periodStartTime = System.currentTimeMillis();
                 L2Effect.this.scheduleEffect();
-            } catch (Exception var2) {
-                L2Effect._log.log(Level.SEVERE, "", var2);
+            } catch (Exception e) {
+                L2Effect._log.log(Level.SEVERE, "", e);
             }
 
         }

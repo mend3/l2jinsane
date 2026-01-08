@@ -5,13 +5,9 @@ import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 
 public class L2EnchantScroll {
     private final CrystalType _grade;
-
     private final boolean _weapon;
-
     private final boolean _breaks;
-
     private final boolean _maintain;
-
     private final byte[] _chance;
 
     public L2EnchantScroll(CrystalType grade, boolean weapon, boolean breaks, boolean maintain, byte[] chance) {
@@ -24,11 +20,11 @@ public class L2EnchantScroll {
 
     public final byte getChance(ItemInstance enchantItem) {
         int level = enchantItem.getEnchantLevel();
-        if (enchantItem.getItem().getBodyPart() == 32768 && level != 0)
-            level--;
-        if (level >= this._chance.length)
-            return 0;
-        return this._chance[level];
+        if (enchantItem.getItem().getBodyPart() == 32768 && level != 0) {
+            --level;
+        }
+
+        return level >= this._chance.length ? 0 : this._chance[level];
     }
 
     public final boolean canBreak() {
@@ -40,17 +36,28 @@ public class L2EnchantScroll {
     }
 
     public final boolean isValid(ItemInstance enchantItem) {
-        if (this._grade != enchantItem.getItem().getCrystalType())
+        if (this._grade != enchantItem.getItem().getCrystalType()) {
             return false;
-        if (enchantItem.getEnchantLevel() >= this._chance.length)
+        } else if (enchantItem.getEnchantLevel() >= this._chance.length) {
             return false;
-        switch (enchantItem.getItem().getType2()) {
-            case 0:
-                return this._weapon;
-            case 1:
-            case 2:
-                return !this._weapon;
+        } else {
+            switch (enchantItem.getItem().getType2()) {
+                case 0:
+                    if (!this._weapon) {
+                        return false;
+                    }
+                    break;
+                case 1:
+                case 2:
+                    if (this._weapon) {
+                        return false;
+                    }
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
         }
-        return false;
     }
 }

@@ -21,7 +21,7 @@ public class IPLog {
         if (!file.exists())
             try {
                 file.createNewFile();
-            } catch (IOException iOException) {
+            } catch (IOException ignored) {
             }
         try {
             FileWriter save = new FileWriter(file, true);

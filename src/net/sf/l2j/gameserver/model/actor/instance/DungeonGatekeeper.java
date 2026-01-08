@@ -20,8 +20,10 @@ public class DungeonGatekeeper extends Folk {
 
     private static void doTeleport(Player player, int val) {
         TeleportLocation list = TeleportLocationData.getInstance().getTeleportLocation(val);
-        if (list != null && !player.isAlikeDead())
+        if (list != null && !player.isAlikeDead()) {
             player.teleportTo(list, 20);
+        }
+
         player.sendPacket(ActionFailed.STATIC_PACKET);
     }
 
@@ -35,23 +37,28 @@ public class DungeonGatekeeper extends Folk {
         CabalType winningCabal = SevenSignsManager.getInstance().getCabalHighestScore();
         if (actualCommand.startsWith("necro")) {
             boolean canPort = true;
-            if (SevenSignsManager.getInstance().isSealValidationPeriod()) {
-                if (winningCabal == CabalType.DAWN && (playerCabal != CabalType.DAWN || sealAvariceOwner != CabalType.DAWN)) {
-                    player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DAWN);
-                    canPort = false;
-                } else if (winningCabal == CabalType.DUSK && (playerCabal != CabalType.DUSK || sealAvariceOwner != CabalType.DUSK)) {
-                    player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DUSK);
-                    canPort = false;
-                } else if (winningCabal == CabalType.NORMAL && playerCabal != CabalType.NORMAL) {
-                    canPort = true;
-                } else if (playerCabal == CabalType.NORMAL) {
+            if (!SevenSignsManager.getInstance().isSealValidationPeriod()) {
+                if (playerCabal == CabalType.NORMAL) {
                     canPort = false;
                 }
-            } else if (playerCabal == CabalType.NORMAL) {
+            } else if (winningCabal != CabalType.DAWN || playerCabal == CabalType.DAWN && sealAvariceOwner == CabalType.DAWN) {
+                if (winningCabal != CabalType.DUSK || playerCabal == CabalType.DUSK && sealAvariceOwner == CabalType.DUSK) {
+                    if (winningCabal == CabalType.NORMAL && playerCabal != CabalType.NORMAL) {
+                        canPort = true;
+                    } else if (playerCabal == CabalType.NORMAL) {
+                        canPort = false;
+                    }
+                } else {
+                    player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DUSK);
+                    canPort = false;
+                }
+            } else {
+                player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DAWN);
                 canPort = false;
             }
+
             if (!canPort) {
-                NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+                NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
                 html.setFile("data/html/seven_signs/necro_no.htm");
                 player.sendPacket(html);
             } else {
@@ -60,23 +67,28 @@ public class DungeonGatekeeper extends Folk {
             }
         } else if (actualCommand.startsWith("cata")) {
             boolean canPort = true;
-            if (SevenSignsManager.getInstance().isSealValidationPeriod()) {
-                if (winningCabal == CabalType.DAWN && (playerCabal != CabalType.DAWN || sealGnosisOwner != CabalType.DAWN)) {
-                    player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DAWN);
-                    canPort = false;
-                } else if (winningCabal == CabalType.DUSK && (playerCabal != CabalType.DUSK || sealGnosisOwner != CabalType.DUSK)) {
-                    player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DUSK);
-                    canPort = false;
-                } else if (winningCabal == CabalType.NORMAL && playerCabal != CabalType.NORMAL) {
-                    canPort = true;
-                } else if (playerCabal == CabalType.NORMAL) {
+            if (!SevenSignsManager.getInstance().isSealValidationPeriod()) {
+                if (playerCabal == CabalType.NORMAL) {
                     canPort = false;
                 }
-            } else if (playerCabal == CabalType.NORMAL) {
+            } else if (winningCabal != CabalType.DAWN || playerCabal == CabalType.DAWN && sealGnosisOwner == CabalType.DAWN) {
+                if (winningCabal != CabalType.DUSK || playerCabal == CabalType.DUSK && sealGnosisOwner == CabalType.DUSK) {
+                    if (winningCabal == CabalType.NORMAL && playerCabal != CabalType.NORMAL) {
+                        canPort = true;
+                    } else if (playerCabal == CabalType.NORMAL) {
+                        canPort = false;
+                    }
+                } else {
+                    player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DUSK);
+                    canPort = false;
+                }
+            } else {
+                player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DAWN);
                 canPort = false;
             }
+
             if (!canPort) {
-                NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+                NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
                 html.setFile("data/html/seven_signs/cata_no.htm");
                 player.sendPacket(html);
             } else {
@@ -91,6 +103,7 @@ public class DungeonGatekeeper extends Folk {
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 
     public String getHtmlPath(int npcId, int val) {
@@ -98,8 +111,9 @@ public class DungeonGatekeeper extends Folk {
         if (val == 0) {
             filename = "" + npcId;
         } else {
-            filename = npcId + "-" + npcId;
+            filename = npcId + "-" + val;
         }
+
         return "data/html/teleporter/" + filename + ".htm";
     }
 }

@@ -10,30 +10,35 @@ public class AttackableStatus extends NpcStatus {
     }
 
     public final void reduceHp(double value, Creature attacker) {
-        reduceHp(value, attacker, true, false, false);
+        this.reduceHp(value, attacker, true, false, false);
     }
 
     public final void reduceHp(double value, Creature attacker, boolean awake, boolean isDOT, boolean isHpConsumption) {
-        if (getActiveChar().isDead())
-            return;
-        Monster monster = null;
-        if (getActiveChar() instanceof Monster) {
-            monster = (Monster) getActiveChar();
-            if (value > 0.0D) {
-                if (monster.isOverhit()) {
-                    monster.setOverhitValues(attacker, value);
+        if (!this.getActiveChar().isDead()) {
+            Monster monster = null;
+            if (this.getActiveChar() instanceof Monster) {
+                monster = (Monster) this.getActiveChar();
+                if (value > (double) 0.0F) {
+                    if (monster.isOverhit()) {
+                        monster.setOverhitValues(attacker, value);
+                    } else {
+                        monster.overhitEnabled(false);
+                    }
                 } else {
                     monster.overhitEnabled(false);
                 }
-            } else {
+            }
+
+            if (attacker != null) {
+                this.getActiveChar().addAttacker(attacker);
+            }
+
+            super.reduceHp(value, attacker, awake, isDOT, isHpConsumption);
+            if (monster != null && !monster.isDead()) {
                 monster.overhitEnabled(false);
             }
+
         }
-        if (attacker != null)
-            getActiveChar().addAttacker(attacker);
-        super.reduceHp(value, attacker, awake, isDOT, isHpConsumption);
-        if (monster != null && !monster.isDead())
-            monster.overhitEnabled(false);
     }
 
     public Attackable getActiveChar() {

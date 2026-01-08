@@ -11,94 +11,107 @@ public class FuncEnchant extends Func {
     }
 
     public void calc(Env env) {
-        if (this.cond != null && !this.cond.test(env))
-            return;
-        ItemInstance item = (ItemInstance) this.funcOwner;
-        int enchant = item.getEnchantLevel();
-        if (enchant <= 0)
-            return;
-        int overenchant = 0;
-        if (enchant > 3) {
-            overenchant = enchant - 3;
-            enchant = 3;
-        }
-        if (this.stat == Stats.MAGIC_DEFENCE || this.stat == Stats.POWER_DEFENCE) {
-            env.addValue((enchant + 3 * overenchant));
-            return;
-        }
-        if (this.stat == Stats.MAGIC_ATTACK) {
-            switch (item.getItem().getItemType()) {
-                case WeaponType.BOW:
-                    env.addValue((4 * enchant + 8 * overenchant));
-                    break;
-                case WeaponType.BIGBLUNT:
-                case WeaponType.BIGSWORD:
-                case WeaponType.DUALFIST:
-                    env.addValue((3 * enchant + 6 * overenchant));
-                    break;
-                case WeaponType.DUAL:
-                    env.addValue((2 * enchant + 4 * overenchant));
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + item.getItem().getItemType());
-            }
-            return;
-        }
-        if (item.isWeapon()) {
-            WeaponType type = (WeaponType) item.getItemType();
-            switch (item.getItem().getItemType()) {
-                case WeaponType.BOW:
-                    switch (type) {
-                        case BOW:
-                            env.addValue((10 * enchant + 20 * overenchant));
-                            break;
-                        case BIGBLUNT:
-                        case BIGSWORD:
-                        case DUALFIST:
-                        case DUAL:
-                            env.addValue((6 * enchant + 12 * overenchant));
-                            break;
+        if (this.cond == null || this.cond.test(env)) {
+            ItemInstance item = (ItemInstance) this.funcOwner;
+            int enchant = item.getEnchantLevel();
+            if (enchant > 0) {
+                int overenchant = 0;
+                if (enchant > 3) {
+                    overenchant = enchant - 3;
+                    enchant = 3;
+                }
+
+                if (this.stat != Stats.MAGIC_DEFENCE && this.stat != Stats.POWER_DEFENCE) {
+                    if (this.stat == Stats.MAGIC_ATTACK) {
+                        switch (item.getItem().getCrystalType()) {
+                            case S:
+                                env.addValue(4 * enchant + 8 * overenchant);
+                                break;
+                            case A:
+                            case B:
+                            case C:
+                                env.addValue(3 * enchant + 6 * overenchant);
+                                break;
+                            case D:
+                                env.addValue(2 * enchant + 4 * overenchant);
+                        }
+
+                    } else {
+                        if (item.isWeapon()) {
+                            WeaponType type = (WeaponType) item.getItemType();
+                            switch (item.getItem().getCrystalType()) {
+                                case S:
+                                    switch (type) {
+                                        case BOW:
+                                            env.addValue(10 * enchant + 20 * overenchant);
+                                            return;
+                                        case BIGBLUNT:
+                                        case BIGSWORD:
+                                        case DUALFIST:
+                                        case DUAL:
+                                            env.addValue(6 * enchant + 12 * overenchant);
+                                            return;
+                                        default:
+                                            env.addValue(5 * enchant + 10 * overenchant);
+                                            return;
+                                    }
+                                case A:
+                                    switch (type) {
+                                        case BOW:
+                                            env.addValue(8 * enchant + 16 * overenchant);
+                                            return;
+                                        case BIGBLUNT:
+                                        case BIGSWORD:
+                                        case DUALFIST:
+                                        case DUAL:
+                                            env.addValue(5 * enchant + 10 * overenchant);
+                                            return;
+                                        default:
+                                            env.addValue(4 * enchant + 8 * overenchant);
+                                            return;
+                                    }
+                                case B:
+                                    switch (type) {
+                                        case BOW:
+                                            env.addValue(6 * enchant + 12 * overenchant);
+                                            return;
+                                        case BIGBLUNT:
+                                        case BIGSWORD:
+                                        case DUALFIST:
+                                        case DUAL:
+                                            env.addValue(4 * enchant + 8 * overenchant);
+                                            return;
+                                        default:
+                                            env.addValue(3 * enchant + 6 * overenchant);
+                                            return;
+                                    }
+                                case C:
+                                    switch (type) {
+                                        case BOW:
+                                            env.addValue(6 * enchant + 12 * overenchant);
+                                            return;
+                                        case BIGBLUNT:
+                                        case BIGSWORD:
+                                        case DUALFIST:
+                                        case DUAL:
+                                            env.addValue(4 * enchant + 8 * overenchant);
+                                            return;
+                                        default:
+                                            env.addValue(3 * enchant + 6 * overenchant);
+                                            return;
+                                    }
+                                case D:
+                                    switch (type) {
+                                        case BOW -> env.addValue(4 * enchant + 8 * overenchant);
+                                        default -> env.addValue(2 * enchant + 4 * overenchant);
+                                    }
+                            }
+                        }
+
                     }
-                    env.addValue((5 * enchant + 10 * overenchant));
-                    break;
-                case WeaponType.BIGBLUNT:
-                    switch (type) {
-                        case BOW:
-                            env.addValue((8 * enchant + 16 * overenchant));
-                            break;
-                        case BIGBLUNT:
-                        case BIGSWORD:
-                        case DUALFIST:
-                        case DUAL:
-                            env.addValue((5 * enchant + 10 * overenchant));
-                            break;
-                    }
-                    env.addValue((4 * enchant + 8 * overenchant));
-                    break;
-                case WeaponType.BIGSWORD, WeaponType.DUALFIST:
-                    switch (type) {
-                        case BOW:
-                            env.addValue((6 * enchant + 12 * overenchant));
-                            break;
-                        case BIGBLUNT:
-                        case BIGSWORD:
-                        case DUALFIST:
-                        case DUAL:
-                            env.addValue((4 * enchant + 8 * overenchant));
-                            break;
-                    }
-                    env.addValue((3 * enchant + 6 * overenchant));
-                    break;
-                case WeaponType.DUAL:
-                    switch (type) {
-                        case BOW:
-                            env.addValue((4 * enchant + 8 * overenchant));
-                            break;
-                    }
-                    env.addValue((2 * enchant + 4 * overenchant));
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + item.getItem().getItemType());
+                } else {
+                    env.addValue(enchant + 3 * overenchant);
+                }
             }
         }
     }

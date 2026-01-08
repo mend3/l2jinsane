@@ -17,27 +17,35 @@ public class BoatAI extends CreatureAI {
 
     protected void moveTo(int x, int y, int z) {
         if (!this._actor.isMovementDisabled()) {
-            if (!this._clientMoving)
-                this._actor.broadcastPacket(new VehicleStarted(getActor(), 1));
+            if (!this._clientMoving) {
+                this._actor.broadcastPacket(new VehicleStarted(this.getActor(), 1));
+            }
+
             this._clientMoving = true;
             this._actor.moveToLocation(x, y, z, 0);
-            this._actor.broadcastPacket(new VehicleDeparture(getActor()));
+            this._actor.broadcastPacket(new VehicleDeparture(this.getActor()));
         }
+
     }
 
     protected void clientStopMoving(SpawnLocation loc) {
-        if (this._actor.isMoving())
+        if (this._actor.isMoving()) {
             this._actor.stopMove(loc);
+        }
+
         if (this._clientMoving || loc != null) {
             this._clientMoving = false;
-            this._actor.broadcastPacket(new VehicleStarted(getActor(), 0));
-            this._actor.broadcastPacket(new VehicleInfo(getActor()));
+            this._actor.broadcastPacket(new VehicleStarted(this.getActor(), 0));
+            this._actor.broadcastPacket(new VehicleInfo(this.getActor()));
         }
+
     }
 
     public void describeStateToPlayer(Player player) {
-        if (this._clientMoving)
-            player.sendPacket(new VehicleDeparture(getActor()));
+        if (this._clientMoving) {
+            player.sendPacket(new VehicleDeparture(this.getActor()));
+        }
+
     }
 
     public Boat getActor() {

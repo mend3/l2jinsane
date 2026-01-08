@@ -10,9 +10,7 @@ import java.util.logging.Level;
 
 public class L2SkillAppearance extends L2Skill {
     private final int _faceId;
-
     private final int _hairColorId;
-
     private final int _hairStyleId;
 
     public L2SkillAppearance(StatSet set) {
@@ -26,17 +24,24 @@ public class L2SkillAppearance extends L2Skill {
         try {
             for (WorldObject target : targets) {
                 if (target instanceof Player targetPlayer) {
-                    if (this._faceId >= 0)
+                    if (this._faceId >= 0) {
                         targetPlayer.getAppearance().setFace(this._faceId);
-                    if (this._hairColorId >= 0)
+                    }
+
+                    if (this._hairColorId >= 0) {
                         targetPlayer.getAppearance().setHairColor(this._hairColorId);
-                    if (this._hairStyleId >= 0)
+                    }
+
+                    if (this._hairStyleId >= 0) {
                         targetPlayer.getAppearance().setHairStyle(this._hairStyleId);
+                    }
+
                     targetPlayer.broadcastUserInfo();
                 }
             }
         } catch (Exception e) {
             _log.log(Level.SEVERE, "", e);
         }
+
     }
 }

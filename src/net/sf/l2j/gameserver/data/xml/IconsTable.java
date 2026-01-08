@@ -37,16 +37,16 @@ public class IconsTable {
                 }
             }
 
-            _log.config("IconsTable: Succesfully loaded " + Icons.size() + " icons, in " + ((double) (System.currentTimeMillis() - startTime)) + " ms.");
+            _log.info("Succesfully loaded " + Icons.size() + " icons, in " + ((double) (System.currentTimeMillis() - startTime)) + " ms.");
         } catch (Exception var7) {
-            _log.config("IconsTable: Failed loading IconsTable. Possible error: " + var7.getMessage());
+            _log.info("Failed loading IconsTable. Possible error: " + var7.getMessage());
         }
 
     }
 
     public static String getIcon(int id) {
         if (Icons.get(id) == null) {
-            _log.config("IconsTable: Invalid Icon request: " + id + ", or it doesn't exist, Ignoring ...");
+            _log.info("Invalid Icon request: " + id + ", or it doesn't exist, Ignoring ...");
             return "null";
         } else {
             return Icons.get(id);

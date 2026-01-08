@@ -41,7 +41,7 @@ public class ClanTable {
     private static final String DELETE_OLD_WARS = "DELETE FROM clan_wars WHERE expiry_time > 0 AND expiry_time <= ?";
     private static final String LOAD_WARS = "SELECT * FROM clan_wars";
     private static final String LOAD_RANK = "SELECT clan_id FROM clan_data ORDER BY reputation_score DESC LIMIT 99";
-    private final Map<Integer, Clan> _clans = new ConcurrentHashMap();
+    private final Map<Integer, Clan> _clans = new ConcurrentHashMap<>();
 
     public static ClanTable getInstance() {
         return ClanTable.SingletonHolder.INSTANCE;
@@ -98,7 +98,7 @@ public class ClanTable {
                 if (con != null) {
                     con.close();
                 }
-            } catch (Exception var15) {
+            } catch (Exception ignored) {
             }
         }
 
@@ -165,7 +165,7 @@ public class ClanTable {
     public void destroyClan(Clan clan) {
         if (this._clans.containsKey(clan.getClanId())) {
             clan.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.CLAN_HAS_DISPERSED));
-            Iterator var2 = CastleManager.getInstance().getCastles().iterator();
+            Iterator<?> var2 = CastleManager.getInstance().getCastles().iterator();
 
             while (var2.hasNext()) {
                 Castle castle = (Castle) var2.next();
@@ -380,7 +380,7 @@ public class ClanTable {
     }
 
     public boolean isAllyExists(String allyName) {
-        Iterator var2 = this._clans.values().iterator();
+        Iterator<Clan> var2 = this._clans.values().iterator();
 
         Clan clan;
         do {
@@ -388,7 +388,7 @@ public class ClanTable {
                 return false;
             }
 
-            clan = (Clan) var2.next();
+            clan = var2.next();
         } while (clan.getAllyName() == null || !clan.getAllyName().equalsIgnoreCase(allyName));
 
         return true;
@@ -531,10 +531,8 @@ public class ClanTable {
 
     public void checkSurrender(Clan clan1, Clan clan2) {
         int count = 0;
-        Iterator var4 = clan1.getMembers().iterator();
 
-        while (var4.hasNext()) {
-            ClanMember player = (ClanMember) var4.next();
+        for (ClanMember player : clan1.getMembers()) {
             if (player != null && player.getPlayerInstance().wantsPeace()) {
                 ++count;
             }
@@ -643,10 +641,8 @@ public class ClanTable {
     }
 
     private void allianceCheck() {
-        Iterator var1 = this._clans.values().iterator();
 
-        while (var1.hasNext()) {
-            Clan clan = (Clan) var1.next();
+        for (Clan clan : this._clans.values()) {
             int allyId = clan.getAllyId();
             if (allyId != 0 && clan.getClanId() != allyId && !this._clans.containsKey(allyId)) {
                 clan.setAllyId(0);
@@ -666,10 +662,8 @@ public class ClanTable {
 
     public void refreshClansLadder(boolean cleanupRank) {
         if (cleanupRank) {
-            Iterator var2 = this._clans.values().iterator();
 
-            while (var2.hasNext()) {
-                Clan clan = (Clan) var2.next();
+            for (Clan clan : this._clans.values()) {
                 if (clan != null && clan.getRank() != 0) {
                     clan.setRank(0);
                 }

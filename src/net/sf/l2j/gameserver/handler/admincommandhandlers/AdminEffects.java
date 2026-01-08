@@ -125,7 +125,7 @@ public class AdminEffects implements IAdminCommandHandler {
                 PlaySound snd = sound.contains(".") ? new PlaySound(sound) : new PlaySound(1, sound);
                 activeChar.broadcastPacket(snd);
                 activeChar.sendMessage("Playing " + sound + ".");
-            } catch (StringIndexOutOfBoundsException stringIndexOutOfBoundsException) {
+            } catch (StringIndexOutOfBoundsException ignored) {
             }
         } else if (command.startsWith("admin_para_all")) {
             for (Player player : activeChar.getKnownType(Player.class)) {

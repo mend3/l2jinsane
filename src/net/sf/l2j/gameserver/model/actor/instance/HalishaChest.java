@@ -5,9 +5,9 @@ import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 public final class HalishaChest extends Monster {
     public HalishaChest(int objectId, NpcTemplate template) {
         super(objectId, template);
-        setIsNoRndWalk(true);
-        setShowSummonAnimation(true);
-        disableCoreAI(true);
+        this.setIsNoRndWalk(true);
+        this.setShowSummonAnimation(true);
+        this.disableCoreAI(true);
     }
 
     public boolean isMovementDisabled() {

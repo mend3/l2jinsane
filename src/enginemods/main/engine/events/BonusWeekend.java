@@ -11,11 +11,11 @@ import net.sf.l2j.gameserver.model.actor.Player;
 
 public class BonusWeekend extends AbstractMods {
     public BonusWeekend() {
-        registerMod(ConfigData.ENABLE_BonusWeekend, ConfigData.BONUS_WEEKEND_ENABLE_DAY);
+        this.registerMod(ConfigData.ENABLE_BonusWeekend, ConfigData.BONUS_WEEKEND_ENABLE_DAY);
     }
 
     public static BonusWeekend getInstance() {
-        return SingletonHolder.INSTANCE;
+        return BonusWeekend.SingletonHolder.INSTANCE;
     }
 
     public void onModState() {

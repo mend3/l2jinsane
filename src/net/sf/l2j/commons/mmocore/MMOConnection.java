@@ -71,7 +71,7 @@ public class MMOConnection<T extends MMOClient<?>> {
         if (!this._sendQueue.isEmpty())
             try {
                 this._selectionKey.interestOps(this._selectionKey.interestOps() | 0x4);
-            } catch (CancelledKeyException cancelledKeyException) {
+            } catch (CancelledKeyException ignored) {
             }
     }
 
@@ -164,7 +164,7 @@ public class MMOConnection<T extends MMOClient<?>> {
         }
         try {
             this._selectionKey.interestOps(this._selectionKey.interestOps() & 0xFFFFFFFB);
-        } catch (CancelledKeyException cancelledKeyException) {
+        } catch (CancelledKeyException ignored) {
         }
         this._selectorThread.closeConnection(this);
     }

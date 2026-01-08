@@ -39,25 +39,25 @@ public class FourSepulchersManager {
     private static final int USED_PASS = 7261;
     private static final int CHAPEL_KEY = 7260;
     private static final int ANTIQUE_BROOCH = 7262;
-    private final Map<Integer, Map<Integer, SpawnLocation>> _shadowSpawnLoc = new HashMap();
-    private final Map<Integer, Boolean> _archonSpawned = new HashMap();
-    private final Map<Integer, Boolean> _hallInUse = new HashMap();
-    private final Map<Integer, Location> _startHallSpawns = new HashMap();
-    private final Map<Integer, Integer> _hallGateKeepers = new HashMap();
-    private final Map<Integer, Integer> _keyBoxNpc = new HashMap();
-    private final Map<Integer, Integer> _victim = new HashMap();
-    private final Map<Integer, L2Spawn> _executionerSpawns = new HashMap();
-    private final Map<Integer, L2Spawn> _keyBoxSpawns = new HashMap();
-    private final Map<Integer, L2Spawn> _mysteriousBoxSpawns = new HashMap();
-    private final Map<Integer, L2Spawn> _shadowSpawns = new HashMap();
-    private final Map<Integer, List<L2Spawn>> _dukeFinalMobs = new HashMap();
-    private final Map<Integer, List<Npc>> _dukeMobs = new HashMap();
-    private final Map<Integer, List<L2Spawn>> _emperorsGraveNpcs = new HashMap();
-    private final Map<Integer, List<L2Spawn>> _magicalMonsters = new HashMap();
-    private final Map<Integer, List<L2Spawn>> _physicalMonsters = new HashMap();
-    private final Map<Integer, List<Npc>> _viscountMobs = new HashMap();
-    private final List<L2Spawn> _managers = new ArrayList();
-    private final List<Npc> _allMobs = new ArrayList();
+    private final Map<Integer, Map<Integer, SpawnLocation>> _shadowSpawnLoc = new HashMap<>();
+    private final Map<Integer, Boolean> _archonSpawned = new HashMap<>();
+    private final Map<Integer, Boolean> _hallInUse = new HashMap<>();
+    private final Map<Integer, Location> _startHallSpawns = new HashMap<>();
+    private final Map<Integer, Integer> _hallGateKeepers = new HashMap<>();
+    private final Map<Integer, Integer> _keyBoxNpc = new HashMap<>();
+    private final Map<Integer, Integer> _victim = new HashMap<>();
+    private final Map<Integer, L2Spawn> _executionerSpawns = new HashMap<>();
+    private final Map<Integer, L2Spawn> _keyBoxSpawns = new HashMap<>();
+    private final Map<Integer, L2Spawn> _mysteriousBoxSpawns = new HashMap<>();
+    private final Map<Integer, L2Spawn> _shadowSpawns = new HashMap<>();
+    private final Map<Integer, List<L2Spawn>> _dukeFinalMobs = new HashMap<>();
+    private final Map<Integer, List<Npc>> _dukeMobs = new HashMap<>();
+    private final Map<Integer, List<L2Spawn>> _emperorsGraveNpcs = new HashMap<>();
+    private final Map<Integer, List<L2Spawn>> _magicalMonsters = new HashMap<>();
+    private final Map<Integer, List<L2Spawn>> _physicalMonsters = new HashMap<>();
+    private final Map<Integer, List<Npc>> _viscountMobs = new HashMap<>();
+    private final List<L2Spawn> _managers = new ArrayList<>();
+    private final List<Npc> _allMobs = new ArrayList<>();
     protected FourSepulchersManager.State _state = FourSepulchersManager.State.ENTRY;
 
     public static FourSepulchersManager getInstance() {
@@ -80,25 +80,25 @@ public class FourSepulchersManager {
     }
 
     protected void initFixedInfo() {
-        Map<Integer, SpawnLocation> temp = new HashMap();
+        Map<Integer, SpawnLocation> temp = new HashMap<>();
         temp.put(25339, new SpawnLocation(191231, -85574, -7216, 33380));
         temp.put(25349, new SpawnLocation(189534, -88969, -7216, 32768));
         temp.put(25346, new SpawnLocation(173195, -76560, -7215, 49277));
         temp.put(25342, new SpawnLocation(175591, -72744, -7215, 49317));
         this._shadowSpawnLoc.put(0, temp);
-        temp = new HashMap();
+        temp = new HashMap<>();
         temp.put(25342, new SpawnLocation(191231, -85574, -7216, 33380));
         temp.put(25339, new SpawnLocation(189534, -88969, -7216, 32768));
         temp.put(25349, new SpawnLocation(173195, -76560, -7215, 49277));
         temp.put(25346, new SpawnLocation(175591, -72744, -7215, 49317));
         this._shadowSpawnLoc.put(1, temp);
-        temp = new HashMap();
+        temp = new HashMap<>();
         temp.put(25346, new SpawnLocation(191231, -85574, -7216, 33380));
         temp.put(25342, new SpawnLocation(189534, -88969, -7216, 32768));
         temp.put(25339, new SpawnLocation(173195, -76560, -7215, 49277));
         temp.put(25349, new SpawnLocation(175591, -72744, -7215, 49317));
         this._shadowSpawnLoc.put(2, temp);
-        temp = new HashMap();
+        temp = new HashMap<>();
         temp.put(25349, new SpawnLocation(191231, -85574, -7216, 33380));
         temp.put(25346, new SpawnLocation(189534, -88969, -7216, 32768));
         temp.put(25342, new SpawnLocation(173195, -76560, -7215, 49277));
@@ -257,11 +257,8 @@ public class FourSepulchersManager {
     }
 
     private void initKeyBoxSpawns() {
-        Iterator var1 = this._keyBoxNpc.entrySet().iterator();
 
-        while (var1.hasNext()) {
-            Entry keyNpc = (Entry) var1.next();
-
+        for (Entry keyNpc : this._keyBoxNpc.entrySet()) {
             try {
                 NpcTemplate template = NpcData.getInstance().getTemplate((Integer) keyNpc.getValue());
                 if (template == null) {
@@ -426,10 +423,8 @@ public class FourSepulchersManager {
         int[] gateKeeper = new int[]{31929, 31934, 31939, 31944};
         Map<Integer, SpawnLocation> newLoc = this._shadowSpawnLoc.get(Rnd.get(4));
         int index = 0;
-        Iterator var4 = newLoc.entrySet().iterator();
 
-        while (var4.hasNext()) {
-            Entry<Integer, SpawnLocation> entry = (Entry) var4.next();
+        for (Entry<Integer, SpawnLocation> entry : newLoc.entrySet()) {
             NpcTemplate template = NpcData.getInstance().getTemplate(entry.getKey());
             if (template == null) {
                 LOGGER.warn("Data missing in NPC table for ID: {}.", entry.getKey());
@@ -450,11 +445,8 @@ public class FourSepulchersManager {
     }
 
     private void initExecutionerSpawns() {
-        Iterator var1 = this._victim.entrySet().iterator();
 
-        while (var1.hasNext()) {
-            Entry victimNpc = (Entry) var1.next();
-
+        for (Entry victimNpc : this._victim.entrySet()) {
             try {
                 NpcTemplate template = NpcData.getInstance().getTemplate((Integer) victimNpc.getValue());
                 if (template == null) {
@@ -543,7 +535,7 @@ public class FourSepulchersManager {
                             return;
                         }
 
-                        Iterator var5 = party.getMembers().iterator();
+                        Iterator<Player> var5 = party.getMembers().iterator();
 
                         Player member;
                         do {
@@ -555,12 +547,11 @@ public class FourSepulchersManager {
 
                                 this.showHtmlFile(player, npcId + "-OK.htm", npc, null);
                                 Location loc = this._startHallSpawns.get(npcId);
-                                Iterator var10 = ((List) party.getMembers().stream().filter((m) -> {
-                                    return !m.isDead() && MathUtil.checkIfInRange(700, player, m, true);
-                                }).collect(Collectors.toList())).iterator();
 
-                                while (var10.hasNext()) {
-                                    member = (Player) var10.next();
+                                for (Object o : (List) party.getMembers().stream().filter((m) -> {
+                                    return !m.isDead() && MathUtil.checkIfInRange(700, player, m, true);
+                                }).collect(Collectors.toList())) {
+                                    member = (Player) o;
                                     ZoneManager.getInstance().getZone(loc.getX(), loc.getY(), loc.getZ(), BossZone.class).allowPlayerEntry(member, 30);
                                     member.teleportTo(loc, 80);
                                     member.destroyItemByItemId("Quest", 7075, 1, member, true);
@@ -578,7 +569,7 @@ public class FourSepulchersManager {
                                 return;
                             }
 
-                            member = (Player) var5.next();
+                            member = var5.next();
                             QuestState qs = member.getQuestState("Q620_FourGoblets");
                             if (qs == null || !qs.isStarted() && !qs.isCompleted()) {
                                 this.showHtmlFile(player, npcId + "-NS.htm", npc, member);
@@ -616,10 +607,10 @@ public class FourSepulchersManager {
     public void spawnMonster(int npcId) {
         if (this.isAttackTime()) {
             List<L2Spawn> monsterList = Rnd.nextBoolean() ? this._physicalMonsters.get(npcId) : this._magicalMonsters.get(npcId);
-            List<Npc> mobs = new ArrayList();
+            List<Npc> mobs = new ArrayList<>();
             boolean spawnKeyBoxMob = false;
             boolean spawnedKeyBoxMob = false;
-            Iterator var6 = monsterList.iterator();
+            Iterator<L2Spawn> var6 = monsterList.iterator();
 
             while (true) {
                 Npc mob;
@@ -654,7 +645,7 @@ public class FourSepulchersManager {
                         return;
                     }
 
-                    L2Spawn spawn = (L2Spawn) var6.next();
+                    L2Spawn spawn = var6.next();
                     if (spawnedKeyBoxMob) {
                         spawnKeyBoxMob = false;
                     } else {
@@ -734,7 +725,7 @@ public class FourSepulchersManager {
     public synchronized void testViscountMobsAnnihilation(int npcId) {
         List<Npc> mobs = this._viscountMobs.get(npcId);
         if (mobs != null) {
-            Iterator var3 = mobs.iterator();
+            Iterator<Npc> var3 = mobs.iterator();
 
             Npc mob;
             do {
@@ -743,7 +734,7 @@ public class FourSepulchersManager {
                     return;
                 }
 
-                mob = (Npc) var3.next();
+                mob = var3.next();
             } while (mob.isDead());
 
         }
@@ -752,7 +743,7 @@ public class FourSepulchersManager {
     public synchronized void testDukeMobsAnnihilation(int npcId) {
         List<Npc> mobs = this._dukeMobs.get(npcId);
         if (mobs != null) {
-            Iterator var3 = mobs.iterator();
+            Iterator<Npc> var3 = mobs.iterator();
 
             Npc mob;
             do {
@@ -761,7 +752,7 @@ public class FourSepulchersManager {
                     return;
                 }
 
-                mob = (Npc) var3.next();
+                mob = var3.next();
             } while (mob.isDead());
 
         }
@@ -798,10 +789,8 @@ public class FourSepulchersManager {
             if (!(Boolean) this._archonSpawned.get(npcId)) {
                 List<L2Spawn> monsterList = this._dukeFinalMobs.get(npcId);
                 if (monsterList != null) {
-                    Iterator var3 = monsterList.iterator();
 
-                    while (var3.hasNext()) {
-                        L2Spawn spawn = (L2Spawn) var3.next();
+                    for (L2Spawn spawn : monsterList) {
                         Npc mob = spawn.doSpawn(false);
                         spawn.setRespawnState(false);
                         if (mob != null) {
@@ -821,10 +810,8 @@ public class FourSepulchersManager {
         if (this.isAttackTime()) {
             List<L2Spawn> monsterList = this._emperorsGraveNpcs.get(npcId);
             if (monsterList != null) {
-                Iterator var3 = monsterList.iterator();
 
-                while (var3.hasNext()) {
-                    L2Spawn spawn = (L2Spawn) var3.next();
+                for (L2Spawn spawn : monsterList) {
                     this._allMobs.add(spawn.doSpawn(false));
                     spawn.setRespawnState(false);
                 }
@@ -861,10 +848,8 @@ public class FourSepulchersManager {
     protected void onEntryEvent() {
         String msg1 = "You may now enter the Sepulcher.";
         String msg2 = "If you place your hand on the stone statue in front of each sepulcher, you will be able to enter.";
-        Iterator var3 = this._managers.iterator();
 
-        while (var3.hasNext()) {
-            L2Spawn temp = (L2Spawn) var3.next();
+        for (L2Spawn temp : this._managers) {
             ((SepulcherNpc) temp.getNpc()).sayInShout(msg1);
             ((SepulcherNpc) temp.getNpc()).sayInShout(msg2);
         }
@@ -873,10 +858,8 @@ public class FourSepulchersManager {
 
     protected void onAttackEvent() {
         Map<Integer, SpawnLocation> newLoc = this._shadowSpawnLoc.get(Rnd.get(4));
-        Iterator var2 = this._shadowSpawns.values().iterator();
 
-        while (var2.hasNext()) {
-            L2Spawn spawn = (L2Spawn) var2.next();
+        for (L2Spawn spawn : this._shadowSpawns.values()) {
             SpawnLocation spawnLoc = newLoc.get(spawn.getNpcId());
             if (spawnLoc != null) {
                 spawn.setLoc(spawnLoc);
@@ -890,7 +873,7 @@ public class FourSepulchersManager {
     }
 
     protected void onEndEvent() {
-        Iterator var1 = this._managers.iterator();
+        Iterator<?> var1 = this._managers.iterator();
 
         while (var1.hasNext()) {
             L2Spawn temp = (L2Spawn) var1.next();
@@ -904,10 +887,8 @@ public class FourSepulchersManager {
         while (var1.hasNext()) {
             Location loc = (Location) var1.next();
             List<Player> players = ZoneManager.getInstance().getZone(loc.getX(), loc.getY(), loc.getZ(), BossZone.class).oustAllPlayers();
-            Iterator var4 = players.iterator();
 
-            while (var4.hasNext()) {
-                Player player = (Player) var4.next();
+            for (Player player : players) {
                 ItemInstance key = player.getInventory().getItemByItemId(7260);
                 if (key != null) {
                     player.destroyItemByItemId("Quest", 7260, key.getCount(), player, false);
@@ -947,10 +928,8 @@ public class FourSepulchersManager {
             int modulo = currentMinute % 5;
             if (modulo == 0) {
                 String msg = currentMinute + " minute(s) have passed.";
-                Iterator var4 = this._managers.iterator();
 
-                while (var4.hasNext()) {
-                    L2Spawn temp = (L2Spawn) var4.next();
+                for (L2Spawn temp : this._managers) {
                     if (this._hallInUse.get(temp.getNpcId())) {
                         ((SepulcherNpc) temp.getNpc()).sayInShout(msg);
                     }

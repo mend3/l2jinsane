@@ -19,12 +19,9 @@ public final class GameTimeTaskManager implements Runnable {
     public static final int SECONDS_PER_GAME_DAY = 14400;
     private static final int MINUTES_PER_DAY = 1440;
     private static final int MILLISECONDS_PER_GAME_MINUTE = 10000;
-
     private static final int TAKE_BREAK_HOURS = 2;
-
     private static final int TAKE_BREAK_GAME_MINUTES = 720;
-
-    private final Map<Player, Integer> _players = new ConcurrentHashMap<>();
+    private final Map<Creature, Integer> _players = new ConcurrentHashMap<>();
     private boolean _isNight;
     private List<Quest> _questEvents = Collections.emptyList();
     private int _time;
@@ -36,45 +33,53 @@ public final class GameTimeTaskManager implements Runnable {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         this._time = (int) (System.currentTimeMillis() - cal.getTimeInMillis()) / 10000;
-        this._isNight = isNight();
+        this._isNight = this.isNight();
         ThreadPool.scheduleAtFixedRate(this, 10000L, 10000L);
     }
 
     public static GameTimeTaskManager getInstance() {
-        return SingletonHolder.INSTANCE;
+        return GameTimeTaskManager.SingletonHolder.INSTANCE;
     }
 
     public void run() {
-        this._time++;
-        for (Quest quest : this._questEvents)
+        ++this._time;
+
+        for (Quest quest : this._questEvents) {
             quest.onGameTime();
+        }
+
         L2Skill skill = null;
-        if (this._isNight != isNight()) {
+        if (this._isNight != this.isNight()) {
             this._isNight = !this._isNight;
             DayNightManager.getInstance().notifyChangeMode();
             skill = SkillTable.getInstance().getInfo(294, 1);
         }
-        if (this._players.isEmpty())
-            return;
-        for (Map.Entry<Player, Integer> entry : this._players.entrySet()) {
-            Player player = entry.getKey();
-            if (!player.isOnline())
-                continue;
-            if (skill != null && player.hasSkill(294)) {
-                player.removeSkill(294, false);
-                player.addSkill(skill, false);
-                player.sendPacket(SystemMessage.getSystemMessage(this._isNight ? SystemMessageId.NIGHT_S1_EFFECT_APPLIES : SystemMessageId.DAY_S1_EFFECT_DISAPPEARS).addSkillName(294));
+
+        if (!this._players.isEmpty()) {
+            for (Map.Entry<Creature, Integer> entry : this._players.entrySet()) {
+                Player player = (Player) entry.getKey();
+                if (player.isOnline()) {
+                    if (skill != null && player.hasSkill(294)) {
+                        player.removeSkill(294, false);
+                        player.addSkill(skill, false);
+                        player.sendPacket(SystemMessage.getSystemMessage(this._isNight ? SystemMessageId.NIGHT_S1_EFFECT_APPLIES : SystemMessageId.DAY_S1_EFFECT_DISAPPEARS).addSkillName(294));
+                    }
+
+                    if (this._time >= entry.getValue()) {
+                        player.sendPacket(SystemMessageId.PLAYING_FOR_LONG_TIME);
+                        entry.setValue(this._time + 720);
+                    }
+                }
             }
-            if (this._time >= entry.getValue()) {
-                player.sendPacket(SystemMessageId.PLAYING_FOR_LONG_TIME);
-                entry.setValue(this._time + 720);
-            }
+
         }
     }
 
     public void addQuestEvent(Quest quest) {
-        if (this._questEvents.isEmpty())
+        if (this._questEvents.isEmpty()) {
             this._questEvents = new ArrayList<>(3);
+        }
+
         this._questEvents.add(quest);
     }
 
@@ -95,11 +100,11 @@ public final class GameTimeTaskManager implements Runnable {
     }
 
     public String getGameTimeFormated() {
-        return String.format("%02d:%02d", getGameHour(), getGameMinute());
+        return String.format("%02d:%02d", this.getGameHour(), this.getGameMinute());
     }
 
     public boolean isNight() {
-        return (getGameTime() < 360);
+        return this.getGameTime() < 360;
     }
 
     public void add(Player player) {

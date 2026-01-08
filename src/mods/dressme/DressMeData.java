@@ -1,11 +1,12 @@
 package mods.dressme;
 
-import mods.xml.IXmlReader;
+import net.sf.l2j.commons.data.xml.IXmlReader;
 import net.sf.l2j.commons.util.StatSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -39,16 +40,15 @@ public class DressMeData implements IXmlReader {
     }
 
     public void load() {
-        reload();
-        parseDatapackFile("./data/xml/dressme.xml");
-        LOG.info(getClass().getSimpleName() + ": Loaded " + _armorSkins.size() + " armor skins");
-        LOG.info(getClass().getSimpleName() + ": Loaded " + _weaponSkins.size() + " weapon skins");
-        LOG.info(getClass().getSimpleName() + ": Loaded " + _hairSkins.size() + " hair skins");
-        LOG.info(getClass().getSimpleName() + ": Loaded " + _faceSkins.size() + " face skins");
-        LOG.info(getClass().getSimpleName() + ": Loaded " + _shieldSkins.size() + " shield skins");
+        parseFile("./data/xml/dressme.xml");
+        LOG.info("Loaded " + _armorSkins.size() + " armor skins");
+        LOG.info("Loaded " + _weaponSkins.size() + " weapon skins");
+        LOG.info("Loaded " + _hairSkins.size() + " hair skins");
+        LOG.info("Loaded " + _faceSkins.size() + " face skins");
+        LOG.info("Loaded " + _shieldSkins.size() + " shield skins");
     }
 
-    public void parseDocument(Document doc) {
+    public void parseDocument(Document doc, Path path) {
         for (Node list = doc.getFirstChild(); list != null; list = list.getNextSibling()) {
             if ("list".equalsIgnoreCase(list.getNodeName()))
                 for (Node skin = list.getFirstChild(); skin != null; skin = skin.getNextSibling()) {

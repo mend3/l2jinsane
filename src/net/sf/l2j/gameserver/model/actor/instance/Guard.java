@@ -23,7 +23,7 @@ public final class Guard extends Attackable {
     }
 
     public void onSpawn() {
-        setIsNoRndWalk(true);
+        this.setIsNoRndWalk(true);
         super.onSpawn();
     }
 
@@ -32,22 +32,25 @@ public final class Guard extends Attackable {
         if (val == 0) {
             filename = "" + npcId;
         } else {
-            filename = npcId + "-" + npcId;
+            filename = npcId + "-" + val;
         }
+
         return "data/html/guard/" + filename + ".htm";
     }
 
     public void onAction(Player player) {
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (!canInteract(player)) {
+        } else if (!this.canInteract(player)) {
             player.getAI().setIntention(IntentionType.INTERACT, this);
         } else {
-            if (player.isMoving() || player.isInCombat())
+            if (player.isMoving() || player.isInCombat()) {
                 player.getAI().setIntention(IntentionType.IDLE);
+            }
+
             player.sendPacket(new MoveToPawn(player, this, 150));
             player.sendPacket(ActionFailed.STATIC_PACKET);
-            switch (getNpcId()) {
+            switch (this.getNpcId()) {
                 case 30733:
                 case 31032:
                 case 31033:
@@ -60,18 +63,24 @@ public final class Guard extends Attackable {
                 case 31674:
                     return;
             }
-            if (hasRandomAnimation())
-                onRandomAnimation(Rnd.get(8));
-            List<Quest> scripts = getTemplate().getEventQuests(ScriptEventType.QUEST_START);
-            if (scripts != null && !scripts.isEmpty())
-                player.setLastQuestNpcObject(getObjectId());
-            scripts = getTemplate().getEventQuests(ScriptEventType.ON_FIRST_TALK);
+
+            if (this.hasRandomAnimation()) {
+                this.onRandomAnimation(Rnd.get(8));
+            }
+
+            List<Quest> scripts = this.getTemplate().getEventQuests(ScriptEventType.QUEST_START);
+            if (scripts != null && !scripts.isEmpty()) {
+                player.setLastQuestNpcObject(this.getObjectId());
+            }
+
+            scripts = this.getTemplate().getEventQuests(ScriptEventType.ON_FIRST_TALK);
             if (scripts != null && scripts.size() == 1) {
                 scripts.get(0).notifyFirstTalk(this, player);
             } else {
-                showChatWindow(player);
+                this.showChatWindow(player);
             }
         }
+
     }
 
     public boolean isGuard() {

@@ -6,6 +6,7 @@ import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.model.actor.Attackable;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Player;
+import net.sf.l2j.gameserver.model.actor.instance.*;
 import net.sf.l2j.gameserver.model.entity.CursedWeapon;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import org.w3c.dom.Document;
@@ -20,34 +21,36 @@ public class CursedWeaponManager implements IXmlReader {
     private final Map<Integer, CursedWeapon> _cursedWeapons = new HashMap<>();
 
     public CursedWeaponManager() {
+        if (!Config.ALLOW_CURSED_WEAPONS) {
+            LOGGER.info("Cursed weapons loading is skipped.");
+        } else {
+            this.load();
+        }
     }
 
-    public static CursedWeaponManager getInstance() {
-        return SingletonHolder.INSTANCE;
+    public static final CursedWeaponManager getInstance() {
+        return CursedWeaponManager.SingletonHolder.INSTANCE;
     }
 
     public void load() {
-        if (!Config.ALLOW_CURSED_WEAPONS) {
-            LOGGER.info("Cursed weapons loading is skipped.");
-            return;
-        }
-        parseFile("./data/xml/cursedWeapons.xml");
-        LOGGER.info("Loaded {} cursed weapons.", this._cursedWeapons.size());
+        this.parseFile("./data/xml/cursedWeapons.xml");
+        LOGGER.info("Loaded {} cursed weapons.", new Object[]{this._cursedWeapons.size()});
     }
 
     public void parseDocument(Document doc, Path path) {
-        forEach(doc, "list", listNode -> forEach(listNode, "item", itemNode ->
-        {
-            final StatSet set = parseAttributes(itemNode);
-            _cursedWeapons.put(set.getInteger("id"), new CursedWeapon(set));
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "item", (itemNode) -> {
+            StatSet set = this.parseAttributes(itemNode);
+            this._cursedWeapons.put(set.getInteger("id"), new CursedWeapon(set));
         }));
     }
 
     public void reload() {
-        for (CursedWeapon cw : this._cursedWeapons.values())
+        for (CursedWeapon cw : this._cursedWeapons.values()) {
             cw.endOfLife();
+        }
+
         this._cursedWeapons.clear();
-        load();
+        this.load();
     }
 
     public boolean isCursed(int itemId) {
@@ -67,59 +70,61 @@ public class CursedWeaponManager implements IXmlReader {
     }
 
     public synchronized void checkDrop(Attackable attackable, Player player) {
-        if (attackable instanceof net.sf.l2j.gameserver.model.actor.instance.SiegeGuard || attackable instanceof net.sf.l2j.gameserver.model.actor.instance.RiftInvader || attackable instanceof net.sf.l2j.gameserver.model.actor.instance.FestivalMonster || attackable instanceof net.sf.l2j.gameserver.model.actor.instance.GrandBoss || attackable instanceof net.sf.l2j.gameserver.model.actor.instance.FeedableBeast)
-            return;
-        for (CursedWeapon cw : this._cursedWeapons.values()) {
-            if (cw.isActive())
-                continue;
-            if (cw.checkDrop(attackable, player))
-                break;
+        if (!(attackable instanceof SiegeGuard) && !(attackable instanceof RiftInvader) && !(attackable instanceof FestivalMonster) && !(attackable instanceof GrandBoss) && !(attackable instanceof FeedableBeast)) {
+            for (CursedWeapon cw : this._cursedWeapons.values()) {
+                if (!cw.isActive() && cw.checkDrop(attackable, player)) {
+                    break;
+                }
+            }
+
         }
     }
 
     public void activate(Player player, ItemInstance item) {
         CursedWeapon cw = this._cursedWeapons.get(item.getItemId());
-        if (cw == null)
-            return;
-        if (player.isCursedWeaponEquipped()) {
-            this._cursedWeapons.get(player.getCursedWeaponEquippedId()).rankUp();
-            cw.setPlayer(player);
-            cw.endOfLife();
-        } else {
-            cw.activate(player, item);
+        if (cw != null) {
+            if (player.isCursedWeaponEquipped()) {
+                this._cursedWeapons.get(player.getCursedWeaponEquippedId()).rankUp();
+                cw.setPlayer(player);
+                cw.endOfLife();
+            } else {
+                cw.activate(player, item);
+            }
+
         }
     }
 
     public void drop(int itemId, Creature killer) {
         CursedWeapon cw = this._cursedWeapons.get(itemId);
-        if (cw == null)
-            return;
-        cw.dropIt(killer);
+        if (cw != null) {
+            cw.dropIt(killer);
+        }
     }
 
     public void increaseKills(int itemId) {
         CursedWeapon cw = this._cursedWeapons.get(itemId);
-        if (cw == null)
-            return;
-        cw.increaseKills();
+        if (cw != null) {
+            cw.increaseKills();
+        }
     }
 
     public int getCurrentStage(int itemId) {
         CursedWeapon cw = this._cursedWeapons.get(itemId);
-        return (cw == null) ? 0 : cw.getCurrentStage();
+        return cw == null ? 0 : cw.getCurrentStage();
     }
 
     public void checkPlayer(Player player) {
-        if (player == null)
-            return;
-        for (CursedWeapon cw : this._cursedWeapons.values()) {
-            if (cw.isActivated() && player.getObjectId() == cw.getPlayerId()) {
-                cw.setPlayer(player);
-                cw.setItem(player.getInventory().getItemByItemId(cw.getItemId()));
-                cw.giveDemonicSkills();
-                player.setCursedWeaponEquippedId(cw.getItemId());
-                break;
+        if (player != null) {
+            for (CursedWeapon cw : this._cursedWeapons.values()) {
+                if (cw.isActivated() && player.getObjectId() == cw.getPlayerId()) {
+                    cw.setPlayer(player);
+                    cw.setItem(player.getInventory().getItemByItemId(cw.getItemId()));
+                    cw.giveDemonicSkills();
+                    player.setCursedWeaponEquippedId(cw.getItemId());
+                    break;
+                }
             }
+
         }
     }
 

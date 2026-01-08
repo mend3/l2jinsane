@@ -8,7 +8,6 @@ import net.sf.l2j.commons.random.Rnd;
 import net.sf.l2j.gameserver.data.SkillTable;
 import net.sf.l2j.gameserver.data.SkillTable.FrequentSkill;
 import net.sf.l2j.gameserver.data.xml.MapRegionData;
-import net.sf.l2j.gameserver.data.xml.MapRegionData.TeleportType;
 import net.sf.l2j.gameserver.enums.*;
 import net.sf.l2j.gameserver.enums.items.ShotType;
 import net.sf.l2j.gameserver.enums.items.WeaponType;
@@ -36,7 +35,6 @@ import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
 import net.sf.l2j.gameserver.model.location.Location;
 import net.sf.l2j.gameserver.model.location.SpawnLocation;
 import net.sf.l2j.gameserver.network.SystemMessageId;
-import net.sf.l2j.gameserver.network.serverpackets.AbstractNpcInfo.NpcInfo;
 import net.sf.l2j.gameserver.network.serverpackets.*;
 import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.skills.Calculator;
@@ -47,7 +45,10 @@ import net.sf.l2j.gameserver.skills.funcs.*;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
 import net.sf.l2j.gameserver.taskmanager.MovementTaskManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
@@ -62,7 +63,7 @@ public abstract class Creature extends WorldObject {
     protected FusionSkill _fusionSkill;
     protected byte _zoneValidateCounter;
     protected CharEffectList _effects;
-    protected Creature.MoveData _move;
+    protected MoveData _move;
     protected CreatureAI _ai;
     protected Future<?> _skillCast;
     protected Future<?> _skillCast2;
@@ -82,9 +83,9 @@ public abstract class Creature extends WorldObject {
     private CreatureStat _stat;
     private CreatureStatus _status;
     private CreatureTemplate _template;
-    private double _hpUpdateIncCheck = 0.0D;
-    private double _hpUpdateDecCheck = 0.0D;
-    private double _hpUpdateInterval = 0.0D;
+    private double _hpUpdateIncCheck = 0.0F;
+    private double _hpUpdateDecCheck = 0.0F;
+    private double _hpUpdateInterval = 0.0F;
     private boolean _champion = false;
     private ChanceSkillList _chanceSkills;
     private boolean _isBuffProtected;
@@ -109,7 +110,7 @@ public abstract class Creature extends WorldObject {
         this._zoneValidateCounter = 4;
         this._isBuffProtected = false;
         this._effects = new CharEffectList(this);
-        this._disabledSkills = new ConcurrentHashMap();
+        this._disabledSkills = new ConcurrentHashMap<>();
         this._team = TeamType.NONE;
         this.inArenaEvent = false;
         this._isStopMov = false;
@@ -155,7 +156,7 @@ public abstract class Creature extends WorldObject {
     }
 
     protected void initCharStatusUpdateValues() {
-        this._hpUpdateInterval = (double) this.getMaxHp() / 352.0D;
+        this._hpUpdateInterval = (double) this.getMaxHp() / (double) 352.0F;
         this._hpUpdateIncCheck = this.getMaxHp();
         this._hpUpdateDecCheck = (double) this.getMaxHp() - this._hpUpdateInterval;
     }
@@ -208,10 +209,7 @@ public abstract class Creature extends WorldObject {
     }
 
     public void broadcastPacket(L2GameServerPacket packet, boolean selfToo) {
-        Iterator var3 = this.getKnownType(Player.class).iterator();
-
-        while (var3.hasNext()) {
-            Player player = (Player) var3.next();
+        for (Player player : this.getKnownType(Player.class)) {
             player.sendPacket(packet);
         }
 
@@ -222,10 +220,7 @@ public abstract class Creature extends WorldObject {
             radius = 600;
         }
 
-        Iterator var3 = this.getKnownTypeInRadius(Player.class, radius).iterator();
-
-        while (var3.hasNext()) {
-            Player player = (Player) var3.next();
+        for (Player player : this.getKnownTypeInRadius(Player.class, radius)) {
             player.sendPacket(packet);
         }
 
@@ -233,12 +228,12 @@ public abstract class Creature extends WorldObject {
 
     protected boolean needHpUpdate(int barPixels) {
         double currentHp = this.getCurrentHp();
-        if (currentHp > 1.0D && this.getMaxHp() >= barPixels) {
-            if (currentHp > this._hpUpdateDecCheck && currentHp < this._hpUpdateIncCheck) {
+        if (!(currentHp <= (double) 1.0F) && this.getMaxHp() >= barPixels) {
+            if (!(currentHp <= this._hpUpdateDecCheck) && !(currentHp >= this._hpUpdateIncCheck)) {
                 return false;
             } else {
                 if (currentHp == (double) this.getMaxHp()) {
-                    this._hpUpdateIncCheck = currentHp + 1.0D;
+                    this._hpUpdateIncCheck = currentHp + (double) 1.0F;
                     this._hpUpdateDecCheck = currentHp - this._hpUpdateInterval;
                 } else {
                     double doubleMulti = currentHp / this._hpUpdateInterval;
@@ -259,10 +254,8 @@ public abstract class Creature extends WorldObject {
             if (this.needHpUpdate(352)) {
                 StatusUpdate su = new StatusUpdate(this);
                 su.addAttribute(9, (int) this.getCurrentHp());
-                Iterator var2 = this.getStatus().getStatusListener().iterator();
 
-                while (var2.hasNext()) {
-                    Creature temp = (Creature) var2.next();
+                for (Creature temp : this.getStatus().getStatusListener()) {
                     if (temp != null) {
                         temp.sendPacket(su);
                     }
@@ -325,7 +318,7 @@ public abstract class Creature extends WorldObject {
         this.teleportTo(loc.getX(), loc.getY(), loc.getZ(), randomOffset);
     }
 
-    public void teleportTo(TeleportType type) {
+    public void teleportTo(MapRegionData.TeleportType type) {
         this.teleportTo(MapRegionData.getInstance().getLocationToTeleport(this, type), 20);
     }
 
@@ -369,7 +362,6 @@ public abstract class Creature extends WorldObject {
                     this.sendPacket(ActionFailed.STATIC_PACKET);
                 } else {
                     long time = System.currentTimeMillis();
-                    int timeAtk;
                     if (weaponItemType == WeaponType.BOW) {
                         if (this instanceof Player) {
                             if (!this.checkAndEquipArrows()) {
@@ -380,23 +372,21 @@ public abstract class Creature extends WorldObject {
                             }
 
                             if (this._disableBowAttackEndTime > time) {
-                                ThreadPool.schedule(() -> {
-                                    this.getAI().notifyEvent(AiEventType.READY_TO_ACT);
-                                }, 100L);
+                                ThreadPool.schedule(() -> this.getAI().notifyEvent(AiEventType.READY_TO_ACT), 100L);
                                 this.sendPacket(ActionFailed.STATIC_PACKET);
                                 return;
                             }
 
-                            timeAtk = weaponItem.getMpConsume();
-                            if (timeAtk > 0) {
-                                if (this.getCurrentMp() < (double) timeAtk) {
+                            int mpConsume = weaponItem.getMpConsume();
+                            if (mpConsume > 0) {
+                                if (this.getCurrentMp() < (double) mpConsume) {
                                     this.getAI().setIntention(IntentionType.IDLE);
                                     this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.NOT_ENOUGH_MP));
                                     this.sendPacket(ActionFailed.STATIC_PACKET);
                                     return;
                                 }
 
-                                this.getStatus().reduceMp(timeAtk);
+                                this.getStatus().reduceMp(mpConsume);
                             }
                         } else if (this instanceof Npc && this._disableBowAttackEndTime > time) {
                             return;
@@ -404,7 +394,7 @@ public abstract class Creature extends WorldObject {
                     }
 
                     this.rechargeShots(true, false);
-                    timeAtk = this.calculateTimeBetweenAttacks(target, weaponItemType);
+                    int timeAtk = this.calculateTimeBetweenAttacks(target, weaponItemType);
                     this._attackEndTime = time + (long) timeAtk - 100L;
                     this._disableBowAttackEndTime = time + 50L;
                     Attack attack = new Attack(this, this.isChargedShot(ShotType.SOULSHOT), weaponItem != null ? weaponItem.getCrystalType().getId() : 0);
@@ -440,15 +430,13 @@ public abstract class Creature extends WorldObject {
                     if (!hitted) {
                         this.abortAttack();
                     } else {
-                        if (this instanceof Attackable mob) {
+                        if (this instanceof Attackable) {
                             Player victim = target.getActingPlayer();
                             if (victim != null) {
+                                Npc mob = (Npc) this;
                                 List<Quest> scripts = mob.getTemplate().getEventQuests(ScriptEventType.ON_ATTACK_ACT);
                                 if (scripts != null) {
-                                    Iterator var13 = scripts.iterator();
-
-                                    while (var13.hasNext()) {
-                                        Quest quest = (Quest) var13.next();
+                                    for (Quest quest : scripts) {
                                         quest.notifyAttackAct(mob, victim);
                                     }
                                 }
@@ -459,10 +447,10 @@ public abstract class Creature extends WorldObject {
                         if (player != null) {
                             if (player.isCursedWeaponEquipped()) {
                                 if (!target.isInvul()) {
-                                    target.setCurrentCp(0.0D);
+                                    target.setCurrentCp(0.0F);
                                 }
                             } else if (player.isHero() && target instanceof Player && ((Player) target).isCursedWeaponEquipped()) {
-                                target.setCurrentCp(0.0D);
+                                target.setCurrentCp(0.0F);
                             }
                         }
                     }
@@ -474,9 +462,7 @@ public abstract class Creature extends WorldObject {
                     if (player != null && !target.isAutoAttackable(player)) {
                         this.getAI().setIntention(IntentionType.IDLE);
                     } else {
-                        ThreadPool.schedule(() -> {
-                            this.getAI().notifyEvent(AiEventType.READY_TO_ACT);
-                        }, timeAtk);
+                        ThreadPool.schedule(() -> this.getAI().notifyEvent(AiEventType.READY_TO_ACT), timeAtk);
                     }
                 }
             }
@@ -511,7 +497,7 @@ public abstract class Creature extends WorldObject {
             this.sendPacket(new SetupGauge(GaugeColor.RED, sAtk + reuse));
         }
 
-        ThreadPool.schedule(new Creature.HitTask(target, damage1, crit1, miss1, attack.soulshot, shld1), sAtk);
+        ThreadPool.schedule(new HitTask(target, damage1, crit1, miss1, attack.soulshot, shld1), sAtk);
         this._disableBowAttackEndTime += sAtk + reuse;
         attack.hit(attack.createHit(target, damage1, miss1, crit1, shld1));
         return !miss1;
@@ -540,23 +526,21 @@ public abstract class Creature extends WorldObject {
             damage2 /= 2;
         }
 
-        ThreadPool.schedule(new Creature.HitTask(target, damage1, crit1, miss1, attack.soulshot, shld1), sAtk / 2);
-        ThreadPool.schedule(new Creature.HitTask(target, damage2, crit2, miss2, attack.soulshot, shld2), sAtk);
+        ThreadPool.schedule(new HitTask(target, damage1, crit1, miss1, attack.soulshot, shld1), sAtk / 2);
+        ThreadPool.schedule(new HitTask(target, damage2, crit2, miss2, attack.soulshot, shld2), sAtk);
         attack.hit(attack.createHit(target, damage1, miss1, crit1, shld1), attack.createHit(target, damage2, miss2, crit2, shld2));
         return !miss1 || !miss2;
     }
 
     private boolean doAttackHitByPole(Attack attack, Creature target, int sAtk) {
         int maxRadius = this.getPhysicalAttackRange();
-        int maxAngleDiff = (int) this.getStat().calcStat(Stats.POWER_ATTACK_ANGLE, 120.0D, null, null);
-        int attackRandomCountMax = (int) this.getStat().calcStat(Stats.ATTACK_COUNT_MAX, 0.0D, null, null) - 1;
+        int maxAngleDiff = (int) this.getStat().calcStat(Stats.POWER_ATTACK_ANGLE, 120.0F, null, null);
+        int attackRandomCountMax = (int) this.getStat().calcStat(Stats.ATTACK_COUNT_MAX, 0.0F, null, null) - 1;
         int attackcount = 0;
-        boolean hitted = this.doAttackHitSimple(attack, target, 100.0D, sAtk);
-        double attackpercent = 85.0D;
-        Iterator var11 = this.getKnownType(Creature.class).iterator();
+        boolean hitted = this.doAttackHitSimple(attack, target, 100.0F, sAtk);
+        double attackpercent = 85.0F;
 
-        while (var11.hasNext()) {
-            Creature obj = (Creature) var11.next();
+        for (Creature obj : this.getKnownType(Creature.class)) {
             if (obj != target && !obj.isAlikeDead()) {
                 if (this instanceof Player) {
                     if (obj instanceof Pet && ((Pet) obj).getOwner() == this) {
@@ -573,7 +557,7 @@ public abstract class Creature extends WorldObject {
                     }
 
                     hitted |= this.doAttackHitSimple(attack, obj, attackpercent, sAtk);
-                    attackpercent /= 1.15D;
+                    attackpercent /= 1.15;
                 }
             }
         }
@@ -582,7 +566,7 @@ public abstract class Creature extends WorldObject {
     }
 
     private boolean doAttackHitSimple(Attack attack, Creature target, int sAtk) {
-        return this.doAttackHitSimple(attack, target, 100.0D, sAtk);
+        return this.doAttackHitSimple(attack, target, 100.0F, sAtk);
     }
 
     private boolean doAttackHitSimple(Attack attack, Creature target, double attackpercent, int sAtk) {
@@ -594,12 +578,12 @@ public abstract class Creature extends WorldObject {
             shld1 = Formulas.calcShldUse(this, target, null);
             crit1 = Formulas.calcCrit(this.getStat().getCriticalHit(target, null));
             damage1 = (int) Formulas.calcPhysDam(this, target, null, shld1, crit1, attack.soulshot);
-            if (attackpercent != 100.0D) {
-                damage1 = (int) ((double) damage1 * attackpercent / 100.0D);
+            if (attackpercent != (double) 100.0F) {
+                damage1 = (int) ((double) damage1 * attackpercent / (double) 100.0F);
             }
         }
 
-        ThreadPool.schedule(new Creature.HitTask(target, damage1, crit1, miss1, attack.soulshot, shld1), sAtk);
+        ThreadPool.schedule(new HitTask(target, damage1, crit1, miss1, attack.soulshot, shld1), sAtk);
         attack.hit(attack.createHit(target, damage1, miss1, crit1, shld1));
         return !miss1;
     }
@@ -634,16 +618,17 @@ public abstract class Creature extends WorldObject {
             Creature target = null;
             WorldObject[] targets = skill.getTargetList(this);
             boolean doit = false;
+            Object var6;
             switch (skill.getTargetType()) {
                 case TARGET_AREA_SUMMON:
-                    target = this.getSummon();
+                    var6 = this.getSummon();
                     break;
                 case TARGET_AURA:
                 case TARGET_FRONT_AURA:
                 case TARGET_BEHIND_AURA:
                 case TARGET_AURA_UNDEAD:
                 case TARGET_GROUND:
-                    target = this;
+                    var6 = this;
                     break;
                 case TARGET_SELF:
                 case TARGET_CORPSE_ALLY:
@@ -679,11 +664,11 @@ public abstract class Creature extends WorldObject {
                         case REFLECT:
                             doit = true;
                         default:
-                            target = doit ? (Creature) targets[0] : (Creature) this.getTarget();
+                            var6 = doit ? (Creature) targets[0] : (Creature) this.getTarget();
                     }
             }
 
-            this.beginCast(skill, simultaneously, target, targets);
+            this.beginCast(skill, simultaneously, (Creature) var6, targets);
         }
     }
 
@@ -712,8 +697,8 @@ public abstract class Creature extends WorldObject {
             }
 
             if (skill.isMagic() && !effectWhileCasting && (this.isChargedShot(ShotType.SPIRITSHOT) || this.isChargedShot(ShotType.BLESSED_SPIRITSHOT))) {
-                hitTime = (int) (0.7D * (double) hitTime);
-                coolTime = (int) (0.7D * (double) coolTime);
+                hitTime = (int) (0.7 * (double) hitTime);
+                coolTime = (int) (0.7 * (double) coolTime);
             }
 
             if (skill.isStaticHitTime()) {
@@ -725,9 +710,7 @@ public abstract class Creature extends WorldObject {
 
             if (simultaneously) {
                 if (this.isCastingSimultaneouslyNow()) {
-                    ThreadPool.schedule(() -> {
-                        this.doSimultaneousCast(skill);
-                    }, 100L);
+                    ThreadPool.schedule(() -> this.doSimultaneousCast(skill), 100L);
                     return;
                 }
 
@@ -741,8 +724,8 @@ public abstract class Creature extends WorldObject {
 
             int reuseDelay = skill.getReuseDelay();
             if (!skill.isStaticReuse()) {
-                reuseDelay = (int) ((double) reuseDelay * this.calcStat(skill.isMagic() ? Stats.MAGIC_REUSE_RATE : Stats.P_REUSE, 1.0D, null, null));
-                reuseDelay = (int) ((double) reuseDelay * (333.0D / (double) (skill.isMagic() ? this.getMAtkSpd() : this.getPAtkSpd())));
+                reuseDelay = (int) ((double) reuseDelay * this.calcStat(skill.isMagic() ? Stats.MAGIC_REUSE_RATE : Stats.P_REUSE, 1.0F, null, null));
+                reuseDelay = (int) ((double) reuseDelay * ((double) 333.0F / (double) (skill.isMagic() ? this.getMAtkSpd() : this.getPAtkSpd())));
             }
 
             boolean skillMastery = Formulas.calcSkillMastery(this, skill);
@@ -825,11 +808,11 @@ public abstract class Creature extends WorldObject {
                 }
 
                 if (this instanceof Player && skill.getFlyType() != null) {
-                    ThreadPool.schedule(new Creature.FlyToLocationTask(this, target, skill), 50L);
+                    ThreadPool.schedule(new FlyToLocationTask(this, target, skill), 50L);
                 }
             }
 
-            Creature.MagicUseTask mut = new Creature.MagicUseTask(targets, skill, hitTime, coolTime, simultaneously);
+            MagicUseTask mut = new MagicUseTask(targets, skill, hitTime, coolTime, simultaneously);
             if (hitTime > 410) {
                 if (this instanceof Player && !effectWhileCasting) {
                     this.sendPacket(new SetupGauge(GaugeColor.BLUE, hitTime));
@@ -839,9 +822,8 @@ public abstract class Creature extends WorldObject {
                     mut.phase = 2;
                 }
 
-                Future future;
                 if (simultaneously) {
-                    future = this._skillCast2;
+                    Future<?> future = this._skillCast2;
                     if (future != null) {
                         future.cancel(true);
                         this._skillCast2 = null;
@@ -849,7 +831,7 @@ public abstract class Creature extends WorldObject {
 
                     this._skillCast2 = ThreadPool.schedule(mut, hitTime - 400);
                 } else {
-                    future = this._skillCast;
+                    Future<?> future = this._skillCast;
                     if (future != null) {
                         future.cancel(true);
                         this._skillCast = null;
@@ -875,30 +857,32 @@ public abstract class Creature extends WorldObject {
                 this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.NOT_ENOUGH_HP));
                 this.sendPacket(ActionFailed.STATIC_PACKET);
                 return false;
-            } else if (!skill.isPotion() && (skill.isMagic() && this.isMuted() || !skill.isMagic() && this.isPhysicalMuted())) {
-                this.sendPacket(ActionFailed.STATIC_PACKET);
-                return false;
-            } else if (!skill.getWeaponDependancy(this)) {
-                this.sendPacket(ActionFailed.STATIC_PACKET);
-                return false;
-            } else {
-                if (skill.getItemConsumeId() > 0 && this.getInventory() != null) {
-                    ItemInstance requiredItems = this.getInventory().getItemByItemId(skill.getItemConsumeId());
-                    if (requiredItems == null || requiredItems.getCount() < skill.getItemConsume()) {
-                        if (skill.getSkillType() == L2SkillType.SUMMON) {
-                            SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.SUMMONING_SERVITOR_COSTS_S2_S1);
-                            sm.addItemName(skill.getItemConsumeId());
-                            sm.addNumber(skill.getItemConsume());
-                            this.sendPacket(sm);
+            } else if (skill.isPotion() || (!skill.isMagic() || !this.isMuted()) && (skill.isMagic() || !this.isPhysicalMuted())) {
+                if (!skill.getWeaponDependancy(this)) {
+                    this.sendPacket(ActionFailed.STATIC_PACKET);
+                    return false;
+                } else {
+                    if (skill.getItemConsumeId() > 0 && this.getInventory() != null) {
+                        ItemInstance requiredItems = this.getInventory().getItemByItemId(skill.getItemConsumeId());
+                        if (requiredItems == null || requiredItems.getCount() < skill.getItemConsume()) {
+                            if (skill.getSkillType() == L2SkillType.SUMMON) {
+                                SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.SUMMONING_SERVITOR_COSTS_S2_S1);
+                                sm.addItemName(skill.getItemConsumeId());
+                                sm.addNumber(skill.getItemConsume());
+                                this.sendPacket(sm);
+                                return false;
+                            }
+
+                            this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.NUMBER_INCORRECT));
                             return false;
                         }
-
-                        this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.NUMBER_INCORRECT));
-                        return false;
                     }
-                }
 
-                return true;
+                    return true;
+                }
+            } else {
+                this.sendPacket(ActionFailed.STATIC_PACKET);
+                return false;
             }
         } else {
             this.sendPacket(ActionFailed.STATIC_PACKET);
@@ -924,7 +908,7 @@ public abstract class Creature extends WorldObject {
                 return false;
             }
 
-            this.setCurrentHp(0.0D);
+            this.setCurrentHp(0.0F);
             this.setIsDead(true);
         }
 
@@ -1183,14 +1167,11 @@ public abstract class Creature extends WorldObject {
         } else if (this instanceof Summon) {
             this.broadcastStatusUpdate();
         } else if (this instanceof Npc) {
-            Iterator var2 = this.getKnownType(Player.class).iterator();
-
-            while (var2.hasNext()) {
-                Player player = (Player) var2.next();
+            for (Player player : this.getKnownType(Player.class)) {
                 if (this.getMoveSpeed() == 0) {
                     player.sendPacket(new ServerObjectInfo((Npc) this, player));
                 } else {
-                    player.sendPacket(new NpcInfo((Npc) this, player));
+                    player.sendPacket(new AbstractNpcInfo.NpcInfo((Npc) this, player));
                 }
             }
         }
@@ -1362,9 +1343,7 @@ public abstract class Creature extends WorldObject {
             player.setRecentFakeDeath();
             this.broadcastPacket(new ChangeWaitType(this, 3));
             this.broadcastPacket(new Revive(this));
-            ThreadPool.schedule(() -> {
-                this.setIsParalyzed(false);
-            }, (int) (2000.0F / this.getStat().getMovementSpeedMultiplier()));
+            ThreadPool.schedule(() -> this.setIsParalyzed(false), (int) (2000.0F / this.getStat().getMovementSpeedMultiplier()));
             this.setIsParalyzed(true);
         }
     }
@@ -1608,11 +1587,9 @@ public abstract class Creature extends WorldObject {
     }
 
     public final void addStatFuncs(List<Func> funcs) {
-        List<Stats> modifiedStats = new ArrayList();
-        Iterator var3 = funcs.iterator();
+        List<Stats> modifiedStats = new ArrayList<>();
 
-        while (var3.hasNext()) {
-            Func f = (Func) var3.next();
+        for (Func f : funcs) {
             modifiedStats.add(f.stat);
             this.addStatFunc(f);
         }
@@ -1624,11 +1601,7 @@ public abstract class Creature extends WorldObject {
         List<Stats> modifiedStats = null;
         int i = 0;
         synchronized (this._calculators) {
-            Calculator[] var5 = this._calculators;
-            int var6 = var5.length;
-
-            for (int var7 = 0; var7 < var6; ++var7) {
-                Calculator calc = var5[var7];
+            for (Calculator calc : this._calculators) {
                 if (calc != null) {
                     if (modifiedStats != null) {
                         modifiedStats.addAll(calc.removeOwner(owner));
@@ -1659,41 +1632,30 @@ public abstract class Creature extends WorldObject {
         if (stats != null && !stats.isEmpty()) {
             boolean broadcastFull = false;
             StatusUpdate su = null;
-            Iterator var4;
             if (this instanceof Summon && ((Summon) this).getOwner() != null) {
                 ((Summon) this).updateAndBroadcastStatusAndInfos(1);
             } else {
-                var4 = stats.iterator();
-
-                label81:
-                while (true) {
-                    while (true) {
-                        if (!var4.hasNext()) {
-                            break label81;
+                for (Stats stat : stats) {
+                    if (stat == Stats.POWER_ATTACK_SPEED) {
+                        if (su == null) {
+                            su = new StatusUpdate(this);
                         }
 
-                        Stats stat = (Stats) var4.next();
-                        if (stat == Stats.POWER_ATTACK_SPEED) {
-                            if (su == null) {
-                                su = new StatusUpdate(this);
-                            }
-
-                            su.addAttribute(18, this.getPAtkSpd());
-                        } else if (stat == Stats.MAGIC_ATTACK_SPEED) {
-                            if (su == null) {
-                                su = new StatusUpdate(this);
-                            }
-
-                            su.addAttribute(24, this.getMAtkSpd());
-                        } else if (stat == Stats.MAX_HP && this instanceof Attackable) {
-                            if (su == null) {
-                                su = new StatusUpdate(this);
-                            }
-
-                            su.addAttribute(10, this.getMaxHp());
-                        } else if (stat == Stats.RUN_SPEED) {
-                            broadcastFull = true;
+                        su.addAttribute(18, this.getPAtkSpd());
+                    } else if (stat == Stats.MAGIC_ATTACK_SPEED) {
+                        if (su == null) {
+                            su = new StatusUpdate(this);
                         }
+
+                        su.addAttribute(24, this.getMAtkSpd());
+                    } else if (stat == Stats.MAX_HP && this instanceof Attackable) {
+                        if (su == null) {
+                            su = new StatusUpdate(this);
+                        }
+
+                        su.addAttribute(10, this.getMaxHp());
+                    } else if (stat == Stats.RUN_SPEED) {
+                        broadcastFull = true;
                     }
                 }
             }
@@ -1709,14 +1671,11 @@ public abstract class Creature extends WorldObject {
                 }
             } else if (this instanceof Npc) {
                 if (broadcastFull) {
-                    var4 = this.getKnownType(Player.class).iterator();
-
-                    while (var4.hasNext()) {
-                        Player player = (Player) var4.next();
+                    for (Player player : this.getKnownType(Player.class)) {
                         if (this.getMoveSpeed() == 0) {
                             player.sendPacket(new ServerObjectInfo((Npc) this, player));
                         } else {
-                            player.sendPacket(new NpcInfo((Npc) this, player));
+                            player.sendPacket(new AbstractNpcInfo.NpcInfo((Npc) this, player));
                         }
                     }
                 } else if (su != null) {
@@ -1730,17 +1689,17 @@ public abstract class Creature extends WorldObject {
     }
 
     public final int getXdestination() {
-        Creature.MoveData m = this._move;
+        MoveData m = this._move;
         return m != null ? m._xDestination : this.getX();
     }
 
     public final int getYdestination() {
-        Creature.MoveData m = this._move;
+        MoveData m = this._move;
         return m != null ? m._yDestination : this.getY();
     }
 
     public final int getZdestination() {
-        Creature.MoveData m = this._move;
+        MoveData m = this._move;
         return m != null ? m._zDestination : this.getZ();
     }
 
@@ -1753,7 +1712,7 @@ public abstract class Creature extends WorldObject {
     }
 
     public final boolean isOnGeodataPath() {
-        Creature.MoveData m = this._move;
+        MoveData m = this._move;
         if (m == null) {
             return false;
         } else if (m.onGeodataPathIndex == -1) {
@@ -1835,7 +1794,7 @@ public abstract class Creature extends WorldObject {
     }
 
     public boolean updatePosition() {
-        Creature.MoveData m = this._move;
+        MoveData m = this._move;
         if (m == null) {
             return true;
         } else if (!this.isVisible()) {
@@ -1864,7 +1823,7 @@ public abstract class Creature extends WorldObject {
                     dz = m._zDestination - geoHeight;
                     if (this instanceof Player && Math.abs(((Player) this).getClientZ() - geoHeight) > 200 && Math.abs(((Player) this).getClientZ() - geoHeight) < 1500) {
                         dz = m._zDestination - zPrev;
-                    } else if (this.isInCombat() && Math.abs(dz) > 200.0D && dx * dx + dy * dy < 40000.0D) {
+                    } else if (this.isInCombat() && Math.abs(dz) > (double) 200.0F && dx * dx + dy * dy < (double) 40000.0F) {
                         dz = m._zDestination - zPrev;
                     } else {
                         zPrev = geoHeight;
@@ -1874,29 +1833,29 @@ public abstract class Creature extends WorldObject {
                 }
 
                 double delta = dx * dx + dy * dy;
-                if (delta < 10000.0D && dz * dz > 2500.0D && !isFloating) {
+                if (delta < (double) 10000.0F && dz * dz > (double) 2500.0F && !isFloating) {
                     delta = Math.sqrt(delta);
                 } else {
                     delta = Math.sqrt(delta + dz * dz);
                 }
 
                 double distFraction = Double.MAX_VALUE;
-                if (delta > 1.0D) {
+                if (delta > (double) 1.0F) {
                     double distPassed = this.getStat().getMoveSpeed() * (float) (time - m._moveTimestamp) / 1000.0F;
                     distFraction = distPassed / delta;
                 }
 
-                if (distFraction > 1.0D) {
+                if (distFraction > (double) 1.0F) {
                     this.setXYZ(m._xDestination, m._yDestination, m._zDestination);
                 } else {
                     m._xAccurate += dx * distFraction;
                     m._yAccurate += dy * distFraction;
-                    this.setXYZ((int) m._xAccurate, (int) m._yAccurate, zPrev + (int) (dz * distFraction + 0.5D));
+                    this.setXYZ((int) m._xAccurate, (int) m._yAccurate, zPrev + (int) (dz * distFraction + (double) 0.5F));
                 }
 
                 this.revalidateZone(false);
                 m._moveTimestamp = time;
-                return distFraction > 1.0D;
+                return distFraction > (double) 1.0F;
             }
         }
     }
@@ -1954,7 +1913,7 @@ public abstract class Creature extends WorldObject {
 
     public void moveToLocation(int x, int y, int z, int offset) {
         double speed = this.getStat().getMoveSpeed();
-        if (speed > 0.0D && !this.isMovementDisabled()) {
+        if (!(speed <= (double) 0.0F) && !this.isMovementDisabled()) {
             int curX = this.getX();
             int curY = this.getY();
             int curZ = this.getZ();
@@ -1962,17 +1921,16 @@ public abstract class Creature extends WorldObject {
             double dy = y - curY;
             double dz = z - curZ;
             double distance = Math.sqrt(dx * dx + dy * dy);
-            boolean verticalMovementOnly = this.isFlying() && distance == 0.0D && dz != 0.0D;
+            boolean verticalMovementOnly = this.isFlying() && distance == (double) 0.0F && dz != (double) 0.0F;
             if (verticalMovementOnly) {
                 distance = Math.abs(dz);
             }
 
-            double cos;
-            if (this.isInsideZone(ZoneId.WATER) && distance > 700.0D) {
-                cos = 700.0D / distance;
-                x = curX + (int) (cos * dx);
-                y = curY + (int) (cos * dy);
-                z = curZ + (int) (cos * dz);
+            if (this.isInsideZone(ZoneId.WATER) && distance > (double) 700.0F) {
+                double divider = (double) 700.0F / distance;
+                x = curX + (int) (divider * dx);
+                y = curY + (int) (divider * dy);
+                z = curZ + (int) (divider * dz);
                 dx = x - curX;
                 dy = y - curY;
                 dz = z - curZ;
@@ -1980,7 +1938,8 @@ public abstract class Creature extends WorldObject {
             }
 
             double sin;
-            if (offset <= 0 && distance >= 1.0D) {
+            double cos;
+            if (offset <= 0 && !(distance < (double) 1.0F)) {
                 sin = dy / distance;
                 cos = dx / distance;
             } else {
@@ -1989,7 +1948,7 @@ public abstract class Creature extends WorldObject {
                     offset = 5;
                 }
 
-                if (distance < 1.0D || distance - (double) offset <= 0.0D) {
+                if (distance < (double) 1.0F || distance - (double) offset <= (double) 0.0F) {
                     this.getAI().notifyEvent(AiEventType.ARRIVED);
                     return;
                 }
@@ -2001,7 +1960,7 @@ public abstract class Creature extends WorldObject {
                 y = curY + (int) (distance * sin);
             }
 
-            Creature.MoveData newMd = new Creature.MoveData();
+            MoveData newMd = new MoveData();
             newMd.onGeodataPathIndex = -1;
             newMd.disregardingGeodata = false;
             if (!this.isFlying() && (!this.isInsideZone(ZoneId.WATER) || this.isInsideZone(ZoneId.SIEGE)) && !(this instanceof Walker)) {
@@ -2011,9 +1970,12 @@ public abstract class Creature extends WorldObject {
                 }
 
                 double originalDistance = distance;
+                int originalX = x;
+                int originalY = y;
+                int originalZ = z;
                 int gtx = x - -131072 >> 4;
                 int gty = y - -262144 >> 4;
-                if (!(this instanceof Attackable) || !((Attackable) this).isReturningToSpawnPoint() || this instanceof Player && (!isInBoat || distance <= 1500.0D) || this instanceof Summon && this.getAI().getDesire().getIntention() != IntentionType.FOLLOW || this.isAfraid() || this instanceof RiftInvader) {
+                if (!(this instanceof Attackable) || !((Attackable) this).isReturningToSpawnPoint() || this instanceof Player && (!isInBoat || !(distance > (double) 1500.0F)) || this instanceof Summon && this.getAI().getDesire().getIntention() != IntentionType.FOLLOW || this.isAfraid() || this instanceof RiftInvader) {
                     if (this.isOnGeodataPath()) {
                         try {
                             if (gtx == this._move.geoPathGtx && gty == this._move.geoPathGty) {
@@ -2021,7 +1983,7 @@ public abstract class Creature extends WorldObject {
                             }
 
                             this._move.onGeodataPathIndex = -1;
-                        } catch (NullPointerException var33) {
+                        } catch (NullPointerException ignored) {
                         }
                     }
 
@@ -2050,14 +2012,14 @@ public abstract class Creature extends WorldObject {
                     distance = verticalMovementOnly ? Math.abs(dz * dz) : Math.sqrt(dx * dx + dy * dy);
                 }
 
-                if (false) {
-                    newMd.geoPath = GeoEngine.getInstance().findPath(curX, curY, curZ, x, y, z, this instanceof Playable);
+                if (originalDistance - distance > (double) 30.0F && distance < (double) 2000.0F && !this.isAfraid() && (this instanceof Playable && !isInBoat || this.isMinion() || this.isInCombat())) {
+                    newMd.geoPath = GeoEngine.getInstance().findPath(curX, curY, curZ, originalX, originalY, originalZ, this instanceof Playable);
                     if (newMd.geoPath != null && newMd.geoPath.size() >= 2) {
                         newMd.onGeodataPathIndex = 0;
                         newMd.geoPathGtx = gtx;
                         newMd.geoPathGty = gty;
-                        newMd.geoPathAccurateTx = x;
-                        newMd.geoPathAccurateTy = y;
+                        newMd.geoPathAccurateTx = originalX;
+                        newMd.geoPathAccurateTy = originalY;
                         x = newMd.geoPath.get(newMd.onGeodataPathIndex).getX();
                         y = newMd.geoPath.get(newMd.onGeodataPathIndex).getY();
                         z = newMd.geoPath.get(newMd.onGeodataPathIndex).getZ();
@@ -2073,14 +2035,14 @@ public abstract class Creature extends WorldObject {
                         }
 
                         newMd.disregardingGeodata = true;
-                        x = x;
-                        y = y;
-                        z = z;
+                        x = originalX;
+                        y = originalY;
+                        z = originalZ;
                         distance = originalDistance;
                     }
                 }
 
-                if (distance < 1.0D) {
+                if (distance < (double) 1.0F) {
                     if (this instanceof Summon) {
                         ((Summon) this).setFollowStatus(false);
                     }
@@ -2112,9 +2074,9 @@ public abstract class Creature extends WorldObject {
         if (!this.isOnGeodataPath()) {
             this._move = null;
             return false;
-        } else if (this.getStat().getMoveSpeed() > 0.0F && !this.isMovementDisabled()) {
-            Creature.MoveData oldMd = this._move;
-            Creature.MoveData newMd = new Creature.MoveData();
+        } else if (!(this.getStat().getMoveSpeed() <= 0.0F) && !this.isMovementDisabled()) {
+            MoveData oldMd = this._move;
+            MoveData newMd = new MoveData();
             newMd.onGeodataPathIndex = oldMd.onGeodataPathIndex + 1;
             newMd.geoPath = oldMd.geoPath;
             newMd.geoPathGtx = oldMd.geoPathGtx;
@@ -2137,7 +2099,7 @@ public abstract class Creature extends WorldObject {
             double dx = this._move._xDestination - super.getX();
             double dy = this._move._yDestination - super.getY();
             double distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance != 0.0D) {
+            if (distance != (double) 0.0F) {
                 this.getPosition().setHeading(MathUtil.calculateHeadingFrom(dx, dy));
             }
 
@@ -2151,7 +2113,7 @@ public abstract class Creature extends WorldObject {
     }
 
     public boolean validateMovementHeading(int heading) {
-        Creature.MoveData m = this._move;
+        MoveData m = this._move;
         if (m == null) {
             return true;
         } else {
@@ -2234,10 +2196,7 @@ public abstract class Creature extends WorldObject {
     protected void onHitTimer(Creature target, int damage, boolean crit, boolean miss, boolean soulshot, byte shld) {
         if (!this.isCastingNow() && !this.cantAttack()) {
             if (target != null && !this.isAlikeDead()) {
-                if (this instanceof Npc && target.isAlikeDead() || target.isDead() || !this.getKnownType(Creature.class).contains(target) && !(this instanceof Door)) {
-                    this.getAI().notifyEvent(AiEventType.CANCEL);
-                    this.sendPacket(ActionFailed.STATIC_PACKET);
-                } else {
+                if ((!(this instanceof Npc) || !target.isAlikeDead()) && !target.isDead() && (this.getKnownType(Creature.class).contains(target) || this instanceof Door)) {
                     if (miss) {
                         if (target.hasAI()) {
                             target.getAI().notifyEvent(AiEventType.EVADED, this);
@@ -2270,15 +2229,13 @@ public abstract class Creature extends WorldObject {
 
                         boolean isBow = this.getAttackType() == WeaponType.BOW;
                         int reflectedDamage = 0;
-                        double absorbPercent;
-                        int maxCanAbsorb;
                         if (!isBow && !target.isInvul() && (!target.isRaidRelated() || this.getActingPlayer() == null || this.getActingPlayer().getLevel() <= target.getLevel() + 8)) {
-                            absorbPercent = target.getStat().calcStat(Stats.REFLECT_DAMAGE_PERCENT, 0.0D, null, null);
-                            if (absorbPercent > 0.0D) {
-                                reflectedDamage = (int) (absorbPercent / 100.0D * (double) damage);
-                                maxCanAbsorb = (int) this.getCurrentHp();
-                                if (reflectedDamage >= maxCanAbsorb) {
-                                    reflectedDamage = maxCanAbsorb - 1;
+                            double reflectPercent = target.getStat().calcStat(Stats.REFLECT_DAMAGE_PERCENT, 0.0F, null, null);
+                            if (reflectPercent > (double) 0.0F) {
+                                reflectedDamage = (int) (reflectPercent / (double) 100.0F * (double) damage);
+                                int currentHp = (int) this.getCurrentHp();
+                                if (reflectedDamage >= currentHp) {
+                                    reflectedDamage = currentHp - 1;
                                 }
                             }
                         }
@@ -2289,10 +2246,10 @@ public abstract class Creature extends WorldObject {
                         }
 
                         if (!isBow) {
-                            absorbPercent = this.getStat().calcStat(Stats.ABSORB_DAMAGE_PERCENT, 0.0D, null, null);
-                            if (absorbPercent > 0.0D) {
-                                maxCanAbsorb = (int) ((double) this.getMaxHp() - this.getCurrentHp());
-                                int absorbDamage = (int) (absorbPercent / 100.0D * (double) damage);
+                            double absorbPercent = this.getStat().calcStat(Stats.ABSORB_DAMAGE_PERCENT, 0.0F, null, null);
+                            if (absorbPercent > (double) 0.0F) {
+                                int maxCanAbsorb = (int) ((double) this.getMaxHp() - this.getCurrentHp());
+                                int absorbDamage = (int) (absorbPercent / (double) 100.0F * (double) damage);
                                 if (absorbDamage > maxCanAbsorb) {
                                     absorbDamage = maxCanAbsorb;
                                 }
@@ -2321,6 +2278,9 @@ public abstract class Creature extends WorldObject {
                         activeWeapon.getSkillEffects(this, target, crit);
                     }
 
+                } else {
+                    this.getAI().notifyEvent(AiEventType.CANCEL);
+                    this.sendPacket(ActionFailed.STATIC_PACKET);
                 }
             } else {
                 this.getAI().notifyEvent(AiEventType.CANCEL);
@@ -2410,10 +2370,12 @@ public abstract class Creature extends WorldObject {
 
     public int calculateTimeBetweenAttacks(Creature target, WeaponType weaponType) {
         switch (weaponType) {
-            case BOW:
+            case BOW -> {
                 return 517500 / this.getStat().getPAtkSpd();
-            default:
+            }
+            default -> {
                 return Formulas.calcPAtkSpd(this, target, this.getStat().getPAtkSpd());
+            }
         }
     }
 
@@ -2423,10 +2385,7 @@ public abstract class Creature extends WorldObject {
 
     public void removeChanceSkill(int id) {
         if (this._chanceSkills != null) {
-            Iterator var2 = this._chanceSkills.keySet().iterator();
-
-            while (var2.hasNext()) {
-                IChanceSkillTrigger trigger = (IChanceSkillTrigger) var2.next();
+            for (IChanceSkillTrigger trigger : this._chanceSkills.keySet()) {
                 if (trigger instanceof L2Skill && ((L2Skill) trigger).getId() == id) {
                     this._chanceSkills.remove(trigger);
                 }
@@ -2492,7 +2451,7 @@ public abstract class Creature extends WorldObject {
         return this._effects.getDanceCount();
     }
 
-    public void onMagicLaunchedTimer(Creature.MagicUseTask mut) {
+    public void onMagicLaunchedTimer(MagicUseTask mut) {
         L2Skill skill = mut.skill;
         WorldObject[] targets = mut.targets;
         if (skill != null && targets != null) {
@@ -2520,12 +2479,9 @@ public abstract class Creature extends WorldObject {
                 int _skiprange = 0;
                 int _skipgeo = 0;
                 int _skippeace = 0;
-                List<Creature> targetList = new ArrayList(targets.length);
-                WorldObject[] var9 = targets;
-                int var10 = targets.length;
+                List<Creature> targetList = new ArrayList<>(targets.length);
 
-                for (int var11 = 0; var11 < var10; ++var11) {
-                    WorldObject target = var9[var11];
+                for (WorldObject target : targets) {
                     if (target instanceof Creature) {
                         if (!MathUtil.checkIfInRange(escapeRange, this, target, true)) {
                             ++_skiprange;
@@ -2557,9 +2513,7 @@ public abstract class Creature extends WorldObject {
                 mut.targets = targetList.toArray(new Creature[targetList.size()]);
             }
 
-            if (mut.simultaneously && !this.isCastingSimultaneouslyNow() || !mut.simultaneously && !this.isCastingNow() || this.isAlikeDead() && !skill.isPotion()) {
-                this.getAI().notifyEvent(AiEventType.CANCEL);
-            } else {
+            if ((!mut.simultaneously || this.isCastingSimultaneouslyNow()) && (mut.simultaneously || this.isCastingNow()) && (!this.isAlikeDead() || skill.isPotion())) {
                 mut.phase = 2;
                 if (mut.hitTime == 0) {
                     this.onMagicHitTimer(mut);
@@ -2567,13 +2521,15 @@ public abstract class Creature extends WorldObject {
                     this._skillCast = ThreadPool.schedule(mut, 400L);
                 }
 
+            } else {
+                this.getAI().notifyEvent(AiEventType.CANCEL);
             }
         } else {
             this.abortCast();
         }
     }
 
-    public void onMagicHitTimer(Creature.MagicUseTask mut) {
+    public void onMagicHitTimer(MagicUseTask mut) {
         L2Skill skill = mut.skill;
         WorldObject[] targets = mut.targets;
         if (skill != null && targets != null) {
@@ -2602,11 +2558,7 @@ public abstract class Creature extends WorldObject {
                     mog.exit();
                     this.notifyQuestEventSkillFinished(skill, targets[0]);
                 } else {
-                    WorldObject[] var5 = targets;
-                    int var6 = targets.length;
-
-                    for (int var7 = 0; var7 < var6; ++var7) {
-                        WorldObject tgt = var5[var7];
+                    for (WorldObject tgt : targets) {
                         if (tgt instanceof Playable) {
                             if (skill.getSkillType() == L2SkillType.BUFF || skill.getSkillType() == L2SkillType.FUSION || skill.getSkillType() == L2SkillType.SEED) {
                                 ((Creature) tgt).sendPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT).addSkillName(skill));
@@ -2621,7 +2573,7 @@ public abstract class Creature extends WorldObject {
                     StatusUpdate su = new StatusUpdate(this);
                     boolean isSendStatus = false;
                     double mpConsume = this.getStat().getMpConsume(skill);
-                    if (mpConsume > 0.0D) {
+                    if (mpConsume > (double) 0.0F) {
                         if (mpConsume > this.getCurrentMp()) {
                             this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.NOT_ENOUGH_MP));
                             this.abortCast();
@@ -2634,7 +2586,7 @@ public abstract class Creature extends WorldObject {
                     }
 
                     double hpConsume = skill.getHpConsume();
-                    if (hpConsume > 0.0D) {
+                    if (hpConsume > (double) 0.0F) {
                         if (hpConsume > this.getCurrentHp()) {
                             this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.NOT_ENOUGH_HP));
                             this.abortCast();
@@ -2688,7 +2640,7 @@ public abstract class Creature extends WorldObject {
         }
     }
 
-    public void onMagicFinalizer(Creature.MagicUseTask mut) {
+    public void onMagicFinalizer(MagicUseTask mut) {
         if (mut.simultaneously) {
             this._skillCast2 = null;
             this.setIsCastingSimultaneouslyNow(false);
@@ -2716,7 +2668,7 @@ public abstract class Creature extends WorldObject {
                     player.setCurrentSkill(null, false, false);
                     SkillUseHolder queuedSkill = player.getQueuedSkill();
                     if (queuedSkill.getSkill() != null) {
-                        ThreadPool.execute(new Creature.QueuedMagicUseTask(player, queuedSkill.getSkill(), queuedSkill.isCtrlPressed(), queuedSkill.isShiftPressed()));
+                        ThreadPool.execute(new QueuedMagicUseTask(player, queuedSkill.getSkill(), queuedSkill.isCtrlPressed(), queuedSkill.isShiftPressed()));
                         player.setQueuedSkill(null, false, false);
                     }
                 } else {
@@ -2779,131 +2731,7 @@ public abstract class Creature extends WorldObject {
                 return;
             }
 
-            WorldObject[] var3 = targets;
-            int var4 = targets.length;
-            int var5 = 0;
-
-            while (true) {
-                if (var5 >= var4) {
-                    ISkillHandler handler = SkillHandler.getInstance().getHandler(skill.getSkillType());
-                    if (handler != null) {
-                        handler.useSkill(this, skill, targets);
-                    } else {
-                        skill.useSkill(this, targets);
-                    }
-
-                    Player player = this.getActingPlayer();
-                    WorldObject[] var13;
-                    int var15;
-                    int var17;
-                    WorldObject target;
-                    if (player != null) {
-                        var13 = targets;
-                        var15 = targets.length;
-                        var17 = 0;
-
-                        label193:
-                        while (true) {
-                            if (var17 >= var15) {
-                                Iterator var14 = player.getKnownTypeInRadius(Npc.class, 1000).iterator();
-
-                                while (true) {
-                                    Npc npcMob;
-                                    List scripts;
-                                    do {
-                                        if (!var14.hasNext()) {
-                                            break label193;
-                                        }
-
-                                        npcMob = (Npc) var14.next();
-                                        scripts = npcMob.getTemplate().getEventQuests(ScriptEventType.ON_SKILL_SEE);
-                                    } while (scripts == null);
-
-                                    Iterator var21 = scripts.iterator();
-
-                                    while (var21.hasNext()) {
-                                        Quest quest = (Quest) var21.next();
-                                        quest.notifySkillSee(npcMob, player, skill, targets, this instanceof Summon);
-                                    }
-                                }
-                            }
-
-                            target = var13[var17];
-                            if (target instanceof Creature) {
-                                if (skill.isOffensive()) {
-                                    if (target instanceof Playable) {
-                                        if (skill.getSkillType() != L2SkillType.SIGNET && skill.getSkillType() != L2SkillType.SIGNET_CASTTIME) {
-                                            ((Creature) target).getAI().startAttackStance();
-                                            if (player.getSummon() != target) {
-                                                player.updatePvPStatus((Creature) target);
-                                            }
-                                        }
-                                    } else if (target instanceof Attackable && skill.getId() != 51) {
-                                        ((Attackable) target).addAttacker(this);
-                                    }
-
-                                    if (((Creature) target).hasAI()) {
-                                        switch (skill.getSkillType()) {
-                                            case AGGREDUCE:
-                                            case AGGREDUCE_CHAR:
-                                            case AGGREMOVE:
-                                                break;
-                                            default:
-                                                ((Creature) target).getAI().notifyEvent(AiEventType.ATTACKED, this);
-                                        }
-                                    }
-                                } else if (target instanceof Player) {
-                                    if (!target.equals(this) && !target.equals(player) && (((Player) target).getPvpFlag() > 0 || ((Player) target).getKarma() > 0)) {
-                                        player.updatePvPStatus();
-                                    }
-                                } else if (target instanceof Attackable && !((Attackable) target).isGuard()) {
-                                    switch (skill.getSkillType()) {
-                                        case SUMMON:
-                                        case BEAST_FEED:
-                                        case UNLOCK:
-                                        case UNLOCK_SPECIAL:
-                                        case DELUXE_KEY_UNLOCK:
-                                            break;
-                                        default:
-                                            player.updatePvPStatus();
-                                    }
-                                }
-
-                                switch (skill.getTargetType()) {
-                                    case TARGET_CORPSE_MOB:
-                                    case TARGET_AREA_CORPSE_MOB:
-                                        if (((Creature) target).isDead()) {
-                                            ((Npc) target).endDecayTask();
-                                        }
-                                }
-                            }
-
-                            ++var17;
-                        }
-                    }
-
-                    if (skill.isOffensive()) {
-                        switch (skill.getSkillType()) {
-                            case AGGREDUCE:
-                            case AGGREDUCE_CHAR:
-                            case AGGREMOVE:
-                                return;
-                            default:
-                                var13 = targets;
-                                var15 = targets.length;
-
-                                for (var17 = 0; var17 < var15; ++var17) {
-                                    target = var13[var17];
-                                    if (target instanceof Creature && ((Creature) target).hasAI()) {
-                                        ((Creature) target).getAI().notifyEvent(AiEventType.ATTACKED, this);
-                                    }
-                                }
-                        }
-                    }
-                    break;
-                }
-
-                WorldObject trg = var3[var5];
+            for (WorldObject trg : targets) {
                 if (trg instanceof Creature target) {
                     if (this instanceof Playable) {
                         if (!Config.RAID_DISABLE_CURSE) {
@@ -2949,11 +2777,94 @@ public abstract class Creature extends WorldObject {
                             }
                     }
                 }
-
-                ++var5;
             }
-        } catch (Exception var10) {
-            LOGGER.error("Couldn't call skill {}.", var10, skill == null ? "not found" : skill.getId());
+
+            ISkillHandler handler = SkillHandler.getInstance().getHandler(skill.getSkillType());
+            if (handler != null) {
+                handler.useSkill(this, skill, targets);
+            } else {
+                skill.useSkill(this, targets);
+            }
+
+            Player player = this.getActingPlayer();
+            if (player != null) {
+                for (WorldObject target : targets) {
+                    if (target instanceof Creature) {
+                        if (skill.isOffensive()) {
+                            if (target instanceof Playable) {
+                                if (skill.getSkillType() != L2SkillType.SIGNET && skill.getSkillType() != L2SkillType.SIGNET_CASTTIME) {
+                                    ((Creature) target).getAI().startAttackStance();
+                                    if (player.getSummon() != target) {
+                                        player.updatePvPStatus((Creature) target);
+                                    }
+                                }
+                            } else if (target instanceof Attackable && skill.getId() != 51) {
+                                ((Attackable) target).addAttacker(this);
+                            }
+
+                            if (((Creature) target).hasAI()) {
+                                switch (skill.getSkillType()) {
+                                    case AGGREDUCE:
+                                    case AGGREDUCE_CHAR:
+                                    case AGGREMOVE:
+                                        break;
+                                    default:
+                                        ((Creature) target).getAI().notifyEvent(AiEventType.ATTACKED, this);
+                                }
+                            }
+                        } else if (target instanceof Player) {
+                            if (!target.equals(this) && !target.equals(player) && (((Player) target).getPvpFlag() > 0 || ((Player) target).getKarma() > 0)) {
+                                player.updatePvPStatus();
+                            }
+                        } else if (target instanceof Attackable && !((Attackable) target).isGuard()) {
+                            switch (skill.getSkillType()) {
+                                case SUMMON:
+                                case BEAST_FEED:
+                                case UNLOCK:
+                                case UNLOCK_SPECIAL:
+                                case DELUXE_KEY_UNLOCK:
+                                    break;
+                                default:
+                                    player.updatePvPStatus();
+                            }
+                        }
+
+                        switch (skill.getTargetType()) {
+                            case TARGET_CORPSE_MOB:
+                            case TARGET_AREA_CORPSE_MOB:
+                                if (((Creature) target).isDead()) {
+                                    ((Npc) target).endDecayTask();
+                                }
+                        }
+                    }
+                }
+
+                for (Npc npcMob : player.getKnownTypeInRadius(Npc.class, 1000)) {
+                    List<Quest> scripts = npcMob.getTemplate().getEventQuests(ScriptEventType.ON_SKILL_SEE);
+                    if (scripts != null) {
+                        for (Quest quest : scripts) {
+                            quest.notifySkillSee(npcMob, player, skill, targets, this instanceof Summon);
+                        }
+                    }
+                }
+            }
+
+            if (skill.isOffensive()) {
+                switch (skill.getSkillType()) {
+                    case AGGREDUCE:
+                    case AGGREDUCE_CHAR:
+                    case AGGREMOVE:
+                        return;
+                    default:
+                        for (WorldObject target : targets) {
+                            if (target instanceof Creature && ((Creature) target).hasAI()) {
+                                ((Creature) target).getAI().notifyEvent(AiEventType.ATTACKED, this);
+                            }
+                        }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Couldn't call skill {}.", e, skill == null ? "not found" : skill.getId());
         }
 
     }
@@ -2962,44 +2873,44 @@ public abstract class Creature extends WorldObject {
         if (target == null) {
             return false;
         } else {
-            double maxAngleDiff = 60.0D;
+            double maxAngleDiff = 60.0F;
             double angleChar = MathUtil.calculateAngleFrom(this, target);
             double angleTarget = MathUtil.convertHeadingToDegree(target.getHeading());
             double angleDiff = angleChar - angleTarget;
-            if (angleDiff <= -300.0D) {
-                angleDiff += 360.0D;
+            if (angleDiff <= (double) -300.0F) {
+                angleDiff += 360.0F;
             }
 
-            if (angleDiff >= 300.0D) {
-                angleDiff -= 360.0D;
+            if (angleDiff >= (double) 300.0F) {
+                angleDiff -= 360.0F;
             }
 
-            return Math.abs(angleDiff) <= 60.0D;
+            return Math.abs(angleDiff) <= (double) 60.0F;
         }
     }
 
     public boolean isBehindTarget() {
         WorldObject target = this.getTarget();
-        return target instanceof Creature && this.isBehind((Creature) target);
+        return target instanceof Creature ? this.isBehind((Creature) target) : false;
     }
 
     public boolean isInFrontOf(Creature target) {
         if (target == null) {
             return false;
         } else {
-            double maxAngleDiff = 60.0D;
+            double maxAngleDiff = 60.0F;
             double angleTarget = MathUtil.calculateAngleFrom(target, this);
             double angleChar = MathUtil.convertHeadingToDegree(target.getHeading());
             double angleDiff = angleChar - angleTarget;
-            if (angleDiff <= -300.0D) {
-                angleDiff += 360.0D;
+            if (angleDiff <= (double) -300.0F) {
+                angleDiff += 360.0F;
             }
 
-            if (angleDiff >= 300.0D) {
-                angleDiff -= 360.0D;
+            if (angleDiff >= (double) 300.0F) {
+                angleDiff -= 360.0F;
             }
 
-            return Math.abs(angleDiff) <= 60.0D;
+            return Math.abs(angleDiff) <= (double) 60.0F;
         }
     }
 
@@ -3011,12 +2922,12 @@ public abstract class Creature extends WorldObject {
             double angleTarget = MathUtil.calculateAngleFrom(this, target);
             double angleChar = MathUtil.convertHeadingToDegree(this.getHeading());
             double angleDiff = angleChar - angleTarget;
-            if (angleDiff <= -360.0D + maxAngleDiff) {
-                angleDiff += 360.0D;
+            if (angleDiff <= (double) -360.0F + maxAngleDiff) {
+                angleDiff += 360.0F;
             }
 
-            if (angleDiff >= 360.0D - maxAngleDiff) {
-                angleDiff -= 360.0D;
+            if (angleDiff >= (double) 360.0F - maxAngleDiff) {
+                angleDiff -= 360.0F;
             }
 
             return Math.abs(angleDiff) <= maxAngleDiff;
@@ -3025,11 +2936,11 @@ public abstract class Creature extends WorldObject {
 
     public boolean isInFrontOfTarget() {
         WorldObject target = this.getTarget();
-        return target instanceof Creature && this.isInFrontOf((Creature) target);
+        return target instanceof Creature ? this.isInFrontOf((Creature) target) : false;
     }
 
     public double getLevelMod() {
-        return (89.0D + (double) this.getLevel()) / 100.0D;
+        return ((double) 89.0F + (double) this.getLevel()) / (double) 100.0F;
     }
 
     public final void setSkillCast(Future<?> newSkillCast) {
@@ -3306,7 +3217,7 @@ public abstract class Creature extends WorldObject {
             random = 5 + (int) Math.sqrt(this.getLevel());
         }
 
-        return 1.0D + (double) Rnd.get(-random, random) / 100.0D;
+        return (double) 1.0F + (double) Rnd.get(0 - random, random) / (double) 100.0F;
     }
 
     public void disableCoreAI(boolean val) {
@@ -3442,6 +3353,29 @@ public abstract class Creature extends WorldObject {
         this._isStopMov = value;
     }
 
+    private static class QueuedMagicUseTask implements Runnable {
+        private final Player _player;
+        private final L2Skill _skill;
+        private final boolean _isCtrlPressed;
+        private final boolean _isShiftPressed;
+
+        public QueuedMagicUseTask(Player player, L2Skill skill, boolean isCtrlPressed, boolean isShiftPressed) {
+            this._player = player;
+            this._skill = skill;
+            this._isCtrlPressed = isCtrlPressed;
+            this._isShiftPressed = isShiftPressed;
+        }
+
+        public void run() {
+            try {
+                this._player.useMagic(this._skill, this._isCtrlPressed, this._isShiftPressed);
+            } catch (Exception e) {
+                WorldObject.LOGGER.error("Couldn't process magic use for {}, skillId {}.", e, this._player == null ? "noname" : this._player.getName(), this._skill == null ? "not found" : this._skill.getId());
+            }
+
+        }
+    }
+
     public static class MoveData {
         public long _moveStartTime;
         public long _moveTimestamp;
@@ -3459,19 +3393,6 @@ public abstract class Creature extends WorldObject {
         public int geoPathAccurateTy;
         public int geoPathGtx;
         public int geoPathGty;
-    }
-
-    private record QueuedMagicUseTask(Player _player, L2Skill _skill, boolean _isCtrlPressed,
-                                      boolean _isShiftPressed) implements Runnable {
-
-        public void run() {
-            try {
-                this._player.useMagic(this._skill, this._isCtrlPressed, this._isShiftPressed);
-            } catch (Exception var2) {
-                WorldObject.LOGGER.error("Couldn't process magic use for {}, skillId {}.", var2, this._player == null ? "noname" : this._player.getName(), this._skill == null ? "not found" : this._skill.getId());
-            }
-
-        }
     }
 
     class HitTask implements Runnable {
@@ -3496,23 +3417,6 @@ public abstract class Creature extends WorldObject {
         }
     }
 
-    private class FlyToLocationTask implements Runnable {
-        private final WorldObject _tgt;
-        private final Creature _actor;
-        private final L2Skill _skill;
-
-        public FlyToLocationTask(Creature actor, WorldObject target, L2Skill skill) {
-            this._actor = actor;
-            this._tgt = target;
-            this._skill = skill;
-        }
-
-        public void run() {
-            Creature.this.broadcastPacket(new FlyToLocation(this._actor, this._tgt, FlyType.valueOf(this._skill.getFlyType())));
-            Creature.this.setXYZ(this._tgt.getX(), this._tgt.getY(), this._tgt.getZ());
-        }
-    }
-
     class MagicUseTask implements Runnable {
         WorldObject[] targets;
         L2Skill skill;
@@ -3533,17 +3437,12 @@ public abstract class Creature extends WorldObject {
         public void run() {
             try {
                 switch (this.phase) {
-                    case 1:
-                        Creature.this.onMagicLaunchedTimer(this);
-                        break;
-                    case 2:
-                        Creature.this.onMagicHitTimer(this);
-                        break;
-                    case 3:
-                        Creature.this.onMagicFinalizer(this);
+                    case 1 -> Creature.this.onMagicLaunchedTimer(this);
+                    case 2 -> Creature.this.onMagicHitTimer(this);
+                    case 3 -> Creature.this.onMagicFinalizer(this);
                 }
-            } catch (Exception var2) {
-                WorldObject.LOGGER.error("Failed executing MagicUseTask on phase {} for skill {}.", var2, this.phase, this.skill == null ? "not found" : this.skill.getName());
+            } catch (Exception e) {
+                WorldObject.LOGGER.error("Failed executing MagicUseTask on phase {} for skill {}.", e, this.phase, this.skill == null ? "not found" : this.skill.getName());
                 if (this.simultaneously) {
                     Creature.this.setIsCastingSimultaneouslyNow(false);
                 } else {
@@ -3551,6 +3450,23 @@ public abstract class Creature extends WorldObject {
                 }
             }
 
+        }
+    }
+
+    private class FlyToLocationTask implements Runnable {
+        private final WorldObject _tgt;
+        private final Creature _actor;
+        private final L2Skill _skill;
+
+        public FlyToLocationTask(Creature actor, WorldObject target, L2Skill skill) {
+            this._actor = actor;
+            this._tgt = target;
+            this._skill = skill;
+        }
+
+        public void run() {
+            Creature.this.broadcastPacket(new FlyToLocation(this._actor, this._tgt, FlyType.valueOf(this._skill.getFlyType())));
+            Creature.this.setXYZ(this._tgt.getX(), this._tgt.getY(), this._tgt.getZ());
         }
     }
 }

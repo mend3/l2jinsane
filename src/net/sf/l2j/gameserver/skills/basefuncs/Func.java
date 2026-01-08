@@ -6,13 +6,9 @@ import net.sf.l2j.gameserver.skills.conditions.Condition;
 
 public abstract class Func {
     public final Stats stat;
-
     public final int order;
-
     public final Object funcOwner;
-
     public Condition cond;
-
     public Lambda _lambda;
 
     public Func(Stats pStat, int pOrder, Object owner, Lambda lambda) {
@@ -26,5 +22,5 @@ public abstract class Func {
         this.cond = pCond;
     }
 
-    public abstract void calc(Env paramEnv);
+    public abstract void calc(Env var1);
 }

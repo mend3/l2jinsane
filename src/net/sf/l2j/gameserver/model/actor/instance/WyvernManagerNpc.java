@@ -16,44 +16,50 @@ public class WyvernManagerNpc extends CastleChamberlain {
     }
 
     public void onBypassFeedback(Player player, String command) {
-        if (player.getCurrentFolk() == null || player.getCurrentFolk().getObjectId() != getObjectId())
-            return;
-        if (command.startsWith("RideWyvern")) {
-            String val = "2";
-            if (player.isClanLeader())
-                if (SevenSignsManager.getInstance().getSealOwner(SealType.STRIFE) == CabalType.DUSK) {
-                    val = "3";
-                } else if (player.isMounted() && (player.getMountNpcId() == 12526 || player.getMountNpcId() == 12527 || player.getMountNpcId() == 12528)) {
-                    if (player.getMountLevel() < Config.WYVERN_REQUIRED_LEVEL) {
-                        val = "6";
-                    } else if (player.destroyItemByItemId("Wyvern", 1460, Config.WYVERN_REQUIRED_CRYSTALS, player, true)) {
-                        player.dismount();
-                        if (player.mount(12621, 0))
-                            val = "4";
+        if (player.getCurrentFolk() != null && player.getCurrentFolk().getObjectId() == this.getObjectId()) {
+            if (command.startsWith("RideWyvern")) {
+                String val = "2";
+                if (player.isClanLeader()) {
+                    if (SevenSignsManager.getInstance().getSealOwner(SealType.STRIFE) == CabalType.DUSK) {
+                        val = "3";
+                    } else if (player.isMounted() && (player.getMountNpcId() == 12526 || player.getMountNpcId() == 12527 || player.getMountNpcId() == 12528)) {
+                        if (player.getMountLevel() < Config.WYVERN_REQUIRED_LEVEL) {
+                            val = "6";
+                        } else if (player.destroyItemByItemId("Wyvern", 1460, Config.WYVERN_REQUIRED_CRYSTALS, player, true)) {
+                            player.dismount();
+                            if (player.mount(12621, 0)) {
+                                val = "4";
+                            }
+                        } else {
+                            val = "5";
+                        }
                     } else {
-                        val = "5";
+                        player.sendPacket(SystemMessageId.YOU_MAY_ONLY_RIDE_WYVERN_WHILE_RIDING_STRIDER);
+                        val = "1";
                     }
-                } else {
-                    player.sendPacket(SystemMessageId.YOU_MAY_ONLY_RIDE_WYVERN_WHILE_RIDING_STRIDER);
-                    val = "1";
                 }
-            sendHtm(player, val);
-        } else if (command.startsWith("Chat")) {
-            String val = "1";
-            try {
-                val = command.substring(5);
-            } catch (IndexOutOfBoundsException indexOutOfBoundsException) {
+
+                this.sendHtm(player, val);
+            } else if (command.startsWith("Chat")) {
+                String val = "1";
+
+                try {
+                    val = command.substring(5);
+                } catch (IndexOutOfBoundsException ignored) {
+                }
+
+                this.sendHtm(player, val);
+            } else {
+                super.onBypassFeedback(player, command);
             }
-            sendHtm(player, val);
-        } else {
-            super.onBypassFeedback(player, command);
+
         }
     }
 
     public void showChatWindow(Player player) {
         String val = "0a";
-        int condition = validateCondition(player);
-        if (condition > 0)
+        int condition = this.validateCondition(player);
+        if (condition > 0) {
             if (condition == 2) {
                 if (player.isFlying()) {
                     val = "4";
@@ -63,14 +69,16 @@ public class WyvernManagerNpc extends CastleChamberlain {
             } else if (condition == 3) {
                 val = "2";
             }
-        sendHtm(player, val);
+        }
+
+        this.sendHtm(player, val);
     }
 
     private void sendHtm(Player player, String val) {
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile("data/html/wyvernmanager/wyvernmanager-" + val + ".htm");
-        html.replace("%objectId%", getObjectId());
-        html.replace("%npcname%", getName());
+        html.replace("%objectId%", this.getObjectId());
+        html.replace("%npcname%", this.getName());
         html.replace("%wyvern_level%", Config.WYVERN_REQUIRED_LEVEL);
         html.replace("%needed_crystals%", Config.WYVERN_REQUIRED_CRYSTALS);
         player.sendPacket(html);

@@ -12,15 +12,21 @@ public final class LambdaStats extends Lambda {
 
     public double calc(Env env) {
         switch (this._stat) {
-            case PLAYER_LEVEL:
-                return (env.getCharacter() == null) ? 1.0D : env.getCharacter().getLevel();
-            case TARGET_LEVEL:
-                return (env.getTarget() == null) ? 1.0D : env.getTarget().getLevel();
-            case PLAYER_MAX_HP:
-                return (env.getCharacter() == null) ? 1.0D : env.getCharacter().getMaxHp();
-            case PLAYER_MAX_MP:
-                return (env.getCharacter() == null) ? 1.0D : env.getCharacter().getMaxMp();
+            case PLAYER_LEVEL -> {
+                return env.getCharacter() == null ? (double)1.0F : (double)env.getCharacter().getLevel();
+            }
+            case TARGET_LEVEL -> {
+                return env.getTarget() == null ? (double)1.0F : (double)env.getTarget().getLevel();
+            }
+            case PLAYER_MAX_HP -> {
+                return env.getCharacter() == null ? (double)1.0F : (double)env.getCharacter().getMaxHp();
+            }
+            case PLAYER_MAX_MP -> {
+                return env.getCharacter() == null ? (double)1.0F : (double)env.getCharacter().getMaxMp();
+            }
+            default -> {
+                return (double)0.0F;
+            }
         }
-        return 0.0D;
     }
 }

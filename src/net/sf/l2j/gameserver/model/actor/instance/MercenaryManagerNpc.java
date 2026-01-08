@@ -13,9 +13,7 @@ import java.util.StringTokenizer;
 
 public final class MercenaryManagerNpc extends Folk {
     private static final int COND_ALL_FALSE = 0;
-
     private static final int COND_BUSY_BECAUSE_OF_SIEGE = 1;
-
     private static final int COND_OWNER = 2;
 
     public MercenaryManagerNpc(int objectId, NpcTemplate template) {
@@ -23,76 +21,82 @@ public final class MercenaryManagerNpc extends Folk {
     }
 
     public void onBypassFeedback(Player player, String command) {
-        int condition = validateCondition(player);
-        if (condition < 2)
-            return;
-        if (command.startsWith("back")) {
-            showChatWindow(player);
-        } else if (command.startsWith("how_to")) {
-            NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-            html.setFile("data/html/mercmanager/mseller005.htm");
-            html.replace("%objectId%", getObjectId());
-            player.sendPacket(html);
-        } else if (command.startsWith("hire")) {
-            if (!SevenSignsManager.getInstance().isSealValidationPeriod()) {
-                NpcHtmlMessage npcHtmlMessage = new NpcHtmlMessage(getObjectId());
-                npcHtmlMessage.setFile("data/html/mercmanager/msellerdenial.htm");
-                npcHtmlMessage.replace("%objectId%", getObjectId());
-                player.sendPacket(npcHtmlMessage);
-                return;
+        int condition = this.validateCondition(player);
+        if (condition >= 2) {
+            if (command.startsWith("back")) {
+                this.showChatWindow(player);
+            } else if (command.startsWith("how_to")) {
+                NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                html.setFile("data/html/mercmanager/mseller005.htm");
+                html.replace("%objectId%", this.getObjectId());
+                player.sendPacket(html);
+            } else if (command.startsWith("hire")) {
+                if (!SevenSignsManager.getInstance().isSealValidationPeriod()) {
+                    NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                    html.setFile("data/html/mercmanager/msellerdenial.htm");
+                    html.replace("%objectId%", this.getObjectId());
+                    player.sendPacket(html);
+                    return;
+                }
+
+                StringTokenizer st = new StringTokenizer(command, " ");
+                st.nextToken();
+                BuyListManager var10000 = BuyListManager.getInstance();
+                int var10001 = this.getNpcId();
+                NpcBuyList buyList = var10000.getBuyList(Integer.parseInt(var10001 + st.nextToken()));
+                if (buyList == null || !buyList.isNpcAllowed(this.getNpcId())) {
+                    return;
+                }
+
+                player.tempInventoryDisable();
+                player.sendPacket(new BuyList(buyList, player.getAdena(), 0.0F));
+                NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                html.setFile("data/html/mercmanager/mseller004.htm");
+                player.sendPacket(html);
+            } else if (command.startsWith("merc_limit")) {
+                NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                int var10 = this.getCastle().getCastleId();
+                html.setFile("data/html/mercmanager/" + (var10 == 5 ? "aden_msellerLimit.htm" : "msellerLimit.htm"));
+                html.replace("%castleName%", this.getCastle().getName());
+                html.replace("%objectId%", this.getObjectId());
+                player.sendPacket(html);
+            } else {
+                super.onBypassFeedback(player, command);
             }
-            StringTokenizer st = new StringTokenizer(command, " ");
-            st.nextToken();
-            NpcBuyList buyList = BuyListManager.getInstance().getBuyList(Integer.parseInt("" + getNpcId() + getNpcId()));
-            if (buyList == null || !buyList.isNpcAllowed(getNpcId()))
-                return;
-            player.tempInventoryDisable();
-            player.sendPacket(new BuyList(buyList, player.getAdena(), 0.0D));
-            NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-            html.setFile("data/html/mercmanager/mseller004.htm");
-            player.sendPacket(html);
-        } else if (command.startsWith("merc_limit")) {
-            NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-            html.setFile("data/html/mercmanager/" + ((getCastle().getCastleId() == 5) ? "aden_msellerLimit.htm" : "msellerLimit.htm"));
-            html.replace("%castleName%", getCastle().getName());
-            html.replace("%objectId%", getObjectId());
-            player.sendPacket(html);
-        } else {
-            super.onBypassFeedback(player, command);
+
         }
     }
 
     public void showChatWindow(Player player) {
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-        int condition = validateCondition(player);
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+        int condition = this.validateCondition(player);
         if (condition == 0) {
             html.setFile("data/html/mercmanager/mseller002.htm");
         } else if (condition == 1) {
             html.setFile("data/html/mercmanager/mseller003.htm");
         } else if (condition == 2) {
             switch (SevenSignsManager.getInstance().getSealOwner(SealType.STRIFE)) {
-                case DAWN:
-                    html.setFile("data/html/mercmanager/mseller001_dawn.htm");
-                    break;
-                case DUSK:
-                    html.setFile("data/html/mercmanager/mseller001_dusk.htm");
-                    break;
-                default:
-                    html.setFile("data/html/mercmanager/mseller001.htm");
-                    break;
+                case DAWN -> html.setFile("data/html/mercmanager/mseller001_dawn.htm");
+                case DUSK -> html.setFile("data/html/mercmanager/mseller001_dusk.htm");
+                default -> html.setFile("data/html/mercmanager/mseller001.htm");
             }
         }
-        html.replace("%objectId%", getObjectId());
+
+        html.replace("%objectId%", this.getObjectId());
         player.sendPacket(html);
     }
 
     private int validateCondition(Player player) {
-        if (getCastle() != null && player.getClan() != null) {
-            if (getCastle().getSiege().isInProgress())
+        if (this.getCastle() != null && player.getClan() != null) {
+            if (this.getCastle().getSiege().isInProgress()) {
                 return 1;
-            if (getCastle().getOwnerId() == player.getClanId() && (player.getClanPrivileges() & 0x200000) == 2097152)
+            }
+
+            if (this.getCastle().getOwnerId() == player.getClanId() && (player.getClanPrivileges() & 2097152) == 2097152) {
                 return 2;
+            }
         }
+
         return 0;
     }
 }

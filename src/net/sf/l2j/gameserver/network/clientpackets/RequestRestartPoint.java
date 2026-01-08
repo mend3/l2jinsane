@@ -11,36 +11,33 @@ import net.sf.l2j.gameserver.model.clanhall.ClanHall;
 import net.sf.l2j.gameserver.model.clanhall.ClanHallFunction;
 import net.sf.l2j.gameserver.model.entity.Siege;
 import net.sf.l2j.gameserver.model.location.Location;
-import net.sf.l2j.gameserver.model.location.SpawnLocation;
 import net.sf.l2j.gameserver.model.pledge.Clan;
 
 public final class RequestRestartPoint extends L2GameClientPacket {
-    private static final Location JAIL_LOCATION = new Location(-114356, -249645, -2984);
-
-    private int _requestType;
+    protected static final Location JAIL_LOCATION = new Location(-114356, -249645, -2984);
+    protected int _requestType;
 
     protected void readImpl() {
-        this._requestType = readD();
+        this._requestType = this.readD();
     }
 
     protected void runImpl() {
-        Player player = getClient().getPlayer();
-        if (player == null)
-            return;
-        if (player.isFakeDeath()) {
-            player.stopFakeDeath(true);
-            return;
-        }
-        if (!player.isDead())
-            return;
-        if (player.getClan() != null) {
-            Siege siege = CastleManager.getInstance().getActiveSiege(player);
-            if (siege != null && siege.checkSide(player.getClan(), SiegeSide.ATTACKER)) {
-                ThreadPool.schedule(() -> portPlayer(player), Config.ATTACKERS_RESPAWN_DELAY);
-                return;
+        Player player = (this.getClient()).getPlayer();
+        if (player != null) {
+            if (player.isFakeDeath()) {
+                player.stopFakeDeath(true);
+            } else if (player.isDead()) {
+                if (player.getClan() != null) {
+                    Siege siege = CastleManager.getInstance().getActiveSiege(player);
+                    if (siege != null && siege.checkSide(player.getClan(), SiegeSide.ATTACKER)) {
+                        ThreadPool.schedule(() -> this.portPlayer(player), Config.ATTACKERS_RESPAWN_DELAY);
+                        return;
+                    }
+                }
+
+                this.portPlayer(player);
             }
         }
-        portPlayer(player);
     }
 
     private void portPlayer(Player player) {
@@ -51,48 +48,64 @@ public final class RequestRestartPoint extends L2GameClientPacket {
         } else if (player.isFestivalParticipant()) {
             this._requestType = 4;
         }
+
+        Object var6;
         if (this._requestType == 1) {
-            if (clan == null || !clan.hasClanHall())
+            if (clan == null || !clan.hasClanHall()) {
                 return;
-            loc = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.CLAN_HALL);
+            }
+
+            var6 = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.CLAN_HALL);
             ClanHall ch = ClanHallManager.getInstance().getClanHallByOwner(clan);
             if (ch != null) {
                 ClanHallFunction function = ch.getFunction(5);
-                if (function != null)
+                if (function != null) {
                     player.restoreExp(function.getLvl());
+                }
             }
         } else if (this._requestType == 2) {
             Siege siege = CastleManager.getInstance().getActiveSiege(player);
             if (siege != null) {
                 SiegeSide side = siege.getSide(clan);
-                if (side == SiegeSide.DEFENDER || side == SiegeSide.OWNER) {
-                    loc = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.CASTLE);
-                } else if (side == SiegeSide.ATTACKER) {
-                    loc = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.TOWN);
+                if (side != SiegeSide.DEFENDER && side != SiegeSide.OWNER) {
+                    if (side != SiegeSide.ATTACKER) {
+                        return;
+                    }
+
+                    var6 = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.TOWN);
                 } else {
-                    return;
+                    var6 = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.CASTLE);
                 }
             } else {
-                if (clan == null || !clan.hasCastle())
+                if (clan == null || !clan.hasCastle()) {
                     return;
-                loc = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.CASTLE);
+                }
+
+                var6 = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.CASTLE);
             }
         } else if (this._requestType == 3) {
-            loc = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.SIEGE_FLAG);
+            var6 = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.SIEGE_FLAG);
         } else if (this._requestType == 4) {
-            if (!player.isGM() && !player.isFestivalParticipant())
+            if (!player.isGM() && !player.isFestivalParticipant()) {
                 return;
-            SpawnLocation spawnLocation = player.getPosition();
+            }
+
+            var6 = player.getPosition();
         } else if (this._requestType == 27) {
-            if (!player.isInJail())
+            if (!player.isInJail()) {
                 return;
-            loc = JAIL_LOCATION;
+            }
+
+            var6 = JAIL_LOCATION;
         } else {
-            loc = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.TOWN);
+            var6 = MapRegionData.getInstance().getLocationToTeleport(player, MapRegionData.TeleportType.TOWN);
         }
+
         player.setIsIn7sDungeon(false);
-        if (player.isDead())
+        if (player.isDead()) {
             player.doRevive();
-        player.teleportTo(loc, 20);
+        }
+
+        player.teleportTo((Location) var6, 20);
     }
 }

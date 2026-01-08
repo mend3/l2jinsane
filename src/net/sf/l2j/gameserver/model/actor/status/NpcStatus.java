@@ -11,18 +11,20 @@ public class NpcStatus extends CreatureStatus {
     }
 
     public void reduceHp(double value, Creature attacker) {
-        reduceHp(value, attacker, true, false, false);
+        this.reduceHp(value, attacker, true, false, false);
     }
 
     public void reduceHp(double value, Creature attacker, boolean awake, boolean isDOT, boolean isHpConsumption) {
-        if (getActiveChar().isDead())
-            return;
-        if (attacker != null) {
-            Player attackerPlayer = attacker.getActingPlayer();
-            if (attackerPlayer != null && attackerPlayer.isInDuel())
-                attackerPlayer.setDuelState(Duel.DuelState.INTERRUPTED);
+        if (!this.getActiveChar().isDead()) {
+            if (attacker != null) {
+                Player attackerPlayer = attacker.getActingPlayer();
+                if (attackerPlayer != null && attackerPlayer.isInDuel()) {
+                    attackerPlayer.setDuelState(Duel.DuelState.INTERRUPTED);
+                }
+            }
+
+            super.reduceHp(value, attacker, awake, isDOT, isHpConsumption);
         }
-        super.reduceHp(value, attacker, awake, isDOT, isHpConsumption);
     }
 
     public Npc getActiveChar() {

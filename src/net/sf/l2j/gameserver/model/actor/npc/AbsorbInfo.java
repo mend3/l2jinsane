@@ -2,9 +2,7 @@ package net.sf.l2j.gameserver.model.actor.npc;
 
 public final class AbsorbInfo {
     private boolean _registered;
-
     private int _itemId;
-
     private int _absorbedHpPercent;
 
     public AbsorbInfo(int itemId) {
@@ -32,6 +30,6 @@ public final class AbsorbInfo {
     }
 
     public boolean isValid(int itemId) {
-        return (this._itemId == itemId && this._absorbedHpPercent < 50);
+        return this._itemId == itemId && this._absorbedHpPercent < 50;
     }
 }

@@ -13,16 +13,15 @@ import net.sf.l2j.gameserver.model.location.Location;
 import net.sf.l2j.gameserver.network.serverpackets.NpcSay;
 import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 
 public final class TamedBeast extends FeedableBeast {
-    private static final String[] FOOD_CHAT = new String[]{"Refills! Yeah!", "I am such a gluttonous beast, it is embarrassing! Ha ha.", "Your cooperative feeling has been getting better and better.", "I will help you!", "The weather is really good. Wanna go for a picnic?", "I really like you! This is tasty...", "If you do not have to leave this place, then I can help you.", "What can I help you with?", "I am not here only for food!", "Yam, yam, yam, yam, yam!"};
+    protected static final String[] FOOD_CHAT = new String[]{"Refills! Yeah!", "I am such a gluttonous beast, it is embarrassing! Ha ha.", "Your cooperative feeling has been getting better and better.", "I will help you!", "The weather is really good. Wanna go for a picnic?", "I really like you! This is tasty...", "If you do not have to leave this place, then I can help you.", "What can I help you with?", "I am not here only for food!", "Yam, yam, yam, yam, yam!"};
     private static final int MAX_DISTANCE_FROM_HOME = 13000;
     private static final int TASK_INTERVAL = 5000;
-    private final int _foodId;
-    private final Player _owner;
+    protected int _foodId;
+    protected Player _owner;
     private Future<?> _aiTask = null;
 
     public TamedBeast(int objectId, NpcTemplate template, Player owner, int foodId, Location loc) {
@@ -34,7 +33,7 @@ public final class TamedBeast extends FeedableBeast {
         this._owner = owner;
         owner.setTrainedBeast(this);
         this._foodId = foodId;
-        this._aiTask = ThreadPool.scheduleAtFixedRate(new TamedBeast.AiTask(), 5000L, 5000L);
+        this._aiTask = ThreadPool.scheduleAtFixedRate(new AiTask(), 5000L, 5000L);
         this.spawnMe(loc);
     }
 
@@ -74,16 +73,10 @@ public final class TamedBeast extends FeedableBeast {
         if (this._owner != null && this._owner.isOnline()) {
             if (!this._owner.isDead() && !this.isCastingNow()) {
                 int proba = Rnd.get(3);
-                float MPRatio;
-                Iterator var4;
-                L2Skill skill;
                 if (proba == 0) {
-                    MPRatio = (float) this._owner.getCurrentHp() / (float) this._owner.getMaxHp();
-                    if ((double) MPRatio < 0.5D) {
-                        var4 = this.getTemplate().getSkills(SkillType.HEAL).iterator();
-
-                        while (var4.hasNext()) {
-                            skill = (L2Skill) var4.next();
+                    float HPRatio = (float) this._owner.getCurrentHp() / (float) this._owner.getMaxHp();
+                    if ((double) HPRatio < (double) 0.5F) {
+                        for (L2Skill skill : this.getTemplate().getSkills(SkillType.HEAL)) {
                             switch (skill.getSkillType()) {
                                 case HEAL:
                                 case HOT:
@@ -96,22 +89,16 @@ public final class TamedBeast extends FeedableBeast {
                         }
                     }
                 } else if (proba == 1) {
-                    Iterator var6 = this.getTemplate().getSkills(SkillType.DEBUFF).iterator();
-
-                    while (var6.hasNext()) {
-                        skill = (L2Skill) var6.next();
+                    for (L2Skill skill : this.getTemplate().getSkills(SkillType.DEBUFF)) {
                         if (attacker.getFirstEffect(skill) == null) {
                             this.sitCastAndFollow(skill, attacker);
                             return;
                         }
                     }
                 } else if (proba == 2) {
-                    MPRatio = (float) this._owner.getCurrentMp() / (float) this._owner.getMaxMp();
-                    if ((double) MPRatio < 0.5D) {
-                        var4 = this.getTemplate().getSkills(SkillType.HEAL).iterator();
-
-                        while (var4.hasNext()) {
-                            skill = (L2Skill) var4.next();
+                    float MPRatio = (float) this._owner.getCurrentMp() / (float) this._owner.getMaxMp();
+                    if ((double) MPRatio < (double) 0.5F) {
+                        for (L2Skill skill : this.getTemplate().getSkills(SkillType.HEAL)) {
                             switch (skill.getSkillType()) {
                                 case MANARECHARGE:
                                 case MANAHEAL_PERCENT:
@@ -128,7 +115,7 @@ public final class TamedBeast extends FeedableBeast {
         }
     }
 
-    private void sitCastAndFollow(L2Skill skill, Creature target) {
+    protected void sitCastAndFollow(L2Skill skill, Creature target) {
         this.stopMove(null);
         this.getAI().setIntention(IntentionType.IDLE);
         this.setTarget(target);
@@ -167,10 +154,8 @@ public final class TamedBeast extends FeedableBeast {
                     L2Skill buffToGive = null;
                     List<L2Skill> skills = TamedBeast.this.getTemplate().getSkills(SkillType.BUFF);
                     int rand = Rnd.get(skills.size());
-                    Iterator var7 = skills.iterator();
 
-                    while (var7.hasNext()) {
-                        L2Skill skill = (L2Skill) var7.next();
+                    for (L2Skill skill : skills) {
                         if (i == rand) {
                             buffToGive = skill;
                         }

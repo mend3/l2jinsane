@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClassBalanceHolder {
     private final int _activeClass;
     private final int _targetClass;
-    private final Map<AttackType, Double> _normalBalance = new ConcurrentHashMap();
-    private final Map<AttackType, Double> _olyBalance = new ConcurrentHashMap();
+    private final Map<AttackType, Double> _normalBalance = new ConcurrentHashMap<>();
+    private final Map<AttackType, Double> _olyBalance = new ConcurrentHashMap<>();
 
     public ClassBalanceHolder(int activeClass, int target) {
         this._activeClass = activeClass;
@@ -36,7 +36,7 @@ public class ClassBalanceHolder {
     }
 
     public Map<AttackType, Double> getNormalBalance() {
-        Map<AttackType, Double> map = new TreeMap(new AttackTypeComparator(this));
+        Map<AttackType, Double> map = new TreeMap<>(new AttackTypeComparator(this));
         map.putAll(this._normalBalance);
         return map;
     }
@@ -60,7 +60,7 @@ public class ClassBalanceHolder {
     }
 
     public Map<AttackType, Double> getOlyBalance() {
-        Map<AttackType, Double> map = new TreeMap(new AttackTypeComparator(this));
+        Map<AttackType, Double> map = new TreeMap<>(new AttackTypeComparator(this));
         map.putAll(this._olyBalance);
         return map;
     }

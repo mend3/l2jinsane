@@ -140,10 +140,8 @@ public class Zaken extends L2AttackableAIScript {
                         boolean willTeleport = mostHated == null || !mostHated.isInsideRadius(this._zakenLocation, 1500, true, false);
 
                         if (willTeleport) {
-                            Iterator var7 = VICTIMS.iterator();
 
-                            while (var7.hasNext()) {
-                                Player ply = (Player) var7.next();
+                            for (Player ply : VICTIMS) {
                                 if (ply.isInsideRadius(this._zakenLocation, 1500, true, false)) {
                                     willTeleport = false;
                                 }
@@ -400,10 +398,8 @@ public class Zaken extends L2AttackableAIScript {
                 player.teleportTo(Rnd.get(LOCS), 0);
                 break;
             case 4217:
-                Iterator var4 = VICTIMS.iterator();
 
-                while (var4.hasNext()) {
-                    Player ply = (Player) var4.next();
+                for (Player ply : VICTIMS) {
                     if (ply.isInsideRadius(player, 250, true, false)) {
                         ((Attackable) npc).stopHating(ply);
                         ply.teleportTo(Rnd.get(LOCS), 0);

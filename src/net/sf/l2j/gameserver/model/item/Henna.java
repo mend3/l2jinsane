@@ -6,27 +6,16 @@ import net.sf.l2j.gameserver.model.actor.Player;
 
 public final class Henna {
     public static final int DRAW_AMOUNT = 10;
-
     public static final int REMOVE_AMOUNT = 5;
-
     private final int _symbolId;
-
     private final int _dyeId;
-
     private final int _drawPrice;
-
     private final int _INT;
-
     private final int _STR;
-
     private final int _CON;
-
     private final int _MEN;
-
     private final int _DEX;
-
     private final int _WIT;
-
     private final int[] _classes;
 
     public Henna(StatSet set) {

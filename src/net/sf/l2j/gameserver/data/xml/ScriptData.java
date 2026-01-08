@@ -16,8 +16,8 @@ import java.util.List;
 
 public final class ScriptData implements IXmlReader, Runnable {
     public static final int PERIOD = 300000;
-    private final List<Quest> _quests = new ArrayList();
-    private final List<ScheduledQuest> _scheduled = new LinkedList();
+    private final List<Quest> _quests = new ArrayList<>();
+    private final List<ScheduledQuest> _scheduled = new LinkedList<>();
 
     public ScriptData() {
     }
@@ -71,10 +71,8 @@ public final class ScriptData implements IXmlReader, Runnable {
 
     public void run() {
         long next = System.currentTimeMillis() + 300000L;
-        Iterator var3 = this._scheduled.iterator();
 
-        while (var3.hasNext()) {
-            ScheduledQuest script = (ScheduledQuest) var3.next();
+        for (ScheduledQuest script : this._scheduled) {
             long eta = next - script.getTimeNext();
             if (eta > 0L) {
                 ThreadPool.schedule(new Scheduler(this, script), 300000L - eta);

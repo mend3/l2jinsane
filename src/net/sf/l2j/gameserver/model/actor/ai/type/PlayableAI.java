@@ -20,26 +20,30 @@ public abstract class PlayableAI extends CreatureAI {
             if (!target.isInsideZone(ZoneId.PVP)) {
                 if (targetPlayer.getProtectionBlessing() && actorPlayer.getLevel() - targetPlayer.getLevel() >= 10 && actorPlayer.getKarma() > 0) {
                     actorPlayer.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-                    clientActionFailed();
+                    this.clientActionFailed();
                     return;
                 }
+
                 if (actorPlayer.getProtectionBlessing() && targetPlayer.getLevel() - actorPlayer.getLevel() >= 10 && targetPlayer.getKarma() > 0) {
                     actorPlayer.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-                    clientActionFailed();
+                    this.clientActionFailed();
                     return;
                 }
             }
+
             if (targetPlayer.isCursedWeaponEquipped() && actorPlayer.getLevel() <= 20) {
                 actorPlayer.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-                clientActionFailed();
+                this.clientActionFailed();
                 return;
             }
+
             if (actorPlayer.isCursedWeaponEquipped() && targetPlayer.getLevel() <= 20) {
                 actorPlayer.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-                clientActionFailed();
+                this.clientActionFailed();
                 return;
             }
         }
+
         super.onIntentionAttack(target);
     }
 
@@ -50,30 +54,34 @@ public abstract class PlayableAI extends CreatureAI {
             if (!target.isInsideZone(ZoneId.PVP)) {
                 if (targetPlayer.getProtectionBlessing() && actorPlayer.getLevel() - targetPlayer.getLevel() >= 10 && actorPlayer.getKarma() > 0) {
                     actorPlayer.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-                    clientActionFailed();
+                    this.clientActionFailed();
                     this._actor.setIsCastingNow(false);
                     return;
                 }
+
                 if (actorPlayer.getProtectionBlessing() && targetPlayer.getLevel() - actorPlayer.getLevel() >= 10 && targetPlayer.getKarma() > 0) {
                     actorPlayer.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-                    clientActionFailed();
+                    this.clientActionFailed();
                     this._actor.setIsCastingNow(false);
                     return;
                 }
             }
+
             if (targetPlayer.isCursedWeaponEquipped() && actorPlayer.getLevel() <= 20) {
                 actorPlayer.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-                clientActionFailed();
+                this.clientActionFailed();
                 this._actor.setIsCastingNow(false);
                 return;
             }
+
             if (actorPlayer.isCursedWeaponEquipped() && targetPlayer.getLevel() <= 20) {
                 actorPlayer.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-                clientActionFailed();
+                this.clientActionFailed();
                 this._actor.setIsCastingNow(false);
                 return;
             }
         }
+
         super.onIntentionCast(skill, target);
     }
 }

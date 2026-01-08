@@ -97,10 +97,8 @@ public class DrChaos extends L2AttackableAIScript {
             this._lastAttackTime = System.currentTimeMillis();
             this.startQuestTimer("golem_despawn", 60000L, golem, null, true);
         } else if (event.equalsIgnoreCase("paranoia_activity") && GrandBossManager.getInstance().getBossStatus(25512) == 0) {
-            Iterator var6 = npc.getKnownTypeInRadius(Player.class, 500).iterator();
 
-            while (var6.hasNext()) {
-                Player obj = (Player) var6.next();
+            for (Player obj : npc.getKnownTypeInRadius(Player.class, 500)) {
                 if (!obj.isDead()) {
                     --this._pissedOffTimer;
                     if (this._pissedOffTimer == 15) {

@@ -74,7 +74,7 @@ public class AdminKnownlist implements IAdminCommandHandler {
             if (command.startsWith("admin_knownlist_page") && st.hasMoreTokens())
                 try {
                     page = Integer.parseInt(st.nextToken());
-                } catch (NumberFormatException numberFormatException) {
+                } catch (NumberFormatException ignored) {
                 }
             showKnownlist(activeChar, player, page);
         }

@@ -13,11 +13,15 @@ public class DungeonMob extends Monster {
     }
 
     public boolean doDie(Creature killer) {
-        if (!super.doDie(killer))
+        if (!super.doDie(killer)) {
             return false;
-        if (this.dungeon != null)
-            ThreadPool.schedule(() -> this.dungeon.onMobKill(this), 2000L);
-        return true;
+        } else {
+            if (this.dungeon != null) {
+                ThreadPool.schedule(() -> this.dungeon.onMobKill(this), 2000L);
+            }
+
+            return true;
+        }
     }
 
     public void setDungeon(Dungeon dungeon) {

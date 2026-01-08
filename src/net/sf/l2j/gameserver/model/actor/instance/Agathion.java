@@ -18,15 +18,13 @@ import java.util.concurrent.ScheduledFuture;
 
 public final class Agathion extends Npc {
     private static final String BUFF_MESSAGE = "Seu Agathion concedeu um buff.";
-
     private final Player _owner;
-
     private final ScheduledFuture<?> _despawnTask;
 
     public Agathion(int objectId, NpcTemplate template, Player owner) {
         super(objectId, template);
         this._owner = Objects.requireNonNull(owner, "Owner cannot be null");
-        this._despawnTask = scheduleAutoDespawn();
+        this._despawnTask = this.scheduleAutoDespawn();
     }
 
     public static boolean canBeTargeted() {
@@ -35,19 +33,21 @@ public final class Agathion extends Npc {
 
     private static Optional<int[]> getBuffDataForNpc(int npcId) {
         int[] buff = AgathionData.getBuffForNpc(npcId);
-        return (buff != null && buff.length == 2) ? Optional.of(buff) : Optional.empty();
+        return buff != null && buff.length == 2 ? Optional.of(buff) : Optional.empty();
     }
 
     private ScheduledFuture<?> scheduleAutoDespawn() {
-        long lifespan = AgathionData.getAgathionDuration(getNpcId());
+        long lifespan = AgathionData.getAgathionDuration(this.getNpcId());
         return ThreadPool.schedule(() -> {
-            if (isOwnerValid())
+            if (this.isOwnerValid()) {
                 this._owner.despawnAgathion();
+            }
+
         }, lifespan);
     }
 
     private boolean isOwnerValid() {
-        return (this._owner != null);
+        return this._owner != null;
     }
 
     public boolean isInvul() {
@@ -55,18 +55,20 @@ public final class Agathion extends Npc {
     }
 
     public void onAction(Player player) {
-        if (player != null)
+        if (player != null) {
             player.sendPacket(ActionFailed.STATIC_PACKET);
+        }
+
     }
 
     public void applyBuffToOwner() {
-        if (!Config.AGATHION_BUFF)
-            return;
-        if (!isOwnerValid() || this._owner.isDead())
-            return;
-        int npcId = getNpcId();
-        Optional<int[]> buffData = getBuffDataForNpc(npcId);
-        buffData.ifPresent(this::processBuffApplication);
+        if (Config.AGATHION_BUFF) {
+            if (this.isOwnerValid() && !this._owner.isDead()) {
+                int npcId = this.getNpcId();
+                Optional<int[]> buffData = getBuffDataForNpc(npcId);
+                buffData.ifPresent(this::processBuffApplication);
+            }
+        }
     }
 
     private void processBuffApplication(int[] buffData) {
@@ -74,16 +76,16 @@ public final class Agathion extends Npc {
         int skillLevel = buffData[1];
         this._owner.stopSkillEffects(skillId);
         L2Skill skill = SkillTable.getInstance().getInfo(skillId, skillLevel);
-        if (skill == null)
-            return;
-        broadcastSkillEffect(skill);
-        skill.getEffects(this, this._owner);
-        this._owner.sendMessage("Seu Agathion concedeu um buff.");
+        if (skill != null) {
+            this.broadcastSkillEffect(skill);
+            skill.getEffects(this, this._owner);
+            this._owner.sendMessage(BUFF_MESSAGE);
+        }
     }
 
     private void broadcastSkillEffect(L2Skill skill) {
         MagicSkillUse magicSkillUse = new MagicSkillUse(this, this._owner, skill.getId(), skill.getLevel(), skill.getHitTime(), skill.getReuseDelay());
-        broadcastPacket(magicSkillUse);
+        this.broadcastPacket(magicSkillUse);
         MagicSkillUse ownerMagicSkillUse = new MagicSkillUse(this._owner, this._owner, skill.getId(), skill.getLevel(), skill.getHitTime(), skill.getReuseDelay());
         this._owner.broadcastPacket(ownerMagicSkillUse);
     }
@@ -93,21 +95,26 @@ public final class Agathion extends Npc {
     }
 
     public void deleteMe() {
-        if (this._despawnTask != null && !this._despawnTask.isDone())
+        if (this._despawnTask != null && !this._despawnTask.isDone()) {
             this._despawnTask.cancel(false);
-        if (isVisible())
-            decayMe();
+        }
+
+        if (this.isVisible()) {
+            this.decayMe();
+        }
+
         super.deleteMe();
-        cleanupOwnerReference();
+        this.cleanupOwnerReference();
         World.getInstance().removeObject(this);
     }
 
     private void cleanupOwnerReference() {
-        if (isOwnerValid() && this._owner.getAgathion() == this)
+        if (this.isOwnerValid() && this._owner.getAgathion() == this) {
             this._owner.setAgathion(null);
+        }
     }
 
     public void forceDespawn() {
-        deleteMe();
+        this.deleteMe();
     }
 }

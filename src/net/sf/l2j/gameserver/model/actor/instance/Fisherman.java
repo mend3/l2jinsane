@@ -32,6 +32,7 @@ public class Fisherman extends Merchant {
         } else {
             player.sendPacket(new AcquireSkillList(AcquireSkillType.FISHING, skills));
         }
+
         player.sendPacket(ActionFailed.STATIC_PACKET);
     }
 
@@ -40,46 +41,51 @@ public class Fisherman extends Merchant {
         if (val == 0) {
             filename = "" + npcId;
         } else {
-            filename = npcId + "-" + npcId;
+            filename = npcId + "-" + val;
         }
+
         return "data/html/fisherman/" + filename + ".htm";
     }
 
     public void onBypassFeedback(Player player, String command) {
-        if (!Config.KARMA_PLAYER_CAN_SHOP && player.getKarma() > 0 && showPkDenyChatWindow(player, "fisherman"))
-            return;
-        if (command.startsWith("FishSkillList")) {
-            showFishSkillList(player);
-        } else if (command.startsWith("FishingChampionship")) {
-            if (!Config.ALT_FISH_CHAMPIONSHIP_ENABLED) {
-                NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-                html.setFile("data/html/fisherman/championship/no_fish_event001.htm");
-                player.sendPacket(html);
-                return;
+        if (Config.KARMA_PLAYER_CAN_SHOP || player.getKarma() <= 0 || !this.showPkDenyChatWindow(player, "fisherman")) {
+            if (command.startsWith("FishSkillList")) {
+                showFishSkillList(player);
+            } else if (command.startsWith("FishingChampionship")) {
+                if (!Config.ALT_FISH_CHAMPIONSHIP_ENABLED) {
+                    NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                    html.setFile("data/html/fisherman/championship/no_fish_event001.htm");
+                    player.sendPacket(html);
+                    return;
+                }
+
+                FishingChampionshipManager.getInstance().showChampScreen(player, this.getObjectId());
+            } else if (command.startsWith("FishingReward")) {
+                if (!Config.ALT_FISH_CHAMPIONSHIP_ENABLED) {
+                    NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                    html.setFile("data/html/fisherman/championship/no_fish_event001.htm");
+                    player.sendPacket(html);
+                    return;
+                }
+
+                if (!FishingChampionshipManager.getInstance().isWinner(player.getName())) {
+                    NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                    html.setFile("data/html/fisherman/championship/no_fish_event_reward001.htm");
+                    player.sendPacket(html);
+                    return;
+                }
+
+                FishingChampionshipManager.getInstance().getReward(player);
+            } else {
+                super.onBypassFeedback(player, command);
             }
-            FishingChampionshipManager.getInstance().showChampScreen(player, getObjectId());
-        } else if (command.startsWith("FishingReward")) {
-            if (!Config.ALT_FISH_CHAMPIONSHIP_ENABLED) {
-                NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-                html.setFile("data/html/fisherman/championship/no_fish_event001.htm");
-                player.sendPacket(html);
-                return;
-            }
-            if (!FishingChampionshipManager.getInstance().isWinner(player.getName())) {
-                NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-                html.setFile("data/html/fisherman/championship/no_fish_event_reward001.htm");
-                player.sendPacket(html);
-                return;
-            }
-            FishingChampionshipManager.getInstance().getReward(player);
-        } else {
-            super.onBypassFeedback(player, command);
+
         }
     }
 
     public void showChatWindow(Player player, int val) {
-        if (!Config.KARMA_PLAYER_CAN_SHOP && player.getKarma() > 0 && showPkDenyChatWindow(player, "fisherman"))
-            return;
-        showChatWindow(player, getHtmlPath(getNpcId(), val));
+        if (Config.KARMA_PLAYER_CAN_SHOP || player.getKarma() <= 0 || !this.showPkDenyChatWindow(player, "fisherman")) {
+            this.showChatWindow(player, this.getHtmlPath(this.getNpcId(), val));
+        }
     }
 }

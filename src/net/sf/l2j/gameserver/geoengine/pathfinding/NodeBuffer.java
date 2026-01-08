@@ -62,7 +62,7 @@ public class NodeBuffer {
     }
 
     public final List<Node> debugPath() {
-        List<Node> result = new ArrayList();
+        List<Node> result = new ArrayList<>();
 
         for (Node n = this._current; n.getParent() != null; n = n.getParent()) {
             result.add(n);

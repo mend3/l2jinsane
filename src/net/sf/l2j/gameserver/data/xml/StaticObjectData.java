@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StaticObjectData implements IXmlReader {
-    private final Map<Integer, StaticObject> _objects = new HashMap();
+    private final Map<Integer, StaticObject> _objects = new HashMap<>();
 
     protected StaticObjectData() {
     }

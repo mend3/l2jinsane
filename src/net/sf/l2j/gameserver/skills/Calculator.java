@@ -67,7 +67,7 @@ public final class Calculator {
     }
 
     public synchronized List<Stats> removeOwner(Object owner) {
-        List<Stats> modifiedStats = new ArrayList();
+        List<Stats> modifiedStats = new ArrayList<>();
         Func[] var3 = this._functions;
         int var4 = var3.length;
 

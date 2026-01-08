@@ -10,14 +10,21 @@ public final class LambdaCalc extends Lambda {
 
     public double calc(Env env) {
         double saveValue = env.getValue();
+
+        double var9;
         try {
-            env.setValue(0.0D);
-            for (Func f : this._funcs)
+            env.setValue((double) 0.0F);
+
+            for (Func f : this._funcs) {
                 f.calc(env);
-            return env.getValue();
+            }
+
+            var9 = env.getValue();
         } finally {
             env.setValue(saveValue);
         }
+
+        return var9;
     }
 
     public void addFunc(Func f) {

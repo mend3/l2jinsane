@@ -57,7 +57,7 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
     private static final String DELETE_CHAR_ITEMS = "DELETE FROM items WHERE owner_id=?";
     private static final String DELETE_CHAR_RBP = "DELETE FROM character_raid_points WHERE char_id=?";
     private static final String DELETE_CHAR = "DELETE FROM characters WHERE obj_Id=?";
-    private final ScheduledFuture<?> _autoSaveInDB;
+    protected final ScheduledFuture<?> _autoSaveInDB;
     private final long[] _floodProtectors;
     private final ArrayBlockingQueue<ReceivablePacket<GameClient>> _packetQueue;
     private final ReentrantLock _queueLock;
@@ -65,8 +65,8 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
     private final GameCrypt _crypt;
     private final ClientStats _stats;
     private final long _connectionStartTime;
-    public GameClient.GameClientState _state;
-    private ScheduledFuture<?> _cleanupTask;
+    public GameClientState _state;
+    protected ScheduledFuture<?> _cleanupTask;
     private String _accountName;
     private SessionKey _sessionId;
     private Player _player;
@@ -93,7 +93,7 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
         this._connectionStartTime = System.currentTimeMillis();
         this._crypt = new GameCrypt();
         this._stats = new ClientStats();
-        this._packetQueue = new ArrayBlockingQueue(Config.CLIENT_PACKET_QUEUE_SIZE);
+        this._packetQueue = new ArrayBlockingQueue<>(Config.CLIENT_PACKET_QUEUE_SIZE);
         this._autoSaveInDB = ThreadPool.scheduleAtFixedRate(() -> {
             if (this.getPlayer() != null && this.getPlayer().isOnline()) {
                 this.getPlayer().store();
@@ -109,405 +109,99 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
         if (objectId >= 0) {
             PlayerInfoTable.getInstance().removePlayer(objectId);
 
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
-                    PreparedStatement ps = con.prepareStatement("DELETE FROM character_friends WHERE char_id=? OR friend_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.setInt(2, objectId);
-                        ps.execute();
-                    } catch (Throwable var41) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var23) {
-                                var41.addSuppressed(var23);
-                            }
-                        }
-
-                        throw var41;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM character_hennas WHERE char_obj_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var40) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var22) {
-                                var40.addSuppressed(var22);
-                            }
-                        }
-
-                        throw var40;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM character_macroses WHERE char_obj_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var39) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var21) {
-                                var39.addSuppressed(var21);
-                            }
-                        }
-
-                        throw var39;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM character_memo WHERE charId=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var38) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var20) {
-                                var38.addSuppressed(var20);
-                            }
-                        }
-
-                        throw var38;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM character_quests WHERE charId=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var37) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var19) {
-                                var37.addSuppressed(var19);
-                            }
-                        }
-
-                        throw var37;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM character_recipebook WHERE charId=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var36) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var18) {
-                                var36.addSuppressed(var18);
-                            }
-                        }
-
-                        throw var36;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM character_shortcuts WHERE char_obj_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var35) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var17) {
-                                var35.addSuppressed(var17);
-                            }
-                        }
-
-                        throw var35;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM character_skills WHERE char_obj_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var34) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var16) {
-                                var34.addSuppressed(var16);
-                            }
-                        }
-
-                        throw var34;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM character_skills_save WHERE char_obj_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var33) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var15) {
-                                var33.addSuppressed(var15);
-                            }
-                        }
-
-                        throw var33;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM character_subclasses WHERE char_obj_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var32) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var14) {
-                                var32.addSuppressed(var14);
-                            }
-                        }
-
-                        throw var32;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM heroes WHERE char_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var31) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var13) {
-                                var31.addSuppressed(var13);
-                            }
-                        }
-
-                        throw var31;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM olympiad_nobles WHERE char_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var30) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var12) {
-                                var30.addSuppressed(var12);
-                            }
-                        }
-
-                        throw var30;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM seven_signs WHERE char_obj_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var29) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var11) {
-                                var29.addSuppressed(var11);
-                            }
-                        }
-
-                        throw var29;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM pets WHERE item_obj_id IN (SELECT object_id FROM items WHERE items.owner_id=?)");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var28) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var10) {
-                                var28.addSuppressed(var10);
-                            }
-                        }
-
-                        throw var28;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM augmentations WHERE item_id IN (SELECT object_id FROM items WHERE items.owner_id=?)");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var27) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var9) {
-                                var27.addSuppressed(var9);
-                            }
-                        }
-
-                        throw var27;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM items WHERE owner_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var26) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var8) {
-                                var26.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var26;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM character_raid_points WHERE char_id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var25) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var7) {
-                                var25.addSuppressed(var7);
-                            }
-                        }
-
-                        throw var25;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-
-                    ps = con.prepareStatement("DELETE FROM characters WHERE obj_Id=?");
-
-                    try {
-                        ps.setInt(1, objectId);
-                        ps.execute();
-                    } catch (Throwable var24) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var6) {
-                                var24.addSuppressed(var6);
-                            }
-                        }
-
-                        throw var24;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (Throwable var42) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var5) {
-                            var42.addSuppressed(var5);
-                        }
-                    }
-
-                    throw var42;
+            try (Connection con = ConnectionPool.getConnection()) {
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_friends WHERE char_id=? OR friend_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.setInt(2, objectId);
+                    ps.execute();
                 }
 
-                if (con != null) {
-                    con.close();
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_hennas WHERE char_obj_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
                 }
-            } catch (Exception var43) {
-                LOGGER.error("Couldn't delete player.", var43);
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_macroses WHERE char_obj_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_memo WHERE charId=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_quests WHERE charId=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_recipebook WHERE charId=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_shortcuts WHERE char_obj_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_skills WHERE char_obj_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_skills_save WHERE char_obj_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_subclasses WHERE char_obj_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM heroes WHERE char_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM olympiad_nobles WHERE char_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM seven_signs WHERE char_obj_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM pets WHERE item_obj_id IN (SELECT object_id FROM items WHERE items.owner_id=?)")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM augmentations WHERE item_id IN (SELECT object_id FROM items WHERE items.owner_id=?)")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM items WHERE owner_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_raid_points WHERE char_id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM characters WHERE obj_Id=?")) {
+                    ps.setInt(1, objectId);
+                    ps.execute();
+                }
+            } catch (Exception e) {
+                LOGGER.error("Couldn't delete player.", e);
             }
 
         }
@@ -531,37 +225,37 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
 
                     try {
                         packet.run();
-                    } catch (Exception var7) {
-                        LOGGER.error("Execution failed on {} for {}.", var7, packet.getClass().getSimpleName(), this.toString());
+                    } catch (Exception e) {
+                        LOGGER.error("Execution failed on {} for {}.", e, packet.getClass().getSimpleName(), this.toString());
                     }
 
                     ++count;
                 } while (!this.getStats().countBurst(count));
+
             } finally {
                 this._queueLock.unlock();
             }
-
         }
     }
 
     public String toString() {
         try {
             InetAddress address = this.getConnection().getInetAddress();
-            String var10000;
-            switch (this.getState().ordinal()) {
-                case 0:
-                    var10000 = address == null ? "disconnected" : address.getHostAddress();
-                    return "[IP: " + var10000 + "]";
-                case 1:
-                    var10000 = this.getAccountName();
-                    return "[Account: " + var10000 + " - IP: " + (address == null ? "disconnected" : address.getHostAddress()) + "]";
-                case 2:
-                case 3:
-                    var10000 = this.getPlayer() == null ? "disconnected" : this.getPlayer().getName();
-                    return "[Character: " + var10000 + " - Account: " + this.getAccountName() + " - IP: " + (address == null ? "disconnected" : address.getHostAddress()) + "]";
-                default:
-                    throw new IllegalStateException("Missing state on switch");
-            }
+            return switch (this.getState().ordinal()) {
+                case 0 -> {
+                    String var4 = address == null ? "disconnected" : address.getHostAddress();
+                    yield "[IP: " + var4 + "]";
+                }
+                case 1 -> {
+                    String var3 = this.getAccountName();
+                    yield "[Account: " + var3 + " - IP: " + (address == null ? "disconnected" : address.getHostAddress()) + "]";
+                }
+                case 2, 3 -> {
+                    String var10000 = this.getPlayer() == null ? "disconnected" : this.getPlayer().getName();
+                    yield "[Character: " + var10000 + " - Account: " + this.getAccountName() + " - IP: " + (address == null ? "disconnected" : address.getHostAddress()) + "]";
+                }
+                default -> throw new IllegalStateException("Missing state on switch");
+            };
         } catch (NullPointerException var2) {
             return "[Character read failed due to disconnect]";
         }
@@ -611,7 +305,7 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
 
                 this.cleanMe(fast);
             });
-        } catch (RejectedExecutionException var2) {
+        } catch (RejectedExecutionException ignored) {
         }
 
     }
@@ -630,11 +324,11 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
         return key;
     }
 
-    public GameClient.GameClientState getState() {
+    public GameClientState getState() {
         return this._state;
     }
 
-    public void setState(GameClient.GameClientState pState) {
+    public void setState(GameClientState pState) {
         if (this._state != pState) {
             this._state = pState;
             this._packetQueue.clear();
@@ -711,16 +405,11 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
             byte answer = 0;
 
             try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
-                    PreparedStatement ps = con.prepareStatement("SELECT clanId FROM characters WHERE obj_id=?");
-
-                    try {
+                try (Connection con = ConnectionPool.getConnection()) {
+                    try (PreparedStatement ps = con.prepareStatement("SELECT clanId FROM characters WHERE obj_id=?")) {
                         ps.setInt(1, objectId);
-                        ResultSet rs = ps.executeQuery();
 
-                        try {
+                        try (ResultSet rs = ps.executeQuery()) {
                             rs.next();
                             int clanId = rs.getInt(1);
                             if (clanId != 0) {
@@ -733,83 +422,25 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
                                     answer = 1;
                                 }
                             }
-                        } catch (Throwable var13) {
-                            if (rs != null) {
-                                try {
-                                    rs.close();
-                                } catch (Throwable var11) {
-                                    var13.addSuppressed(var11);
-                                }
-                            }
-
-                            throw var13;
                         }
-
-                        if (rs != null) {
-                            rs.close();
-                        }
-                    } catch (Throwable var15) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var10) {
-                                var15.addSuppressed(var10);
-                            }
-                        }
-
-                        throw var15;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
                     }
 
                     if (answer == 0) {
                         if (Config.DELETE_DAYS == 0) {
                             deleteCharByObjId(objectId);
                         } else {
-                            ps = con.prepareStatement("UPDATE characters SET deletetime=? WHERE obj_id=?");
-
-                            try {
+                            try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET deletetime=? WHERE obj_id=?")) {
                                 ps.setLong(1, System.currentTimeMillis() + (long) Config.DELETE_DAYS * 86400000L);
                                 ps.setInt(2, objectId);
                                 ps.execute();
-                            } catch (Throwable var14) {
-                                if (ps != null) {
-                                    try {
-                                        ps.close();
-                                    } catch (Throwable var12) {
-                                        var14.addSuppressed(var12);
-                                    }
-                                }
-
-                                throw var14;
-                            }
-
-                            if (ps != null) {
-                                ps.close();
                             }
                         }
                     }
-                } catch (Throwable var16) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var9) {
-                            var16.addSuppressed(var9);
-                        }
-                    }
-
-                    throw var16;
-                }
-
-                if (con != null) {
-                    con.close();
                 }
 
                 return answer;
-            } catch (Exception var17) {
-                LOGGER.error("Couldn't mark as delete a player.", var17);
+            } catch (Exception e) {
+                LOGGER.error("Couldn't mark as delete a player.", e);
                 return -1;
             }
         }
@@ -818,48 +449,15 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
     public void markRestoredChar(int slot) {
         int objectId = this.getObjectIdForSlot(slot);
         if (objectId >= 0) {
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
-                    PreparedStatement ps = con.prepareStatement("UPDATE characters SET deletetime=? WHERE obj_id=?");
-
-                    try {
-                        ps.setLong(1, 0L);
-                        ps.setInt(2, objectId);
-                        ps.execute();
-                    } catch (Throwable var9) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var8) {
-                                var9.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (Throwable var10) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
-                }
-
-                if (con != null) {
-                    con.close();
-                }
-            } catch (Exception var11) {
-                LOGGER.error("Couldn't restore player.", var11);
+            try (
+                    Connection con = ConnectionPool.getConnection();
+                    PreparedStatement ps = con.prepareStatement("UPDATE characters SET deletetime=? WHERE obj_id=?")
+            ) {
+                ps.setLong(1, 0L);
+                ps.setInt(2, objectId);
+                ps.execute();
+            } catch (Exception e) {
+                LOGGER.error("Couldn't restore player.", e);
             }
 
         }
@@ -920,12 +518,12 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
             this._cleanupTask = null;
         }
 
-        ThreadPool.schedule(new GameClient.CleanupTask(), 0L);
+        ThreadPool.schedule(new CleanupTask(), 0L);
     }
 
     public synchronized void cleanMe(boolean fast) {
         if (this._cleanupTask == null) {
-            this._cleanupTask = ThreadPool.schedule(new GameClient.CleanupTask(), fast ? 100L : 15000L);
+            this._cleanupTask = ThreadPool.schedule(new CleanupTask(), fast ? 100L : 15000L);
         }
 
     }
@@ -993,7 +591,7 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
                 }
 
                 ThreadPool.execute(this);
-            } catch (RejectedExecutionException var3) {
+            } catch (RejectedExecutionException ignored) {
             }
 
         }
@@ -1059,12 +657,7 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
         CONNECTED,
         AUTHED,
         ENTERING,
-        IN_GAME;
-
-        // $FF: synthetic method
-        private static GameClient.GameClientState[] $values() {
-            return new GameClient.GameClientState[]{CONNECTED, AUTHED, ENTERING, IN_GAME};
-        }
+        IN_GAME
     }
 
     protected class CleanupTask implements Runnable {

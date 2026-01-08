@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 public class FakePcsTable implements IXmlReader {
     private static final Logger _log = Logger.getLogger(FakePcsTable.class.getName());
-    private final Map<Integer, FakePc> _fakePcs = new HashMap();
+    private final Map<Integer, FakePc> _fakePcs = new HashMap<>();
 
     protected FakePcsTable() {
     }

@@ -21,18 +21,19 @@ public class ManorManagerNpc extends Merchant {
                 player.sendPacket(SystemMessageId.THE_MANOR_SYSTEM_IS_CURRENTLY_UNDER_MAINTENANCE);
                 return;
             }
+
             StringTokenizer st = new StringTokenizer(command, "&");
             int ask = Integer.parseInt(st.nextToken().split("=")[1]);
             int state = Integer.parseInt(st.nextToken().split("=")[1]);
             boolean time = st.nextToken().split("=")[1].equals("1");
-            int castleId = (state < 0) ? getCastle().getCastleId() : state;
+            int castleId = state < 0 ? this.getCastle().getCastleId() : state;
             switch (ask) {
                 case 1:
-                    if (castleId != getCastle().getCastleId()) {
-                        player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.HERE_YOU_CAN_BUY_ONLY_SEEDS_OF_S1_MANOR).addString(getCastle().getName()));
-                        break;
+                    if (castleId != this.getCastle().getCastleId()) {
+                        player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.HERE_YOU_CAN_BUY_ONLY_SEEDS_OF_S1_MANOR).addString(this.getCastle().getName()));
+                    } else {
+                        player.sendPacket(new BuyListSeed(player.getAdena(), castleId));
                     }
-                    player.sendPacket(new BuyListSeed(player.getAdena(), castleId));
                     break;
                 case 2:
                     player.sendPacket(new ExShowSellCropList(player.getInventory(), castleId));
@@ -47,15 +48,18 @@ public class ManorManagerNpc extends Merchant {
                     player.sendPacket(new ExShowManorDefaultInfo(false));
                     break;
                 case 6:
-                    showBuyWindow(player, 300000 + getNpcId());
+                    this.showBuyWindow(player, 300000 + this.getNpcId());
+                case 7:
+                case 8:
+                default:
                     break;
                 case 9:
                     player.sendPacket(new ExShowProcureCropDetail(state));
-                    break;
             }
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 
     public String getHtmlPath(int npcId, int val) {
@@ -64,13 +68,14 @@ public class ManorManagerNpc extends Merchant {
 
     public void showChatWindow(Player player) {
         if (!Config.ALLOW_MANOR) {
-            showChatWindow(player, "data/html/npcdefault.htm");
-            return;
-        }
-        if (getCastle() != null && player.getClan() != null && getCastle().getOwnerId() == player.getClanId() && player.isClanLeader()) {
-            showChatWindow(player, "data/html/manormanager/manager-lord.htm");
+            this.showChatWindow(player, "data/html/npcdefault.htm");
         } else {
-            showChatWindow(player, "data/html/manormanager/manager.htm");
+            if (this.getCastle() != null && player.getClan() != null && this.getCastle().getOwnerId() == player.getClanId() && player.isClanLeader()) {
+                this.showChatWindow(player, "data/html/manormanager/manager-lord.htm");
+            } else {
+                this.showChatWindow(player, "data/html/manormanager/manager.htm");
+            }
+
         }
     }
 }

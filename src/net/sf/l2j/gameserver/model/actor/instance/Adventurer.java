@@ -13,14 +13,17 @@ public class Adventurer extends Folk {
         if (command.startsWith("raidInfo")) {
             int bossLevel = Integer.parseInt(command.substring(9).trim());
             String filename = "data/html/adventurer_guildsman/raid_info/info.htm";
-            if (bossLevel != 0)
+            if (bossLevel != 0) {
                 filename = "data/html/adventurer_guildsman/raid_info/level" + bossLevel + ".htm";
-            showChatWindow(player, filename);
+            }
+
+            this.showChatWindow(player, filename);
         } else if (command.equalsIgnoreCase("questlist")) {
             player.sendPacket(ExQuestInfo.STATIC_PACKET);
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 
     public String getHtmlPath(int npcId, int val) {
@@ -28,8 +31,9 @@ public class Adventurer extends Folk {
         if (val == 0) {
             filename = "" + npcId;
         } else {
-            filename = npcId + "-" + npcId;
+            filename = npcId + "-" + val;
         }
+
         return "data/html/adventurer_guildsman/" + filename + ".htm";
     }
 }

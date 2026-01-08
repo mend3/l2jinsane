@@ -34,16 +34,16 @@ public class NpcTemplate extends CreatureTemplate {
     private final int _aggroRange;
     private final boolean _canMove;
     private final boolean _isSeedable;
-    private final Map<NpcTemplate.SkillType, List<L2Skill>> _skills;
+    private final Map<SkillType, List<L2Skill>> _skills;
     private final Map<ScriptEventType, List<Quest>> _questEvents;
     private final boolean _usingServerSideName;
     private final boolean _usingServerSideTitle;
     private final int _dropHerbGroup;
-    private final NpcTemplate.AIType _aiType;
+    private final AIType _aiType;
     private final List<DropCategory> _categories;
     private final List<MinionData> _minions;
     private int _corpseTime;
-    private NpcTemplate.Race _race;
+    private Race _race;
     private String[] _clans;
     private int _clanRange;
     private int[] _ignoredIds;
@@ -96,20 +96,15 @@ public class NpcTemplate extends CreatureTemplate {
         if (set.containsKey("teachTo")) {
             int[] classIds = set.getIntegerArray("teachTo");
             this._teachInfo = new ArrayList<>(classIds.length);
-            int[] var3 = classIds;
-            int var4 = classIds.length;
 
-            for (int var5 = 0; var5 < var4; ++var5) {
-                int classId = var3[var5];
+            for (int classId : classIds) {
                 this._teachInfo.add(ClassId.VALUES[classId]);
             }
         }
 
         this.addSkills(set.getList("skills"));
-        Iterator var7 = CastleManager.getInstance().getCastles().iterator();
 
-        while (var7.hasNext()) {
-            Castle castle = (Castle) var7.next();
+        for (Castle castle : CastleManager.getInstance().getCastles()) {
             if (castle.getRelatedNpcIds().contains(this._npcId)) {
                 this._castle = castle;
                 break;
@@ -190,7 +185,7 @@ public class NpcTemplate extends CreatureTemplate {
         return this._dropHerbGroup;
     }
 
-    public NpcTemplate.Race getRace() {
+    public Race getRace() {
         return this._race;
     }
 
@@ -200,7 +195,7 @@ public class NpcTemplate extends CreatureTemplate {
         }
     }
 
-    public NpcTemplate.AIType getAiType() {
+    public AIType getAiType() {
         return this._aiType;
     }
 
@@ -254,10 +249,8 @@ public class NpcTemplate extends CreatureTemplate {
 
     public List<DropData> getAllDropData() {
         List<DropData> list = new ArrayList<>();
-        Iterator var2 = this._categories.iterator();
 
-        while (var2.hasNext()) {
-            DropCategory tmp = (DropCategory) var2.next();
+        for (DropCategory tmp : this._categories) {
             list.addAll(tmp.getAllDrops());
         }
 
@@ -267,21 +260,16 @@ public class NpcTemplate extends CreatureTemplate {
     public void addDropData(DropData drop, int categoryType) {
         boolean isBossType = this.isType("RaidBoss") || this.isType("GrandBoss");
         synchronized (this._categories) {
-            Iterator var5 = this._categories.iterator();
-
-            DropCategory cat;
-            do {
-                if (!var5.hasNext()) {
-                    cat = new DropCategory(categoryType);
+            for (DropCategory cat : this._categories) {
+                if (cat.getCategoryType() == categoryType) {
                     cat.addDropData(drop, isBossType);
-                    this._categories.add(cat);
                     return;
                 }
+            }
 
-                cat = (DropCategory) var5.next();
-            } while (cat.getCategoryType() != categoryType);
-
+            DropCategory cat = new DropCategory(categoryType);
             cat.addDropData(drop, isBossType);
+            this._categories.add(cat);
         }
     }
 
@@ -293,19 +281,16 @@ public class NpcTemplate extends CreatureTemplate {
         return this._teachInfo != null && this._teachInfo.contains(classId.level() == 3 ? classId.getParent() : classId);
     }
 
-    public Map<NpcTemplate.SkillType, List<L2Skill>> getSkills() {
+    public Map<SkillType, List<L2Skill>> getSkills() {
         return this._skills;
     }
 
-    public List<L2Skill> getSkills(NpcTemplate.SkillType type) {
+    public List<L2Skill> getSkills(SkillType type) {
         return this._skills.getOrDefault(type, Collections.emptyList());
     }
 
     public void addSkills(List<L2Skill> skills) {
-        Iterator var2 = skills.iterator();
-
-        while (var2.hasNext()) {
-            L2Skill skill = (L2Skill) var2.next();
+        for (L2Skill skill : skills) {
             if (skill.isPassive()) {
                 this.addSkill(NpcTemplate.SkillType.PASSIVE, skill);
             } else if (skill.isSuicideAttack()) {
@@ -364,7 +349,7 @@ public class NpcTemplate extends CreatureTemplate {
 
     }
 
-    private void addSkill(NpcTemplate.SkillType type, L2Skill skill) {
+    private void addSkill(SkillType type, L2Skill skill) {
         List<L2Skill> list = this._skills.get(type);
         if (list == null) {
             list = new ArrayList<>(5);
@@ -399,7 +384,26 @@ public class NpcTemplate extends CreatureTemplate {
 
     }
 
-    public enum Race {
+    public static enum SkillType {
+        BUFF,
+        DEBUFF,
+        HEAL,
+        PASSIVE,
+        LONG_RANGE,
+        SHORT_RANGE,
+        SUICIDE,
+        TELEPORT;
+    }
+
+    public static enum AIType {
+        DEFAULT,
+        ARCHER,
+        MAGE,
+        HEALER,
+        CORPSE;
+    }
+
+    public static enum Race {
         UNKNOWN,
         UNDEAD,
         MAGICCREATURE,
@@ -425,40 +429,6 @@ public class NpcTemplate extends CreatureTemplate {
         DEFENDINGARMY,
         MERCENARIE;
 
-        public static final NpcTemplate.Race[] VALUES = values();
-
-        // $FF: synthetic method
-        private static NpcTemplate.Race[] $values() {
-            return new NpcTemplate.Race[]{UNKNOWN, UNDEAD, MAGICCREATURE, BEAST, ANIMAL, PLANT, HUMANOID, SPIRIT, ANGEL, DEMON, DRAGON, GIANT, BUG, FAIRIE, HUMAN, ELVE, DARKELVE, ORC, DWARVE, OTHER, NONLIVING, SIEGEWEAPON, DEFENDINGARMY, MERCENARIE};
-        }
-    }
-
-    public enum AIType {
-        DEFAULT,
-        ARCHER,
-        MAGE,
-        HEALER,
-        CORPSE;
-
-        // $FF: synthetic method
-        private static NpcTemplate.AIType[] $values() {
-            return new NpcTemplate.AIType[]{DEFAULT, ARCHER, MAGE, HEALER, CORPSE};
-        }
-    }
-
-    public enum SkillType {
-        BUFF,
-        DEBUFF,
-        HEAL,
-        PASSIVE,
-        LONG_RANGE,
-        SHORT_RANGE,
-        SUICIDE,
-        TELEPORT;
-
-        // $FF: synthetic method
-        private static NpcTemplate.SkillType[] $values() {
-            return new NpcTemplate.SkillType[]{BUFF, DEBUFF, HEAL, PASSIVE, LONG_RANGE, SHORT_RANGE, SUICIDE, TELEPORT};
-        }
+        public static final Race[] VALUES = values();
     }
 }

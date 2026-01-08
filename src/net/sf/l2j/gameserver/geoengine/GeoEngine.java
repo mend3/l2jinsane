@@ -35,7 +35,7 @@ public class GeoEngine {
     private final BlockNull _nullBlock = new BlockNull();
     private final PrintWriter _geoBugReports;
     private final Set<ItemInstance> _debugItems = ConcurrentHashMap.newKeySet();
-    private final GeoEngine.BufferHolder[] _buffers;
+    private final BufferHolder[] _buffers;
     private int _findSuccess = 0;
     private int _findFails = 0;
     private int _postFilterPlayableUses = 0;
@@ -63,10 +63,10 @@ public class GeoEngine {
             }
         }
 
-        LOGGER.info("Loaded {} L2D region files.", loaded);
+        LOGGER.info("Loaded {} L2D region files.", new Object[]{loaded});
         BlockMultilayer.release();
         if (failed > 0) {
-            LOGGER.warn("Failed to load {} L2D region files. Please consider to check your \"geodata.properties\" settings and location of your geodata files.", failed);
+            LOGGER.warn("Failed to load {} L2D region files. Please consider to check your \"geodata.properties\" settings and location of your geodata files.", new Object[]{failed});
             System.exit(1);
         }
 
@@ -74,13 +74,13 @@ public class GeoEngine {
 
         try {
             writer = new PrintWriter(new FileOutputStream(new File(Config.GEODATA_PATH + "geo_bugs.txt"), true), true);
-        } catch (Exception var12) {
-            LOGGER.error("Couldn't load \"geo_bugs.txt\" file.", var12);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't load \"geo_bugs.txt\" file.", e);
         }
 
         this._geoBugReports = writer;
         String[] array = Config.PATHFIND_BUFFERS.split(";");
-        this._buffers = new GeoEngine.BufferHolder[array.length];
+        this._buffers = new BufferHolder[array.length];
         int count = 0;
 
         for (int i = 0; i < array.length; ++i) {
@@ -90,17 +90,17 @@ public class GeoEngine {
             try {
                 int size = Integer.parseInt(args[1]);
                 count += size;
-                this._buffers[i] = new GeoEngine.BufferHolder(Integer.parseInt(args[0]), size);
-            } catch (Exception var11) {
-                LOGGER.error("Couldn't load buffer setting: {}.", var11, buf);
+                this._buffers[i] = new BufferHolder(Integer.parseInt(args[0]), size);
+            } catch (Exception e) {
+                LOGGER.error("Couldn't load buffer setting: {}.", e, new Object[]{buf});
             }
         }
 
-        LOGGER.info("Loaded {} node buffers.", count);
+        LOGGER.info("Loaded {} node buffers.", new Object[]{count});
     }
 
     private static List<Location> constructPath(Node target) {
-        LinkedList<Location> list = new LinkedList();
+        LinkedList<Location> list = new LinkedList<>();
         int dx = 0;
         int dy = 0;
 
@@ -200,16 +200,10 @@ public class GeoEngine {
 
     private final NodeBuffer getBuffer(int size, boolean playable) {
         NodeBuffer current = null;
-        GeoEngine.BufferHolder[] var4 = this._buffers;
-        int var5 = var4.length;
 
-        for (int var6 = 0; var6 < var5; ++var6) {
-            GeoEngine.BufferHolder holder = var4[var6];
+        for (BufferHolder holder : this._buffers) {
             if (holder._size >= size) {
-                Iterator var8 = holder._buffer.iterator();
-
-                while (var8.hasNext()) {
-                    NodeBuffer buffer = (NodeBuffer) var8.next();
+                for (NodeBuffer buffer : holder._buffer) {
                     if (buffer.isLocked()) {
                         ++holder._uses;
                         if (playable) {
@@ -238,77 +232,39 @@ public class GeoEngine {
         String filepath = Config.GEODATA_PATH + filename;
 
         try {
-            RandomAccessFile raf = new RandomAccessFile(filepath, "r");
-
             boolean var18;
-            try {
-                FileChannel fc = raf.getChannel();
+            try (
+                    RandomAccessFile raf = new RandomAccessFile(filepath, "r");
+                    FileChannel fc = raf.getChannel();
+            ) {
+                MappedByteBuffer buffer = fc.map(MapMode.READ_ONLY, 0L, fc.size()).load();
+                buffer.order(ByteOrder.LITTLE_ENDIAN);
+                int blockX = (regionX - 16) * 256;
+                int blockY = (regionY - 10) * 256;
 
-                try {
-                    MappedByteBuffer buffer = fc.map(MapMode.READ_ONLY, 0L, fc.size()).load();
-                    buffer.order(ByteOrder.LITTLE_ENDIAN);
-                    int blockX = (regionX - 16) * 256;
-                    int blockY = (regionY - 10) * 256;
-                    int ix = 0;
-
-                    while (true) {
-                        if (ix >= 256) {
-                            if (buffer.remaining() > 0) {
-                                LOGGER.warn("Region file {} can be corrupted, remaining {} bytes to read.", filename, buffer.remaining());
-                            }
-
-                            var18 = true;
-                            break;
-                        }
-
-                        for (int iy = 0; iy < 256; ++iy) {
-                            byte type = buffer.get();
-                            switch (type) {
-                                case -48:
-                                    this._blocks[blockX + ix][blockY + iy] = new BlockFlat(buffer, GeoType.L2D);
-                                    break;
-                                case -47:
-                                    this._blocks[blockX + ix][blockY + iy] = new BlockComplex(buffer, GeoType.L2D);
-                                    break;
-                                case -46:
+                for (int ix = 0; ix < 256; ++ix) {
+                    for (int iy = 0; iy < 256; ++iy) {
+                        byte type = buffer.get();
+                        switch (type) {
+                            case -48 -> this._blocks[blockX + ix][blockY + iy] = new BlockFlat(buffer, GeoType.L2D);
+                            case -47 -> this._blocks[blockX + ix][blockY + iy] = new BlockComplex(buffer, GeoType.L2D);
+                            case -46 ->
                                     this._blocks[blockX + ix][blockY + iy] = new BlockMultilayer(buffer, GeoType.L2D);
-                                    break;
-                                default:
-                                    throw new IllegalArgumentException("Unknown block type: " + type);
-                            }
-                        }
-
-                        ++ix;
-                    }
-                } catch (Throwable var15) {
-                    if (fc != null) {
-                        try {
-                            fc.close();
-                        } catch (Throwable var14) {
-                            var15.addSuppressed(var14);
+                            default -> throw new IllegalArgumentException("Unknown block type: " + type);
                         }
                     }
-
-                    throw var15;
                 }
 
-                if (fc != null) {
-                    fc.close();
-                }
-            } catch (Throwable var16) {
-                try {
-                    raf.close();
-                } catch (Throwable var13) {
-                    var16.addSuppressed(var13);
+                if (buffer.remaining() > 0) {
+                    LOGGER.warn("Region file {} can be corrupted, remaining {} bytes to read.", new Object[]{filename, buffer.remaining()});
                 }
 
-                throw var16;
+                var18 = true;
             }
 
-            raf.close();
             return var18;
-        } catch (Exception var17) {
-            LOGGER.error("Error loading {} region file.", var17, filename);
+        } catch (Exception e) {
+            LOGGER.error("Error loading {} region file.", e, new Object[]{filename});
             this.loadNullBlocks(regionX, regionY);
             return false;
         }
@@ -377,7 +333,7 @@ public class GeoEngine {
 
         for (int bx = minBX; bx <= maxBX; ++bx) {
             for (int by = minBY; by <= maxBY; ++by) {
-                Object block;
+                ABlock block;
                 synchronized (this._blocks) {
                     block = this._blocks[bx][by];
                     if (!(block instanceof IBlockDynamic)) {
@@ -387,13 +343,13 @@ public class GeoEngine {
 
                         if (block instanceof BlockFlat) {
                             block = new BlockComplexDynamic(bx, by, (BlockFlat) block);
-                            this._blocks[bx][by] = (ABlock) block;
+                            this._blocks[bx][by] = block;
                         } else if (block instanceof BlockComplex) {
                             block = new BlockComplexDynamic(bx, by, (BlockComplex) block);
-                            this._blocks[bx][by] = (ABlock) block;
+                            this._blocks[bx][by] = block;
                         } else if (block instanceof BlockMultilayer) {
                             block = new BlockMultilayerDynamic(bx, by, (BlockMultilayer) block);
-                            this._blocks[bx][by] = (ABlock) block;
+                            this._blocks[bx][by] = block;
                         }
                     }
                 }
@@ -431,14 +387,14 @@ public class GeoEngine {
                 if (gox == gtx && goy == gty) {
                     return goz == gtz;
                 } else {
-                    double oheight = 0.0D;
+                    double oheight = 0.0F;
                     if (origin instanceof Creature) {
-                        oheight = ((Creature) origin).getCollisionHeight() * 2.0D;
+                        oheight = ((Creature) origin).getCollisionHeight() * (double) 2.0F;
                     }
 
-                    double theight = 0.0D;
+                    double theight = 0.0F;
                     if (target instanceof Creature) {
-                        theight = ((Creature) target).getCollisionHeight() * 2.0D;
+                        theight = ((Creature) target).getCollisionHeight() * (double) 2.0F;
                     }
 
                     return door ? this.checkSeeOriginal(gox, goy, goz, oheight, gtx, gty, gtz, theight) : this.checkSee(gox, goy, goz, oheight, gtx, gty, gtz, theight);
@@ -469,20 +425,20 @@ public class GeoEngine {
                 if (gox == gtx && goy == gty) {
                     return goz == gtz;
                 } else {
-                    double oheight = 0.0D;
+                    double oheight = 0.0F;
                     if (origin instanceof Creature) {
                         oheight = ((Creature) origin).getTemplate().getCollisionHeight();
                     }
 
-                    return this.checkSee(gox, goy, goz, oheight, gtx, gty, gtz, 0.0D);
+                    return this.checkSee(gox, goy, goz, oheight, gtx, gty, gtz, 0.0F);
                 }
             }
         }
     }
 
     protected final boolean checkSee(int gox, int goy, int goz, double oheight, int gtx, int gty, int gtz, double theight) {
-        double losoz = (double) goz + oheight * (double) Config.PART_OF_CHARACTER_HEIGHT / 100.0D;
-        double lostz = (double) gtz + theight * (double) Config.PART_OF_CHARACTER_HEIGHT / 100.0D;
+        double losoz = (double) goz + oheight * (double) Config.PART_OF_CHARACTER_HEIGHT / (double) 100.0F;
+        double lostz = (double) gtz + theight * (double) Config.PART_OF_CHARACTER_HEIGHT / (double) 100.0F;
         int dx = Math.abs(gtx - gox);
         int sx = gox < gtx ? 1 : -1;
         byte dirox = (byte) (sx > 0 ? 1 : 2);
@@ -573,8 +529,8 @@ public class GeoEngine {
     }
 
     protected final boolean checkSeeOriginal(int gox, int goy, int goz, double oheight, int gtx, int gty, int gtz, double theight) {
-        double losoz = (double) goz + oheight * (double) Config.PART_OF_CHARACTER_HEIGHT / 100.0D;
-        double lostz = (double) gtz + theight * (double) Config.PART_OF_CHARACTER_HEIGHT / 100.0D;
+        double losoz = (double) goz + oheight * (double) Config.PART_OF_CHARACTER_HEIGHT / (double) 100.0F;
+        double lostz = (double) gtz + theight * (double) Config.PART_OF_CHARACTER_HEIGHT / (double) 100.0F;
         int dx = Math.abs(gtx - gox);
         int sx = gox < gtx ? 1 : -1;
         byte dirox = (byte) (sx > 0 ? 1 : 2);
@@ -777,39 +733,32 @@ public class GeoEngine {
                         this.clearDebugItems();
                     }
 
-                    List path = null;
+                    List<Location> path = null;
 
                     try {
-                        Iterator var18;
-                        try {
-                            Node result = buffer.findPath(gox, goy, goz, gtx, gty, gtz);
-                            if (result == null) {
-                                ++this._findFails;
-                                var18 = null;
-                                return (List<Location>) var18;
-                            }
+                        Node result = buffer.findPath(gox, goy, goz, gtx, gty, gtz);
+                        if (result == null) {
+                            ++this._findFails;
+                            return null;
+                        }
 
-                            if (debug) {
-                                this.dropDebugItem(728, 0, new GeoLocation(gox, goy, goz));
-                                var18 = buffer.debugPath().iterator();
+                        if (debug) {
+                            this.dropDebugItem(728, 0, new GeoLocation(gox, goy, goz));
 
-                                while (var18.hasNext()) {
-                                    Node n = (Node) var18.next();
-                                    if (n.getCost() < 0.0D) {
-                                        this.dropDebugItem(1831, (int) (-n.getCost() * 10.0D), n.getLoc());
-                                    } else {
-                                        this.dropDebugItem(57, (int) (n.getCost() * 10.0D), n.getLoc());
-                                    }
+                            for (Node n : buffer.debugPath()) {
+                                if (n.getCost() < (double) 0.0F) {
+                                    this.dropDebugItem(1831, (int) (-n.getCost() * (double) 10.0F), n.getLoc());
+                                } else {
+                                    this.dropDebugItem(57, (int) (n.getCost() * (double) 10.0F), n.getLoc());
                                 }
                             }
-
-                            path = constructPath(result);
-                        } catch (Exception var28) {
-                            LOGGER.error("Failed to generate a path.", var28);
-                            ++this._findFails;
-                            var18 = null;
-                            return (List<Location>) var18;
                         }
+
+                        path = constructPath(result);
+                    } catch (Exception e) {
+                        LOGGER.error("Failed to generate a path.", e);
+                        ++this._findFails;
+                        return  null;
                     } finally {
                         buffer.free();
                         ++this._findSuccess;
@@ -845,10 +794,7 @@ public class GeoEngine {
                         }
 
                         if (debug) {
-                            Iterator var32 = path.iterator();
-
-                            while (var32.hasNext()) {
-                                Location node = (Location) var32.next();
+                            for (Location node : path) {
                                 this.dropDebugItem(65, 0, node);
                             }
                         }
@@ -862,12 +808,9 @@ public class GeoEngine {
     }
 
     public List<String> getStat() {
-        List<String> list = new ArrayList();
-        GeoEngine.BufferHolder[] var2 = this._buffers;
-        int var3 = var2.length;
+        List<String> list = new ArrayList<>();
 
-        for (int var4 = 0; var4 < var3; ++var4) {
-            GeoEngine.BufferHolder buffer = var2[var4];
+        for (BufferHolder buffer : this._buffers) {
             list.add(buffer.toString());
         }
 
@@ -897,8 +840,8 @@ public class GeoEngine {
         try {
             this._geoBugReports.printf("%d;%d;%d;%d;%d;%d;%d;%s\r\n", rx, ry, bx, by, cx, cy, goz, comment.replace(";", ":"));
             return true;
-        } catch (Exception var13) {
-            LOGGER.error("Couldn't save new entry to \"geo_bugs.txt\" file.", var13);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't save new entry to \"geo_bugs.txt\" file.", e);
             return false;
         }
     }
@@ -911,10 +854,7 @@ public class GeoEngine {
     }
 
     public final void clearDebugItems() {
-        Iterator var1 = this._debugItems.iterator();
-
-        while (var1.hasNext()) {
-            ItemInstance item = (ItemInstance) var1.next();
+        for (ItemInstance item : this._debugItems) {
             item.decayMe();
         }
 
@@ -934,7 +874,7 @@ public class GeoEngine {
         public BufferHolder(int size, int count) {
             this._size = size;
             this._count = count;
-            this._buffer = new ArrayList(count);
+            this._buffer = new ArrayList<>(count);
 
             for (int i = 0; i < count; ++i) {
                 this._buffer.add(new NodeBuffer(size));
@@ -944,12 +884,12 @@ public class GeoEngine {
 
         public String toString() {
             StringBuilder sb = new StringBuilder(100);
-            StringUtil.append(sb, "Buffer ", String.valueOf(this._size), "x", String.valueOf(this._size), ": count=", String.valueOf(this._count), " uses=", String.valueOf(this._playableUses), "/", String.valueOf(this._uses));
+            StringUtil.append(sb, new Object[]{"Buffer ", String.valueOf(this._size), "x", String.valueOf(this._size), ": count=", String.valueOf(this._count), " uses=", String.valueOf(this._playableUses), "/", String.valueOf(this._uses)});
             if (this._uses > 0) {
-                StringUtil.append(sb, " total/avg(ms)=", String.valueOf(this._elapsed), "/", String.format("%1.2f", (double) this._elapsed / (double) this._uses));
+                StringUtil.append(sb, new Object[]{" total/avg(ms)=", String.valueOf(this._elapsed), "/", String.format("%1.2f", (double) this._elapsed / (double) this._uses)});
             }
 
-            StringUtil.append(sb, " ovf=", String.valueOf(this._playableOverflows), "/", String.valueOf(this._overflows));
+            StringUtil.append(sb, new Object[]{" ovf=", String.valueOf(this._playableOverflows), "/", String.valueOf(this._overflows)});
             return sb.toString();
         }
     }

@@ -10,15 +10,15 @@ import net.sf.l2j.gameserver.taskmanager.WalkerTaskManager;
 import java.util.List;
 
 public class WalkerAI extends CreatureAI {
-    private final List<WalkerLocation> _route;
-
+    private final List<WalkerLocation> _route = WalkerRouteData.getInstance().getWalkerRoute(this.getActor().getNpcId());
     private int _index = 1;
 
     public WalkerAI(Creature creature) {
         super(creature);
-        this._route = WalkerRouteData.getInstance().getWalkerRoute(getActor().getNpcId());
-        if (!this._route.isEmpty())
-            setIntention(IntentionType.MOVE_TO, this._route.get(this._index));
+        if (!this._route.isEmpty()) {
+            this.setIntention(IntentionType.MOVE_TO, this._route.get(this._index));
+        }
+
     }
 
     public Walker getActor() {
@@ -27,27 +27,32 @@ public class WalkerAI extends CreatureAI {
 
     protected void onEvtArrived() {
         WalkerLocation node = this._route.get(this._index);
-        if (node.getChat() != null)
-            getActor().broadcastNpcSay(node.getChat());
-        if (node.getDelay() > 0) {
-            WalkerTaskManager.getInstance().add(getActor(), node.getDelay());
-        } else {
-            moveToNextPoint();
+        if (node.getChat() != null) {
+            this.getActor().broadcastNpcSay(node.getChat());
         }
+
+        if (node.getDelay() > 0) {
+            WalkerTaskManager.getInstance().add(this.getActor(), node.getDelay());
+        } else {
+            this.moveToNextPoint();
+        }
+
     }
 
     public void moveToNextPoint() {
         if (this._index < this._route.size() - 1) {
-            this._index++;
+            ++this._index;
         } else {
             this._index = 0;
         }
+
         WalkerLocation node = this._route.get(this._index);
         if (node.doesNpcMustRun()) {
-            getActor().setRunning();
+            this.getActor().setRunning();
         } else {
-            getActor().setWalking();
+            this.getActor().setWalking();
         }
-        setIntention(IntentionType.MOVE_TO, node);
+
+        this.setIntention(IntentionType.MOVE_TO, node);
     }
 }

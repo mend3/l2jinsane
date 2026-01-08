@@ -8,6 +8,7 @@ import net.sf.l2j.gameserver.geoengine.GeoEngine;
 import net.sf.l2j.gameserver.idfactory.IdFactory;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Npc;
+import net.sf.l2j.gameserver.model.actor.instance.Monster;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.location.SpawnLocation;
 
@@ -16,31 +17,22 @@ import java.util.logging.Logger;
 
 public final class L2Spawn implements Runnable {
     private static final Logger _log = Logger.getLogger(L2Spawn.class.getName());
-
     private final NpcTemplate _template;
-
     private Constructor<?> _constructor;
-
     private Npc _npc;
-
     private SpawnLocation _loc;
-
     private int _respawnDelay;
-
     private int _respawnRandom;
-
     private boolean _respawnEnabled;
-
     private int _respawnMinDelay;
-
     private int _respawnMaxDelay;
 
     public L2Spawn(NpcTemplate template) throws SecurityException, ClassNotFoundException, NoSuchMethodException {
         this._template = template;
-        if (this._template == null)
-            return;
-        Class<?>[] parameters = new Class[]{int.class, Class.forName("net.sf.l2j.gameserver.model.actor.template.NpcTemplate")};
-        this._constructor = Class.forName("net.sf.l2j.gameserver.model.actor.instance." + this._template.getType()).getConstructor(parameters);
+        if (this._template != null) {
+            Class<?>[] parameters = new Class[]{Integer.TYPE, Class.forName("net.sf.l2j.gameserver.model.actor.template.NpcTemplate")};
+            this._constructor = Class.forName("net.sf.l2j.gameserver.model.actor.instance." + this._template.getType()).getConstructor(parameters);
+        }
     }
 
     public NpcTemplate getTemplate() {
@@ -101,8 +93,10 @@ public final class L2Spawn implements Runnable {
 
     public int calculateRespawnTime() {
         int respawnTime = this._respawnDelay;
-        if (this._respawnRandom > 0)
+        if (this._respawnRandom > 0) {
             respawnTime += Rnd.get(-this._respawnRandom, this._respawnRandom);
+        }
+
         return respawnTime;
     }
 
@@ -128,19 +122,25 @@ public final class L2Spawn implements Runnable {
 
     public Npc doSpawn(boolean isSummonSpawn) {
         try {
-            if (this._template.isType("Pet"))
+            if (this._template.isType("Pet")) {
                 return null;
-            Object[] parameters = {IdFactory.getInstance().getNextId(), this._template};
-            Object tmp = this._constructor.newInstance(parameters);
-            if (isSummonSpawn && tmp instanceof Creature)
-                ((Creature) tmp).setShowSummonAnimation(isSummonSpawn);
-            if (!(tmp instanceof Npc))
-                return null;
-            this._npc = (Npc) tmp;
-            this._npc.setSpawn(this);
-            initializeAndSpawn();
-            return this._npc;
-        } catch (Exception e) {
+            } else {
+                Object[] parameters = new Object[]{IdFactory.getInstance().getNextId(), this._template};
+                Object tmp = this._constructor.newInstance(parameters);
+                if (isSummonSpawn && tmp instanceof Creature) {
+                    ((Creature) tmp).setShowSummonAnimation(isSummonSpawn);
+                }
+
+                if (!(tmp instanceof Npc)) {
+                    return null;
+                } else {
+                    this._npc = (Npc) tmp;
+                    this._npc.setSpawn(this);
+                    this.initializeAndSpawn();
+                    return this._npc;
+                }
+            }
+        } catch (Exception var4) {
             _log.warning("L2Spawn: Error during spawn, NPC id=" + this._template.getNpcId());
             return null;
         }
@@ -148,41 +148,47 @@ public final class L2Spawn implements Runnable {
 
     public void doRespawn() {
         if (this._respawnEnabled) {
-            int respawnTime = calculateRespawnTime() * 1000;
+            int respawnTime = this.calculateRespawnTime() * 1000;
             ThreadPool.schedule(this, respawnTime);
         }
+
     }
 
     public void run() {
         if (this._respawnEnabled) {
             this._npc.refreshID();
-            initializeAndSpawn();
+            this.initializeAndSpawn();
         }
+
     }
 
     private void initializeAndSpawn() {
         if (this._loc == null) {
             _log.warning("L2Spawn : the following npcID: " + this._template.getNpcId() + " misses location informations.");
-            return;
+        } else {
+            this._npc.stopAllEffects();
+            this._npc.setIsDead(false);
+            this._npc.setDecayed(false);
+            this._npc.setScriptValue(0);
+            int locx = this._loc.getX();
+            int locy = this._loc.getY();
+            int locz = GeoEngine.getInstance().getHeight(locx, locy, this._loc.getZ());
+            if (Math.abs(locz - this._loc.getZ()) > 200) {
+                locz = this._loc.getZ();
+            }
+
+            this._npc.setCurrentHpMp(this._npc.getMaxHp(), this._npc.getMaxMp());
+            if (Config.CHAMPION_FREQUENCY > 0 && this._npc instanceof Monster && !this.getTemplate().cantBeChampion() && this._npc.getLevel() >= Config.CHAMP_MIN_LVL && this._npc.getLevel() <= Config.CHAMP_MAX_LVL && !this._npc.isRaidRelated() && !this._npc.isMinion()) {
+                this._npc.setChampion(Rnd.get(100) < Config.CHAMPION_FREQUENCY);
+            }
+
+            EngineModsManager.onSpawn(this._npc);
+            this._npc.spawnMe(locx, locy, locz, this._loc.getHeading() < 0 ? Rnd.get(65536) : this._loc.getHeading());
         }
-        this._npc.stopAllEffects();
-        this._npc.setIsDead(false);
-        this._npc.setDecayed(false);
-        this._npc.setScriptValue(0);
-        int locx = this._loc.getX();
-        int locy = this._loc.getY();
-        int locz = GeoEngine.getInstance().getHeight(locx, locy, this._loc.getZ());
-        if (Math.abs(locz - this._loc.getZ()) > 200)
-            locz = this._loc.getZ();
-        this._npc.setCurrentHpMp(this._npc.getMaxHp(), this._npc.getMaxMp());
-        if (Config.CHAMPION_FREQUENCY > 0)
-            if (this._npc instanceof net.sf.l2j.gameserver.model.actor.instance.Monster && !getTemplate().cantBeChampion() && this._npc.getLevel() >= Config.CHAMP_MIN_LVL && this._npc.getLevel() <= Config.CHAMP_MAX_LVL && !this._npc.isRaidRelated() && !this._npc.isMinion())
-                this._npc.setChampion((Rnd.get(100) < Config.CHAMPION_FREQUENCY));
-        EngineModsManager.onSpawn(this._npc);
-        this._npc.spawnMe(locx, locy, locz, (this._loc.getHeading() < 0) ? Rnd.get(65536) : this._loc.getHeading());
     }
 
     public String toString() {
-        return "L2Spawn [id=" + this._template.getNpcId() + ", loc=" + this._loc.toString() + "]";
+        int var10000 = this._template.getNpcId();
+        return "L2Spawn [id=" + var10000 + ", loc=" + this._loc.toString() + "]";
     }
 }

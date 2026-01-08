@@ -2,11 +2,8 @@ package net.sf.l2j.gameserver.model;
 
 public class HistoryInfo {
     private final int _raceId;
-
     private int _first;
-
     private int _second;
-
     private double _oddRate;
 
     public HistoryInfo(int raceId, int first, int second, double oddRate) {

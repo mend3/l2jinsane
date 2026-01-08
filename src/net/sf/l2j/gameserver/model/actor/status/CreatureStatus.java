@@ -18,8 +18,8 @@ public class CreatureStatus {
     private final Creature _activeChar;
     private final Set<Creature> _statusListener = ConcurrentHashMap.newKeySet();
     protected byte _flagsRegenActive = 0;
-    private double _currentHp = 0.0D;
-    private double _currentMp = 0.0D;
+    private double _currentHp = 0.0F;
+    private double _currentMp = 0.0F;
     private Future<?> _regTask;
 
     public CreatureStatus(Creature activeChar) {
@@ -27,9 +27,9 @@ public class CreatureStatus {
     }
 
     public final void addStatusListener(Creature object) {
-        if (object == getActiveChar())
-            return;
-        this._statusListener.add(object);
+        if (object != this.getActiveChar()) {
+            this._statusListener.add(object);
+        }
     }
 
     public final void removeStatusListener(Creature object) {
@@ -44,52 +44,66 @@ public class CreatureStatus {
     }
 
     public void reduceHp(double value, Creature attacker) {
-        reduceHp(value, attacker, true, false, false);
+        this.reduceHp(value, attacker, true, false, false);
     }
 
     public void reduceHp(double value, Creature attacker, boolean isHpConsumption) {
-        reduceHp(value, attacker, true, false, isHpConsumption);
+        this.reduceHp(value, attacker, true, false, isHpConsumption);
     }
 
     public void reduceHp(double value, Creature attacker, boolean awake, boolean isDOT, boolean isHPConsumption) {
-        if (getActiveChar().isDead())
-            return;
-        if (getActiveChar().isInvul()) {
-            if (attacker != getActiveChar())
-                return;
-            if (!isDOT && !isHPConsumption)
-                return;
-        }
-        if (attacker != null) {
-            Player attackerPlayer = attacker.getActingPlayer();
-            if (attackerPlayer != null && attackerPlayer.isGM() && !attackerPlayer.getAccessLevel().canGiveDamage())
-                return;
-        }
-        if (!isDOT && !isHPConsumption) {
-            getActiveChar().stopEffectsOnDamage(awake);
-            if (getActiveChar().isStunned() && Rnd.get(10) == 0)
-                getActiveChar().stopStunning(true);
-            if (getActiveChar().isImmobileUntilAttacked())
-                getActiveChar().stopImmobileUntilAttacked(null);
-        }
-        if (value > 0.0D)
-            setCurrentHp(Math.max(getCurrentHp() - value, 0.0D));
-        if (getActiveChar().getCurrentHp() < 0.5D && getActiveChar().isMortal()) {
-            getActiveChar().abortAttack();
-            getActiveChar().abortCast();
-            getActiveChar().doDie(attacker);
+        if (!this.getActiveChar().isDead()) {
+            if (this.getActiveChar().isInvul()) {
+                if (attacker != this.getActiveChar()) {
+                    return;
+                }
+
+                if (!isDOT && !isHPConsumption) {
+                    return;
+                }
+            }
+
+            if (attacker != null) {
+                Player attackerPlayer = attacker.getActingPlayer();
+                if (attackerPlayer != null && attackerPlayer.isGM() && !attackerPlayer.getAccessLevel().canGiveDamage()) {
+                    return;
+                }
+            }
+
+            if (!isDOT && !isHPConsumption) {
+                this.getActiveChar().stopEffectsOnDamage(awake);
+                if (this.getActiveChar().isStunned() && Rnd.get(10) == 0) {
+                    this.getActiveChar().stopStunning(true);
+                }
+
+                if (this.getActiveChar().isImmobileUntilAttacked()) {
+                    this.getActiveChar().stopImmobileUntilAttacked(null);
+                }
+            }
+
+            if (value > (double) 0.0F) {
+                this.setCurrentHp(Math.max(this.getCurrentHp() - value, 0.0F));
+            }
+
+            if (this.getActiveChar().getCurrentHp() < (double) 0.5F && this.getActiveChar().isMortal()) {
+                this.getActiveChar().abortAttack();
+                this.getActiveChar().abortCast();
+                this.getActiveChar().doDie(attacker);
+            }
+
         }
     }
 
     public void reduceMp(double value) {
-        setCurrentMp(Math.max(getCurrentMp() - value, 0.0D));
+        this.setCurrentMp(Math.max(this.getCurrentMp() - value, 0.0F));
     }
 
     public final synchronized void startHpMpRegeneration() {
-        if (this._regTask == null && !getActiveChar().isDead()) {
-            int period = Formulas.getRegeneratePeriod(getActiveChar());
-            this._regTask = ThreadPool.scheduleAtFixedRate(() -> doRegeneration(), period, period);
+        if (this._regTask == null && !this.getActiveChar().isDead()) {
+            int period = Formulas.getRegeneratePeriod(this.getActiveChar());
+            this._regTask = ThreadPool.scheduleAtFixedRate(() -> this.doRegeneration(), period, period);
         }
+
     }
 
     public final synchronized void stopHpMpRegeneration() {
@@ -98,10 +112,11 @@ public class CreatureStatus {
             this._regTask = null;
             this._flagsRegenActive = 0;
         }
+
     }
 
     public double getCurrentCp() {
-        return 0.0D;
+        return 0.0F;
     }
 
     public void setCurrentCp(double newCp) {
@@ -112,32 +127,38 @@ public class CreatureStatus {
     }
 
     public final void setCurrentHp(double newHp) {
-        setCurrentHp(newHp, true);
+        this.setCurrentHp(newHp, true);
     }
 
     public void setCurrentHp(double newHp, boolean broadcastPacket) {
-        double maxHp = getActiveChar().getMaxHp();
+        double maxHp = this.getActiveChar().getMaxHp();
         synchronized (this) {
-            if (getActiveChar().isDead())
+            if (this.getActiveChar().isDead()) {
                 return;
+            }
+
             if (newHp >= maxHp) {
                 this._currentHp = maxHp;
-                this._flagsRegenActive = (byte) (this._flagsRegenActive & 0xFFFFFFFE);
-                if (this._flagsRegenActive == 0)
-                    stopHpMpRegeneration();
+                this._flagsRegenActive &= -2;
+                if (this._flagsRegenActive == 0) {
+                    this.stopHpMpRegeneration();
+                }
             } else {
                 this._currentHp = newHp;
-                this._flagsRegenActive = (byte) (this._flagsRegenActive | 0x1);
-                startHpMpRegeneration();
+                this._flagsRegenActive = (byte) (this._flagsRegenActive | 1);
+                this.startHpMpRegeneration();
             }
         }
-        if (broadcastPacket)
-            getActiveChar().broadcastStatusUpdate();
+
+        if (broadcastPacket) {
+            this.getActiveChar().broadcastStatusUpdate();
+        }
+
     }
 
     public final void setCurrentHpMp(double newHp, double newMp) {
-        setCurrentHp(newHp, false);
-        setCurrentMp(newMp, true);
+        this.setCurrentHp(newHp, false);
+        this.setCurrentMp(newMp, true);
     }
 
     public final double getCurrentMp() {
@@ -145,36 +166,46 @@ public class CreatureStatus {
     }
 
     public final void setCurrentMp(double newMp) {
-        setCurrentMp(newMp, true);
+        this.setCurrentMp(newMp, true);
     }
 
     public final void setCurrentMp(double newMp, boolean broadcastPacket) {
-        int maxMp = getActiveChar().getStat().getMaxMp();
+        int maxMp = this.getActiveChar().getStat().getMaxMp();
         synchronized (this) {
-            if (getActiveChar().isDead())
+            if (this.getActiveChar().isDead()) {
                 return;
-            if (newMp >= maxMp) {
+            }
+
+            if (newMp >= (double) maxMp) {
                 this._currentMp = maxMp;
-                this._flagsRegenActive = (byte) (this._flagsRegenActive & 0xFFFFFFFD);
-                if (this._flagsRegenActive == 0)
-                    stopHpMpRegeneration();
+                this._flagsRegenActive &= -3;
+                if (this._flagsRegenActive == 0) {
+                    this.stopHpMpRegeneration();
+                }
             } else {
                 this._currentMp = newMp;
-                this._flagsRegenActive = (byte) (this._flagsRegenActive | 0x2);
-                startHpMpRegeneration();
+                this._flagsRegenActive = (byte) (this._flagsRegenActive | 2);
+                this.startHpMpRegeneration();
             }
         }
-        if (broadcastPacket)
-            getActiveChar().broadcastStatusUpdate();
+
+        if (broadcastPacket) {
+            this.getActiveChar().broadcastStatusUpdate();
+        }
+
     }
 
     protected void doRegeneration() {
-        CreatureStat charstat = getActiveChar().getStat();
-        if (getCurrentHp() < charstat.getMaxHp())
-            setCurrentHp(getCurrentHp() + Formulas.calcHpRegen(getActiveChar()), false);
-        if (getCurrentMp() < charstat.getMaxMp())
-            setCurrentMp(getCurrentMp() + Formulas.calcMpRegen(getActiveChar()), false);
-        getActiveChar().broadcastStatusUpdate();
+        CreatureStat charstat = this.getActiveChar().getStat();
+        if (this.getCurrentHp() < (double) charstat.getMaxHp()) {
+            this.setCurrentHp(this.getCurrentHp() + Formulas.calcHpRegen(this.getActiveChar()), false);
+        }
+
+        if (this.getCurrentMp() < (double) charstat.getMaxMp()) {
+            this.setCurrentMp(this.getCurrentMp() + Formulas.calcMpRegen(this.getActiveChar()), false);
+        }
+
+        this.getActiveChar().broadcastStatusUpdate();
     }
 
     public Creature getActiveChar() {

@@ -4,15 +4,10 @@ import net.sf.l2j.gameserver.model.zone.ZoneForm;
 
 public class ZoneCylinder extends ZoneForm {
     private final int _x;
-
     private final int _y;
-
     private final int _z1;
-
     private final int _z2;
-
     private final int _rad;
-
     private final int _radS;
 
     public ZoneCylinder(int x, int y, int z1, int z2, int rad) {
@@ -25,36 +20,47 @@ public class ZoneCylinder extends ZoneForm {
     }
 
     public boolean isInsideZone(int x, int y, int z) {
-        return !(Math.pow((this._x - x), 2.0D) + Math.pow((this._y - y), 2.0D) > this._radS) && z >= this._z1 && z <= this._z2;
+        return !(Math.pow(this._x - x, 2.0F) + Math.pow(this._y - y, 2.0F) > (double) this._radS) && z >= this._z1 && z <= this._z2;
     }
 
     public boolean intersectsRectangle(int ax1, int ax2, int ay1, int ay2) {
-        if (this._x > ax1 && this._x < ax2 && this._y > ay1 && this._y < ay2)
+        if (this._x > ax1 && this._x < ax2 && this._y > ay1 && this._y < ay2) {
             return true;
-        if (Math.pow((ax1 - this._x), 2.0D) + Math.pow((ay1 - this._y), 2.0D) < this._radS)
+        } else if (Math.pow(ax1 - this._x, 2.0F) + Math.pow(ay1 - this._y, 2.0F) < (double) this._radS) {
             return true;
-        if (Math.pow((ax1 - this._x), 2.0D) + Math.pow((ay2 - this._y), 2.0D) < this._radS)
+        } else if (Math.pow(ax1 - this._x, 2.0F) + Math.pow(ay2 - this._y, 2.0F) < (double) this._radS) {
             return true;
-        if (Math.pow((ax2 - this._x), 2.0D) + Math.pow((ay1 - this._y), 2.0D) < this._radS)
+        } else if (Math.pow(ax2 - this._x, 2.0F) + Math.pow(ay1 - this._y, 2.0F) < (double) this._radS) {
             return true;
-        if (Math.pow((ax2 - this._x), 2.0D) + Math.pow((ay2 - this._y), 2.0D) < this._radS)
+        } else if (Math.pow(ax2 - this._x, 2.0F) + Math.pow(ay2 - this._y, 2.0F) < (double) this._radS) {
             return true;
-        if (this._x > ax1 && this._x < ax2) {
-            if (Math.abs(this._y - ay2) < this._rad)
-                return true;
-            if (Math.abs(this._y - ay1) < this._rad)
-                return true;
+        } else {
+            if (this._x > ax1 && this._x < ax2) {
+                if (Math.abs(this._y - ay2) < this._rad) {
+                    return true;
+                }
+
+                if (Math.abs(this._y - ay1) < this._rad) {
+                    return true;
+                }
+            }
+
+            if (this._y > ay1 && this._y < ay2) {
+                if (Math.abs(this._x - ax2) < this._rad) {
+                    return true;
+                }
+
+                if (Math.abs(this._x - ax1) < this._rad) {
+                    return true;
+                }
+            }
+
+            return false;
         }
-        if (this._y > ay1 && this._y < ay2) {
-            if (Math.abs(this._x - ax2) < this._rad)
-                return true;
-            return Math.abs(this._x - ax1) < this._rad;
-        }
-        return false;
     }
 
     public double getDistanceToZone(int x, int y) {
-        return Math.sqrt(Math.pow((this._x - x), 2.0D) + Math.pow((this._y - y), 2.0D)) - this._rad;
+        return Math.sqrt(Math.pow(this._x - x, 2.0F) + Math.pow(this._y - y, 2.0F)) - (double) this._rad;
     }
 
     public int getLowZ() {
@@ -66,12 +72,14 @@ public class ZoneCylinder extends ZoneForm {
     }
 
     public void visualizeZone(int id, int z) {
-        int count = (int) (6.283185307179586D * this._rad / 50.0D);
-        double angle = 6.283185307179586D / count;
-        for (int i = 0; i < count; i++) {
-            int x = (int) (Math.cos(angle * i) * this._rad);
-            int y = (int) (Math.sin(angle * i) * this._rad);
+        int count = (int) ((Math.PI * 2D) * (double) this._rad / (double) 50.0F);
+        double angle = (Math.PI * 2D) / (double) count;
+
+        for (int i = 0; i < count; ++i) {
+            int x = (int) (Math.cos(angle * (double) i) * (double) this._rad);
+            int y = (int) (Math.sin(angle * (double) i) * (double) this._rad);
             dropDebugItem(id, this._x + x, this._y + y, z);
         }
+
     }
 }

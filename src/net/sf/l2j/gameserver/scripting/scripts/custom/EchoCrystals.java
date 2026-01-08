@@ -14,7 +14,7 @@ public class EchoCrystals extends Quest {
     private static final String qn = "EchoCrystals";
     private static final int ADENA = 57;
     private static final int COST = 200;
-    private static final Map<Integer, EchoCrystals.ScoreData> SCORES = new HashMap();
+    private static final Map<Integer, EchoCrystals.ScoreData> SCORES = new HashMap<>();
 
     public EchoCrystals() {
         super(-1, "custom");

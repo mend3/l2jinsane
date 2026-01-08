@@ -16,44 +16,53 @@ public class SpreeKills extends AbstractMods {
     private static final Map<Integer, Integer> players = new HashMap<>();
 
     public SpreeKills() {
-        registerMod(ConfigData.ENABLE_SpreeKills);
+        this.registerMod(ConfigData.ENABLE_SpreeKills);
     }
 
     public static boolean announcements(Player player, int count) {
         String announcement = "";
+
         for (Map.Entry<Integer, String> kill : ConfigData.ANNOUNCEMENTS_KILLS.entrySet()) {
             announcement = kill.getValue();
-            if (kill.getKey() == count)
+            if (kill.getKey() == count) {
                 break;
+            }
         }
+
         World.toAllOnlinePlayers(new CreatureSay(0, 2, "", announcement.replace("%s1", player.getName())));
         return true;
     }
 
     public static SpreeKills getInstance() {
-        return SingletonHolder.INSTANCE;
+        return SpreeKills.SingletonHolder.INSTANCE;
     }
 
     public void onModState() {
     }
 
     public void onDeath(Creature player) {
-        players.remove(player.getObjectId());
+        if (players.containsKey(player.getObjectId())) {
+            players.remove(player.getObjectId());
+        }
+
     }
 
     public void onKill(Creature killer, Creature victim, boolean isPet) {
-        if (!Util.areObjectType(Player.class, victim) || killer.getActingPlayer() == null)
-            return;
-        Player activeChar = killer.getActingPlayer();
-        int count = 1;
-        if (players.containsKey(activeChar.getObjectId())) {
-            count = players.get(activeChar.getObjectId());
-            count++;
+        if (Util.areObjectType(Player.class, victim) && killer.getActingPlayer() != null) {
+            Player activeChar = killer.getActingPlayer();
+            int count = 1;
+            if (players.containsKey(activeChar.getObjectId())) {
+                count = players.get(activeChar.getObjectId());
+                ++count;
+            }
+
+            players.put(activeChar.getObjectId(), count);
+            if (ConfigData.ENABLE_KILL_EFFECT) {
+                activeChar.broadcastPacket(new MagicSkillUse(activeChar, victim, ConfigData.KILL_SKILL_EFFECT, 1, 500, 500));
+            }
+
+            announcements(activeChar, count);
         }
-        players.put(activeChar.getObjectId(), count);
-        if (ConfigData.ENABLE_KILL_EFFECT)
-            activeChar.broadcastPacket(new MagicSkillUse(activeChar, victim, ConfigData.KILL_SKILL_EFFECT, 1, 500, 500));
-        announcements(activeChar, count);
     }
 
     private static class SingletonHolder {

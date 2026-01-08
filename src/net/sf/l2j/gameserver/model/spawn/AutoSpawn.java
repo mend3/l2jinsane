@@ -8,27 +8,16 @@ import java.util.List;
 
 public class AutoSpawn {
     private final List<SpawnLocation> _locList = new ArrayList<>();
-
     private final List<Npc> _npcList = new ArrayList<>();
-
     protected int _objectId;
-
     protected int _npcId;
-
     protected int _initDelay;
-
     protected int _resDelay;
-
     protected int _desDelay;
-
     protected int _spawnCount = 1;
-
     protected int _lastLocIndex = -1;
-
     private boolean _spawnActive;
-
     private boolean _randomSpawn;
-
     private boolean _broadcastAnnouncement;
 
     public AutoSpawn(int npcId, int initDelay, int respawnDelay, int despawnDelay) {
@@ -91,18 +80,20 @@ public class AutoSpawn {
     }
 
     public Npc[] getNPCInstanceList() {
-        Npc[] ret;
         synchronized (this._npcList) {
-            ret = new Npc[this._npcList.size()];
+            Npc[] ret = new Npc[this._npcList.size()];
             this._npcList.toArray(ret);
+            return ret;
         }
-        return ret;
     }
 
     public L2Spawn[] getSpawns() {
         List<L2Spawn> npcSpawns = new ArrayList<>();
-        for (Npc npcInst : this._npcList)
+
+        for (Npc npcInst : this._npcList) {
             npcSpawns.add(npcInst.getSpawn());
+        }
+
         return npcSpawns.toArray(new L2Spawn[npcSpawns.size()]);
     }
 
@@ -135,8 +126,6 @@ public class AutoSpawn {
     }
 
     public boolean addSpawnLocation(int[] spawnLoc) {
-        if (spawnLoc.length != 3)
-            return false;
-        return addSpawnLocation(spawnLoc[0], spawnLoc[1], spawnLoc[2], -1);
+        return spawnLoc.length != 3 ? false : this.addSpawnLocation(spawnLoc[0], spawnLoc[1], spawnLoc[2], -1);
     }
 }

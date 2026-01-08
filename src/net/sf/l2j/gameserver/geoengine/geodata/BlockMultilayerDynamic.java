@@ -18,7 +18,7 @@ public final class BlockMultilayerDynamic extends BlockMultilayer implements IBl
         this._by = by;
         this._original = new byte[this._buffer.length];
         System.arraycopy(this._buffer, 0, this._original, 0, this._buffer.length);
-        this._objects = new LinkedList();
+        this._objects = new LinkedList<>();
     }
 
     public short getHeightNearestOriginal(int geoX, int geoY, int worldZ) {
@@ -117,10 +117,8 @@ public final class BlockMultilayerDynamic extends BlockMultilayer implements IBl
         int minBY = this._by * 8;
         int maxBX = minBX + 8;
         int maxBY = minBY + 8;
-        Iterator var5 = this._objects.iterator();
 
-        while (var5.hasNext()) {
-            IGeoObject object = (IGeoObject) var5.next();
+        for (IGeoObject object : this._objects) {
             int minOX = object.getGeoX();
             int minOY = object.getGeoY();
             int minOZ = object.getGeoZ();

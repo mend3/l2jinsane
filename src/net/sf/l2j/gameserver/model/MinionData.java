@@ -4,11 +4,8 @@ import net.sf.l2j.commons.random.Rnd;
 
 public class MinionData {
     private int _minionId;
-
     private int _minionAmount;
-
     private int _minionAmountMin;
-
     private int _minionAmountMax;
 
     public int getMinionId() {
@@ -31,8 +28,9 @@ public class MinionData {
         if (this._minionAmountMax > this._minionAmountMin) {
             this._minionAmount = Rnd.get(this._minionAmountMin, this._minionAmountMax);
             return this._minionAmount;
+        } else {
+            return this._minionAmountMin;
         }
-        return this._minionAmountMin;
     }
 
     public void setAmount(int amount) {

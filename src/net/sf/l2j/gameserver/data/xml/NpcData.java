@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class NpcData implements IXmlReader {
-    private final Map<Integer, NpcTemplate> _npcs = new HashMap();
+    private final Map<Integer, NpcTemplate> _npcs = new HashMap<>();
 
     protected NpcData() {
     }
@@ -77,7 +77,7 @@ public class NpcData implements IXmlReader {
                 this.forEach(npcNode, "drops", (dropsNode) -> {
                     String type = set.getString("type");
                     boolean isRaid = type.equalsIgnoreCase("RaidBoss") || type.equalsIgnoreCase("GrandBoss");
-                    List<DropCategory> drops = new ArrayList();
+                    List<DropCategory> drops = new ArrayList<>();
                     this.forEach(dropsNode, "category", (categoryNode) -> {
                         NamedNodeMap categoryAttrs = categoryNode.getAttributes();
                         DropCategory category = new DropCategory(this.parseInteger(categoryAttrs, "id"));
@@ -99,7 +99,7 @@ public class NpcData implements IXmlReader {
                     set.set("drops", drops);
                 });
                 this.forEach(npcNode, "minions", (minionsNode) -> {
-                    List<MinionData> minions = new ArrayList();
+                    List<MinionData> minions = new ArrayList<>();
                     this.forEach(minionsNode, "minion", (minionNode) -> {
                         NamedNodeMap minionAttrs = minionNode.getAttributes();
                         MinionData data = new MinionData();
@@ -118,7 +118,7 @@ public class NpcData implements IXmlReader {
                     set.set("autoFeedLimit", this.parseDouble(petdataAttrs, "autoFeedLimit"));
                     set.set("hungryLimit", this.parseDouble(petdataAttrs, "hungryLimit"));
                     set.set("unsummonLimit", this.parseDouble(petdataAttrs, "unsummonLimit"));
-                    Map<Integer, PetDataEntry> entries = new HashMap();
+                    Map<Integer, PetDataEntry> entries = new HashMap<>();
                     this.forEach(petdataNode, "stat", (statNode) -> {
                         StatSet petSet = this.parseAttributes(statNode);
                         entries.put(petSet.getInteger("level"), new PetDataEntry(petSet));
@@ -126,7 +126,7 @@ public class NpcData implements IXmlReader {
                     set.set("petData", entries);
                 });
                 this.forEach(npcNode, "skills", (skillsNode) -> {
-                    List<L2Skill> skills = new ArrayList();
+                    List<L2Skill> skills = new ArrayList<>();
                     this.forEach(skillsNode, "skill", (skillNode) -> {
                         NamedNodeMap skillAttrs = skillNode.getAttributes();
                         int skillId = this.parseInteger(skillAttrs, "id");

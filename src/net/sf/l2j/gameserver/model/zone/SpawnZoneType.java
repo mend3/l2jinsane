@@ -8,7 +8,6 @@ import java.util.List;
 
 public abstract class SpawnZoneType extends ZoneType {
     private List<Location> _locs = null;
-
     private List<Location> _chaoticLocs = null;
 
     public SpawnZoneType(int id) {
@@ -17,14 +16,19 @@ public abstract class SpawnZoneType extends ZoneType {
 
     public final void addLoc(Location loc, boolean isChaotic) {
         if (isChaotic) {
-            if (this._chaoticLocs == null)
+            if (this._chaoticLocs == null) {
                 this._chaoticLocs = new ArrayList<>();
+            }
+
             this._chaoticLocs.add(loc);
         } else {
-            if (this._locs == null)
+            if (this._locs == null) {
                 this._locs = new ArrayList<>();
+            }
+
             this._locs.add(loc);
         }
+
     }
 
     public final List<Location> getLocs() {
@@ -36,6 +40,6 @@ public abstract class SpawnZoneType extends ZoneType {
     }
 
     public final Location getRandomChaoticLoc() {
-        return Rnd.get((this._chaoticLocs != null) ? this._chaoticLocs : this._locs);
+        return Rnd.get(this._chaoticLocs != null ? this._chaoticLocs : this._locs);
     }
 }

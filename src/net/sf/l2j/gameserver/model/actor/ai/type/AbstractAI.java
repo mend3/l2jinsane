@@ -63,32 +63,15 @@ abstract class AbstractAI {
         }
 
         switch (intention) {
-            case IDLE:
-                this.onIntentionIdle();
-                break;
-            case ACTIVE:
-                this.onIntentionActive();
-                break;
-            case REST:
-                this.onIntentionRest();
-                break;
-            case ATTACK:
-                this.onIntentionAttack((Creature) arg0);
-                break;
-            case CAST:
-                this.onIntentionCast((L2Skill) arg0, (WorldObject) arg1);
-                break;
-            case MOVE_TO:
-                this.onIntentionMoveTo((Location) arg0);
-                break;
-            case FOLLOW:
-                this.onIntentionFollow((Creature) arg0);
-                break;
-            case PICK_UP:
-                this.onIntentionPickUp((WorldObject) arg0);
-                break;
-            case INTERACT:
-                this.onIntentionInteract((WorldObject) arg0);
+            case IDLE -> this.onIntentionIdle();
+            case ACTIVE -> this.onIntentionActive();
+            case REST -> this.onIntentionRest();
+            case ATTACK -> this.onIntentionAttack((Creature) arg0);
+            case CAST -> this.onIntentionCast((L2Skill) arg0, (WorldObject) arg1);
+            case MOVE_TO -> this.onIntentionMoveTo((Location) arg0);
+            case FOLLOW -> this.onIntentionFollow((Creature) arg0);
+            case PICK_UP -> this.onIntentionPickUp((WorldObject) arg0);
+            case INTERACT -> this.onIntentionInteract((WorldObject) arg0);
         }
 
         if (this._nextAction != null && this._nextAction.getIntention() == intention) {
@@ -354,7 +337,7 @@ abstract class AbstractAI {
         }
 
         this._followTarget = target;
-        this._followTask = ThreadPool.scheduleAtFixedRate(new AbstractAI.FollowTask(), 5L, 1000L);
+        this._followTask = ThreadPool.scheduleAtFixedRate(new FollowTask(), 5L, 1000L);
     }
 
     public synchronized void startFollow(Creature target, int range) {
@@ -364,7 +347,7 @@ abstract class AbstractAI {
         }
 
         this._followTarget = target;
-        this._followTask = ThreadPool.scheduleAtFixedRate(new AbstractAI.FollowTask(range), 5L, 500L);
+        this._followTask = ThreadPool.scheduleAtFixedRate(new FollowTask(range), 5L, 500L);
     }
 
     public synchronized void stopFollow() {
@@ -397,7 +380,7 @@ abstract class AbstractAI {
     }
 
     public String toString() {
-        return "Actor: " + this._actor;
+        return "Actor: " + String.valueOf(this._actor);
     }
 
     private class FollowTask implements Runnable {

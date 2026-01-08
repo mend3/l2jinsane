@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SpellbookData implements IXmlReader {
-    private final Map<Integer, Integer> _books = new HashMap();
+    private final Map<Integer, Integer> _books = new HashMap<>();
 
     protected SpellbookData() {
     }

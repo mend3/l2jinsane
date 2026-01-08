@@ -19,34 +19,39 @@ public final class WaterTaskManager implements Runnable {
     }
 
     public static WaterTaskManager getInstance() {
-        return SingletonHolder.INSTANCE;
+        return WaterTaskManager.SingletonHolder.INSTANCE;
     }
 
     public void run() {
-        if (this._players.isEmpty())
-            return;
-        long time = System.currentTimeMillis();
-        for (Map.Entry<Player, Long> entry : this._players.entrySet()) {
-            if (time < entry.getValue())
-                continue;
-            Player player = entry.getKey();
-            double hp = player.getMaxHp() / 100.0D;
-            player.reduceCurrentHp(hp, player, false, false, null);
-            player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.DROWN_DAMAGE_S1).addNumber((int) hp));
+        if (!this._players.isEmpty()) {
+            long time = System.currentTimeMillis();
+
+            for (Map.Entry<Player, Long> entry : this._players.entrySet()) {
+                if (time >= entry.getValue()) {
+                    Player player = entry.getKey();
+                    double hp = (double) player.getMaxHp() / (double) 100.0F;
+                    player.reduceCurrentHp(hp, player, false, false, null);
+                    player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.DROWN_DAMAGE_S1).addNumber((int) hp));
+                }
+            }
+
         }
     }
 
     public void add(Player player) {
         if (!player.isDead() && !this._players.containsKey(player)) {
-            int time = (int) player.calcStat(Stats.BREATH, 60000.0D * player.getRace().getBreathMultiplier(), player, null);
-            this._players.put(player, System.currentTimeMillis() + time);
+            int time = (int) player.calcStat(Stats.BREATH, (double) 60000.0F * player.getRace().getBreathMultiplier(), player, null);
+            this._players.put(player, System.currentTimeMillis() + (long) time);
             player.sendPacket(new SetupGauge(GaugeColor.CYAN, time));
         }
+
     }
 
     public void remove(Player player) {
-        if (this._players.remove(player) != null)
+        if (this._players.remove(player) != null) {
             player.sendPacket(new SetupGauge(GaugeColor.CYAN, 0));
+        }
+
     }
 
     private static class SingletonHolder {

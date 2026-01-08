@@ -31,7 +31,6 @@ public class L2RandomZone extends SpawnZoneType {
     public String _name;
     public int _time;
     public List<Location> _locations = new ArrayList<>();
-    L2Skill noblesse = SkillTable.getInstance().getInfo(1323, 1);
     private int _id;
     private int _maxClanMembers;
 
@@ -109,7 +108,8 @@ public class L2RandomZone extends SpawnZoneType {
                 }
             }
             activeChar.sendPacket(new CreatureSay(0, 16, "PvP Zone", "will be changed in " + RandomZoneManager.getInstance().getLeftTime()));
-            this.noblesse.getEffects(activeChar, activeChar);
+            L2Skill noblesse = SkillTable.getInstance().getInfo(1323, 1);
+            noblesse.getEffects(activeChar, activeChar);
             if (activeChar.getPvpFlag() > 0)
                 PvpFlagTaskManager.getInstance().remove(activeChar);
             activeChar.setPvpFlag(1);
@@ -146,7 +146,8 @@ public class L2RandomZone extends SpawnZoneType {
 
     public void onReviveInside(Creature character) {
         if (character instanceof Player activeChar) {
-            this.noblesse.getEffects(activeChar, activeChar);
+            L2Skill noblesse = SkillTable.getInstance().getInfo(1323, 1);
+            noblesse.getEffects(activeChar, activeChar);
         }
     }
 
@@ -157,7 +158,8 @@ public class L2RandomZone extends SpawnZoneType {
         character.setCurrentHp(character.getMaxHp());
         character.setCurrentCp(character.getMaxCp());
         character.setCurrentMp(character.getMaxMp());
-        this.noblesse.getEffects(character, character);
+        L2Skill noblesse = SkillTable.getInstance().getInfo(1323, 1);
+        noblesse.getEffects(character, character);
         if (RandomZoneManager.getInstance().getCurrentZone() != null && character.isInsideZone(ZoneId.RANDOMZONE)) {
             character.teleportTo(RandomZoneManager.getInstance().getCurrentZone().getLoc(), 20);
         } else {

@@ -57,56 +57,25 @@ public class CharSelectSlot {
 
     private static int[][] restoreVisibleInventory(int objectId) {
         int[][] paperdoll = new int[18][3];
-        try {
-            Connection con = ConnectionPool.getConnection();
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT object_id,item_id,loc_data,enchant_level FROM items WHERE owner_id=? AND loc='PAPERDOLL'");
-                try {
-                    ps.setInt(1, objectId);
-                    ResultSet rs = ps.executeQuery();
-                    try {
-                        while (rs.next()) {
-                            int slot = rs.getInt("loc_data");
-                            paperdoll[slot][0] = rs.getInt("object_id");
-                            paperdoll[slot][1] = rs.getInt("item_id");
-                            paperdoll[slot][2] = rs.getInt("enchant_level");
-                        }
-                        if (rs != null)
-                            rs.close();
-                    } catch (Throwable throwable) {
-                        if (rs != null)
-                            try {
-                                rs.close();
-                            } catch (Throwable throwable1) {
-                                throwable.addSuppressed(throwable1);
-                            }
-                        throw throwable;
-                    }
-                    if (ps != null)
-                        ps.close();
-                } catch (Throwable throwable) {
-                    if (ps != null)
-                        try {
-                            ps.close();
-                        } catch (Throwable throwable1) {
-                            throwable.addSuppressed(throwable1);
-                        }
-                    throw throwable;
+
+        try (
+                Connection con = ConnectionPool.getConnection();
+                PreparedStatement ps = con.prepareStatement(RESTORE_PAPERDOLLS);
+        ) {
+            ps.setInt(1, objectId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int slot = rs.getInt("loc_data");
+                    paperdoll[slot][0] = rs.getInt("object_id");
+                    paperdoll[slot][1] = rs.getInt("item_id");
+                    paperdoll[slot][2] = rs.getInt("enchant_level");
                 }
-                if (con != null)
-                    con.close();
-            } catch (Throwable throwable) {
-                if (con != null)
-                    try {
-                        con.close();
-                    } catch (Throwable throwable1) {
-                        throwable.addSuppressed(throwable1);
-                    }
-                throw throwable;
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't restore paperdolls for {}.", e, objectId);
+            LOGGER.error("Couldn't restore paperdolls for {}.", e, new Object[]{objectId});
         }
+
         return paperdoll;
     }
 

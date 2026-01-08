@@ -23,29 +23,26 @@ public class InitialPartyFarm {
     }
 
     public String getRestartNextTime() {
-        return this.NextEvent.getTime() != null ? this.format.format(this.NextEvent.getTime()) : "Erro";
+        return this.format.format(this.NextEvent.getTime());
     }
 
-    public void load() {
+    public void StartCalculationOfNextEventTime() {
         try {
             Calendar currentTime = Calendar.getInstance();
             Calendar testStartTime = null;
             long flush2 = 0L;
             long timeL = 0L;
             int count = 0;
-            String[] var8 = Config.EVENT_BEST_FARM_INTERVAL_BY_TIME_OF_DAY;
-            int var9 = var8.length;
 
-            for (int var10 = 0; var10 < var9; ++var10) {
-                String timeOfDay = var8[var10];
+            for (String timeOfDay : Config.EVENT_BEST_FARM_INTERVAL_BY_TIME_OF_DAY) {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
                 String[] splitTimeOfDay = timeOfDay.split(":");
-                testStartTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitTimeOfDay[0]));
-                testStartTime.set(Calendar.MINUTE, Integer.parseInt(splitTimeOfDay[1]));
-                testStartTime.set(Calendar.SECOND, 0);
+                testStartTime.set(11, Integer.parseInt(splitTimeOfDay[0]));
+                testStartTime.set(12, Integer.parseInt(splitTimeOfDay[1]));
+                testStartTime.set(13, 0);
                 if (testStartTime.getTimeInMillis() < currentTime.getTimeInMillis()) {
-                    testStartTime.add(Calendar.DATE, 1);
+                    testStartTime.add(5, 1);
                 }
 
                 timeL = testStartTime.getTimeInMillis() - currentTime.getTimeInMillis();
@@ -62,8 +59,8 @@ public class InitialPartyFarm {
                 ++count;
             }
 
-            _log.info("[Party Farm]: Next event: " + this.NextEvent.getTime());
-            ThreadPool.schedule(new StartEventTask(this), flush2);
+            _log.info("[Party Farm]: Next event: " + this.NextEvent.getTime().toString());
+            ThreadPool.schedule(new StartEventTask(), flush2);
         } catch (Exception var13) {
             System.out.println("[Party Farm]: Some error in the configs was found!");
         }
@@ -71,9 +68,6 @@ public class InitialPartyFarm {
     }
 
     static class StartEventTask implements Runnable {
-        StartEventTask(final InitialPartyFarm param1) {
-        }
-
         public void run() {
             InitialPartyFarm._log.info("[Party Farm]: Event Started.");
             PartyFarm.bossSpawnMonster();

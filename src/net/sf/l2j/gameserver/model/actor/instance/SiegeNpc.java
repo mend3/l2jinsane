@@ -12,15 +12,16 @@ public class SiegeNpc extends Folk {
     }
 
     public void showChatWindow(Player player) {
-        if (!getCastle().getSiege().isInProgress()) {
-            player.sendPacket(new SiegeInfo(getCastle()));
+        if (!this.getCastle().getSiege().isInProgress()) {
+            player.sendPacket(new SiegeInfo(this.getCastle()));
         } else {
-            NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-            html.setFile("data/html/siege/" + getNpcId() + "-busy.htm");
-            html.replace("%castlename%", getCastle().getName());
-            html.replace("%objectId%", getObjectId());
+            NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+            html.setFile("data/html/siege/" + this.getNpcId() + "-busy.htm");
+            html.replace("%castlename%", this.getCastle().getName());
+            html.replace("%objectId%", this.getObjectId());
             player.sendPacket(html);
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 }

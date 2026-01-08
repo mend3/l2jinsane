@@ -2,7 +2,6 @@ package net.sf.l2j.gameserver.model.location;
 
 public class BoatLocation extends Location {
     private final int _moveSpeed;
-
     private final int _rotationSpeed;
 
     public BoatLocation(int x, int y, int z) {

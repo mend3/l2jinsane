@@ -16,7 +16,6 @@ import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 
-import java.util.Iterator;
 import java.util.concurrent.Future;
 
 public final class BabyPet extends Pet {
@@ -30,15 +29,13 @@ public final class BabyPet extends Pet {
 
     public void onSpawn() {
         super.onSpawn();
-        double healPower = 0.0D;
-        Iterator var4 = this.getTemplate().getSkills(SkillType.HEAL).iterator();
+        double healPower = 0.0F;
 
-        while (var4.hasNext()) {
-            L2Skill skill = (L2Skill) var4.next();
+        for (L2Skill skill : this.getTemplate().getSkills(SkillType.HEAL)) {
             if (skill.getTargetType() == SkillTargetType.TARGET_OWNER_PET && skill.getSkillType() == L2SkillType.HEAL) {
                 int skillLevel = this.getSkillLevel(skill.getId());
                 if (skillLevel > 0) {
-                    if (healPower == 0.0D) {
+                    if (healPower == (double) 0.0F) {
                         this._majorHeal = new IntIntHolder(skill.getId(), skillLevel);
                         this._minorHeal = this._majorHeal;
                         healPower = skill.getPower();
@@ -77,9 +74,8 @@ public final class BabyPet extends Pet {
 
     private void startCastTask() {
         if (this._majorHeal != null && this._castTask == null && !this.isDead()) {
-            this._castTask = ThreadPool.scheduleAtFixedRate(new BabyPet.CastTask(this), 3000L, 1000L);
+            this._castTask = ThreadPool.scheduleAtFixedRate(new CastTask(this), 3000L, 1000L);
         }
-
     }
 
     private void stopCastTask() {
@@ -87,7 +83,6 @@ public final class BabyPet extends Pet {
             this._castTask.cancel(false);
             this._castTask = null;
         }
-
     }
 
     private void castSkill(L2Skill skill) {
@@ -116,15 +111,17 @@ public final class BabyPet extends Pet {
                 L2Skill skill = null;
                 if (BabyPet.this._majorHeal != null) {
                     double hpPercent = owner.getCurrentHp() / (double) owner.getMaxHp();
-                    if (hpPercent < 0.15D) {
+                    if (hpPercent < 0.15) {
                         skill = BabyPet.this._majorHeal.getSkill();
                         if (!this._baby.isSkillDisabled(skill) && Rnd.get(100) <= 75 && this._baby.getCurrentMp() >= (double) skill.getMpConsume()) {
                             BabyPet.this.castSkill(skill);
+                            return;
                         }
-                    } else if (BabyPet.this._majorHeal.getSkill() != BabyPet.this._minorHeal.getSkill() && hpPercent < 0.8D) {
+                    } else if (BabyPet.this._majorHeal.getSkill() != BabyPet.this._minorHeal.getSkill() && hpPercent < 0.8) {
                         skill = BabyPet.this._minorHeal.getSkill();
                         if (!this._baby.isSkillDisabled(skill) && Rnd.get(100) <= 25 && this._baby.getCurrentMp() >= (double) skill.getMpConsume()) {
                             BabyPet.this.castSkill(skill);
+                            return;
                         }
                     }
                 }

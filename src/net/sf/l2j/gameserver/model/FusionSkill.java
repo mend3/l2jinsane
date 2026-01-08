@@ -38,7 +38,7 @@ public final class FusionSkill {
             }
         }
 
-        this._geoCheckTask = ThreadPool.scheduleAtFixedRate(new FusionSkill.GeoCheckTask(), 1000L, 1000L);
+        this._geoCheckTask = ThreadPool.scheduleAtFixedRate(new GeoCheckTask(), 1000L, 1000L);
     }
 
     public Creature getCaster() {
@@ -69,7 +69,7 @@ public final class FusionSkill {
                 if (!GeoEngine.getInstance().canSeeTarget(FusionSkill.this._caster, FusionSkill.this._target)) {
                     FusionSkill.this._caster.abortCast();
                 }
-            } catch (Exception var2) {
+            } catch (Exception ignored) {
             }
 
         }

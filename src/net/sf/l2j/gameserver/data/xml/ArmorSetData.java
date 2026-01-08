@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ArmorSetData implements IXmlReader {
-    private final Map<Integer, ArmorSet> _armorSets = new HashMap();
+    private final Map<Integer, ArmorSet> _armorSets = new HashMap<>();
 
     protected ArmorSetData() {
     }

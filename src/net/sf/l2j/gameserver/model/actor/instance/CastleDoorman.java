@@ -13,25 +13,28 @@ public class CastleDoorman extends Doorman {
     protected void openDoors(Player player, String command) {
         StringTokenizer st = new StringTokenizer(command.substring(10), ", ");
         st.nextToken();
-        while (st.hasMoreTokens())
-            getCastle().openDoor(player, Integer.parseInt(st.nextToken()));
+
+        while (st.hasMoreTokens()) {
+            this.getCastle().openDoor(player, Integer.parseInt(st.nextToken()));
+        }
+
     }
 
     protected final void closeDoors(Player player, String command) {
         StringTokenizer st = new StringTokenizer(command.substring(11), ", ");
         st.nextToken();
-        while (st.hasMoreTokens())
-            getCastle().closeDoor(player, Integer.parseInt(st.nextToken()));
+
+        while (st.hasMoreTokens()) {
+            this.getCastle().closeDoor(player, Integer.parseInt(st.nextToken()));
+        }
+
     }
 
     protected final boolean isOwnerClan(Player player) {
-        if (player.getClan() != null)
-            if (getCastle() != null)
-                return player.getClanId() == getCastle().getOwnerId() && (player.getClanPrivileges() & 0x8000) == 32768;
-        return false;
+        return player.getClan() != null && this.getCastle() != null && player.getClanId() == this.getCastle().getOwnerId() && (player.getClanPrivileges() & '耀') == 32768;
     }
 
     protected final boolean isUnderSiege() {
-        return getCastle().getSiegeZone().isActive();
+        return this.getCastle().getSiegeZone().isActive();
     }
 }

@@ -7,21 +7,13 @@ import java.util.List;
 
 public class Recipe {
     private final List<IntIntHolder> _materials;
-
     private final IntIntHolder _product;
-
     private final int _id;
-
     private final int _level;
-
     private final int _recipeId;
-
     private final String _recipeName;
-
     private final int _successRate;
-
     private final int _mpCost;
-
     private final boolean _isDwarven;
 
     public Recipe(StatSet set) {

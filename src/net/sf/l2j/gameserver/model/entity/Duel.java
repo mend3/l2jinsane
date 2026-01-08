@@ -13,7 +13,6 @@ import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.*;
 
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
@@ -25,7 +24,7 @@ public class Duel {
     private final Calendar _duelEndTime;
     private final Player _playerA;
     private final Player _playerB;
-    private final List<Duel.PlayerCondition> _playerConditions = new CopyOnWriteArrayList();
+    private final List<PlayerCondition> _playerConditions = new CopyOnWriteArrayList<>();
     protected Future<?> _startTask = null;
     protected Future<?> _checkTask = null;
     protected int _countdown = 5;
@@ -37,24 +36,18 @@ public class Duel {
         this._playerB = playerB;
         this._isPartyDuel = isPartyDuel;
         this._duelEndTime = Calendar.getInstance();
-        this._duelEndTime.add(Calendar.SECOND, 120);
+        this._duelEndTime.add(13, 120);
         if (this._isPartyDuel) {
             this._countdown = 35;
             SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.IN_A_MOMENT_YOU_WILL_BE_TRANSPORTED_TO_THE_SITE_WHERE_THE_DUEL_WILL_TAKE_PLACE);
             this.broadcastToTeam1(sm);
             this.broadcastToTeam2(sm);
-            Iterator var6 = this._playerA.getParty().getMembers().iterator();
 
-            Player partyPlayer;
-            while (var6.hasNext()) {
-                partyPlayer = (Player) var6.next();
+            for (Player partyPlayer : this._playerA.getParty().getMembers()) {
                 partyPlayer.setInDuel(this._duelId);
             }
 
-            var6 = this._playerB.getParty().getMembers().iterator();
-
-            while (var6.hasNext()) {
-                partyPlayer = (Player) var6.next();
+            for (Player partyPlayer : this._playerB.getParty().getMembers()) {
                 partyPlayer.setInDuel(this._duelId);
             }
         } else {
@@ -63,27 +56,20 @@ public class Duel {
         }
 
         this.savePlayerConditions();
-        this._startTask = ThreadPool.scheduleAtFixedRate(new Duel.StartTask(), 1000L, 1000L);
-        this._checkTask = ThreadPool.scheduleAtFixedRate(new Duel.CheckTask(), 1000L, 1000L);
+        this._startTask = ThreadPool.scheduleAtFixedRate(new StartTask(), 1000L, 1000L);
+        this._checkTask = ThreadPool.scheduleAtFixedRate(new CheckTask(), 1000L, 1000L);
     }
 
     protected void stopFighting() {
         if (this._isPartyDuel) {
-            Iterator var1 = this._playerA.getParty().getMembers().iterator();
-
-            Player partyPlayer;
-            while (var1.hasNext()) {
-                partyPlayer = (Player) var1.next();
+            for (Player partyPlayer : this._playerA.getParty().getMembers()) {
                 partyPlayer.abortCast();
                 partyPlayer.getAI().setIntention(IntentionType.ACTIVE);
                 partyPlayer.setTarget(null);
                 partyPlayer.sendPacket(ActionFailed.STATIC_PACKET);
             }
 
-            var1 = this._playerB.getParty().getMembers().iterator();
-
-            while (var1.hasNext()) {
-                partyPlayer = (Player) var1.next();
+            for (Player partyPlayer : this._playerB.getParty().getMembers()) {
                 partyPlayer.abortCast();
                 partyPlayer.getAI().setIntention(IntentionType.ACTIVE);
                 partyPlayer.setTarget(null);
@@ -103,38 +89,35 @@ public class Duel {
     }
 
     protected void startDuel() {
-        Summon summon;
-        ExDuelReady ready;
-        ExDuelStart start;
         if (this._isPartyDuel) {
-            Iterator var1;
-            Player partyPlayer;
-            for (var1 = this._playerA.getParty().getMembers().iterator(); var1.hasNext(); this.broadcastToTeam2(new ExDuelUpdateUserInfo(partyPlayer))) {
-                partyPlayer = (Player) var1.next();
+            for (Player partyPlayer : this._playerA.getParty().getMembers()) {
                 partyPlayer.cancelActiveTrade();
                 partyPlayer.setDuelState(Duel.DuelState.DUELLING);
                 partyPlayer.setTeam(TeamType.BLUE);
                 partyPlayer.broadcastUserInfo();
-                summon = partyPlayer.getSummon();
+                Summon summon = partyPlayer.getSummon();
                 if (summon != null) {
                     summon.updateAbnormalEffect();
                 }
+
+                this.broadcastToTeam2(new ExDuelUpdateUserInfo(partyPlayer));
             }
 
-            for (var1 = this._playerB.getParty().getMembers().iterator(); var1.hasNext(); this.broadcastToTeam1(new ExDuelUpdateUserInfo(partyPlayer))) {
-                partyPlayer = (Player) var1.next();
+            for (Player partyPlayer : this._playerB.getParty().getMembers()) {
                 partyPlayer.cancelActiveTrade();
                 partyPlayer.setDuelState(Duel.DuelState.DUELLING);
                 partyPlayer.setTeam(TeamType.RED);
                 partyPlayer.broadcastUserInfo();
-                summon = partyPlayer.getSummon();
+                Summon summon = partyPlayer.getSummon();
                 if (summon != null) {
                     summon.updateAbnormalEffect();
                 }
+
+                this.broadcastToTeam1(new ExDuelUpdateUserInfo(partyPlayer));
             }
 
-            ready = new ExDuelReady(true);
-            start = new ExDuelStart(true);
+            ExDuelReady ready = new ExDuelReady(true);
+            ExDuelStart start = new ExDuelStart(true);
             this.broadcastToTeam1(ready);
             this.broadcastToTeam2(ready);
             this.broadcastToTeam1(start);
@@ -144,8 +127,8 @@ public class Duel {
             this._playerA.setTeam(TeamType.BLUE);
             this._playerB.setDuelState(Duel.DuelState.DUELLING);
             this._playerB.setTeam(TeamType.RED);
-            ready = new ExDuelReady(false);
-            start = new ExDuelStart(false);
+            ExDuelReady ready = new ExDuelReady(false);
+            ExDuelStart start = new ExDuelStart(false);
             this.broadcastToTeam1(ready);
             this.broadcastToTeam2(ready);
             this.broadcastToTeam1(start);
@@ -153,7 +136,7 @@ public class Duel {
             this.broadcastToTeam1(new ExDuelUpdateUserInfo(this._playerB));
             this.broadcastToTeam2(new ExDuelUpdateUserInfo(this._playerA));
             this._playerA.broadcastUserInfo();
-            summon = this._playerA.getSummon();
+            Summon summon = this._playerA.getSummon();
             if (summon != null) {
                 summon.updateAbnormalEffect();
             }
@@ -171,53 +154,37 @@ public class Duel {
 
     private void savePlayerConditions() {
         if (this._isPartyDuel) {
-            Iterator var1 = this._playerA.getParty().getMembers().iterator();
-
-            Player partyPlayer;
-            while (var1.hasNext()) {
-                partyPlayer = (Player) var1.next();
-                this._playerConditions.add(new Duel.PlayerCondition(partyPlayer, this._isPartyDuel));
+            for (Player partyPlayer : this._playerA.getParty().getMembers()) {
+                this._playerConditions.add(new PlayerCondition(partyPlayer, this._isPartyDuel));
             }
 
-            var1 = this._playerB.getParty().getMembers().iterator();
-
-            while (var1.hasNext()) {
-                partyPlayer = (Player) var1.next();
-                this._playerConditions.add(new Duel.PlayerCondition(partyPlayer, this._isPartyDuel));
+            for (Player partyPlayer : this._playerB.getParty().getMembers()) {
+                this._playerConditions.add(new PlayerCondition(partyPlayer, this._isPartyDuel));
             }
         } else {
-            this._playerConditions.add(new Duel.PlayerCondition(this._playerA, this._isPartyDuel));
-            this._playerConditions.add(new Duel.PlayerCondition(this._playerB, this._isPartyDuel));
+            this._playerConditions.add(new PlayerCondition(this._playerA, this._isPartyDuel));
+            this._playerConditions.add(new PlayerCondition(this._playerB, this._isPartyDuel));
         }
 
     }
 
     private void restorePlayerConditions(boolean abnormalEnd) {
-        Iterator var2;
         if (this._isPartyDuel) {
-            var2 = this._playerA.getParty().getMembers().iterator();
-
-            Player partyPlayer;
-            Summon summon;
-            while (var2.hasNext()) {
-                partyPlayer = (Player) var2.next();
+            for (Player partyPlayer : this._playerA.getParty().getMembers()) {
                 partyPlayer.setInDuel(0);
                 partyPlayer.setTeam(TeamType.NONE);
                 partyPlayer.broadcastUserInfo();
-                summon = partyPlayer.getSummon();
+                Summon summon = partyPlayer.getSummon();
                 if (summon != null) {
                     summon.updateAbnormalEffect();
                 }
             }
 
-            var2 = this._playerB.getParty().getMembers().iterator();
-
-            while (var2.hasNext()) {
-                partyPlayer = (Player) var2.next();
+            for (Player partyPlayer : this._playerB.getParty().getMembers()) {
                 partyPlayer.setInDuel(0);
                 partyPlayer.setTeam(TeamType.NONE);
                 partyPlayer.broadcastUserInfo();
-                summon = partyPlayer.getSummon();
+                Summon summon = partyPlayer.getSummon();
                 if (summon != null) {
                     summon.updateAbnormalEffect();
                 }
@@ -240,11 +207,8 @@ public class Duel {
             }
         }
 
-        if (this._isPartyDuel || !abnormalEnd) {
-            var2 = this._playerConditions.iterator();
-
-            while (var2.hasNext()) {
-                Duel.PlayerCondition cond = (Duel.PlayerCondition) var2.next();
+        if (!this._isPartyDuel && !abnormalEnd || this._isPartyDuel) {
+            for (PlayerCondition cond : this._playerConditions) {
                 cond.restoreCondition(abnormalEnd);
             }
         }
@@ -275,18 +239,16 @@ public class Duel {
         if (this._isPartyDuel) {
             int offset = 0;
 
-            Iterator var5;
-            Player partyPlayer;
-            for (var5 = this._playerA.getParty().getMembers().iterator(); var5.hasNext(); offset += 40) {
-                partyPlayer = (Player) var5.next();
+            for (Player partyPlayer : this._playerA.getParty().getMembers()) {
                 partyPlayer.teleportTo(x + offset - 180, y - 150, z, 0);
+                offset += 40;
             }
 
             offset = 0;
 
-            for (var5 = this._playerB.getParty().getMembers().iterator(); var5.hasNext(); offset += 40) {
-                partyPlayer = (Player) var5.next();
+            for (Player partyPlayer : this._playerB.getParty().getMembers()) {
                 partyPlayer.teleportTo(x + offset - 180, y + 150, z, 0);
+                offset += 40;
             }
 
         }
@@ -294,10 +256,7 @@ public class Duel {
 
     public void broadcastToTeam1(L2GameServerPacket packet) {
         if (this._isPartyDuel && this._playerA.getParty() != null) {
-            Iterator var2 = this._playerA.getParty().getMembers().iterator();
-
-            while (var2.hasNext()) {
-                Player partyPlayer = (Player) var2.next();
+            for (Player partyPlayer : this._playerA.getParty().getMembers()) {
                 partyPlayer.sendPacket(packet);
             }
         } else {
@@ -308,10 +267,7 @@ public class Duel {
 
     public void broadcastToTeam2(L2GameServerPacket packet) {
         if (this._isPartyDuel && this._playerB.getParty() != null) {
-            Iterator var2 = this._playerB.getParty().getMembers().iterator();
-
-            while (var2.hasNext()) {
-                Player partyPlayer = (Player) var2.next();
+            for (Player partyPlayer : this._playerB.getParty().getMembers()) {
                 partyPlayer.sendPacket(packet);
             }
         } else {
@@ -321,15 +277,10 @@ public class Duel {
     }
 
     protected void playAnimations() {
-        Iterator var1;
-        Player partyPlayer;
         if (this._playerA.isOnline()) {
             if (this._playerA.getDuelState() == Duel.DuelState.WINNER) {
                 if (this._isPartyDuel && this._playerA.getParty() != null) {
-                    var1 = this._playerA.getParty().getMembers().iterator();
-
-                    while (var1.hasNext()) {
-                        partyPlayer = (Player) var1.next();
+                    for (Player partyPlayer : this._playerA.getParty().getMembers()) {
                         partyPlayer.broadcastPacket(new SocialAction(partyPlayer, 3));
                     }
                 } else {
@@ -337,10 +288,7 @@ public class Duel {
                 }
             } else if (this._playerA.getDuelState() == Duel.DuelState.DEAD) {
                 if (this._isPartyDuel && this._playerA.getParty() != null) {
-                    var1 = this._playerA.getParty().getMembers().iterator();
-
-                    while (var1.hasNext()) {
-                        partyPlayer = (Player) var1.next();
+                    for (Player partyPlayer : this._playerA.getParty().getMembers()) {
                         partyPlayer.broadcastPacket(new SocialAction(partyPlayer, 7));
                     }
                 } else {
@@ -352,10 +300,7 @@ public class Duel {
         if (this._playerB.isOnline()) {
             if (this._playerB.getDuelState() == Duel.DuelState.WINNER) {
                 if (this._isPartyDuel && this._playerB.getParty() != null) {
-                    var1 = this._playerB.getParty().getMembers().iterator();
-
-                    while (var1.hasNext()) {
-                        partyPlayer = (Player) var1.next();
+                    for (Player partyPlayer : this._playerB.getParty().getMembers()) {
                         partyPlayer.broadcastPacket(new SocialAction(partyPlayer, 3));
                     }
                 } else {
@@ -363,10 +308,7 @@ public class Duel {
                 }
             } else if (this._playerB.getDuelState() == Duel.DuelState.DEAD) {
                 if (this._isPartyDuel && this._playerB.getParty() != null) {
-                    var1 = this._playerB.getParty().getMembers().iterator();
-
-                    while (var1.hasNext()) {
-                        partyPlayer = (Player) var1.next();
+                    for (Player partyPlayer : this._playerB.getParty().getMembers()) {
                         partyPlayer.broadcastPacket(new SocialAction(partyPlayer, 7));
                     }
                 } else {
@@ -377,7 +319,7 @@ public class Duel {
 
     }
 
-    protected void endDuel(Duel.DuelResult result) {
+    protected void endDuel(DuelResult result) {
         SystemMessage sm = null;
         switch (result.ordinal()) {
             case 3:
@@ -409,7 +351,7 @@ public class Duel {
         DuelManager.getInstance().removeDuel(this._duelId);
     }
 
-    protected Duel.DuelResult checkEndDuelCondition() {
+    protected DuelResult checkEndDuelCondition() {
         if (!this._playerA.isOnline() && !this._playerB.isOnline()) {
             return Duel.DuelResult.CANCELED;
         } else if (!this._playerA.isOnline()) {
@@ -444,13 +386,8 @@ public class Duel {
                     return Duel.DuelResult.CANCELED;
                 }
             } else {
-                Iterator var1;
-                Player partyMember;
                 if (this._playerA.getParty() != null) {
-                    var1 = this._playerA.getParty().getMembers().iterator();
-
-                    while (var1.hasNext()) {
-                        partyMember = (Player) var1.next();
+                    for (Player partyMember : this._playerA.getParty().getMembers()) {
                         if (partyMember.getDuelState() == Duel.DuelState.INTERRUPTED) {
                             return Duel.DuelResult.CANCELED;
                         }
@@ -470,10 +407,7 @@ public class Duel {
                 }
 
                 if (this._playerB.getParty() != null) {
-                    var1 = this._playerB.getParty().getMembers().iterator();
-
-                    while (var1.hasNext()) {
-                        partyMember = (Player) var1.next();
+                    for (Player partyMember : this._playerB.getParty().getMembers()) {
                         if (partyMember.getDuelState() == Duel.DuelState.INTERRUPTED) {
                             return Duel.DuelResult.CANCELED;
                         }
@@ -500,36 +434,24 @@ public class Duel {
     public void doSurrender(Player player) {
         if (this._surrenderRequest == 0) {
             if (this._isPartyDuel) {
-                Iterator var2;
-                Player partyPlayer;
                 if (this._playerA.getParty().containsPlayer(player)) {
                     this._surrenderRequest = 1;
-                    var2 = this._playerA.getParty().getMembers().iterator();
 
-                    while (var2.hasNext()) {
-                        partyPlayer = (Player) var2.next();
+                    for (Player partyPlayer : this._playerA.getParty().getMembers()) {
                         partyPlayer.setDuelState(Duel.DuelState.DEAD);
                     }
 
-                    var2 = this._playerB.getParty().getMembers().iterator();
-
-                    while (var2.hasNext()) {
-                        partyPlayer = (Player) var2.next();
+                    for (Player partyPlayer : this._playerB.getParty().getMembers()) {
                         partyPlayer.setDuelState(Duel.DuelState.WINNER);
                     }
                 } else if (this._playerB.getParty().containsPlayer(player)) {
                     this._surrenderRequest = 2;
-                    var2 = this._playerB.getParty().getMembers().iterator();
 
-                    while (var2.hasNext()) {
-                        partyPlayer = (Player) var2.next();
+                    for (Player partyPlayer : this._playerB.getParty().getMembers()) {
                         partyPlayer.setDuelState(Duel.DuelState.DEAD);
                     }
 
-                    var2 = this._playerA.getParty().getMembers().iterator();
-
-                    while (var2.hasNext()) {
-                        partyPlayer = (Player) var2.next();
+                    for (Player partyPlayer : this._playerA.getParty().getMembers()) {
                         partyPlayer.setDuelState(Duel.DuelState.WINNER);
                     }
                 }
@@ -550,10 +472,8 @@ public class Duel {
         player.setDuelState(Duel.DuelState.DEAD);
         if (this._isPartyDuel) {
             boolean teamDefeated = true;
-            Iterator var3 = player.getParty().getMembers().iterator();
 
-            while (var3.hasNext()) {
-                Player partyPlayer = (Player) var3.next();
+            for (Player partyPlayer : player.getParty().getMembers()) {
                 if (partyPlayer.getDuelState() == Duel.DuelState.DUELLING) {
                     teamDefeated = false;
                     break;
@@ -566,10 +486,7 @@ public class Duel {
                     winner = this._playerB;
                 }
 
-                Iterator var7 = winner.getParty().getMembers().iterator();
-
-                while (var7.hasNext()) {
-                    Player partyPlayer = (Player) var7.next();
+                for (Player partyPlayer : winner.getParty().getMembers()) {
                     partyPlayer.setDuelState(Duel.DuelState.WINNER);
                 }
             }
@@ -583,10 +500,7 @@ public class Duel {
 
     public void onPartyEdit() {
         if (this._isPartyDuel) {
-            Iterator var1 = this._playerConditions.iterator();
-
-            while (var1.hasNext()) {
-                Duel.PlayerCondition cond = (Duel.PlayerCondition) var1.next();
+            for (PlayerCondition cond : this._playerConditions) {
                 cond.teleportBack();
                 cond.getPlayer().setInDuel(0);
             }
@@ -596,35 +510,25 @@ public class Duel {
     }
 
     public void onBuff(Player player, L2Effect effect) {
-        Iterator var3 = this._playerConditions.iterator();
-
-        Duel.PlayerCondition cond;
-        do {
-            if (!var3.hasNext()) {
+        for (PlayerCondition cond : this._playerConditions) {
+            if (cond.getPlayer() == player) {
+                cond.registerDebuff(effect);
                 return;
             }
+        }
 
-            cond = (Duel.PlayerCondition) var3.next();
-        } while (cond.getPlayer() != player);
-
-        cond.registerDebuff(effect);
     }
 
-    public enum DuelState {
+    public static enum DuelState {
         NO_DUEL,
         ON_COUNTDOWN,
         DUELLING,
         DEAD,
         WINNER,
         INTERRUPTED;
-
-        // $FF: synthetic method
-        private static Duel.DuelState[] $values() {
-            return new Duel.DuelState[]{NO_DUEL, ON_COUNTDOWN, DUELLING, DEAD, WINNER, INTERRUPTED};
-        }
     }
 
-    private enum DuelResult {
+    private static enum DuelResult {
         CONTINUE,
         TEAM_1_WIN,
         TEAM_2_WIN,
@@ -632,11 +536,6 @@ public class Duel {
         TEAM_2_SURRENDER,
         CANCELED,
         TIMEOUT;
-
-        // $FF: synthetic method
-        private static Duel.DuelResult[] $values() {
-            return new Duel.DuelResult[]{CONTINUE, TEAM_1_WIN, TEAM_2_WIN, TEAM_1_SURRENDER, TEAM_2_SURRENDER, CANCELED, TIMEOUT};
-        }
     }
 
     private static class PlayerCondition {
@@ -671,10 +570,7 @@ public class Duel {
                 this._player.setCurrentMp(this._mp);
                 this._player.setCurrentCp(this._cp);
                 if (this._debuffs != null) {
-                    Iterator var2 = this._debuffs.iterator();
-
-                    while (var2.hasNext()) {
-                        L2Effect skill = (L2Effect) var2.next();
+                    for (L2Effect skill : this._debuffs) {
                         if (skill != null) {
                             skill.exit();
                         }
@@ -686,7 +582,7 @@ public class Duel {
 
         public void registerDebuff(L2Effect debuff) {
             if (this._debuffs == null) {
-                this._debuffs = new CopyOnWriteArrayList();
+                this._debuffs = new CopyOnWriteArrayList<>();
             }
 
             this._debuffs.add(debuff);
@@ -713,7 +609,6 @@ public class Duel {
                 Duel.this._startTask.cancel(true);
                 Duel.this._startTask = null;
             }
-
             SystemMessage sm;
             switch (Duel.this._countdown) {
                 case 0:
@@ -734,6 +629,9 @@ public class Duel {
                     sm = SystemMessage.getSystemMessage(SystemMessageId.THE_DUEL_WILL_BEGIN_IN_S1_SECONDS).addNumber(Duel.this._countdown);
                     Duel.this.broadcastToTeam1(sm);
                     Duel.this.broadcastToTeam2(sm);
+                    break;
+                case 33:
+                    Duel.this.teleportPlayers(-83760, -238825, -3331);
                 case 6:
                 case 7:
                 case 8:
@@ -759,8 +657,6 @@ public class Duel {
                 case 32:
                 default:
                     break;
-                case 33:
-                    Duel.this.teleportPlayers(-83760, -238825, -3331);
             }
 
             --Duel.this._countdown;
@@ -772,7 +668,7 @@ public class Duel {
         }
 
         public void run() {
-            Duel.DuelResult status = Duel.this.checkEndDuelCondition();
+            DuelResult status = Duel.this.checkEndDuelCondition();
             if (status != Duel.DuelResult.CONTINUE) {
                 if (Duel.this._startTask != null) {
                     Duel.this._startTask.cancel(true);

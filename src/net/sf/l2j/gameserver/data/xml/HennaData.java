@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HennaData implements IXmlReader {
-    private final Map<Integer, Henna> _hennas = new HashMap();
+    private final Map<Integer, Henna> _hennas = new HashMap<>();
 
     protected HennaData() {
     }

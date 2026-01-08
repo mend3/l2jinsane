@@ -27,8 +27,8 @@ public class Arena4x4 implements Runnable {
     public Arena4x4() {
         this.free = Config.ARENA_EVENT_COUNT_4X4;
         this.arenas = new Arena4x4.Arena[Config.ARENA_EVENT_COUNT_4X4];
-        this.fights = new HashMap(Config.ARENA_EVENT_COUNT_4X4);
-        registered = new ArrayList();
+        this.fights = new HashMap<>(Config.ARENA_EVENT_COUNT_4X4);
+        registered = new ArrayList<>();
 
         for (int i = 0; i < Config.ARENA_EVENT_COUNT_4X4; ++i) {
             int[] coord = Config.ARENA_EVENT_LOCS_4X4[i];
@@ -42,10 +42,8 @@ public class Arena4x4 implements Runnable {
     }
 
     public boolean register(Player player, Player assist, Player assist2, Player assist3) {
-        Iterator var5 = registered.iterator();
 
-        while (var5.hasNext()) {
-            Arena4x4.Pair p = (Arena4x4.Pair) var5.next();
+        for (Pair p : registered) {
             if (p.getLeader() != player && p.getAssist() != player) {
                 if (p.getLeader() != assist && p.getAssist() != assist) {
                     if (p.getLeader() != assist2 && p.getAssist2() != assist2) {
@@ -73,7 +71,7 @@ public class Arena4x4 implements Runnable {
     }
 
     public boolean isRegistered(Player player) {
-        Iterator var2 = registered.iterator();
+        Iterator<Pair> var2 = registered.iterator();
 
         Arena4x4.Pair p;
         do {
@@ -81,7 +79,7 @@ public class Arena4x4 implements Runnable {
                 return false;
             }
 
-            p = (Arena4x4.Pair) var2.next();
+            p = var2.next();
         } while (p.getLeader() != player && p.getAssist() != player && p.getAssist2() != player && p.getAssist3() != player);
 
         return true;
@@ -92,7 +90,7 @@ public class Arena4x4 implements Runnable {
     }
 
     public boolean remove(Player player) {
-        Iterator var2 = registered.iterator();
+        Iterator<Pair> var2 = registered.iterator();
 
         Arena4x4.Pair p;
         do {
@@ -100,7 +98,7 @@ public class Arena4x4 implements Runnable {
                 return false;
             }
 
-            p = (Arena4x4.Pair) var2.next();
+            p = var2.next();
         } while (p.getLeader() != player && p.getAssist() != player && p.getAssist2() != player && p.getAssist3() != player);
 
         p.removeMessage();
@@ -120,19 +118,19 @@ public class Arena4x4 implements Runnable {
 
                 try {
                     Thread.sleep((long) (Config.ARENA_CALL_INTERVAL * 1000L));
-                } catch (InterruptedException var3) {
+                } catch (InterruptedException ignored) {
                 }
             } else {
                 try {
                     Thread.sleep((long) (Config.ARENA_CALL_INTERVAL * 1000L));
-                } catch (InterruptedException var4) {
+                } catch (InterruptedException ignored) {
                 }
             }
         }
     }
 
     private List<Arena4x4.Pair> selectOpponents() {
-        List<Arena4x4.Pair> opponents = new ArrayList();
+        List<Arena4x4.Pair> opponents = new ArrayList<>();
         Arena4x4.Pair pairOne = null;
         Arena4x4.Pair pairTwo = null;
         int tries = 3;
@@ -875,7 +873,7 @@ public class Arena4x4 implements Runnable {
 
             try {
                 Thread.sleep((long) (Config.ARENA_WAIT_INTERVAL_4X4 * 1000L));
-            } catch (InterruptedException var3) {
+            } catch (InterruptedException ignored) {
             }
 
             this.pairOne.sendPacketinit("Started. Good Fight!", 3);
@@ -890,7 +888,7 @@ public class Arena4x4 implements Runnable {
             while (this.check()) {
                 try {
                     Thread.sleep((long) Config.ARENA_CHECK_INTERVAL);
-                } catch (InterruptedException var2) {
+                } catch (InterruptedException ignored) {
                 }
             }
 
@@ -968,7 +966,7 @@ public class Arena4x4 implements Runnable {
                     this.pairTwo.setInTournamentEvent(true);
                     this.pairOne.removeSkills();
                     this.pairTwo.removeSkills();
-                    Map var10000 = Arena4x4.this.fights;
+                    Map<Integer, String> var10000 = Arena4x4.this.fights;
                     Integer var10001 = this.arena.id;
                     String var10002 = this.pairOne.getLeader().getName();
                     var10000.put(var10001, var10002 + " vs " + this.pairTwo.getLeader().getName());

@@ -97,7 +97,7 @@ public class BookmarkTable {
     }
 
     public Bookmark getBookmark(String name, int objId) {
-        Iterator var3 = this._bks.iterator();
+        Iterator<Bookmark> var3 = this._bks.iterator();
 
         Bookmark bk;
         do {
@@ -105,7 +105,7 @@ public class BookmarkTable {
                 return null;
             }
 
-            bk = (Bookmark) var3.next();
+            bk = var3.next();
         } while (!bk.getName().equalsIgnoreCase(name) || bk.getId() != objId);
 
         return bk;

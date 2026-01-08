@@ -7,14 +7,15 @@ import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.Summon;
 import net.sf.l2j.gameserver.model.actor.ai.Desire;
+import net.sf.l2j.gameserver.model.actor.instance.StaticObject;
 import net.sf.l2j.gameserver.model.location.Location;
 import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.AutoAttackStart;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
 
 public class PlayerAI extends PlayableAI {
-    private final Desire _nextIntention = new Desire();
     private boolean _thinking;
+    private final Desire _nextIntention = new Desire();
 
     public PlayerAI(Player player) {
         super(player);
@@ -29,22 +30,23 @@ public class PlayerAI extends PlayableAI {
     }
 
     public synchronized void changeIntention(IntentionType intention, Object arg0, Object arg1) {
-        if (intention != IntentionType.CAST || (arg0 != null && ((L2Skill) arg0).isOffensive())) {
+        if (intention == IntentionType.CAST && (arg0 == null || !((L2Skill) arg0).isOffensive())) {
+            if (!this._desire.equals(intention, arg0, arg1)) {
+                this._nextIntention.update(this._desire);
+                super.changeIntention(intention, arg0, arg1);
+            }
+        } else {
             this._nextIntention.reset();
             super.changeIntention(intention, arg0, arg1);
-            return;
         }
-        if (this._desire.equals(intention, arg0, arg1))
-            return;
-        this._nextIntention.update(this._desire);
-        super.changeIntention(intention, arg0, arg1);
     }
 
     protected void onEvtReadyToAct() {
         if (!this._nextIntention.isBlank()) {
-            setIntention(this._nextIntention.getIntention(), this._nextIntention.getFirstParameter(), this._nextIntention.getSecondParameter());
+            this.setIntention(this._nextIntention.getIntention(), this._nextIntention.getFirstParameter(), this._nextIntention.getSecondParameter());
             this._nextIntention.reset();
         }
+
         super.onEvtReadyToAct();
     }
 
@@ -54,53 +56,52 @@ public class PlayerAI extends PlayableAI {
     }
 
     protected void onEvtFinishCasting() {
-        if (this._desire.getIntention() == IntentionType.CAST)
+        if (this._desire.getIntention() == IntentionType.CAST) {
             if (!this._nextIntention.isBlank() && this._nextIntention.getIntention() != IntentionType.CAST) {
-                setIntention(this._nextIntention.getIntention(), this._nextIntention.getFirstParameter(), this._nextIntention.getSecondParameter());
+                this.setIntention(this._nextIntention.getIntention(), this._nextIntention.getFirstParameter(), this._nextIntention.getSecondParameter());
             } else {
-                setIntention(IntentionType.IDLE);
+                this.setIntention(IntentionType.IDLE);
             }
+        }
+
     }
 
     protected void onIntentionRest() {
         if (this._desire.getIntention() != IntentionType.REST) {
-            changeIntention(IntentionType.REST, null, null);
-            setTarget(null);
-            clientStopMoving(null);
+            this.changeIntention(IntentionType.REST, null, null);
+            this.setTarget(null);
+            this.clientStopMoving(null);
         }
+
     }
 
     protected void onIntentionActive() {
-        setIntention(IntentionType.IDLE);
+        this.setIntention(IntentionType.IDLE);
     }
 
     protected void onIntentionMoveTo(Location loc) {
         if (this._desire.getIntention() == IntentionType.REST) {
-            clientActionFailed();
-            return;
-        }
-        if (this._actor.isAllSkillsDisabled() || this._actor.isCastingNow() || this._actor.isAttackingNow()) {
-            clientActionFailed();
+            this.clientActionFailed();
+        } else if (!this._actor.isAllSkillsDisabled() && !this._actor.isCastingNow() && !this._actor.isAttackingNow()) {
+            this.changeIntention(IntentionType.MOVE_TO, loc, null);
+            this.moveTo(loc.getX(), loc.getY(), loc.getZ());
+        } else {
+            this.clientActionFailed();
             this._nextIntention.update(IntentionType.MOVE_TO, loc, null);
-            return;
         }
-        changeIntention(IntentionType.MOVE_TO, loc, null);
-        moveTo(loc.getX(), loc.getY(), loc.getZ());
     }
 
     protected void onIntentionInteract(WorldObject object) {
         if (this._desire.getIntention() == IntentionType.REST) {
-            clientActionFailed();
-            return;
-        }
-        if (this._actor.isAllSkillsDisabled() || this._actor.isCastingNow()) {
-            clientActionFailed();
+            this.clientActionFailed();
+        } else if (!this._actor.isAllSkillsDisabled() && !this._actor.isCastingNow()) {
+            this.changeIntention(IntentionType.INTERACT, object, null);
+            this.setTarget(object);
+            this.moveToPawn(object, 60);
+        } else {
+            this.clientActionFailed();
             this._nextIntention.update(IntentionType.INTERACT, object, null);
-            return;
         }
-        changeIntention(IntentionType.INTERACT, object, null);
-        setTarget(object);
-        moveToPawn(object, 60);
     }
 
     protected void clientNotifyDead() {
@@ -112,103 +113,108 @@ public class PlayerAI extends PlayableAI {
     public void startAttackStance() {
         if (!AttackStanceTaskManager.getInstance().isInAttackStance(this._actor)) {
             Summon summon = this._actor.getSummon();
-            if (summon != null)
+            if (summon != null) {
                 summon.broadcastPacket(new AutoAttackStart(summon.getObjectId()));
+            }
+
             this._actor.broadcastPacket(new AutoAttackStart(this._actor.getObjectId()));
         }
+
         AttackStanceTaskManager.getInstance().add(this._actor);
     }
 
     private void thinkAttack() {
-        Creature target = (Creature) getTarget();
+        Creature target = (Creature) this.getTarget();
         if (target == null) {
-            setTarget(null);
-            setIntention(IntentionType.ACTIVE);
-            return;
-        }
-        if (maybeMoveToPawn(target, this._actor.getPhysicalAttackRange()))
-            return;
-        if (target.isAlikeDead())
-            if (target instanceof Player && ((Player) target).isFakeDeath()) {
+            this.setTarget(null);
+            this.setIntention(IntentionType.ACTIVE);
+        } else if (!this.maybeMoveToPawn(target, this._actor.getPhysicalAttackRange())) {
+            if (target.isAlikeDead()) {
+                if (!(target instanceof Player) || !((Player) target).isFakeDeath()) {
+                    this.setIntention(IntentionType.ACTIVE);
+                    return;
+                }
+
                 target.stopFakeDeath(true);
-            } else {
-                setIntention(IntentionType.ACTIVE);
-                return;
             }
-        clientStopMoving(null);
-        this._actor.doAttack(target);
+
+            this.clientStopMoving(null);
+            this._actor.doAttack(target);
+        }
     }
 
     private void thinkCast() {
-        Creature target = (Creature) getTarget();
+        Creature target = (Creature) this.getTarget();
         if (this._skill.getTargetType() == L2Skill.SkillTargetType.TARGET_GROUND && this._actor instanceof Player) {
-            if (maybeMoveToPosition(((Player) this._actor).getCurrentSkillWorldPosition(), this._skill.getCastRange())) {
+            if (this.maybeMoveToPosition(((Player) this._actor).getCurrentSkillWorldPosition(), this._skill.getCastRange())) {
                 this._actor.setIsCastingNow(false);
                 return;
             }
         } else {
-            if (checkTargetLost(target)) {
-                if (this._skill.isOffensive() && getTarget() != null)
-                    setTarget(null);
+            if (this.checkTargetLost(target)) {
+                if (this._skill.isOffensive() && this.getTarget() != null) {
+                    this.setTarget(null);
+                }
+
                 this._actor.setIsCastingNow(false);
                 return;
             }
-            if (target != null && maybeMoveToPawn(target, this._skill.getCastRange())) {
+
+            if (target != null && this.maybeMoveToPawn(target, this._skill.getCastRange())) {
                 this._actor.setIsCastingNow(false);
                 return;
             }
         }
-        if (this._skill.getHitTime() > 50 && !this._skill.isSimultaneousCast())
-            clientStopMoving(null);
+
+        if (this._skill.getHitTime() > 50 && !this._skill.isSimultaneousCast()) {
+            this.clientStopMoving(null);
+        }
+
         this._actor.doCast(this._skill);
     }
 
     private void thinkPickUp() {
-        if (this._actor.isAllSkillsDisabled() || this._actor.isCastingNow() || this._actor.isAttackingNow())
-            return;
-        WorldObject target = getTarget();
-        if (checkTargetLost(target))
-            return;
-        if (maybeMoveToPawn(target, 36))
-            return;
-        setIntention(IntentionType.IDLE);
-        this._actor.getActingPlayer().doPickupItem(target);
+        if (!this._actor.isAllSkillsDisabled() && !this._actor.isCastingNow() && !this._actor.isAttackingNow()) {
+            WorldObject target = this.getTarget();
+            if (!this.checkTargetLost(target)) {
+                if (!this.maybeMoveToPawn(target, 36)) {
+                    this.setIntention(IntentionType.IDLE);
+                    this._actor.getActingPlayer().doPickupItem(target);
+                }
+            }
+        }
     }
 
     private void thinkInteract() {
-        if (this._actor.isAllSkillsDisabled() || this._actor.isCastingNow())
-            return;
-        WorldObject target = getTarget();
-        if (checkTargetLost(target))
-            return;
-        if (maybeMoveToPawn(target, 36))
-            return;
-        if (!(target instanceof net.sf.l2j.gameserver.model.actor.instance.StaticObject))
-            this._actor.getActingPlayer().doInteract((Creature) target);
-        setIntention(IntentionType.IDLE);
+        if (!this._actor.isAllSkillsDisabled() && !this._actor.isCastingNow()) {
+            WorldObject target = this.getTarget();
+            if (!this.checkTargetLost(target)) {
+                if (!this.maybeMoveToPawn(target, 36)) {
+                    if (!(target instanceof StaticObject)) {
+                        this._actor.getActingPlayer().doInteract((Creature) target);
+                    }
+
+                    this.setIntention(IntentionType.IDLE);
+                }
+            }
+        }
     }
 
     protected void onEvtThink() {
-        if (this._thinking && this._desire.getIntention() != IntentionType.CAST)
-            return;
-        this._thinking = true;
-        try {
-            switch (this._desire.getIntention()) {
-                case ATTACK:
-                    thinkAttack();
-                    break;
-                case CAST:
-                    thinkCast();
-                    break;
-                case PICK_UP:
-                    thinkPickUp();
-                    break;
-                case INTERACT:
-                    thinkInteract();
-                    break;
+        if (!this._thinking || this._desire.getIntention() == IntentionType.CAST) {
+            this._thinking = true;
+
+            try {
+                switch (this._desire.getIntention()) {
+                    case ATTACK -> this.thinkAttack();
+                    case CAST -> this.thinkCast();
+                    case PICK_UP -> this.thinkPickUp();
+                    case INTERACT -> this.thinkInteract();
+                }
+            } finally {
+                this._thinking = false;
             }
-        } finally {
-            this._thinking = false;
+
         }
     }
 }

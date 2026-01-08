@@ -20,7 +20,7 @@ public class AdminMaintenance implements IAdminCommandHandler {
         html.replace("%count%", World.getInstance().getPlayers().size());
         html.replace("%used%", SysUtil.getUsedMemory());
         html.replace("%server_name%", LoginServerThread.getInstance().getServerName());
-        html.replace("%status%", LoginServerThread.getInstance().getServerType().getName());
+        html.replace("%status%", LoginServerThread.getInstance().getServerStatus().getName());
         html.replace("%max_players%", LoginServerThread.getInstance().getMaxPlayers());
         html.replace("%time%", GameTimeTaskManager.getInstance().getGameTimeFormated());
         activeChar.sendPacket(html);
@@ -44,12 +44,12 @@ public class AdminMaintenance implements IAdminCommandHandler {
         } else if (command.startsWith("admin_server_abort")) {
             Shutdown.getInstance().abort(activeChar);
         } else if (command.equals("admin_server_gm_only")) {
-            LoginServerThread.getInstance().setServerType(StatusType.GM_ONLY);
+            LoginServerThread.getInstance().setServerStatus(StatusType.GM_ONLY);
             Config.SERVER_GMONLY = true;
             activeChar.sendMessage("Server is now setted as GMonly.");
             sendHtmlForm(activeChar);
         } else if (command.equals("admin_server_all")) {
-            LoginServerThread.getInstance().setServerType(StatusType.AUTO);
+            LoginServerThread.getInstance().setServerStatus(StatusType.AUTO);
             Config.SERVER_GMONLY = false;
             activeChar.sendMessage("Server isn't setted as GMonly anymore.");
             sendHtmlForm(activeChar);

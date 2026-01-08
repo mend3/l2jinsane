@@ -7,7 +7,7 @@ import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 public class Walker extends Folk {
     public Walker(int objectId, NpcTemplate template) {
         super(objectId, template);
-        setAI(new WalkerAI(this));
+        this.setAI(new WalkerAI(this));
     }
 
     public WalkerAI getAI() {
@@ -15,8 +15,9 @@ public class Walker extends Folk {
     }
 
     public void setAI(CreatureAI newAI) {
-        if (!(this._ai instanceof WalkerAI))
+        if (!(this._ai instanceof WalkerAI)) {
             this._ai = newAI;
+        }
     }
 
     public void detachAI() {

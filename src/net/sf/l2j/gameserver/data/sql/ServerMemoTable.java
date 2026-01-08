@@ -8,7 +8,7 @@ import net.sf.l2j.gameserver.model.memo.AbstractMemo;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Iterator;
+import java.util.Map;
 
 public class ServerMemoTable extends AbstractMemo {
     private static final CLogger LOGGER = new CLogger(ServerMemoTable.class.getName());
@@ -17,16 +17,17 @@ public class ServerMemoTable extends AbstractMemo {
     private static final String INSERT_QUERY = "INSERT INTO server_memo (var, value) VALUES (?, ?)";
 
     protected ServerMemoTable() {
+        this.restoreMe();
     }
 
-    public static ServerMemoTable getInstance() {
+    public static final ServerMemoTable getInstance() {
         return ServerMemoTable.SingletonHolder.INSTANCE;
     }
 
-    public boolean load() {
+    public boolean restoreMe() {
         label163:
         {
-            boolean var2;
+            boolean result = true;
             try {
                 Connection con = ConnectionPool.getConnection();
 
@@ -86,17 +87,17 @@ public class ServerMemoTable extends AbstractMemo {
                     con.close();
                 }
                 break label163;
-            } catch (Exception var21) {
-                LOGGER.error("Couldn't restore server variables.", var21);
-                var2 = false;
+            } catch (Exception e) {
+                LOGGER.error("Couldn't restore server variables.", e);
+                result = false;
             } finally {
                 this.compareAndSetChanges(true, false);
             }
 
-            return var2;
+            return result;
         }
 
-        LOGGER.info("Loaded {} server variables.", this.size());
+        LOGGER.info("Loaded {} server variables.", new Object[]{this.size()});
         return true;
     }
 
@@ -104,9 +105,9 @@ public class ServerMemoTable extends AbstractMemo {
         if (!this.hasChanges()) {
             return false;
         } else {
-            label173:
+            label176:
             {
-                boolean var2;
+                boolean result = true;
                 try {
                     Connection con = ConnectionPool.getConnection();
 
@@ -119,8 +120,8 @@ public class ServerMemoTable extends AbstractMemo {
                             if (ps != null) {
                                 try {
                                     ps.close();
-                                } catch (Throwable var15) {
-                                    var17.addSuppressed(var15);
+                                } catch (Throwable var16) {
+                                    var17.addSuppressed(var16);
                                 }
                             }
 
@@ -134,25 +135,19 @@ public class ServerMemoTable extends AbstractMemo {
                         ps = con.prepareStatement("INSERT INTO server_memo (var, value) VALUES (?, ?)");
 
                         try {
-                            Iterator var3 = this.entrySet().iterator();
-
-                            while (true) {
-                                if (!var3.hasNext()) {
-                                    ps.executeBatch();
-                                    break;
-                                }
-
-                                Entry<String, Object> entry = (Entry) var3.next();
+                            for (Map.Entry<String, Object> entry : this.entrySet()) {
                                 ps.setString(1, (String) entry.getKey());
                                 ps.setString(2, String.valueOf(entry.getValue()));
                                 ps.addBatch();
                             }
+
+                            ps.executeBatch();
                         } catch (Throwable var18) {
                             if (ps != null) {
                                 try {
                                     ps.close();
-                                } catch (Throwable var16) {
-                                    var18.addSuppressed(var16);
+                                } catch (Throwable var15) {
+                                    var18.addSuppressed(var15);
                                 }
                             }
 
@@ -177,18 +172,18 @@ public class ServerMemoTable extends AbstractMemo {
                     if (con != null) {
                         con.close();
                     }
-                    break label173;
-                } catch (Exception var20) {
-                    LOGGER.error("Couldn't save server variables to database.", var20);
-                    var2 = false;
+                    break label176;
+                } catch (Exception e) {
+                    LOGGER.error("Couldn't save server variables to database.", e);
+                    result = false;
                 } finally {
                     this.compareAndSetChanges(true, false);
                 }
 
-                return var2;
+                return result;
             }
 
-            LOGGER.info("Stored {} server variables.", this.size());
+            LOGGER.info("Stored {} server variables.", new Object[]{this.size()});
             return true;
         }
     }

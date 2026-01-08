@@ -31,10 +31,10 @@ public class CreatureTemplate {
         this._baseINT = set.getInteger("int", 20);
         this._baseWIT = set.getInteger("wit", 43);
         this._baseMEN = set.getInteger("men", 20);
-        this._baseHpMax = set.getDouble("hp", 0.0D);
-        this._baseMpMax = set.getDouble("mp", 0.0D);
-        this._baseHpReg = set.getDouble("hpRegen", 1.5D);
-        this._baseMpReg = set.getDouble("mpRegen", 0.9D);
+        this._baseHpMax = set.getDouble("hp", 0.0F);
+        this._baseMpMax = set.getDouble("mp", 0.0F);
+        this._baseHpReg = set.getDouble("hpRegen", 1.5F);
+        this._baseMpReg = set.getDouble("mpRegen", 0.9);
         this._basePAtk = set.getDouble("pAtk");
         this._baseMAtk = set.getDouble("mAtk");
         this._basePDef = set.getDouble("pDef");

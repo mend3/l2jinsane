@@ -29,7 +29,7 @@ public class Gordon extends L2AttackableAIScript {
     }
 
     private static Npc findSpawn(int npcId) {
-        Iterator var1 = SpawnTable.getInstance().getSpawns().iterator();
+        Iterator<L2Spawn> var1 = SpawnTable.getInstance().getSpawns().iterator();
 
         L2Spawn spawn;
         do {
@@ -37,7 +37,7 @@ public class Gordon extends L2AttackableAIScript {
                 return null;
             }
 
-            spawn = (L2Spawn) var1.next();
+            spawn = var1.next();
         } while (spawn.getNpcId() != npcId);
 
         return spawn.getNpc();
@@ -53,10 +53,7 @@ public class Gordon extends L2AttackableAIScript {
                 return null;
             }
 
-            Iterator var4 = npc.getKnownTypeInRadius(Player.class, 5000).iterator();
-
-            while (var4.hasNext()) {
-                Player pc = (Player) var4.next();
+            for (Player pc : npc.getKnownTypeInRadius(Player.class, 5000)) {
                 if (pc.isCursedWeaponEquipped()) {
                     attack((Attackable) npc, pc);
                     return null;

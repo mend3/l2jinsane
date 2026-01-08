@@ -7,7 +7,6 @@ import java.util.Vector;
 
 public class CancelTaskManager implements Runnable {
     private final Player _player;
-
     private final Vector<L2Skill> _buffsCanceled;
 
     public CancelTaskManager(Player player, Vector<L2Skill> skill) {
@@ -16,12 +15,13 @@ public class CancelTaskManager implements Runnable {
     }
 
     public void run() {
-        if (this._player == null)
-            return;
-        for (L2Skill skill : this._buffsCanceled) {
-            if (skill == null)
-                continue;
-            skill.getEffects(this._player, this._player);
+        if (this._player != null) {
+            for (L2Skill skill : this._buffsCanceled) {
+                if (skill != null) {
+                    skill.getEffects(this._player, this._player);
+                }
+            }
+
         }
     }
 }

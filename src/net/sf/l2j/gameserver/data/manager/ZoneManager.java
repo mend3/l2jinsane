@@ -32,22 +32,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ZoneManager implements IXmlReader {
     private static final String DELETE_GRAND_BOSS_LIST = "DELETE FROM grandboss_list";
     private static final String INSERT_GRAND_BOSS_LIST = "INSERT INTO grandboss_list (player_id,zone) VALUES (?,?)";
-    private final Map<Class<? extends ZoneType>, Map<Integer, ? extends ZoneType>> _zones = new HashMap();
-    private final Map<Integer, ItemInstance> _debugItems = new ConcurrentHashMap();
+    private final Map<Class<? extends ZoneType>, Map<Integer, ? extends ZoneType>> _zones = new HashMap<>();
+    private final Map<Integer, ItemInstance> _debugItems = new ConcurrentHashMap<>();
     private int _lastDynamicId = 0;
 
     protected ZoneManager() {
     }
 
     public static <T extends ZoneType> void toAllPlayersInZoneType(Class<T> zoneType, L2GameServerPacket... packets) {
-        Iterator var2 = getInstance().getAllZones(zoneType).iterator();
 
-        while (var2.hasNext()) {
-            ZoneType zone = (ZoneType) var2.next();
-            Iterator var4 = zone.getKnownTypeInside(Player.class).iterator();
-
-            while (var4.hasNext()) {
-                Player player = (Player) var4.next();
+        for (ZoneType zone : getInstance().getAllZones(zoneType)) {
+            for (Player player : zone.getKnownTypeInside(Player.class)) {
                 L2GameServerPacket[] var6 = packets;
                 int var7 = packets.length;
 
@@ -60,7 +55,7 @@ public class ZoneManager implements IXmlReader {
 
     }
 
-    public static final ZoneManager getInstance() {
+    public static ZoneManager getInstance() {
         return ZoneManager.SingletonHolder.INSTANCE;
     }
 
@@ -107,7 +102,7 @@ public class ZoneManager implements IXmlReader {
                 String zoneShape = this.parseString(attrs, "shape");
                 int minZ = this.parseInteger(attrs, "minZ");
                 int maxZ = this.parseInteger(attrs, "maxZ");
-                List<IntIntHolder> nodes = new ArrayList();
+                List<IntIntHolder> nodes = new ArrayList<>();
                 this.forEach(zoneNode, "node", (nodeNode) -> {
                     NamedNodeMap nodeAttrs = nodeNode.getAttributes();
                     nodes.add(new IntIntHolder(this.parseInteger(nodeAttrs, "x"), this.parseInteger(nodeAttrs, "y")));
@@ -225,10 +220,8 @@ public class ZoneManager implements IXmlReader {
         this.clearDebugItems();
         this._lastDynamicId = 0;
         this.load();
-        Iterator var9 = World.getInstance().getObjects().iterator();
 
-        while (var9.hasNext()) {
-            WorldObject object = (WorldObject) var9.next();
+        for (WorldObject object : World.getInstance().getObjects()) {
             if (object instanceof Creature) {
                 ((Creature) object).revalidateZone(true);
             }
@@ -273,10 +266,8 @@ public class ZoneManager implements IXmlReader {
                         }
 
                         ZoneType zone = (ZoneType) var3.next();
-                        Iterator var5 = ((BossZone) zone).getAllowedPlayers().iterator();
 
-                        while (var5.hasNext()) {
-                            int player = (Integer) var5.next();
+                        for (int player : ((BossZone) zone).getAllowedPlayers()) {
                             ps.setInt(1, player);
                             ps.setInt(2, zone.getId());
                             ps.addBatch();
@@ -322,7 +313,7 @@ public class ZoneManager implements IXmlReader {
     public <T extends ZoneType> void addZone(Integer id, T zone) {
         Map<Integer, T> map = (Map) this._zones.get(zone.getClass());
         if (map == null) {
-            map = new HashMap();
+            map = new HashMap<>();
             map.put(id, zone);
             this._zones.put(zone.getClass(), map);
         } else {
@@ -336,7 +327,7 @@ public class ZoneManager implements IXmlReader {
     }
 
     public ZoneType getZoneById(int id) {
-        Iterator var2 = this._zones.values().iterator();
+        Iterator<Map<Integer, ? extends ZoneType>> var2 = this._zones.values().iterator();
 
         Map map;
         do {
@@ -344,7 +335,7 @@ public class ZoneManager implements IXmlReader {
                 return null;
             }
 
-            map = (Map) var2.next();
+            map = var2.next();
         } while (!map.containsKey(id));
 
         return (ZoneType) map.get(id);
@@ -363,11 +354,9 @@ public class ZoneManager implements IXmlReader {
     }
 
     public List<ZoneType> getZones(int x, int y) {
-        List<ZoneType> temp = new ArrayList();
-        Iterator var4 = World.getInstance().getRegion(x, y).getZones().iterator();
+        List<ZoneType> temp = new ArrayList<>();
 
-        while (var4.hasNext()) {
-            ZoneType zone = (ZoneType) var4.next();
+        for (ZoneType zone : World.getInstance().getRegion(x, y).getZones()) {
             if (zone.isInsideZone(x, y)) {
                 temp.add(zone);
             }
@@ -377,11 +366,9 @@ public class ZoneManager implements IXmlReader {
     }
 
     public List<ZoneType> getZones(int x, int y, int z) {
-        List<ZoneType> temp = new ArrayList();
-        Iterator var5 = World.getInstance().getRegion(x, y).getZones().iterator();
+        List<ZoneType> temp = new ArrayList<>();
 
-        while (var5.hasNext()) {
-            ZoneType zone = (ZoneType) var5.next();
+        for (ZoneType zone : World.getInstance().getRegion(x, y).getZones()) {
             if (zone.isInsideZone(x, y, z)) {
                 temp.add(zone);
             }
@@ -391,7 +378,7 @@ public class ZoneManager implements IXmlReader {
     }
 
     public <T extends ZoneType> T getZone(int x, int y, Class<T> type) {
-        Iterator var4 = World.getInstance().getRegion(x, y).getZones().iterator();
+        Iterator<ZoneType> var4 = World.getInstance().getRegion(x, y).getZones().iterator();
 
         ZoneType zone;
         do {
@@ -399,14 +386,14 @@ public class ZoneManager implements IXmlReader {
                 return null;
             }
 
-            zone = (ZoneType) var4.next();
+            zone = var4.next();
         } while (!zone.isInsideZone(x, y) || !type.isInstance(zone));
 
         return (T) zone;
     }
 
     public <T extends ZoneType> T getZone(int x, int y, int z, Class<T> type) {
-        Iterator var5 = World.getInstance().getRegion(x, y).getZones().iterator();
+        Iterator<ZoneType> var5 = World.getInstance().getRegion(x, y).getZones().iterator();
 
         ZoneType zone;
         do {
@@ -414,7 +401,7 @@ public class ZoneManager implements IXmlReader {
                 return null;
             }
 
-            zone = (ZoneType) var5.next();
+            zone = var5.next();
         } while (!zone.isInsideZone(x, y, z) || !type.isInstance(zone));
 
         return (T) zone;
@@ -425,10 +412,8 @@ public class ZoneManager implements IXmlReader {
     }
 
     public void clearDebugItems() {
-        Iterator var1 = this._debugItems.values().iterator();
 
-        while (var1.hasNext()) {
-            ItemInstance item = (ItemInstance) var1.next();
+        for (ItemInstance item : this._debugItems.values()) {
             item.decayMe();
         }
 

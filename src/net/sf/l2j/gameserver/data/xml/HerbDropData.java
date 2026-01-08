@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class HerbDropData implements IXmlReader {
-    private final Map<Integer, List<DropCategory>> _herbGroups = new HashMap();
+    private final Map<Integer, List<DropCategory>> _herbGroups = new HashMap<>();
 
     protected HerbDropData() {
     }
@@ -30,7 +30,7 @@ public class HerbDropData implements IXmlReader {
             this.forEach(listNode, "group", (groupNode) -> {
                 int groupId = this.parseInteger(groupNode.getAttributes(), "id");
                 List<DropCategory> category = this._herbGroups.computeIfAbsent(groupId, (k) -> {
-                    return new ArrayList();
+                    return new ArrayList<>();
                 });
                 this.forEach(groupNode, "item", (itemNode) -> {
                     NamedNodeMap attrs = itemNode.getAttributes();
@@ -43,10 +43,8 @@ public class HerbDropData implements IXmlReader {
                     dropDat.setMaxDrop(1);
                     dropDat.setChance(chance);
                     boolean catExists = false;
-                    Iterator var9 = category.iterator();
 
-                    while (var9.hasNext()) {
-                        DropCategory catx = (DropCategory) var9.next();
+                    for (DropCategory catx : category) {
                         if (catx.getCategoryType() == categoryType) {
                             catx.addDropData(dropDat, false);
                             catExists = true;

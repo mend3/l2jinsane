@@ -27,8 +27,8 @@ public class Arena9x9 implements Runnable {
     public Arena9x9() {
         this.free = Config.ARENA_EVENT_COUNT_9X9;
         this.arenas = new Arena9x9.Arena[Config.ARENA_EVENT_COUNT_9X9];
-        this.fights = new HashMap(Config.ARENA_EVENT_COUNT_9X9);
-        registered = new ArrayList();
+        this.fights = new HashMap<>(Config.ARENA_EVENT_COUNT_9X9);
+        registered = new ArrayList<>();
 
         for (int i = 0; i < Config.ARENA_EVENT_COUNT_9X9; ++i) {
             int[] coord = Config.ARENA_EVENT_LOCS_9X9[i];
@@ -42,10 +42,8 @@ public class Arena9x9 implements Runnable {
     }
 
     public boolean register(Player player, Player assist, Player assist2, Player assist3, Player assist4, Player assist5, Player assist6, Player assist7, Player assist8) {
-        Iterator var10 = registered.iterator();
 
-        while (var10.hasNext()) {
-            Arena9x9.Pair p = (Arena9x9.Pair) var10.next();
+        for (Pair p : registered) {
             if (p.getLeader() != player && p.getAssist() != player) {
                 if (p.getLeader() != assist && p.getAssist() != assist) {
                     if (p.getLeader() != assist2 && p.getAssist2() != assist2) {
@@ -98,7 +96,7 @@ public class Arena9x9 implements Runnable {
     }
 
     public boolean isRegistered(Player player) {
-        Iterator var2 = registered.iterator();
+        Iterator<Pair> var2 = registered.iterator();
 
         Arena9x9.Pair p;
         do {
@@ -106,7 +104,7 @@ public class Arena9x9 implements Runnable {
                 return false;
             }
 
-            p = (Arena9x9.Pair) var2.next();
+            p = var2.next();
         } while (p.getLeader() != player && p.getAssist() != player && p.getAssist2() != player && p.getAssist3() != player && p.getAssist4() != player && p.getAssist5() != player && p.getAssist6() != player && p.getAssist7() != player && p.getAssist8() != player);
 
         return true;
@@ -117,7 +115,7 @@ public class Arena9x9 implements Runnable {
     }
 
     public boolean remove(Player player) {
-        Iterator var2 = registered.iterator();
+        Iterator<Pair> var2 = registered.iterator();
 
         Arena9x9.Pair p;
         do {
@@ -125,7 +123,7 @@ public class Arena9x9 implements Runnable {
                 return false;
             }
 
-            p = (Arena9x9.Pair) var2.next();
+            p = var2.next();
         } while (p.getLeader() != player && p.getAssist() != player && p.getAssist2() != player && p.getAssist3() != player && p.getAssist4() != player && p.getAssist5() != player && p.getAssist6() != player && p.getAssist7() != player && p.getAssist8() != player);
 
         p.removeMessage();
@@ -145,19 +143,19 @@ public class Arena9x9 implements Runnable {
 
                 try {
                     Thread.sleep((long) (Config.ARENA_CALL_INTERVAL * 1000L));
-                } catch (InterruptedException var3) {
+                } catch (InterruptedException ignored) {
                 }
             } else {
                 try {
                     Thread.sleep((long) (Config.ARENA_CALL_INTERVAL * 1000L));
-                } catch (InterruptedException var4) {
+                } catch (InterruptedException ignored) {
                 }
             }
         }
     }
 
     private List<Arena9x9.Pair> selectOpponents() {
-        List<Arena9x9.Pair> opponents = new ArrayList();
+        List<Arena9x9.Pair> opponents = new ArrayList<>();
         Arena9x9.Pair pairOne = null;
         Arena9x9.Pair pairTwo = null;
         int tries = 3;
@@ -1533,7 +1531,7 @@ public class Arena9x9 implements Runnable {
 
             try {
                 Thread.sleep((long) (Config.ARENA_WAIT_INTERVAL_9X9 * 1000L));
-            } catch (InterruptedException var3) {
+            } catch (InterruptedException ignored) {
             }
 
             this.pairOne.sendPacketinit("Started. Good Fight!", 3);
@@ -1548,7 +1546,7 @@ public class Arena9x9 implements Runnable {
             while (this.check()) {
                 try {
                     Thread.sleep((long) Config.ARENA_CHECK_INTERVAL);
-                } catch (InterruptedException var2) {
+                } catch (InterruptedException ignored) {
                 }
             }
 
@@ -1626,7 +1624,7 @@ public class Arena9x9 implements Runnable {
                     this.pairTwo.setInTournamentEvent(true);
                     this.pairOne.removeSkills();
                     this.pairTwo.removeSkills();
-                    Map var10000 = Arena9x9.this.fights;
+                    Map<Integer, String> var10000 = Arena9x9.this.fights;
                     Integer var10001 = this.arena.id;
                     String var10002 = this.pairOne.getLeader().getName();
                     var10000.put(var10001, var10002 + " vs " + this.pairTwo.getLeader().getName());

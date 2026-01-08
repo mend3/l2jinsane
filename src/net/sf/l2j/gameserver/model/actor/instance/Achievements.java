@@ -33,7 +33,7 @@ public class Achievements extends Folk {
         StringTokenizer st = new StringTokenizer(command, " ");
         String actualCommand = st.nextToken();
         if (actualCommand.startsWith("showMyAchievements")) {
-            player.getAchievementData();
+            player.refreshCompletedAchievements();
             showMyAchievements(player);
         } else if (actualCommand.startsWith("achievementInfo")) {
             int id = Integer.parseInt(st.nextToken());
@@ -59,7 +59,7 @@ public class Achievements extends Folk {
             player.getAI().setIntention(IntentionType.INTERACT, this);
         } else {
             player.sendPacket(new MoveToPawn(player, this, 150));
-            player.getAchievementData();
+            player.refreshCompletedAchievements();
             showMyAchievements(player);
         }
         player.sendPacket(ActionFailed.STATIC_PACKET);

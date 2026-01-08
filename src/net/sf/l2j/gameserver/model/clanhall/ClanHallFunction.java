@@ -33,9 +33,9 @@ public class ClanHallFunction {
         if (!this._ch.isFree()) {
             long currentTime = System.currentTimeMillis();
             if (this._endDate > currentTime) {
-                this._feeTask = ThreadPool.schedule(new ClanHallFunction.FunctionTask(), this._endDate - currentTime);
+                this._feeTask = ThreadPool.schedule(new FunctionTask(), this._endDate - currentTime);
             } else {
-                ThreadPool.execute(new ClanHallFunction.FunctionTask());
+                ThreadPool.execute(new FunctionTask());
             }
 
         }
@@ -74,52 +74,19 @@ public class ClanHallFunction {
     }
 
     public void dbSave() {
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
+        try (
+                Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("REPLACE INTO clanhall_functions (hall_id, type, lvl, lease, rate, endTime) VALUES (?,?,?,?,?,?)");
-
-                try {
-                    ps.setInt(1, this._ch.getId());
-                    ps.setInt(2, this.getType());
-                    ps.setInt(3, this.getLvl());
-                    ps.setInt(4, this.getLease());
-                    ps.setLong(5, this.getRate());
-                    ps.setLong(6, this.getEndTime());
-                    ps.execute();
-                } catch (Throwable var7) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var6) {
-                            var7.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var7;
-                }
-
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var8) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var5) {
-                        var8.addSuppressed(var5);
-                    }
-                }
-
-                throw var8;
-            }
-
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var9) {
-            LOGGER.error("Couldn't save clan hall function.", var9);
+        ) {
+            ps.setInt(1, this._ch.getId());
+            ps.setInt(2, this.getType());
+            ps.setInt(3, this.getLvl());
+            ps.setInt(4, this.getLease());
+            ps.setLong(5, this.getRate());
+            ps.setLong(6, this.getEndTime());
+            ps.execute();
+        } catch (Exception e) {
+            LOGGER.error("Couldn't save clan hall function.", e);
         }
 
     }
@@ -128,48 +95,15 @@ public class ClanHallFunction {
         this.stopFeeTask();
         this._ch.getFunctions().remove(this.getType());
 
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
+        try (
+                Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("DELETE FROM clanhall_functions WHERE hall_id=? AND type=?");
-
-                try {
-                    ps.setInt(1, this._ch.getId());
-                    ps.setInt(2, this.getType());
-                    ps.execute();
-                } catch (Throwable var7) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var6) {
-                            var7.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var7;
-                }
-
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var8) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var5) {
-                        var8.addSuppressed(var5);
-                    }
-                }
-
-                throw var8;
-            }
-
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var9) {
-            LOGGER.error("Couldn't remove clan hall function.", var9);
+        ) {
+            ps.setInt(1, this._ch.getId());
+            ps.setInt(2, this.getType());
+            ps.execute();
+        } catch (Exception e) {
+            LOGGER.error("Couldn't remove clan hall function.", e);
         }
 
     }
@@ -180,7 +114,7 @@ public class ClanHallFunction {
         this._lvl = lvl;
         this.refreshEndTime();
         this.dbSave();
-        this._feeTask = ThreadPool.schedule(new ClanHallFunction.FunctionTask(), this.getRate());
+        this._feeTask = ThreadPool.schedule(new FunctionTask(), this.getRate());
     }
 
     private class FunctionTask implements Runnable {

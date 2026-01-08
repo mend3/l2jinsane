@@ -28,7 +28,7 @@ public class MapRegionData implements IXmlReader {
     private static final int REGIONS_X = 11;
     private static final int REGIONS_Y = 16;
     private static final Location MDT_LOCATION = new Location(12661, 181687, -3560);
-    private final int[][] _regions = new int[11][16];
+    private final int[][] _regions = new int[REGIONS_X][REGIONS_Y];
 
     protected MapRegionData() {
     }
@@ -79,82 +79,42 @@ public class MapRegionData implements IXmlReader {
     }
 
     public final int getAreaCastle(int x, int y) {
-        switch (this.getMapRegion(x, y)) {
-            case 0:
-            case 5:
-            case 6:
-                return 1;
-            case 1:
-            case 2:
-            case 9:
-            case 17:
-                return 4;
-            case 3:
-            case 4:
-            case 16:
-                return 9;
-            case 7:
-                return 2;
-            case 8:
-            case 12:
-                return 3;
-            case 10:
-            case 11:
-            default:
-                return 5;
-            case 13:
-                return 6;
-            case 14:
-            case 18:
-                return 8;
-            case 15:
-                return 7;
-        }
+        return switch (this.getMapRegion(x, y)) {
+            case 0, 5, 6 -> 1;
+            case 1, 2, 9, 17 -> 4;
+            case 3, 4, 16 -> 9;
+            case 7 -> 2;
+            case 8, 12 -> 3;
+            case 13 -> 6;
+            case 14, 18 -> 8;
+            case 15 -> 7;
+            default -> 5;
+        };
     }
 
     public String getClosestTownName(int x, int y) {
-        switch (this.getMapRegion(x, y)) {
-            case 0:
-                return "Talking Island Village";
-            case 1:
-                return "Elven Village";
-            case 2:
-                return "Dark Elven Village";
-            case 3:
-                return "Orc Village";
-            case 4:
-                return "Dwarven Village";
-            case 5:
-                return "Town of Gludio";
-            case 6:
-                return "Gludin Village";
-            case 7:
-                return "Town of Dion";
-            case 8:
-                return "Town of Giran";
-            case 9:
-                return "Town of Oren";
-            case 10:
-                return "Town of Aden";
-            case 11:
-                return "Hunters Village";
-            case 12:
-                return "Giran Harbor";
-            case 13:
-                return "Heine";
-            case 14:
-                return "Rune Township";
-            case 15:
-                return "Town of Goddard";
-            case 16:
-                return "Town of Schuttgart";
-            case 17:
-                return "Floran Village";
-            case 18:
-                return "Primeval Isle";
-            default:
-                return "Town of Aden";
-        }
+        return switch (this.getMapRegion(x, y)) {
+            case 0 -> "Talking Island Village";
+            case 1 -> "Elven Village";
+            case 2 -> "Dark Elven Village";
+            case 3 -> "Orc Village";
+            case 4 -> "Dwarven Village";
+            case 5 -> "Town of Gludio";
+            case 6 -> "Gludin Village";
+            case 7 -> "Town of Dion";
+            case 8 -> "Town of Giran";
+            case 9 -> "Town of Oren";
+            case 10 -> "Town of Aden";
+            case 11 -> "Hunters Village";
+            case 12 -> "Giran Harbor";
+            case 13 -> "Heine";
+            case 14 -> "Rune Township";
+            case 15 -> "Town of Goddard";
+            case 16 -> "Town of Schuttgart";
+            case 17 -> "Floran Village";
+            case 18 -> "Primeval Isle";
+            default -> "Town of Aden";
+        };
     }
 
     public Location getLocationToTeleport(Creature creature, MapRegionData.TeleportType teleportType) {
@@ -210,111 +170,62 @@ public class MapRegionData implements IXmlReader {
         }
     }
 
-    private final TownZone getClosestTown(Creature creature) {
-        switch (this.getMapRegion(creature.getX(), creature.getY())) {
-            case 0:
-                return getTown(2);
-            case 1:
-                return getTown(creature instanceof Player && ((Player) creature).getTemplate().getRace() == ClassRace.DARK_ELF ? 1 : 3);
-            case 2:
-                return getTown(creature instanceof Player && ((Player) creature).getTemplate().getRace() == ClassRace.ELF ? 3 : 1);
-            case 3:
-                return getTown(4);
-            case 4:
-                return getTown(6);
-            case 5:
-                return getTown(7);
-            case 6:
-                return getTown(5);
-            case 7:
-                return getTown(8);
-            case 8:
-            case 12:
-                return getTown(9);
-            case 9:
-                return getTown(10);
-            case 10:
-                return getTown(12);
-            case 11:
-                return getTown(11);
-            case 13:
-                return getTown(15);
-            case 14:
-                return getTown(14);
-            case 15:
-                return getTown(13);
-            case 16:
-                return getTown(17);
-            case 17:
-                return getTown(16);
-            case 18:
-                return getTown(19);
-            default:
-                return getTown(16);
-        }
+    private TownZone getClosestTown(Creature creature) {
+        return switch (this.getMapRegion(creature.getX(), creature.getY())) {
+            case 0 -> getTown(2);
+            case 1 ->
+                    getTown(creature instanceof Player && ((Player) creature).getTemplate().getRace() == ClassRace.DARK_ELF ? 1 : 3);
+            case 2 ->
+                    getTown(creature instanceof Player && ((Player) creature).getTemplate().getRace() == ClassRace.ELF ? 3 : 1);
+            case 3 -> getTown(4);
+            case 4 -> getTown(6);
+            case 5 -> getTown(7);
+            case 6 -> getTown(5);
+            case 7 -> getTown(8);
+            case 8, 12 -> getTown(9);
+            case 9 -> getTown(10);
+            case 10 -> getTown(12);
+            case 11 -> getTown(11);
+            case 13 -> getTown(15);
+            case 14 -> getTown(14);
+            case 15 -> getTown(13);
+            case 16 -> getTown(17);
+            case 17 -> getTown(16);
+            case 18 -> getTown(19);
+            default -> getTown(16);
+        };
     }
 
     public final int getClosestLocation(int x, int y) {
-        switch (this.getMapRegion(x, y)) {
-            case 0:
-                return 1;
-            case 1:
-                return 4;
-            case 2:
-                return 3;
-            case 3:
-            case 4:
-            case 16:
-                return 9;
-            case 5:
-            case 6:
-                return 2;
-            case 7:
-                return 5;
-            case 8:
-            case 12:
-                return 6;
-            case 9:
-                return 10;
-            case 10:
-                return 13;
-            case 11:
-                return 11;
-            case 13:
-                return 12;
-            case 14:
-                return 14;
-            case 15:
-                return 15;
-            default:
-                return 0;
-        }
+        return switch (this.getMapRegion(x, y)) {
+            case 0 -> 1;
+            case 1 -> 4;
+            case 2 -> 3;
+            case 3, 4, 16 -> 9;
+            case 5, 6 -> 2;
+            case 7 -> 5;
+            case 8, 12 -> 6;
+            case 9 -> 10;
+            case 10 -> 13;
+            case 11 -> 11;
+            case 13 -> 12;
+            case 14 -> 14;
+            case 15 -> 15;
+            default -> 0;
+        };
     }
 
     public final String getPictureName(int x, int y) {
-        switch (this.getMapRegion(x, y)) {
-            case 5:
-                return "GLUDIO";
-            case 6:
-                return "GLUDIN";
-            case 7:
-                return "DION";
-            case 8:
-                return "GIRAN";
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            default:
-                return "ADEN";
-            case 14:
-                return "RUNE";
-            case 15:
-                return "GODARD";
-            case 16:
-                return "SCHUTTGART";
-        }
+        return switch (this.getMapRegion(x, y)) {
+            case 5 -> "GLUDIO";
+            case 6 -> "GLUDIN";
+            case 7 -> "DION";
+            case 8 -> "GIRAN";
+            case 14 -> "RUNE";
+            case 15 -> "GODARD";
+            case 16 -> "SCHUTTGART";
+            default -> "ADEN";
+        };
     }
 
     public enum TeleportType {
@@ -323,10 +234,6 @@ public class MapRegionData implements IXmlReader {
         SIEGE_FLAG,
         TOWN;
 
-        // $FF: synthetic method
-        private static MapRegionData.TeleportType[] $values() {
-            return new MapRegionData.TeleportType[]{CASTLE, CLAN_HALL, SIEGE_FLAG, TOWN};
-        }
     }
 
 }

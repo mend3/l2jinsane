@@ -29,7 +29,7 @@ public abstract class Playable extends Creature {
     }
 
     public void initCharStat() {
-        setStat(new PlayableStat(this));
+        this.setStat(new PlayableStat(this));
     }
 
     public PlayableStat getStat() {
@@ -37,7 +37,7 @@ public abstract class Playable extends Creature {
     }
 
     public void initCharStatus() {
-        setStatus(new PlayableStatus(this));
+        this.setStatus(new PlayableStatus(this));
     }
 
     public PlayableStatus getStatus() {
@@ -47,85 +47,115 @@ public abstract class Playable extends Creature {
     public void onActionShift(Player player) {
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (isAutoAttackable(player) && player.isInsideRadius(this, player.getPhysicalAttackRange(), false, false) && GeoEngine.getInstance().canSeeTarget(player, this)) {
+        } else if (this.isAutoAttackable(player) && player.isInsideRadius(this, player.getPhysicalAttackRange(), false, false) && GeoEngine.getInstance().canSeeTarget(player, this)) {
             player.getAI().setIntention(IntentionType.ATTACK, this);
         } else {
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 
     public boolean doDie(Creature killer) {
         synchronized (this) {
-            if (isDead())
+            if (this.isDead()) {
                 return false;
-            setCurrentHp(0.0D);
-            setIsDead(true);
+            }
+
+            this.setCurrentHp(0.0F);
+            this.setIsDead(true);
         }
+
         EngineModsManager.onKill(killer, this, killer instanceof Summon);
         EngineModsManager.onDeath(this);
-        setTarget(null);
-        stopMove(null);
-        getStatus().stopHpMpRegeneration();
-        if (isPhoenixBlessed()) {
-            if (getCharmOfLuck())
-                stopCharmOfLuck(null);
-            if (isNoblesseBlessed())
-                stopNoblesseBlessing(null);
-        } else if (isNoblesseBlessed()) {
-            stopNoblesseBlessing(null);
-            if (getCharmOfLuck())
-                stopCharmOfLuck(null);
-        } else if (getActingPlayer() != null) {
-            if (TvTEventManager.getInstance().getActiveEvent() == null || !TvTEventManager.getInstance().getActiveEvent().isInEvent(getActingPlayer()))
-                stopAllEffectsExceptThoseThatLastThroughDeath();
-            if (CtfEventManager.getInstance().getActiveEvent() == null || !CtfEventManager.getInstance().getActiveEvent().isInEvent(getActingPlayer()))
-                stopAllEffectsExceptThoseThatLastThroughDeath();
-            if (DmEventManager.getInstance().getActiveEvent() == null || !DmEventManager.getInstance().getActiveEvent().isInEvent(getActingPlayer()))
-                stopAllEffectsExceptThoseThatLastThroughDeath();
+        this.setTarget(null);
+        this.stopMove(null);
+        this.getStatus().stopHpMpRegeneration();
+        if (this.isPhoenixBlessed()) {
+            if (this.getCharmOfLuck()) {
+                this.stopCharmOfLuck(null);
+            }
+
+            if (this.isNoblesseBlessed()) {
+                this.stopNoblesseBlessing(null);
+            }
+        } else if (this.isNoblesseBlessed()) {
+            this.stopNoblesseBlessing(null);
+            if (this.getCharmOfLuck()) {
+                this.stopCharmOfLuck(null);
+            }
+        } else if (this.getActingPlayer() != null) {
+            if (TvTEventManager.getInstance().getActiveEvent() == null || !TvTEventManager.getInstance().getActiveEvent().isInEvent(this.getActingPlayer())) {
+                this.stopAllEffectsExceptThoseThatLastThroughDeath();
+            }
+
+            if (CtfEventManager.getInstance().getActiveEvent() == null || !CtfEventManager.getInstance().getActiveEvent().isInEvent(this.getActingPlayer())) {
+                this.stopAllEffectsExceptThoseThatLastThroughDeath();
+            }
+
+            if (DmEventManager.getInstance().getActiveEvent() == null || !DmEventManager.getInstance().getActiveEvent().isInEvent(this.getActingPlayer())) {
+                this.stopAllEffectsExceptThoseThatLastThroughDeath();
+            }
         }
-        broadcastStatusUpdate();
-        getAI().notifyEvent(AiEventType.DEAD);
-        WorldRegion region = getRegion();
-        if (region != null)
+
+        this.broadcastStatusUpdate();
+        this.getAI().notifyEvent(AiEventType.DEAD);
+        WorldRegion region = this.getRegion();
+        if (region != null) {
             region.onDeath(this);
-        Player actingPlayer = getActingPlayer();
-        for (QuestState qs : actingPlayer.getNotifyQuestOfDeath())
-            qs.getQuest().notifyDeath((killer == null) ? this : killer, actingPlayer);
+        }
+
+        Player actingPlayer = this.getActingPlayer();
+
+        for (QuestState qs : actingPlayer.getNotifyQuestOfDeath()) {
+            qs.getQuest().notifyDeath(killer == null ? this : killer, actingPlayer);
+        }
+
         if (killer != null) {
             Player player = killer.getActingPlayer();
-            if (player != null)
+            if (player != null) {
                 player.onKillUpdatePvPKarma(this);
+            }
         }
+
         return true;
     }
 
     public void doRevive() {
-        if (!isDead() || isTeleporting())
-            return;
-        setIsDead(false);
-        if (isPhoenixBlessed()) {
-            stopPhoenixBlessing(null);
-            getStatus().setCurrentHp(getMaxHp());
-            getStatus().setCurrentMp(getMaxMp());
-        } else {
-            getStatus().setCurrentHp(getMaxHp() * Config.RESPAWN_RESTORE_HP);
+        if (this.isDead() && !this.isTeleporting()) {
+            this.setIsDead(false);
+            if (this.isPhoenixBlessed()) {
+                this.stopPhoenixBlessing(null);
+                this.getStatus().setCurrentHp(this.getMaxHp());
+                this.getStatus().setCurrentMp(this.getMaxMp());
+            } else {
+                this.getStatus().setCurrentHp((double) this.getMaxHp() * Config.RESPAWN_RESTORE_HP);
+            }
+
+            this.broadcastPacket(new Revive(this));
+            WorldRegion region = this.getRegion();
+            if (region != null) {
+                region.onRevive(this);
+            }
+
         }
-        broadcastPacket(new Revive(this));
-        WorldRegion region = getRegion();
-        if (region != null)
-            region.onRevive(this);
     }
 
     public boolean checkIfPvP(Playable target) {
-        if (target == null || target == this)
+        if (target != null && target != this) {
+            Player player = this.getActingPlayer();
+            if (player != null && player.getKarma() == 0) {
+                Player targetPlayer = target.getActingPlayer();
+                if (targetPlayer != null && targetPlayer != this) {
+                    return targetPlayer.getKarma() == 0 && targetPlayer.getPvpFlag() != 0;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
             return false;
-        Player player = getActingPlayer();
-        if (player == null || player.getKarma() != 0)
-            return false;
-        Player targetPlayer = target.getActingPlayer();
-        if (targetPlayer == null || targetPlayer == this)
-            return false;
-        return targetPlayer.getKarma() == 0 && targetPlayer.getPvpFlag() != 0;
+        }
     }
 
     public boolean isAttackable() {
@@ -141,11 +171,12 @@ public abstract class Playable extends Creature {
 
     public final void stopNoblesseBlessing(L2Effect effect) {
         if (effect == null) {
-            stopEffects(L2EffectType.NOBLESSE_BLESSING);
+            this.stopEffects(L2EffectType.NOBLESSE_BLESSING);
         } else {
-            removeEffect(effect);
+            this.removeEffect(effect);
         }
-        updateAbnormalEffect();
+
+        this.updateAbnormalEffect();
     }
 
     public final boolean isPhoenixBlessed() {
@@ -154,11 +185,12 @@ public abstract class Playable extends Creature {
 
     public final void stopPhoenixBlessing(L2Effect effect) {
         if (effect == null) {
-            stopEffects(L2EffectType.PHOENIX_BLESSING);
+            this.stopEffects(L2EffectType.PHOENIX_BLESSING);
         } else {
-            removeEffect(effect);
+            this.removeEffect(effect);
         }
-        updateAbnormalEffect();
+
+        this.updateAbnormalEffect();
     }
 
     public boolean isSilentMoving() {
@@ -171,11 +203,12 @@ public abstract class Playable extends Creature {
 
     public void stopProtectionBlessing(L2Effect effect) {
         if (effect == null) {
-            stopEffects(L2EffectType.PROTECTION_BLESSING);
+            this.stopEffects(L2EffectType.PROTECTION_BLESSING);
         } else {
-            removeEffect(effect);
+            this.removeEffect(effect);
         }
-        updateAbnormalEffect();
+
+        this.updateAbnormalEffect();
     }
 
     public final boolean getCharmOfLuck() {
@@ -184,11 +217,12 @@ public abstract class Playable extends Creature {
 
     public final void stopCharmOfLuck(L2Effect effect) {
         if (effect == null) {
-            stopEffects(L2EffectType.CHARM_OF_LUCK);
+            this.stopEffects(L2EffectType.CHARM_OF_LUCK);
         } else {
-            removeEffect(effect);
+            this.removeEffect(effect);
         }
-        updateAbnormalEffect();
+
+        this.updateAbnormalEffect();
     }
 
     public void updateEffectIcons(boolean partyOnly) {
@@ -199,14 +233,14 @@ public abstract class Playable extends Creature {
     }
 
     public boolean isInArena() {
-        return (isInsideZone(ZoneId.PVP) && !isInsideZone(ZoneId.SIEGE));
+        return this.isInsideZone(ZoneId.PVP) && !this.isInsideZone(ZoneId.SIEGE);
     }
 
-    public abstract void doPickupItem(WorldObject paramWorldObject);
+    public abstract void doPickupItem(WorldObject var1);
 
     public abstract int getKarma();
 
     public abstract byte getPvpFlag();
 
-    public abstract boolean useMagic(L2Skill paramL2Skill, boolean paramBoolean1, boolean paramBoolean2);
+    public abstract boolean useMagic(L2Skill var1, boolean var2, boolean var3);
 }

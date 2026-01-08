@@ -26,7 +26,7 @@ public class RequestProcureCropList extends L2GameClientPacket {
     protected void readImpl() {
         int count = this.readD();
         if (count > 0 && count <= Config.MAX_ITEM_IN_PACKET && count * 16 == this._buf.remaining()) {
-            this._items = new ArrayList(count);
+            this._items = new ArrayList<>(count);
 
             for (int i = 0; i < count; ++i) {
                 int objId = this.readD();
@@ -57,11 +57,11 @@ public class RequestProcureCropList extends L2GameClientPacket {
                         int castleId = folk.getCastle().getCastleId();
                         int slots = 0;
                         int weight = 0;
-                        Iterator var7 = this._items.iterator();
+                        Iterator<CropHolder> var7 = this._items.iterator();
 
                         RequestProcureCropList.CropHolder i;
                         while (var7.hasNext()) {
-                            i = (RequestProcureCropList.CropHolder) var7.next();
+                            i = var7.next();
                             ItemInstance item = player.getInventory().getItemByObjectId(i.getObjectId());
                             if (item != null && item.getCount() >= i.getValue() && item.getItemId() == i.getId()) {
                                 CropProcure cp = i.getCropProcure();
@@ -99,7 +99,7 @@ public class RequestProcureCropList extends L2GameClientPacket {
                                             return;
                                         }
 
-                                        i = (RequestProcureCropList.CropHolder) var7.next();
+                                        i = var7.next();
                                         rewardPrice = ItemTable.getInstance().getTemplate(i.getRewardId()).getReferencePrice();
                                     } while (rewardPrice == 0);
 

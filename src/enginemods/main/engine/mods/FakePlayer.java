@@ -33,7 +33,6 @@ import net.sf.l2j.gameserver.network.serverpackets.TitleUpdate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -98,10 +97,8 @@ public class FakePlayer extends AbstractMods {
         }
 
         String accountName = "fake" + Rnd.get(Integer.MAX_VALUE);
-        Iterator var6 = PlayerData.getAllPlayers().iterator();
 
-        while (var6.hasNext()) {
-            PlayerHolder ph = (PlayerHolder) var6.next();
+        for (PlayerHolder ph : PlayerData.getAllPlayers()) {
             if (ph.getAccountName().equals(accountName)) {
                 accountName = "fake" + Rnd.get(Integer.MAX_VALUE);
             }
@@ -111,14 +108,10 @@ public class FakePlayer extends AbstractMods {
         byte hairStyle = (byte) (sex == Sex.MALE ? Rnd.get(5) : Rnd.get(7));
         byte face = (byte) Rnd.get(3);
         PlayerTemplate template = PlayerClassData.getInstance().getTemplate(templateId);
-        List<Integer> items = new ArrayList();
+        List<Integer> items = new ArrayList<>();
         int chestId = template.getClassId().getType() != ClassType.FIGHTER ? FAKE_SET_MAGE[Rnd.get(FAKE_SET_MAGE.length - 1)] : FAKE_SET_WARRIOR[Rnd.get(FAKE_SET_WARRIOR.length - 1)];
         if (ArmorSetData.getInstance().getSet(chestId) != null) {
-            int[] var12 = ArmorSetData.getInstance().getSet(chestId).getSetItemsId();
-            int var13 = var12.length;
-
-            for (int var14 = 0; var14 < var13; ++var14) {
-                int it = var12[var14];
+            for (int it : ArmorSetData.getInstance().getSet(chestId).getSetItemsId()) {
                 items.add(it);
             }
         } else {
@@ -130,56 +123,23 @@ public class FakePlayer extends AbstractMods {
     }
 
     private static void storeClan(Clan clan) {
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
+        try (
+                Connection con = ConnectionPool.getConnection();
                 PreparedStatement statement = con.prepareStatement("INSERT INTO clan_data (clan_id,clan_name,clan_level,hasCastle,ally_id,ally_name,leader_id,crest_id,crest_large_id,ally_crest_id) values (?,?,?,?,?,?,?,?,?,?)");
-
-                try {
-                    statement.setInt(1, clan.getClanId());
-                    statement.setString(2, clan.getName());
-                    statement.setInt(3, clan.getLevel());
-                    statement.setInt(4, clan.getCastleId());
-                    statement.setInt(5, clan.getAllyId());
-                    statement.setString(6, clan.getAllyName());
-                    statement.setInt(7, clan.getLeaderId());
-                    statement.setInt(8, clan.getCrestId());
-                    statement.setInt(9, clan.getCrestLargeId());
-                    statement.setInt(10, clan.getAllyCrestId());
-                    statement.execute();
-                } catch (Throwable var7) {
-                    if (statement != null) {
-                        try {
-                            statement.close();
-                        } catch (Throwable var6) {
-                            var7.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var7;
-                }
-
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (Throwable var8) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var5) {
-                        var8.addSuppressed(var5);
-                    }
-                }
-
-                throw var8;
-            }
-
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var9) {
-            var9.printStackTrace();
+        ) {
+            statement.setInt(1, clan.getClanId());
+            statement.setString(2, clan.getName());
+            statement.setInt(3, clan.getLevel());
+            statement.setInt(4, clan.getCastleId());
+            statement.setInt(5, clan.getAllyId());
+            statement.setString(6, clan.getAllyName());
+            statement.setInt(7, clan.getLeaderId());
+            statement.setInt(8, clan.getCrestId());
+            statement.setInt(9, clan.getCrestLargeId());
+            statement.setInt(10, clan.getAllyCrestId());
+            statement.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
@@ -198,63 +158,40 @@ public class FakePlayer extends AbstractMods {
     }
 
     private void restoreAllFakePlayers() {
-        Iterator var1 = PlayerData.getAllPlayers().iterator();
+        for (PlayerHolder ph : PlayerData.getAllPlayers()) {
+            String fake = this.getValueDB(ph.getObjectId(), "fakePlayer");
+            if (fake != null) {
+                Player fakePlayer = UtilPlayer.spawnPlayer(ph.getObjectId());
+                boolean insideCity = MapRegionData.getTown(fakePlayer.getX(), fakePlayer.getY(), fakePlayer.getZ()) != null;
+                if (fake.equals("sitDown") && insideCity) {
+                    fakePlayer.sitDown();
+                } else {
+                    String posToFarm = this.getValueDB(ph.getObjectId(), "posToFarm");
+                    if (posToFarm != null) {
+                        ph.setPosToFarm(posToFarm);
+                        fakePlayer.teleportTo(ph.getPosToFarm(), 0);
+                    } else if (!insideCity) {
+                        ph.setPosToFarm(fakePlayer.getX(), fakePlayer.getY(), fakePlayer.getZ());
+                    }
 
-        while (true) {
-            PlayerHolder ph;
-            String fake;
-            do {
-                if (!var1.hasNext()) {
-                    return;
+                    fakePlayer.detachAI();
+                    fakePlayer.setAI(new FakePlayerAI(fakePlayer));
                 }
 
-                ph = (PlayerHolder) var1.next();
-                fake = this.getValueDB(ph.getObjectId(), "fakePlayer");
-            } while (fake == null);
-
-            Player fakePlayer = UtilPlayer.spawnPlayer(ph.getObjectId());
-            boolean insideCity = MapRegionData.getTown(fakePlayer.getX(), fakePlayer.getY(), fakePlayer.getZ()) != null;
-            if (fake.equals("sitDown") && insideCity) {
-                fakePlayer.sitDown();
-            } else {
-                String posToFarm = this.getValueDB(ph.getObjectId(), "posToFarm");
-                if (posToFarm != null) {
-                    ph.setPosToFarm(posToFarm);
-                    fakePlayer.teleportTo(ph.getPosToFarm(), 0);
-                } else if (!insideCity) {
-                    ph.setPosToFarm(fakePlayer.getX(), fakePlayer.getY(), fakePlayer.getZ());
-                }
-
-                fakePlayer.detachAI();
-                fakePlayer.setAI(new FakePlayerAI(fakePlayer));
+                fakePlayer.broadcastUserInfo();
+                ph.setFake(true);
             }
-
-            fakePlayer.broadcastUserInfo();
-            ph.setFake(true);
         }
+
     }
 
     public void onEvent(Player player, Creature npc, String command) {
         StringTokenizer st = new StringTokenizer(command, " ");
-        String event = st.nextToken();
-        byte var7 = -1;
-        switch (event.hashCode()) {
-            case 1764164512:
-                if (event.equals("deleteFake")) {
-                    var7 = 1;
-                }
-                break;
-            case 1774618269:
-                if (event.equals("allFakes")) {
-                    var7 = 0;
-                }
-        }
-
-        switch (var7) {
-            case 0:
+        switch (st.nextToken()) {
+            case "allFakes":
                 this.getAllFakePlayer(player, Integer.parseInt(st.nextToken()));
                 break;
-            case 1:
+            case "deleteFake":
                 int objId = Integer.parseInt(st.nextToken());
                 int page = Integer.parseInt(st.nextToken());
                 Player fake = World.getInstance().getPlayer(objId);
@@ -272,37 +209,18 @@ public class FakePlayer extends AbstractMods {
 
     public boolean onAdminCommand(Player player, String chat) {
         StringTokenizer st = new StringTokenizer(chat, " ");
-        String var4 = st.nextToken();
-        byte var5 = -1;
-        switch (var4.hashCode()) {
-            case -708504447:
-                if (var4.equals("createRndFake")) {
-                    var5 = 2;
-                }
-                break;
-            case 323383276:
-                if (var4.equals("formatFake")) {
-                    var5 = 1;
-                }
-                break;
-            case 1774618269:
-                if (var4.equals("allFakes")) {
-                    var5 = 0;
-                }
-        }
-
-        switch (var5) {
-            case 0:
+        switch (st.nextToken()) {
+            case "allFakes":
                 if (player.getTarget() != player) {
                     player.setTarget(player);
                 }
 
                 this.getAllFakePlayer(player, 1);
                 return true;
-            case 1:
+            case "formatFake":
                 player.sendMessage("//createRndFake count Lvl pvp pk clan(1=true 0=false) template(0 118)");
                 return true;
-            case 2:
+            case "createRndFake":
                 if (player.getTarget() != player) {
                     player.setTarget(player);
                 }
@@ -356,9 +274,9 @@ public class FakePlayer extends AbstractMods {
                         fakePlayer.broadcastPacket(new TitleUpdate(fakePlayer));
                         Thread.sleep(100L);
                     }
-                } catch (Exception var16) {
+                } catch (Exception e) {
                     player.sendMessage("format: //createRndFake count Lvl pvp pk clan(1=true 0=false) template(0 118)");
-                    var16.printStackTrace();
+                    e.printStackTrace();
                 }
 
                 return true;
@@ -387,10 +305,8 @@ public class FakePlayer extends AbstractMods {
         int searchPage = MAX_PER_PAGE * (page - 1);
         int count = 0;
         int countFakes = 0;
-        Iterator var8 = PlayerData.getAllPlayers().iterator();
 
-        while (var8.hasNext()) {
-            PlayerHolder ph = (PlayerHolder) var8.next();
+        for (PlayerHolder ph : PlayerData.getAllPlayers()) {
             if (ph.isFake()) {
                 ++countFakes;
                 if (count < searchPage) {
@@ -450,8 +366,8 @@ public class FakePlayer extends AbstractMods {
                 player.setPledgeClass(ClanMember.calculatePledgeClass(player));
                 player.setClanPrivileges(clan.getPriviledgesByRank(player.getPowerGrade()));
             }
-        } catch (Exception var5) {
-            var5.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return true;

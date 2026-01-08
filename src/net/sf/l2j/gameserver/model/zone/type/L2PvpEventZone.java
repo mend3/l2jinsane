@@ -3,7 +3,6 @@ package net.sf.l2j.gameserver.model.zone.type;
 import net.sf.l2j.gameserver.data.SkillTable;
 import net.sf.l2j.gameserver.enums.ZoneId;
 import net.sf.l2j.gameserver.events.pvpevent.PvPEvent;
-import net.sf.l2j.gameserver.model.L2Skill;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.zone.SpawnZoneType;
@@ -12,7 +11,6 @@ import net.sf.l2j.gameserver.network.serverpackets.CreatureSay;
 import net.sf.l2j.gameserver.taskmanager.PvpFlagTaskManager;
 
 public class L2PvpEventZone extends SpawnZoneType {
-    L2Skill noblesse = SkillTable.getInstance().getInfo(1323, 1);
 
     public L2PvpEventZone(int id) {
         super(id);
@@ -27,7 +25,7 @@ public class L2PvpEventZone extends SpawnZoneType {
             }
             if (activeChar.isInsideZone(ZoneId.PVPEVENT))
                 activeChar.sendPacket(SystemMessageId.ENTERED_COMBAT_ZONE);
-            this.noblesse.getEffects(character, character);
+            SkillTable.getInstance().getInfo(1323, 1).getEffects(character, character);
             if (activeChar.getPvpFlag() > 0)
                 PvpFlagTaskManager.getInstance().remove(activeChar);
             activeChar.setPvpFlag(1);
@@ -66,7 +64,7 @@ public class L2PvpEventZone extends SpawnZoneType {
         character.setCurrentHp(character.getMaxHp());
         character.setCurrentCp(character.getMaxCp());
         character.setCurrentMp(character.getMaxMp());
-        this.noblesse.getEffects(character, character);
+        SkillTable.getInstance().getInfo(1323, 1).getEffects(character, character);
         character.teleportTo(82635, 148798, -3464, 25);
     }
 }

@@ -18,8 +18,6 @@ import net.sf.l2j.gameserver.model.item.instance.ItemInstance.ItemLocation;
 import net.sf.l2j.gameserver.model.location.Location;
 import net.sf.l2j.gameserver.model.location.SpawnLocation;
 
-import java.util.Iterator;
-
 public class CreatureAI extends AbstractAI {
     public CreatureAI(Creature character) {
         super(character);
@@ -357,10 +355,7 @@ public class CreatureAI extends AbstractAI {
 
     public boolean canAura(L2Skill sk) {
         if (sk.getTargetType() == SkillTargetType.TARGET_AURA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AURA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AURA) {
-            Iterator var2 = this._actor.getKnownTypeInRadius(Creature.class, sk.getSkillRadius()).iterator();
-
-            while (var2.hasNext()) {
-                WorldObject target = (WorldObject) var2.next();
+            for (WorldObject target : this._actor.getKnownTypeInRadius(Creature.class, sk.getSkillRadius())) {
                 if (target == this.getTarget()) {
                     return true;
                 }
@@ -371,93 +366,67 @@ public class CreatureAI extends AbstractAI {
     }
 
     public boolean canAOE(L2Skill sk) {
-        boolean cancast;
-        Iterator var3;
-        Creature target;
-        L2Effect[] effects;
-        if (sk.getSkillType() == L2SkillType.NEGATE && sk.getSkillType() == L2SkillType.CANCEL) {
-            if (sk.getTargetType() != SkillTargetType.TARGET_AURA && sk.getTargetType() != SkillTargetType.TARGET_BEHIND_AURA && sk.getTargetType() != SkillTargetType.TARGET_FRONT_AURA) {
-                if (sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) {
-                    cancast = true;
-                    var3 = this.getTarget().getKnownTypeInRadius(Creature.class, sk.getSkillRadius()).iterator();
+        boolean canAoe = sk.getTargetType() != SkillTargetType.TARGET_AURA && sk.getTargetType() != SkillTargetType.TARGET_BEHIND_AURA && sk.getTargetType() != SkillTargetType.TARGET_FRONT_AURA;
+        boolean canArea = sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA;
+        if (sk.getSkillType() == L2SkillType.NEGATE || sk.getSkillType() == L2SkillType.CANCEL) {
+            if (canAoe) {
+                if (canArea) {
+                    boolean cancast = true;
 
-                    while (true) {
-                        do {
-                            do {
-                                if (!var3.hasNext()) {
-                                    return cancast;
-                                }
-
-                                target = (Creature) var3.next();
-                            } while (!GeoEngine.getInstance().canSeeTarget(this._actor, target));
-                        } while (target instanceof Attackable && !this._actor.isConfused());
-
-                        if (target.getFirstEffect(sk) != null) {
+                    for (Creature target : this.getTarget().getKnownTypeInRadius(Creature.class, sk.getSkillRadius())) {
+                        if (GeoEngine.getInstance().canSeeTarget(this._actor, target) && (!(target instanceof Attackable) || this._actor.isConfused()) && target.getFirstEffect(sk) != null) {
                             cancast = false;
                         }
                     }
+
+                    if (cancast) {
+                        return true;
+                    }
                 }
             } else {
-                cancast = false;
-                var3 = this._actor.getKnownTypeInRadius(Creature.class, sk.getSkillRadius()).iterator();
+                boolean cancast = false;
 
-                while (true) {
-                    do {
-                        do {
-                            if (!var3.hasNext()) {
-                                return cancast;
-                            }
-
-                            target = (Creature) var3.next();
-                        } while (!GeoEngine.getInstance().canSeeTarget(this._actor, target));
-                    } while (target instanceof Attackable && !this._actor.isConfused());
-
-                    effects = target.getAllEffects();
-                    if (effects.length > 0) {
-                        cancast = true;
+                for (Creature target : this._actor.getKnownTypeInRadius(Creature.class, sk.getSkillRadius())) {
+                    if (GeoEngine.getInstance().canSeeTarget(this._actor, target) && (!(target instanceof Attackable) || this._actor.isConfused())) {
+                        L2Effect[] effects = target.getAllEffects();
+                        if (effects.length > 0) {
+                            cancast = true;
+                        }
                     }
                 }
+
+                if (cancast) {
+                    return true;
+                }
             }
-        } else if (sk.getTargetType() != SkillTargetType.TARGET_AURA && sk.getTargetType() != SkillTargetType.TARGET_BEHIND_AURA && sk.getTargetType() != SkillTargetType.TARGET_FRONT_AURA) {
-            if (sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) {
-                cancast = true;
-                var3 = this.getTarget().getKnownTypeInRadius(Creature.class, sk.getSkillRadius()).iterator();
+        } else if (canAoe) {
+            if (canArea) {
+                boolean cancast = true;
 
-                while (true) {
-                    do {
-                        do {
-                            if (!var3.hasNext()) {
-                                return cancast;
-                            }
-
-                            target = (Creature) var3.next();
-                        } while (!GeoEngine.getInstance().canSeeTarget(this._actor, target));
-                    } while (target instanceof Attackable && !this._actor.isConfused());
-
-                    effects = target.getAllEffects();
-                    if (effects.length > 0) {
-                        cancast = true;
+                for (Creature target : this.getTarget().getKnownTypeInRadius(Creature.class, sk.getSkillRadius())) {
+                    if (GeoEngine.getInstance().canSeeTarget(this._actor, target) && (!(target instanceof Attackable) || this._actor.isConfused())) {
+                        L2Effect[] effects = target.getAllEffects();
+                        if (effects.length > 0) {
+                            cancast = true;
+                        }
                     }
+                }
+
+                if (cancast) {
+                    return true;
                 }
             }
         } else {
-            cancast = true;
-            var3 = this._actor.getKnownTypeInRadius(Creature.class, sk.getSkillRadius()).iterator();
+            boolean cancast = true;
 
-            while (true) {
-                do {
-                    do {
-                        if (!var3.hasNext()) {
-                            return cancast;
-                        }
-
-                        target = (Creature) var3.next();
-                    } while (!GeoEngine.getInstance().canSeeTarget(this._actor, target));
-                } while (target instanceof Attackable && !this._actor.isConfused());
-
-                if (target.getFirstEffect(sk) != null) {
+            for (Creature target : this._actor.getKnownTypeInRadius(Creature.class, sk.getSkillRadius())) {
+                if (GeoEngine.getInstance().canSeeTarget(this._actor, target) && (!(target instanceof Attackable) || this._actor.isConfused()) && target.getFirstEffect(sk) != null) {
                     cancast = false;
                 }
+            }
+
+            if (cancast) {
+                return true;
             }
         }
 
@@ -471,10 +440,8 @@ public class CreatureAI extends AbstractAI {
             int count = 0;
             int ccount = 0;
             String[] actorClans = ((Npc) this._actor).getTemplate().getClans();
-            Iterator var5 = this._actor.getKnownTypeInRadius(Attackable.class, sk.getSkillRadius()).iterator();
 
-            while (var5.hasNext()) {
-                Attackable target = (Attackable) var5.next();
+            for (Attackable target : this._actor.getKnownTypeInRadius(Attackable.class, sk.getSkillRadius())) {
                 if (GeoEngine.getInstance().canSeeTarget(this._actor, target) && ArraysUtil.contains(actorClans, target.getTemplate().getClans())) {
                     ++count;
                     if (target.getFirstEffect(sk) != null) {
@@ -483,7 +450,11 @@ public class CreatureAI extends AbstractAI {
                 }
             }
 
-            return ccount < count;
+            if (ccount < count) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }

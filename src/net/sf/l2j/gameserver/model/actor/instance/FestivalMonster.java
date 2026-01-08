@@ -29,9 +29,9 @@ public class FestivalMonster extends Monster {
 
     public void doItemDrop(NpcTemplate template, Creature attacker) {
         Player player = attacker.getActingPlayer();
-        if (player == null || !player.isInParty())
-            return;
-        player.getParty().getLeader().addItem("Sign", 5901, this._bonusMultiplier, attacker, true);
-        super.doItemDrop(template, attacker);
+        if (player != null && player.isInParty()) {
+            player.getParty().getLeader().addItem("Sign", 5901, this._bonusMultiplier, attacker, true);
+            super.doItemDrop(template, attacker);
+        }
     }
 }

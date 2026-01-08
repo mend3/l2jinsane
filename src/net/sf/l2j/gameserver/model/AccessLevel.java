@@ -4,10 +4,8 @@ import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.data.xml.AdminData;
 
 public class AccessLevel {
-    private final int _accessLevel;
-
     private final String _name;
-
+    private final int _accessLevel;
     private final int _childLevel;
     private final int _nameColor;
     private final int _titleColor;
@@ -86,8 +84,10 @@ public class AccessLevel {
     }
 
     public boolean hasChildAccess(AccessLevel access) {
-        if (this._childAccess == null && this._childLevel > 0)
+        if (this._childAccess == null && this._childLevel > 0) {
             this._childAccess = AdminData.getInstance().getAccessLevel(this._childLevel);
-        return (this._childAccess != null && (this._childAccess.getLevel() == access.getLevel() || this._childAccess.hasChildAccess(access)));
+        }
+
+        return this._childAccess != null && (this._childAccess.getLevel() == access.getLevel() || this._childAccess.hasChildAccess(access));
     }
 }

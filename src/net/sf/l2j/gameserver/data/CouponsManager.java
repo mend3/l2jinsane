@@ -69,7 +69,7 @@ public class CouponsManager implements IXmlReader {
                 int price = 0;
                 try {
                     price = Integer.parseInt(attrs.getNamedItem("price").getNodeValue());
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
                 CouponTemplate template = new CouponTemplate(itemId, count, price);
                 if (ItemTable.getInstance().getTemplate(template.getId()) != null) {

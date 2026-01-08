@@ -3,19 +3,14 @@ package net.sf.l2j.gameserver.model.item;
 import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
-import net.sf.l2j.gameserver.model.itemcontainer.PcInventory;
+import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
 
 public final class ArmorSet {
     private final String _name;
-
     private final int[] _set = new int[5];
-
     private final int _skillId;
-
     private final int _shield;
-
     private final int _shieldSkillId;
-
     private final int _enchant6Skill;
 
     public ArmorSet(StatSet set) {
@@ -56,46 +51,63 @@ public final class ArmorSet {
     }
 
     public boolean containAll(Player player) {
-        PcInventory pcInventory = player.getInventory();
+        Inventory inv = player.getInventory();
         int legs = 0;
         int head = 0;
         int gloves = 0;
         int feet = 0;
-        ItemInstance legsItem = pcInventory.getPaperdollItem(11);
-        if (legsItem != null)
+        ItemInstance legsItem = inv.getPaperdollItem(11);
+        if (legsItem != null) {
             legs = legsItem.getItemId();
-        if (this._set[1] != 0 && this._set[1] != legs)
+        }
+
+        if (this._set[1] != 0 && this._set[1] != legs) {
             return false;
-        ItemInstance headItem = pcInventory.getPaperdollItem(6);
-        if (headItem != null)
-            head = headItem.getItemId();
-        if (this._set[2] != 0 && this._set[2] != head)
-            return false;
-        ItemInstance glovesItem = pcInventory.getPaperdollItem(9);
-        if (glovesItem != null)
-            gloves = glovesItem.getItemId();
-        if (this._set[3] != 0 && this._set[3] != gloves)
-            return false;
-        ItemInstance feetItem = pcInventory.getPaperdollItem(12);
-        if (feetItem != null)
-            feet = feetItem.getItemId();
-        return this._set[4] == 0 || this._set[4] == feet;
+        } else {
+            ItemInstance headItem = inv.getPaperdollItem(6);
+            if (headItem != null) {
+                head = headItem.getItemId();
+            }
+
+            if (this._set[2] != 0 && this._set[2] != head) {
+                return false;
+            } else {
+                ItemInstance glovesItem = inv.getPaperdollItem(9);
+                if (glovesItem != null) {
+                    gloves = glovesItem.getItemId();
+                }
+
+                if (this._set[3] != 0 && this._set[3] != gloves) {
+                    return false;
+                } else {
+                    ItemInstance feetItem = inv.getPaperdollItem(12);
+                    if (feetItem != null) {
+                        feet = feetItem.getItemId();
+                    }
+
+                    return this._set[4] == 0 || this._set[4] == feet;
+                }
+            }
+        }
     }
 
     public boolean containItem(int slot, int itemId) {
         switch (slot) {
-            case 10:
-                return (this._set[0] == itemId);
-            case 11:
-                return (this._set[1] == itemId);
             case 6:
-                return (this._set[2] == itemId);
+                return this._set[2] == itemId;
+            case 7:
+            case 8:
+            default:
+                return false;
             case 9:
-                return (this._set[3] == itemId);
+                return this._set[3] == itemId;
+            case 10:
+                return this._set[0] == itemId;
+            case 11:
+                return this._set[1] == itemId;
             case 12:
-                return (this._set[4] == itemId);
+                return this._set[4] == itemId;
         }
-        return false;
     }
 
     public boolean containShield(Player player) {
@@ -104,38 +116,56 @@ public final class ArmorSet {
     }
 
     public boolean containShield(int shieldId) {
-        if (this._shield == 0)
+        if (this._shield == 0) {
             return false;
-        return (this._shield == shieldId);
+        } else {
+            return this._shield == shieldId;
+        }
     }
 
     public boolean isEnchanted6(Player player) {
-        PcInventory pcInventory = player.getInventory();
-        ItemInstance chestItem = pcInventory.getPaperdollItem(10);
-        if (chestItem.getEnchantLevel() < 6)
+        Inventory inv = player.getInventory();
+        ItemInstance chestItem = inv.getPaperdollItem(10);
+        if (chestItem.getEnchantLevel() < 6) {
             return false;
-        int legs = 0;
-        int head = 0;
-        int gloves = 0;
-        int feet = 0;
-        ItemInstance legsItem = pcInventory.getPaperdollItem(11);
-        if (legsItem != null && legsItem.getEnchantLevel() > 5)
-            legs = legsItem.getItemId();
-        if (this._set[1] != 0 && this._set[1] != legs)
-            return false;
-        ItemInstance headItem = pcInventory.getPaperdollItem(6);
-        if (headItem != null && headItem.getEnchantLevel() > 5)
-            head = headItem.getItemId();
-        if (this._set[2] != 0 && this._set[2] != head)
-            return false;
-        ItemInstance glovesItem = pcInventory.getPaperdollItem(9);
-        if (glovesItem != null && glovesItem.getEnchantLevel() > 5)
-            gloves = glovesItem.getItemId();
-        if (this._set[3] != 0 && this._set[3] != gloves)
-            return false;
-        ItemInstance feetItem = pcInventory.getPaperdollItem(12);
-        if (feetItem != null && feetItem.getEnchantLevel() > 5)
-            feet = feetItem.getItemId();
-        return this._set[4] == 0 || this._set[4] == feet;
+        } else {
+            int legs = 0;
+            int head = 0;
+            int gloves = 0;
+            int feet = 0;
+            ItemInstance legsItem = inv.getPaperdollItem(11);
+            if (legsItem != null && legsItem.getEnchantLevel() > 5) {
+                legs = legsItem.getItemId();
+            }
+
+            if (this._set[1] != 0 && this._set[1] != legs) {
+                return false;
+            } else {
+                ItemInstance headItem = inv.getPaperdollItem(6);
+                if (headItem != null && headItem.getEnchantLevel() > 5) {
+                    head = headItem.getItemId();
+                }
+
+                if (this._set[2] != 0 && this._set[2] != head) {
+                    return false;
+                } else {
+                    ItemInstance glovesItem = inv.getPaperdollItem(9);
+                    if (glovesItem != null && glovesItem.getEnchantLevel() > 5) {
+                        gloves = glovesItem.getItemId();
+                    }
+
+                    if (this._set[3] != 0 && this._set[3] != gloves) {
+                        return false;
+                    } else {
+                        ItemInstance feetItem = inv.getPaperdollItem(12);
+                        if (feetItem != null && feetItem.getEnchantLevel() > 5) {
+                            feet = feetItem.getItemId();
+                        }
+
+                        return this._set[4] == 0 || this._set[4] == feet;
+                    }
+                }
+            }
+        }
     }
 }

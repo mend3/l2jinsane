@@ -14,7 +14,6 @@ import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
@@ -22,7 +21,7 @@ public class CabalBuffer extends Folk {
     protected static final String[] MESSAGES_LOSER = new String[]{"%player_cabal_loser%! All is lost! Prepare to meet the goddess of death!", "%player_cabal_loser%! You bring an ill wind!", "%player_cabal_loser%! You might as well give up!", "A curse upon you!", "All is lost! Prepare to meet the goddess of death!", "All is lost! The prophecy of destruction has been fulfilled!", "The prophecy of doom has awoken!", "This world will soon be annihilated!"};
     protected static final String[] MESSAGES_WINNER = new String[]{"%player_cabal_winner%! I bestow on you the authority of the abyss!", "%player_cabal_winner%, Darkness shall be banished forever!", "%player_cabal_winner%, the time for glory is at hand!", "All hail the eternal twilight!", "As foretold in the prophecy of darkness, the era of chaos has begun!", "The day of judgment is near!", "The prophecy of darkness has been fulfilled!", "The prophecy of darkness has come to pass!"};
     protected int _step = 0;
-    private ScheduledFuture<?> _aiTask = ThreadPool.scheduleAtFixedRate(new CabalBuffer.CabaleAI(this), 5000L, 5000L);
+    private ScheduledFuture<?> _aiTask = ThreadPool.scheduleAtFixedRate(new CabaleAI(this), 5000L, 5000L);
 
     public CabalBuffer(int objectId, NpcTemplate template) {
         super(objectId, template);
@@ -71,12 +70,10 @@ public class CabalBuffer extends Folk {
                 losingCabal = CabalType.DAWN;
             }
 
-            List<Player> playersList = new ArrayList();
-            List<Player> gmsList = new ArrayList();
-            Iterator var7 = CabalBuffer.this.getKnownTypeInRadius(Player.class, 900).iterator();
+            List<Player> playersList = new ArrayList<>();
+            List<Player> gmsList = new ArrayList<>();
 
-            while (var7.hasNext()) {
-                Player player = (Player) var7.next();
+            for (Player player : CabalBuffer.this.getKnownTypeInRadius(Player.class, 900)) {
                 if (player.isGM()) {
                     gmsList.add(player);
                 } else {
@@ -102,29 +99,21 @@ public class CabalBuffer extends Folk {
             if (CabalBuffer.this._step >= 12) {
                 if (!playersList.isEmpty() || !gmsList.isEmpty()) {
                     String text;
-                    if (this._caster.getCollisionHeight() > 30.0D) {
+                    if (this._caster.getCollisionHeight() > (double) 30.0F) {
                         text = Rnd.get(CabalBuffer.MESSAGES_LOSER);
                     } else {
                         text = Rnd.get(CabalBuffer.MESSAGES_WINNER);
                     }
 
-                    Iterator var12;
-                    Player nearbyPlayer;
                     if (text.indexOf("%player_cabal_winner%") > -1) {
-                        var12 = playersList.iterator();
-
-                        while (var12.hasNext()) {
-                            nearbyPlayer = (Player) var12.next();
+                        for (Player nearbyPlayer : playersList) {
                             if (SevenSignsManager.getInstance().getPlayerCabal(nearbyPlayer.getObjectId()) == winningCabal) {
                                 text = text.replaceAll("%player_cabal_winner%", nearbyPlayer.getName());
                                 break;
                             }
                         }
                     } else if (text.indexOf("%player_cabal_loser%") > -1) {
-                        var12 = playersList.iterator();
-
-                        while (var12.hasNext()) {
-                            nearbyPlayer = (Player) var12.next();
+                        for (Player nearbyPlayer : playersList) {
                             if (SevenSignsManager.getInstance().getPlayerCabal(nearbyPlayer.getObjectId()) == losingCabal) {
                                 text = text.replaceAll("%player_cabal_loser%", nearbyPlayer.getName());
                                 break;
@@ -134,18 +123,12 @@ public class CabalBuffer extends Folk {
 
                     if (!text.contains("%player_")) {
                         CreatureSay cs = new CreatureSay(CabalBuffer.this.getObjectId(), 0, CabalBuffer.this.getName(), text);
-                        Iterator var15 = playersList.iterator();
 
-                        Player nearbyGM;
-                        while (var15.hasNext()) {
-                            nearbyGM = (Player) var15.next();
-                            nearbyGM.sendPacket(cs);
+                        for (Player nearbyPlayer : playersList) {
+                            nearbyPlayer.sendPacket(cs);
                         }
 
-                        var15 = gmsList.iterator();
-
-                        while (var15.hasNext()) {
-                            nearbyGM = (Player) var15.next();
+                        for (Player nearbyGM : gmsList) {
                             nearbyGM.sendPacket(cs);
                         }
                     }

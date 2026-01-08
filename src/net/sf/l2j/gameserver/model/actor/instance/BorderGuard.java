@@ -12,15 +12,16 @@ public class BorderGuard extends Folk {
 
     public void onBypassFeedback(Player player, String command) {
         Party party = player.getParty();
-        if (party == null)
-            return;
-        DimensionalRift rift = party.getDimensionalRift();
-        if (rift == null)
-            return;
-        if (command.startsWith("ChangeRiftRoom")) {
-            rift.manualTeleport(player, this);
-        } else if (command.startsWith("ExitRift")) {
-            rift.manualExitRift(player, this);
+        if (party != null) {
+            DimensionalRift rift = party.getDimensionalRift();
+            if (rift != null) {
+                if (command.startsWith("ChangeRiftRoom")) {
+                    rift.manualTeleport(player, this);
+                } else if (command.startsWith("ExitRift")) {
+                    rift.manualExitRift(player, this);
+                }
+
+            }
         }
     }
 

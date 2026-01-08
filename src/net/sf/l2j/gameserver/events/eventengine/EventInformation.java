@@ -8,9 +8,7 @@ import java.util.Map;
 
 public class EventInformation implements Runnable {
     private final AbstractEvent event;
-
     private final String msg;
-
     private Map<String, Integer> replacements;
 
     public EventInformation(AbstractEvent event, String msg) {
@@ -33,10 +31,17 @@ public class EventInformation implements Runnable {
 
     public void run() {
         String finalMsg = this.msg;
-        for (String r : this.replacements.keySet())
-            finalMsg = finalMsg.replaceAll(r, String.valueOf(this.replacements.get(r)));
+
+        for (String r : this.replacements.keySet()) {
+            Object var10002 = this.replacements.get(r);
+            finalMsg = finalMsg.replaceAll(r, "" + String.valueOf(var10002));
+        }
+
         ExShowScreenMessage sm = new ExShowScreenMessage(finalMsg, 3000, 2, false);
-        for (Player player : this.event.getPlayers())
+
+        for (Player player : this.event.getPlayers()) {
             player.sendPacket(sm);
+        }
+
     }
 }

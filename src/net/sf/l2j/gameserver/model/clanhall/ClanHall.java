@@ -6,11 +6,8 @@ import net.sf.l2j.commons.pool.ConnectionPool;
 import net.sf.l2j.commons.pool.ThreadPool;
 import net.sf.l2j.commons.util.StatSet;
 import net.sf.l2j.gameserver.data.sql.ClanTable;
-import net.sf.l2j.gameserver.enums.SpawnType;
-import net.sf.l2j.gameserver.model.Residence;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.instance.Door;
-import net.sf.l2j.gameserver.model.location.Location;
 import net.sf.l2j.gameserver.model.pledge.Clan;
 import net.sf.l2j.gameserver.model.zone.type.ClanHallZone;
 import net.sf.l2j.gameserver.network.SystemMessageId;
@@ -19,11 +16,13 @@ import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 
-public class ClanHall extends Residence {
+public class ClanHall {
     public static final int FUNC_TELEPORT = 1;
     public static final int FUNC_ITEM_CREATE = 2;
     public static final int FUNC_RESTORE_HP = 3;
@@ -32,42 +31,34 @@ public class ClanHall extends Residence {
     public static final int FUNC_SUPPORT = 6;
     public static final int FUNC_DECO_FRONTPLATEFORM = 7;
     public static final int FUNC_DECO_CURTAINS = 8;
-    public static final int FUNC_SUPPORT_MAGIC = 9;
-    public static final int FUNC_DECO_FIXTURES = 11;
-    public static final int FUNC_CREATE_ITEM = 12;
     private static final CLogger LOGGER = new CLogger(ClanHall.class.getName());
     private static final String DELETE_FUNCTIONS = "DELETE FROM clanhall_functions WHERE hall_id=?";
     private static final String UPDATE_CH = "UPDATE clanhall SET ownerId=?, paidUntil=?, paid=?, sellerBid=?, sellerName=?, sellerClanName=?, endDate=? WHERE id=?";
-    private static final int ONE_DAY = 86400000; // One day
-    private static final int ONE_WEEK = 604800000; // One week
-    protected final List<Integer> _npcs = new ArrayList<>();
-    protected final Map<SpawnType, List<Location>> _spawns = new EnumMap<>(SpawnType.class);
-    private final Map<Integer, ClanHallFunction> _functions = new ConcurrentHashMap();
-    private final List<Door> _doors = new ArrayList();
-
+    private static final int ONE_WEEK = 604800000;
+    private final Map<Integer, ClanHallFunction> _functions = new ConcurrentHashMap<>();
+    private final List<Door> _doors = new ArrayList<>();
+    private final int _id;
+    private final String _name;
     private final String _desc;
-
-    private final int _auctionMin;
-    private final int _deposit;
-    private final int _lease;
-    private final int _size;
+    private final String _location;
     private final int _grade;
-
+    private final int _lease;
+    private final int _defaultBid;
     private ScheduledFuture<?> _feeTask;
     private Auction _auction;
+    private int _ownerId;
     private ClanHallZone _zone;
     private long _paidUntil;
     private boolean _isPaid;
 
     public ClanHall(StatSet set) {
-        super(set);
-        _desc = set.getString("desc");
-        _townName = set.getString("loc");
-        _auctionMin = set.getInteger("auctionMin", 0);
-        _deposit = set.getInteger("deposit", 0);
-        _lease = set.getInteger("lease", 0);
-        _size = set.getInteger("size", 0);
-        _grade = set.getInteger("grade", 0);
+        this._id = set.getInteger("id");
+        this._name = set.getString("name");
+        this._desc = set.getString("desc");
+        this._location = set.getString("loc");
+        this._grade = set.getInteger("grade");
+        this._lease = set.getInteger("lease");
+        this._defaultBid = set.getInteger("defaultBid");
     }
 
     public static void openCloseDoor(Door door, boolean open) {
@@ -81,14 +72,20 @@ public class ClanHall extends Residence {
 
     }
 
+    public final int getId() {
+        return this._id;
+    }
+
+    public final String getName() {
+        return this._name;
+    }
 
     public final String getDesc() {
         return this._desc;
     }
 
-
-    public final int getAuctionMin() {
-        return _auctionMin;
+    public final String getLocation() {
+        return this._location;
     }
 
     public final int getGrade() {
@@ -99,6 +96,9 @@ public class ClanHall extends Residence {
         return this._lease;
     }
 
+    public final int getDefaultBid() {
+        return this._defaultBid;
+    }
 
     public final Auction getAuction() {
         return this._auction;
@@ -106,6 +106,10 @@ public class ClanHall extends Residence {
 
     public final void setAuction(Auction auction) {
         this._auction = auction;
+    }
+
+    public final int getOwnerId() {
+        return this._ownerId;
     }
 
     public void setOwnerId(int ownerId) {
@@ -142,6 +146,14 @@ public class ClanHall extends Residence {
 
     public final Map<Integer, ClanHallFunction> getFunctions() {
         return this._functions;
+    }
+
+    public final List<Door> getDoors() {
+        return this._doors;
+    }
+
+    public final Door getDoor(int doorId) {
+        return this._doors.stream().filter((d) -> d.getDoorId() == doorId).findFirst().orElse(null);
     }
 
     public ClanHallFunction getFunction(int type) {
@@ -224,10 +236,7 @@ public class ClanHall extends Residence {
     }
 
     public void openCloseDoors(boolean open) {
-        Iterator var2 = this._doors.iterator();
-
-        while (var2.hasNext()) {
-            Door door = (Door) var2.next();
+        for (Door door : this._doors) {
             if (open) {
                 door.openMe();
             } else {
@@ -247,47 +256,14 @@ public class ClanHall extends Residence {
     public void removeAllFunctions() {
         this._functions.clear();
 
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
+        try (
+                Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("DELETE FROM clanhall_functions WHERE hall_id=?");
-
-                try {
-                    ps.setInt(1, this.getId());
-                    ps.execute();
-                } catch (Throwable var7) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var6) {
-                            var7.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var7;
-                }
-
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var8) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var5) {
-                        var8.addSuppressed(var5);
-                    }
-                }
-
-                throw var8;
-            }
-
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var9) {
-            LOGGER.error("Couldn't delete all clan hall functions.", var9);
+        ) {
+            ps.setInt(1, this.getId());
+            ps.execute();
+        } catch (Exception e) {
+            LOGGER.error("Couldn't delete all clan hall functions.", e);
         }
 
     }
@@ -315,69 +291,36 @@ public class ClanHall extends Residence {
     }
 
     public void updateDb() {
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
+        try (
+                Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("UPDATE clanhall SET ownerId=?, paidUntil=?, paid=?, sellerBid=?, sellerName=?, sellerClanName=?, endDate=? WHERE id=?");
-
-                try {
-                    ps.setInt(1, this._ownerId);
-                    ps.setLong(2, this._paidUntil);
-                    ps.setInt(3, this._isPaid ? 1 : 0);
-                    if (this._auction != null) {
-                        if (this._auction.getSeller() != null) {
-                            ps.setInt(4, this._auction.getSeller().getBid());
-                            ps.setString(5, this._auction.getSeller().getName());
-                            ps.setString(6, this._auction.getSeller().getClanName());
-                        } else {
-                            ps.setInt(4, 0);
-                            ps.setString(5, "");
-                            ps.setString(6, "");
-                        }
-
-                        ps.setLong(7, this._auction.getEndDate());
-                    } else {
-                        ps.setInt(4, 0);
-                        ps.setString(5, "");
-                        ps.setString(6, "");
-                        ps.setLong(7, 0L);
-                    }
-
-                    ps.setInt(8, this._id);
-                    ps.execute();
-                } catch (Throwable var7) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var6) {
-                            var7.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var7;
+        ) {
+            ps.setInt(1, this._ownerId);
+            ps.setLong(2, this._paidUntil);
+            ps.setInt(3, this._isPaid ? 1 : 0);
+            if (this._auction != null) {
+                if (this._auction.getSeller() != null) {
+                    ps.setInt(4, this._auction.getSeller().getBid());
+                    ps.setString(5, this._auction.getSeller().getName());
+                    ps.setString(6, this._auction.getSeller().getClanName());
+                } else {
+                    ps.setInt(4, 0);
+                    ps.setString(5, "");
+                    ps.setString(6, "");
                 }
 
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var8) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var5) {
-                        var8.addSuppressed(var5);
-                    }
-                }
-
-                throw var8;
+                ps.setLong(7, this._auction.getEndDate());
+            } else {
+                ps.setInt(4, 0);
+                ps.setString(5, "");
+                ps.setString(6, "");
+                ps.setLong(7, 0L);
             }
 
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var9) {
-            LOGGER.error("Couldn't update clan hall.", var9);
+            ps.setInt(8, this._id);
+            ps.execute();
+        } catch (Exception e) {
+            LOGGER.error("Couldn't update clan hall.", e);
         }
 
     }
@@ -389,7 +332,7 @@ public class ClanHall extends Residence {
 
         long time = System.currentTimeMillis();
         time = this._paidUntil > time ? this._paidUntil - time : 0L;
-        this._feeTask = ThreadPool.schedule(new ClanHall.FeeTask(), time);
+        this._feeTask = ThreadPool.schedule(new FeeTask(), time);
     }
 
     private class FeeTask implements Runnable {
@@ -402,11 +345,10 @@ public class ClanHall extends Residence {
                 if (clan == null) {
                     ClanHall.this.free();
                 } else {
-                    ClanHall var10000;
                     if (clan.getWarehouse().getAdena() >= ClanHall.this.getLease()) {
                         clan.getWarehouse().destroyItemByItemId("CH_rental_fee", 57, ClanHall.this.getLease(), null, null);
                         ClanHall.this._feeTask = ThreadPool.schedule(ClanHall.this.new FeeTask(), 604800000L);
-                        var10000 = ClanHall.this;
+                        ClanHall var10000 = ClanHall.this;
                         var10000._paidUntil += 604800000L;
                         ClanHall.this._isPaid = true;
                         ClanHall.this.updateDb();
@@ -415,8 +357,8 @@ public class ClanHall extends Residence {
                         clan.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.THE_CLAN_HALL_FEE_IS_ONE_WEEK_OVERDUE_THEREFORE_THE_CLAN_HALL_OWNERSHIP_HAS_BEEN_REVOKED));
                     } else {
                         ClanHall.this._feeTask = ThreadPool.schedule(ClanHall.this.new FeeTask(), 604800000L);
-                        var10000 = ClanHall.this;
-                        var10000._paidUntil += 604800000L;
+                        ClanHall var2 = ClanHall.this;
+                        var2._paidUntil += 604800000L;
                         ClanHall.this._isPaid = false;
                         ClanHall.this.updateDb();
                         clan.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.PAYMENT_FOR_YOUR_CLAN_HALL_HAS_NOT_BEEN_MADE_PLEASE_MAKE_PAYMENT_TO_YOUR_CLAN_WAREHOUSE_BY_S1_TOMORROW).addNumber(ClanHall.this.getLease()));

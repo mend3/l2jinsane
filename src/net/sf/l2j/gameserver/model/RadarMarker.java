@@ -2,11 +2,8 @@ package net.sf.l2j.gameserver.model;
 
 public class RadarMarker {
     public int _type;
-
     public int _x;
-
     public int _y;
-
     public int _z;
 
     public RadarMarker(int type, int x, int y, int z) {
@@ -34,18 +31,22 @@ public class RadarMarker {
     }
 
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        } else if (obj == null) {
             return false;
-        if (!(obj instanceof RadarMarker other))
+        } else if (!(obj instanceof RadarMarker other)) {
             return false;
-        if (this._type != other._type)
-            return false;
-        if (this._x != other._x)
-            return false;
-        if (this._y != other._y)
-            return false;
-        return this._z == other._z;
+        } else {
+            if (this._type != other._type) {
+                return false;
+            } else if (this._x != other._x) {
+                return false;
+            } else if (this._y != other._y) {
+                return false;
+            } else {
+                return this._z == other._z;
+            }
+        }
     }
 }

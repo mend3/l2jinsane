@@ -29,8 +29,8 @@ public class Arena2x2 implements Runnable {
     public Arena2x2() {
         this.free = Config.ARENA_EVENT_COUNT;
         this.arenas = new Arena2x2.Arena[Config.ARENA_EVENT_COUNT];
-        this.fights = new HashMap(Config.ARENA_EVENT_COUNT);
-        registered = new ArrayList();
+        this.fights = new HashMap<>(Config.ARENA_EVENT_COUNT);
+        registered = new ArrayList<>();
 
         for (int i = 0; i < Config.ARENA_EVENT_COUNT; ++i) {
             int[] coord = Config.ARENA_EVENT_LOCS[i];
@@ -44,10 +44,8 @@ public class Arena2x2 implements Runnable {
     }
 
     public boolean register(Player player, Player assist) {
-        Iterator var3 = registered.iterator();
 
-        while (var3.hasNext()) {
-            Arena2x2.Pair p = (Arena2x2.Pair) var3.next();
+        for (Pair p : registered) {
             if (p.getLeader() != player && p.getAssist() != player) {
                 if (p.getLeader() != assist && p.getAssist() != assist) {
                     continue;
@@ -65,7 +63,7 @@ public class Arena2x2 implements Runnable {
     }
 
     public boolean isRegistered(Player player) {
-        Iterator var2 = registered.iterator();
+        Iterator<Pair> var2 = registered.iterator();
 
         Arena2x2.Pair p;
         do {
@@ -73,7 +71,7 @@ public class Arena2x2 implements Runnable {
                 return false;
             }
 
-            p = (Arena2x2.Pair) var2.next();
+            p = var2.next();
         } while (p.getLeader() != player && p.getAssist() != player);
 
         return true;
@@ -84,7 +82,7 @@ public class Arena2x2 implements Runnable {
     }
 
     public boolean remove(Player player) {
-        Iterator var2 = registered.iterator();
+        Iterator<Pair> var2 = registered.iterator();
 
         Arena2x2.Pair p;
         do {
@@ -92,7 +90,7 @@ public class Arena2x2 implements Runnable {
                 return false;
             }
 
-            p = (Arena2x2.Pair) var2.next();
+            p = var2.next();
         } while (p.getLeader() != player && p.getAssist() != player);
 
         p.removeMessage();
@@ -112,19 +110,19 @@ public class Arena2x2 implements Runnable {
 
                 try {
                     Thread.sleep((long) (Config.ARENA_CALL_INTERVAL * 1000L));
-                } catch (InterruptedException var3) {
+                } catch (InterruptedException ignored) {
                 }
             } else {
                 try {
                     Thread.sleep((long) (Config.ARENA_CALL_INTERVAL * 1000L));
-                } catch (InterruptedException var4) {
+                } catch (InterruptedException ignored) {
                 }
             }
         }
     }
 
     private List<Arena2x2.Pair> selectOpponents() {
-        List<Arena2x2.Pair> opponents = new ArrayList();
+        List<Arena2x2.Pair> opponents = new ArrayList<>();
         Arena2x2.Pair pairOne = null;
         Arena2x2.Pair pairTwo = null;
         int tries = 3;
@@ -623,7 +621,7 @@ public class Arena2x2 implements Runnable {
 
             try {
                 Thread.sleep((long) (Config.ARENA_WAIT_INTERVAL * 1000L));
-            } catch (InterruptedException var2) {
+            } catch (InterruptedException ignored) {
             }
 
             this.pairOne.sendPacketinit("Started. Good Fight!", 3);
@@ -700,7 +698,7 @@ public class Arena2x2 implements Runnable {
                     this.pairTwo.setInTournamentEvent(true);
                     this.pairOne.removeSkills();
                     this.pairTwo.removeSkills();
-                    Map var10000 = Arena2x2.this.fights;
+                    Map<Integer, String> var10000 = Arena2x2.this.fights;
                     Integer var10001 = this.arena.id;
                     String var10002 = this.pairOne.getLeader().getName();
                     var10000.put(var10001, var10002 + " vs " + this.pairTwo.getLeader().getName());

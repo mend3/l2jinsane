@@ -16,14 +16,17 @@ public final class HolyThing extends Folk {
     public void onAction(Player player) {
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (!canInteract(player)) {
+        } else if (!this.canInteract(player)) {
             player.getAI().setIntention(IntentionType.INTERACT, this);
         } else {
-            if (player.isMoving() || player.isInCombat())
+            if (player.isMoving() || player.isInCombat()) {
                 player.getAI().setIntention(IntentionType.IDLE);
+            }
+
             player.sendPacket(new MoveToPawn(player, this, 150));
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 
     public boolean isAttackable() {

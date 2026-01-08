@@ -22,7 +22,6 @@ import java.util.List;
 
 public class SepulcherNpc extends Folk {
     private static final String HTML_FILE_PATH = "data/html/sepulchers/";
-
     private static final int HALLS_KEY = 7260;
 
     public SepulcherNpc(int objectId, NpcTemplate template) {
@@ -32,110 +31,124 @@ public class SepulcherNpc extends Folk {
     public void onAction(Player player) {
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (isAutoAttackable(player)) {
+        } else if (this.isAutoAttackable(player)) {
             player.getAI().setIntention(IntentionType.ATTACK, this);
-        } else if (!isAutoAttackable(player)) {
-            if (!canInteract(player)) {
+        } else if (!this.isAutoAttackable(player)) {
+            if (!this.canInteract(player)) {
                 player.getAI().setIntention(IntentionType.INTERACT, this);
             } else {
-                if (player.isMoving() || player.isInCombat())
+                if (player.isMoving() || player.isInCombat()) {
                     player.getAI().setIntention(IntentionType.IDLE);
+                }
+
                 player.sendPacket(new MoveToPawn(player, this, 150));
                 player.sendPacket(ActionFailed.STATIC_PACKET);
-                if (hasRandomAnimation())
-                    onRandomAnimation(Rnd.get(8));
-                doAction(player);
+                if (this.hasRandomAnimation()) {
+                    this.onRandomAnimation(Rnd.get(8));
+                }
+
+                this.doAction(player);
             }
         }
+
     }
 
     public void onActionShift(Player player) {
-        if (player.isGM())
-            sendNpcInfos(player);
+        if (player.isGM()) {
+            this.sendNpcInfos(player);
+        }
+
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (isAutoAttackable(player)) {
+        } else if (this.isAutoAttackable(player)) {
             if (player.isInsideRadius(this, player.getPhysicalAttackRange(), false, false) && GeoEngine.getInstance().canSeeTarget(player, this)) {
                 player.getAI().setIntention(IntentionType.ATTACK, this);
             } else {
                 player.sendPacket(ActionFailed.STATIC_PACKET);
             }
-        } else if (canInteract(player)) {
+        } else if (this.canInteract(player)) {
             player.sendPacket(new MoveToPawn(player, this, 150));
             player.sendPacket(ActionFailed.STATIC_PACKET);
-            if (hasRandomAnimation())
-                onRandomAnimation(Rnd.get(8));
-            doAction(player);
+            if (this.hasRandomAnimation()) {
+                this.onRandomAnimation(Rnd.get(8));
+            }
+
+            this.doAction(player);
         } else {
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 
     private void doAction(Player player) {
-        List<Quest> scripts;
-        if (isDead()) {
+        if (this.isDead()) {
             player.sendPacket(ActionFailed.STATIC_PACKET);
-            return;
-        }
-        switch (getNpcId()) {
-            case 31468:
-            case 31469:
-            case 31470:
-            case 31471:
-            case 31472:
-            case 31473:
-            case 31474:
-            case 31475:
-            case 31476:
-            case 31477:
-            case 31478:
-            case 31479:
-            case 31480:
-            case 31481:
-            case 31482:
-            case 31483:
-            case 31484:
-            case 31485:
-            case 31486:
-            case 31487:
-                if (Calendar.getInstance().get(Calendar.MINUTE) >= 50) {
-                    broadcastNpcSay("You can start at the scheduled time.");
-                    return;
-                }
-                FourSepulchersManager.getInstance().spawnMonster(getNpcId());
-                deleteMe();
-                break;
-            case 31455:
-            case 31456:
-            case 31457:
-            case 31458:
-            case 31459:
-            case 31460:
-            case 31461:
-            case 31462:
-            case 31463:
-            case 31464:
-            case 31465:
-            case 31466:
-            case 31467:
-                if (player.isInParty() && !player.getParty().isLeader(player))
-                    player = player.getParty().getLeader();
-                player.addItem("Quest", 7260, 1, player, true);
-                deleteMe();
-                break;
-            default:
-                scripts = getTemplate().getEventQuests(ScriptEventType.QUEST_START);
-                if (scripts != null && !scripts.isEmpty())
-                    player.setLastQuestNpcObject(getObjectId());
-                scripts = getTemplate().getEventQuests(ScriptEventType.ON_FIRST_TALK);
-                if (scripts != null && scripts.size() == 1) {
-                    scripts.get(0).notifyFirstTalk(this, player);
+        } else {
+            switch (this.getNpcId()) {
+                case 31455:
+                case 31456:
+                case 31457:
+                case 31458:
+                case 31459:
+                case 31460:
+                case 31461:
+                case 31462:
+                case 31463:
+                case 31464:
+                case 31465:
+                case 31466:
+                case 31467:
+                    if (player.isInParty() && !player.getParty().isLeader(player)) {
+                        player = player.getParty().getLeader();
+                    }
+
+                    player.addItem("Quest", 7260, 1, player, true);
+                    this.deleteMe();
                     break;
-                }
-                showChatWindow(player);
-                break;
+                case 31468:
+                case 31469:
+                case 31470:
+                case 31471:
+                case 31472:
+                case 31473:
+                case 31474:
+                case 31475:
+                case 31476:
+                case 31477:
+                case 31478:
+                case 31479:
+                case 31480:
+                case 31481:
+                case 31482:
+                case 31483:
+                case 31484:
+                case 31485:
+                case 31486:
+                case 31487:
+                    if (Calendar.getInstance().get(12) >= 50) {
+                        this.broadcastNpcSay("You can start at the scheduled time.");
+                        return;
+                    }
+
+                    FourSepulchersManager.getInstance().spawnMonster(this.getNpcId());
+                    this.deleteMe();
+                    break;
+                default:
+                    List<Quest> scripts = this.getTemplate().getEventQuests(ScriptEventType.QUEST_START);
+                    if (scripts != null && !scripts.isEmpty()) {
+                        player.setLastQuestNpcObject(this.getObjectId());
+                    }
+
+                    scripts = this.getTemplate().getEventQuests(ScriptEventType.ON_FIRST_TALK);
+                    if (scripts != null && scripts.size() == 1) {
+                        scripts.get(0).notifyFirstTalk(this, player);
+                    } else {
+                        this.showChatWindow(player);
+                    }
+            }
+
+            player.sendPacket(ActionFailed.STATIC_PACKET);
         }
-        player.sendPacket(ActionFailed.STATIC_PACKET);
     }
 
     public String getHtmlPath(int npcId, int val) {
@@ -143,8 +156,9 @@ public class SepulcherNpc extends Folk {
         if (val == 0) {
             filename = "" + npcId;
         } else {
-            filename = npcId + "-" + npcId;
+            filename = npcId + "-" + val;
         }
+
         return "data/html/sepulchers/" + filename + ".htm";
     }
 
@@ -152,23 +166,24 @@ public class SepulcherNpc extends Folk {
         if (command.startsWith("open_gate")) {
             ItemInstance hallsKey = player.getInventory().getItemByItemId(7260);
             if (hallsKey == null) {
-                showHtmlFile(player, "Gatekeeper-no.htm");
+                this.showHtmlFile(player, "Gatekeeper-no.htm");
             } else if (FourSepulchersManager.getInstance().isAttackTime()) {
-                switch (getNpcId()) {
+                switch (this.getNpcId()) {
                     case 31929:
                     case 31934:
                     case 31939:
                     case 31944:
-                        FourSepulchersManager.getInstance().spawnShadow(getNpcId());
-                        break;
+                        FourSepulchersManager.getInstance().spawnShadow(this.getNpcId());
                 }
-                openNextDoor(getNpcId());
+
+                this.openNextDoor(this.getNpcId());
                 Party party = player.getParty();
                 if (party != null) {
                     for (Player member : player.getParty().getMembers()) {
                         ItemInstance key = member.getInventory().getItemByItemId(7260);
-                        if (key != null)
+                        if (key != null) {
                             member.destroyItemByItemId("Quest", 7260, key.getCount(), member, true);
+                        }
                     }
                 } else {
                     player.destroyItemByItemId("Quest", 7260, hallsKey.getCount(), player, true);
@@ -177,6 +192,7 @@ public class SepulcherNpc extends Folk {
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 
     public void openNextDoor(int npcId) {
@@ -185,21 +201,24 @@ public class SepulcherNpc extends Folk {
         door.openMe();
         ThreadPool.schedule(() -> door.closeMe(), 10000L);
         FourSepulchersManager.getInstance().spawnMysteriousBox(npcId);
-        sayInShout("The monsters have spawned!");
+        this.sayInShout("The monsters have spawned!");
     }
 
     public void sayInShout(String msg) {
-        if (msg == null || msg.isEmpty())
-            return;
-        CreatureSay sm = new CreatureSay(getObjectId(), 1, getName(), msg);
-        for (Player player : getKnownType(Player.class))
-            player.sendPacket(sm);
+        if (msg != null && !msg.isEmpty()) {
+            CreatureSay sm = new CreatureSay(this.getObjectId(), 1, this.getName(), msg);
+
+            for (Player player : this.getKnownType(Player.class)) {
+                player.sendPacket(sm);
+            }
+
+        }
     }
 
     public void showHtmlFile(Player player, String file) {
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-        html.setFile("data/html/sepulchers/" + file);
-        html.replace("%npcname%", getName());
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+        html.setFile(HTML_FILE_PATH + file);
+        html.replace("%npcname%", this.getName());
         player.sendPacket(html);
     }
 }

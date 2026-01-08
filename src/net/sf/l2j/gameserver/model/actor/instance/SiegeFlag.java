@@ -19,8 +19,10 @@ public class SiegeFlag extends Npc {
     public SiegeFlag(Player player, int objectId, NpcTemplate template) {
         super(objectId, template);
         this._clan = player.getClan();
-        if (this._clan != null)
+        if (this._clan != null) {
             this._clan.setFlag(this);
+        }
+
     }
 
     public boolean isAttackable() {
@@ -32,28 +34,35 @@ public class SiegeFlag extends Npc {
     }
 
     public boolean doDie(Creature killer) {
-        if (!super.doDie(killer))
+        if (!super.doDie(killer)) {
             return false;
-        if (this._clan != null)
-            this._clan.setFlag(null);
-        return true;
+        } else {
+            if (this._clan != null) {
+                this._clan.setFlag(null);
+            }
+
+            return true;
+        }
     }
 
     public void onForcedAttack(Player player) {
-        onAction(player);
+        this.onAction(player);
     }
 
     public void onAction(Player player) {
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (isAutoAttackable(player) && Math.abs(player.getZ() - getZ()) < 100) {
+        } else if (this.isAutoAttackable(player) && Math.abs(player.getZ() - this.getZ()) < 100) {
             player.getAI().setIntention(IntentionType.ATTACK, this);
         } else {
-            if (player.isMoving() || player.isInCombat())
+            if (player.isMoving() || player.isInCombat()) {
                 player.getAI().setIntention(IntentionType.IDLE);
+            }
+
             player.sendPacket(new MoveToPawn(player, this, 150));
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 
     public boolean hasRandomAnimation() {
@@ -61,11 +70,12 @@ public class SiegeFlag extends Npc {
     }
 
     public void reduceCurrentHp(double damage, Creature attacker, L2Skill skill) {
-        if (this._clan != null && isScriptValue(0)) {
+        if (this._clan != null && this.isScriptValue(0)) {
             this._clan.broadcastToOnlineMembers(SystemMessage.getSystemMessage(SystemMessageId.BASE_UNDER_ATTACK));
-            setScriptValue(1);
-            ThreadPool.schedule(() -> setScriptValue(0), 30000L);
+            this.setScriptValue(1);
+            ThreadPool.schedule(() -> this.setScriptValue(0), 30000L);
         }
+
         super.reduceCurrentHp(damage, attacker, skill);
     }
 

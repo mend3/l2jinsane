@@ -12,22 +12,26 @@ import java.util.concurrent.ScheduledFuture;
 
 public class ChristmasTree extends Folk {
     public static final int SPECIAL_TREE_ID = 13007;
-
     private ScheduledFuture<?> _aiTask;
 
     public ChristmasTree(int objectId, NpcTemplate template) {
         super(objectId, template);
-        if (template.getNpcId() == 13007 && !isInsideZone(ZoneId.TOWN)) {
+        if (template.getNpcId() == 13007 && !this.isInsideZone(ZoneId.TOWN)) {
             L2Skill recoveryAura = SkillTable.FrequentSkill.SPECIAL_TREE_RECOVERY_BONUS.getSkill();
-            if (recoveryAura == null)
+            if (recoveryAura == null) {
                 return;
+            }
+
             this._aiTask = ThreadPool.scheduleAtFixedRate(() -> {
-                for (Player player : getKnownTypeInRadius(Player.class, 200)) {
-                    if (player.getFirstEffect(recoveryAura) == null)
+                for (Player player : this.getKnownTypeInRadius(Player.class, 200)) {
+                    if (player.getFirstEffect(recoveryAura) == null) {
                         recoveryAura.getEffects(player, player);
+                    }
                 }
+
             }, 3000L, 3000L);
         }
+
     }
 
     public void deleteMe() {
@@ -35,6 +39,7 @@ public class ChristmasTree extends Folk {
             this._aiTask.cancel(true);
             this._aiTask = null;
         }
+
         super.deleteMe();
     }
 

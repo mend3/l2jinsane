@@ -30,8 +30,8 @@ public class AutoSpawnTable {
     private static final int DEFAULT_INITIAL_SPAWN = 30000;
     private static final int DEFAULT_RESPAWN = 3600000;
     private static final int DEFAULT_DESPAWN = 3600000;
-    private final Map<Integer, AutoSpawn> _registeredSpawns = new ConcurrentHashMap();
-    private final Map<Integer, ScheduledFuture<?>> _runningSpawns = new ConcurrentHashMap();
+    private final Map<Integer, AutoSpawn> _registeredSpawns = new ConcurrentHashMap<>();
+    private final Map<Integer, ScheduledFuture<?>> _runningSpawns = new ConcurrentHashMap<>();
 
     public static AutoSpawnTable getInstance() {
         return AutoSpawnTable.SingletonHolder.INSTANCE;
@@ -237,10 +237,8 @@ public class AutoSpawnTable {
                 return this._registeredSpawns.get(id);
             }
         } else {
-            Iterator var3 = this._registeredSpawns.values().iterator();
 
-            while (var3.hasNext()) {
-                AutoSpawn spawnInst = (AutoSpawn) var3.next();
+            for (AutoSpawn spawnInst : this._registeredSpawns.values()) {
                 if (spawnInst.getNpcId() == id) {
                     return spawnInst;
                 }
@@ -251,11 +249,9 @@ public class AutoSpawnTable {
     }
 
     public Map<Integer, AutoSpawn> getAutoSpawnInstances(int npcId) {
-        Map<Integer, AutoSpawn> spawnInstList = new HashMap();
-        Iterator var3 = this._registeredSpawns.values().iterator();
+        Map<Integer, AutoSpawn> spawnInstList = new HashMap<>();
 
-        while (var3.hasNext()) {
-            AutoSpawn spawnInst = (AutoSpawn) var3.next();
+        for (AutoSpawn spawnInst : this._registeredSpawns.values()) {
             if (spawnInst.getNpcId() == npcId) {
                 spawnInstList.put(spawnInst.getObjectId(), spawnInst);
             }

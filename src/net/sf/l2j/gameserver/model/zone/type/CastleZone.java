@@ -18,6 +18,7 @@ public class CastleZone extends SpawnZoneType {
         } else {
             super.setParameter(name, value);
         }
+
     }
 
     protected void onEnter(Creature character) {
@@ -29,11 +30,12 @@ public class CastleZone extends SpawnZoneType {
     }
 
     public void banishForeigners(int clanId) {
-        for (Player player : getKnownTypeInside(Player.class)) {
-            if (player.getClanId() == clanId)
-                continue;
-            player.teleportTo(getRandomChaoticLoc(), 20);
+        for (Player player : this.getKnownTypeInside(Player.class)) {
+            if (player.getClanId() != clanId) {
+                player.teleportTo(this.getRandomChaoticLoc(), 20);
+            }
         }
+
     }
 
     public int getCastleId() {

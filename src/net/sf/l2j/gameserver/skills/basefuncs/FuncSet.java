@@ -9,7 +9,9 @@ public class FuncSet extends Func {
     }
 
     public void calc(Env env) {
-        if (this.cond == null || this.cond.test(env))
+        if (this.cond == null || this.cond.test(env)) {
             env.setValue(this._lambda.calc(env));
+        }
+
     }
 }

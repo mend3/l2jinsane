@@ -25,6 +25,7 @@ public final class BroadcastingTower extends Folk {
                 player.sendPacket(SystemMessageId.ONLY_VIEW_SIEGE);
                 return;
             }
+
             if (player.reduceAdena("Broadcast", cost, this, true)) {
                 player.enterObserverMode(x, y, z);
                 player.sendPacket(new ItemList(player, false));
@@ -39,7 +40,7 @@ public final class BroadcastingTower extends Folk {
         if (val == 0) {
             filename = "" + npcId;
         } else {
-            filename = npcId + "-" + npcId;
+            filename = npcId + "-" + val;
         }
         return "data/html/observation/" + filename + ".htm";
     }

@@ -54,10 +54,8 @@ public class L2MultiFunctionZone extends SpawnZoneType {
 
     public static void givereward(Player player) {
         if (player.isInsideZone(ZoneId.MULTI_FUNCTION)) {
-            Iterator var1 = Config.REWARDS.keySet().iterator();
 
-            while (var1.hasNext()) {
-                int reward = (Integer) var1.next();
+            for (int reward : Config.REWARDS.keySet()) {
                 player.addItem("PvP Zone", reward, Config.REWARDS.get(reward), null, true);
             }
         }
@@ -86,10 +84,7 @@ public class L2MultiFunctionZone extends SpawnZoneType {
                 return;
             }
 
-            Iterator var3 = activeChar.getInventory().getItems().iterator();
-
-            while (var3.hasNext()) {
-                ItemInstance o = (ItemInstance) var3.next();
+            for (ItemInstance o : activeChar.getInventory().getItems()) {
                 if (o.isEquipable() && o.isEquipped() && !checkItem(o)) {
                     int slot = activeChar.getInventory().getSlotFromItem(o);
                     activeChar.getInventory().unEquipItemInBodySlotAndRecord(slot);

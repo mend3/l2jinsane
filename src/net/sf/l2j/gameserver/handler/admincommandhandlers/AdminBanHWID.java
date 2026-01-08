@@ -81,7 +81,7 @@ public class AdminBanHWID implements IAdminCommandHandler {
                         if (hwidz.equals(targetPlayer.getHWID()))
                             p.logout(true);
                 }
-                activeChar.sendMessage("HWID : " + hwid + " Banned");
+                activeChar.sendMessage("HWID: " + hwid + " Banned");
             }
         }
         return false;

@@ -9,7 +9,6 @@ import java.util.List;
 
 public class EventResTask implements Runnable {
     private final AbstractEvent event;
-
     private final List<Player> players;
 
     public EventResTask(AbstractEvent event) {
@@ -23,21 +22,23 @@ public class EventResTask implements Runnable {
     }
 
     public void run() {
-        if (this.event.getState() != EventState.RUNNING)
-            return;
-        for (Player player : this.players) {
-            if (!player.isDead())
-                continue;
-            player.doRevive();
-            player.setCurrentHpMp(player.getMaxHp(), player.getMaxMp());
-            player.setCurrentCp(player.getMaxCp());
-            if (this.event.getTeam(player) == null) {
-                player.teleToLocation(this.event.getRandomLocation());
-            } else {
-                player.teleToLocation(this.event.getTeam(player).getLocation());
+        if (this.event.getState() == EventState.RUNNING) {
+            for (Player player : this.players) {
+                if (player.isDead()) {
+                    player.doRevive();
+                    player.setCurrentHpMp(player.getMaxHp(), player.getMaxMp());
+                    player.setCurrentCp(player.getMaxCp());
+                    if (this.event.getTeam(player) == null) {
+                        player.teleToLocation(this.event.getRandomLocation());
+                    } else {
+                        player.teleToLocation(this.event.getTeam(player).getLocation());
+                    }
+
+                    SkillTable.getInstance().getInfo(1323, 1).getEffects(player, player);
+                    player.broadcastPacket(new MagicSkillUse(player, player, 1323, 1, 850, 0));
+                }
             }
-            SkillTable.getInstance().getInfo(1323, 1).getEffects(player, player);
-            player.broadcastPacket(new MagicSkillUse(player, player, 1323, 1, 850, 0));
+
         }
     }
 }

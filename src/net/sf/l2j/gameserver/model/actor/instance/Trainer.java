@@ -12,8 +12,9 @@ public final class Trainer extends Folk {
         if (val == 0) {
             filename = "" + npcId;
         } else {
-            filename = npcId + "-" + npcId;
+            filename = npcId + "-" + val;
         }
+
         return "data/html/trainer/" + filename + ".htm";
     }
 }

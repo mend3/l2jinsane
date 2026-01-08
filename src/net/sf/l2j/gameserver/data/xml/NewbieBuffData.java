@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NewbieBuffData implements IXmlReader {
-    private final List<NewbieBuff> _buffs = new ArrayList();
+    private final List<NewbieBuff> _buffs = new ArrayList<>();
     private int _magicLowestLevel = 100;
     private int _physicLowestLevel = 100;
     private int _magicHighestLevel = 1;

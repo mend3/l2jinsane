@@ -6,39 +6,22 @@ import net.sf.l2j.gameserver.enums.OpenType;
 
 public class DoorTemplate extends CreatureTemplate {
     private final String _name;
-
     private final int _id;
-
     private final DoorType _type;
-
     private final int _level;
-
     private final int _x;
-
     private final int _y;
-
     private final int _z;
-
     private final int _geoX;
-
     private final int _geoY;
-
     private final int _geoZ;
-
     private final byte[][] _geoData;
-
     private final int _castle;
-
     private final int _triggeredId;
-
     private final boolean _opened;
-
     private final OpenType _openType;
-
     private final int _openTime;
-
     private final int _randomTime;
-
     private final int _closeTime;
 
     public DoorTemplate(StatSet stats) {

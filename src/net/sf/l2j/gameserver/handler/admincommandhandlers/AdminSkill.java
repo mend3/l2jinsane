@@ -156,7 +156,7 @@ public class AdminSkill implements IAdminCommandHandler {
                 int idval = Integer.parseInt(id);
                 int levelval = Integer.parseInt(level);
                 skill = SkillTable.getInstance().getInfo(idval, levelval);
-            } catch (Exception exception) {
+            } catch (Exception ignored) {
             }
             if (skill != null) {
                 String name = skill.getName();
@@ -238,7 +238,7 @@ public class AdminSkill implements IAdminCommandHandler {
             try {
                 String val = command.substring(18);
                 AdminHelpPage.showHelpPage(activeChar, "skills/" + val + ".htm");
-            } catch (Exception exception) {
+            } catch (Exception ignored) {
             }
         } else if (command.startsWith("admin_add_skill")) {
             try {

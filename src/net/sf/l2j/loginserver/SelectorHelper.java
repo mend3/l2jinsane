@@ -16,7 +16,7 @@ public class SelectorHelper implements IMMOExecutor<LoginClient>, IClientFactory
     private final IPv4Filter _ipv4filter;
 
     public SelectorHelper() {
-        this._generalPacketsThreadPool = new ThreadPoolExecutor(4, 6, 15L, TimeUnit.SECONDS, new LinkedBlockingQueue());
+        this._generalPacketsThreadPool = new ThreadPoolExecutor(4, 6, 15L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
         this._ipv4filter = new IPv4Filter();
     }
 

@@ -26,90 +26,104 @@ public class Merchant extends Folk {
         if (val == 0) {
             filename = "" + npcId;
         } else {
-            filename = npcId + "-" + npcId;
+            filename = npcId + "-" + val;
         }
+
         return "data/html/merchant/" + filename + ".htm";
     }
 
     public void onBypassFeedback(Player player, String command) {
-        if (!Config.KARMA_PLAYER_CAN_SHOP && player.getKarma() > 0 && showPkDenyChatWindow(player, "merchant"))
-            return;
-        StringTokenizer st = new StringTokenizer(command, " ");
-        String actualCommand = st.nextToken();
-        if (actualCommand.equalsIgnoreCase("Buy")) {
-            if (st.countTokens() < 1)
-                return;
-            showBuyWindow(player, Integer.parseInt(st.nextToken()));
-        } else if (actualCommand.equalsIgnoreCase("Sell")) {
-            List<ItemInstance> items = player.getInventory().getSellableItems();
-            if (items.isEmpty()) {
-                String content = HtmCache.getInstance().getHtm("data/html/" + ((this instanceof Fisherman) ? "fisherman" : "merchant") + "/" + getNpcId() + "-empty.htm");
-                if (content != null) {
-                    NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-                    html.setHtml(content);
-                    html.replace("%objectId%", getObjectId());
-                    player.sendPacket(html);
+        if (Config.KARMA_PLAYER_CAN_SHOP || player.getKarma() <= 0 || !this.showPkDenyChatWindow(player, "merchant")) {
+            StringTokenizer st = new StringTokenizer(command, " ");
+            String actualCommand = st.nextToken();
+            if (actualCommand.equalsIgnoreCase("Buy")) {
+                if (st.countTokens() < 1) {
                     return;
                 }
-            }
-            player.sendPacket(new SellList(player.getAdena(), items));
-        } else if (actualCommand.equalsIgnoreCase("Wear") && Config.ALLOW_WEAR) {
-            if (st.countTokens() < 1)
-                return;
-            showWearWindow(player, Integer.parseInt(st.nextToken()));
-        } else if (actualCommand.equalsIgnoreCase("Multisell")) {
-            if (st.countTokens() < 1)
-                return;
-            MultisellData.getInstance().separateAndSend(st.nextToken(), player, this, false);
-        } else if (actualCommand.equalsIgnoreCase("Multisell_Shadow")) {
-            NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-            if (player.getLevel() < 40) {
-                html.setFile("data/html/common/shadow_item-lowlevel.htm");
-            } else if (player.getLevel() < 46) {
-                html.setFile("data/html/common/shadow_item_mi_c.htm");
-            } else if (player.getLevel() < 52) {
-                html.setFile("data/html/common/shadow_item_hi_c.htm");
-            } else {
-                html.setFile("data/html/common/shadow_item_b.htm");
-            }
-            html.replace("%objectId%", getObjectId());
-            player.sendPacket(html);
-        } else if (actualCommand.equalsIgnoreCase("Exc_Multisell")) {
-            if (st.countTokens() < 1)
-                return;
-            MultisellData.getInstance().separateAndSend(st.nextToken(), player, this, true);
-        } else if (actualCommand.equalsIgnoreCase("Newbie_Exc_Multisell")) {
-            if (st.countTokens() < 1)
-                return;
-            if (player.isNewbie()) {
+
+                this.showBuyWindow(player, Integer.parseInt(st.nextToken()));
+            } else if (actualCommand.equalsIgnoreCase("Sell")) {
+                List<ItemInstance> items = player.getInventory().getSellableItems();
+                if (items.isEmpty()) {
+                    String content = HtmCache.getInstance().getHtm("data/html/" + (this instanceof Fisherman ? "fisherman" : "merchant") + "/" + this.getNpcId() + "-empty.htm");
+                    if (content != null) {
+                        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                        html.setHtml(content);
+                        html.replace("%objectId%", this.getObjectId());
+                        player.sendPacket(html);
+                        return;
+                    }
+                }
+
+                player.sendPacket(new SellList(player.getAdena(), items));
+            } else if (actualCommand.equalsIgnoreCase("Wear") && Config.ALLOW_WEAR) {
+                if (st.countTokens() < 1) {
+                    return;
+                }
+
+                this.showWearWindow(player, Integer.parseInt(st.nextToken()));
+            } else if (actualCommand.equalsIgnoreCase("Multisell")) {
+                if (st.countTokens() < 1) {
+                    return;
+                }
+
+                MultisellData.getInstance().separateAndSend(st.nextToken(), player, this, false);
+            } else if (actualCommand.equalsIgnoreCase("Multisell_Shadow")) {
+                NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                if (player.getLevel() < 40) {
+                    html.setFile("data/html/common/shadow_item-lowlevel.htm");
+                } else if (player.getLevel() < 46) {
+                    html.setFile("data/html/common/shadow_item_mi_c.htm");
+                } else if (player.getLevel() < 52) {
+                    html.setFile("data/html/common/shadow_item_hi_c.htm");
+                } else {
+                    html.setFile("data/html/common/shadow_item_b.htm");
+                }
+
+                html.replace("%objectId%", this.getObjectId());
+                player.sendPacket(html);
+            } else if (actualCommand.equalsIgnoreCase("Exc_Multisell")) {
+                if (st.countTokens() < 1) {
+                    return;
+                }
+
                 MultisellData.getInstance().separateAndSend(st.nextToken(), player, this, true);
+            } else if (actualCommand.equalsIgnoreCase("Newbie_Exc_Multisell")) {
+                if (st.countTokens() < 1) {
+                    return;
+                }
+
+                if (player.isNewbie()) {
+                    MultisellData.getInstance().separateAndSend(st.nextToken(), player, this, true);
+                } else {
+                    this.showChatWindow(player, "data/html/exchangelvlimit.htm");
+                }
             } else {
-                showChatWindow(player, "data/html/exchangelvlimit.htm");
+                super.onBypassFeedback(player, command);
             }
-        } else {
-            super.onBypassFeedback(player, command);
+
         }
     }
 
     public void showChatWindow(Player player, int val) {
-        if (!Config.KARMA_PLAYER_CAN_SHOP && player.getKarma() > 0 && showPkDenyChatWindow(player, "merchant"))
-            return;
-        showChatWindow(player, getHtmlPath(getNpcId(), val));
+        if (Config.KARMA_PLAYER_CAN_SHOP || player.getKarma() <= 0 || !this.showPkDenyChatWindow(player, "merchant")) {
+            this.showChatWindow(player, this.getHtmlPath(this.getNpcId(), val));
+        }
     }
 
     private final void showWearWindow(Player player, int val) {
         NpcBuyList buyList = BuyListManager.getInstance().getBuyList(val);
-        if (buyList == null || !buyList.isNpcAllowed(getNpcId()))
-            return;
-        player.tempInventoryDisable();
-        player.sendPacket(new ShopPreviewList(buyList, player.getAdena(), player.getSkillLevel(239)));
+        if (buyList != null && buyList.isNpcAllowed(this.getNpcId())) {
+            player.tempInventoryDisable();
+            player.sendPacket(new ShopPreviewList(buyList, player.getAdena(), player.getSkillLevel(239)));
+        }
     }
 
     protected final void showBuyWindow(Player player, int val) {
         NpcBuyList buyList = BuyListManager.getInstance().getBuyList(val);
-        if (buyList == null || !buyList.isNpcAllowed(getNpcId()))
-            return;
-        player.tempInventoryDisable();
-        player.sendPacket(new BuyList(buyList, player.getAdena(), (getCastle() != null) ? getCastle().getTaxRate() : 0.0D));
+        if (buyList != null && buyList.isNpcAllowed(this.getNpcId())) {
+            player.tempInventoryDisable();
+            player.sendPacket(new BuyList(buyList, player.getAdena(), this.getCastle() != null ? this.getCastle().getTaxRate() : (double) 0.0F));
+        }
     }
 }

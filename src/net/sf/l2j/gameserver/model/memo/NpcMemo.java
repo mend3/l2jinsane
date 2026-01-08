@@ -5,10 +5,10 @@ import net.sf.l2j.gameserver.model.actor.Summon;
 
 public class NpcMemo extends AbstractMemo {
     public int getInteger(String key) {
-        return getInteger(key, 0);
+        return super.getInteger(key, 0);
     }
 
-    public boolean load() {
+    public boolean restoreMe() {
         return true;
     }
 
@@ -17,10 +17,10 @@ public class NpcMemo extends AbstractMemo {
     }
 
     public Player getPlayer(String name) {
-        return getObject(name, Player.class);
+        return this.getObject(name, Player.class);
     }
 
     public Summon getSummon(String name) {
-        return getObject(name, Summon.class);
+        return this.getObject(name, Summon.class);
     }
 }

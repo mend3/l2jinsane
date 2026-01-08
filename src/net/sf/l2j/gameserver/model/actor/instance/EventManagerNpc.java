@@ -14,52 +14,76 @@ public class EventManagerNpc extends Folk {
 
     private static String getActiveEvent() {
         String s = "---";
-        if (TvTEventManager.getInstance().getActiveEvent() != null)
+        if (TvTEventManager.getInstance().getActiveEvent() != null) {
             s = TvTEventManager.getInstance().getActiveEvent().getName();
-        if (CtfEventManager.getInstance().getActiveEvent() != null)
+        }
+
+        if (CtfEventManager.getInstance().getActiveEvent() != null) {
             s = CtfEventManager.getInstance().getActiveEvent().getName();
-        if (DmEventManager.getInstance().getActiveEvent() != null)
+        }
+
+        if (DmEventManager.getInstance().getActiveEvent() != null) {
             s = DmEventManager.getInstance().getActiveEvent().getName();
+        }
+
         return s;
     }
 
     private static int getCurrentReg() {
         int i = 0;
-        if (TvTEventManager.getInstance().getActiveEvent() != null)
+        if (TvTEventManager.getInstance().getActiveEvent() != null) {
             i = TvTEventManager.getInstance().getTotalParticipants();
-        if (CtfEventManager.getInstance().getActiveEvent() != null)
+        }
+
+        if (CtfEventManager.getInstance().getActiveEvent() != null) {
             i = CtfEventManager.getInstance().getTotalParticipants();
-        if (DmEventManager.getInstance().getActiveEvent() != null)
+        }
+
+        if (DmEventManager.getInstance().getActiveEvent() != null) {
             i = DmEventManager.getInstance().getTotalParticipants();
+        }
+
         return i;
     }
 
     public void onBypassFeedback(Player player, String command) {
         if (command.equals("register")) {
-            if (TvTEventManager.getInstance().getActiveEvent() != null)
+            if (TvTEventManager.getInstance().getActiveEvent() != null) {
                 TvTEventManager.getInstance().registerPlayer(player);
-            if (CtfEventManager.getInstance().getActiveEvent() != null)
+            }
+
+            if (CtfEventManager.getInstance().getActiveEvent() != null) {
                 CtfEventManager.getInstance().registerPlayer(player);
-            if (DmEventManager.getInstance().getActiveEvent() != null)
+            }
+
+            if (DmEventManager.getInstance().getActiveEvent() != null) {
                 DmEventManager.getInstance().registerPlayer(player);
+            }
         } else if (command.equals("remove")) {
-            if (TvTEventManager.getInstance().getActiveEvent() != null)
+            if (TvTEventManager.getInstance().getActiveEvent() != null) {
                 TvTEventManager.getInstance().removePlayer(player);
-            if (CtfEventManager.getInstance().getActiveEvent() != null)
+            }
+
+            if (CtfEventManager.getInstance().getActiveEvent() != null) {
                 CtfEventManager.getInstance().removePlayer(player);
-            if (DmEventManager.getInstance().getActiveEvent() != null)
+            }
+
+            if (DmEventManager.getInstance().getActiveEvent() != null) {
                 DmEventManager.getInstance().removePlayer(player);
+            }
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 
     public void showChatWindow(Player player, int val) {
-        NpcHtmlMessage htm = new NpcHtmlMessage(getObjectId());
-        htm.setFile("data/html/mods/eventmanager/" + getNpcId() + ((val == 0) ? "" : ("-" + val)) + ".htm");
+        NpcHtmlMessage htm = new NpcHtmlMessage(this.getObjectId());
+        int var10001 = this.getNpcId();
+        htm.setFile("data/html/mods/eventmanager/" + var10001 + (val == 0 ? "" : "-" + val) + ".htm");
         htm.replace("%activeevent%", getActiveEvent());
         htm.replace("%currentreg%", getCurrentReg());
-        htm.replace("%objectId%", "" + getObjectId());
+        htm.replace("%objectId%", "" + this.getObjectId());
         player.sendPacket(htm);
     }
 
@@ -68,8 +92,9 @@ public class EventManagerNpc extends Folk {
         if (val == 0) {
             pom = "" + npcId;
         } else {
-            pom = npcId + "-" + npcId;
+            pom = npcId + "-" + val;
         }
+
         return "data/html/mods/eventmanager/" + pom + ".htm";
     }
 }

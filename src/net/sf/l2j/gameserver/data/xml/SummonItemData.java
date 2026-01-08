@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SummonItemData implements IXmlReader {
-    private final Map<Integer, IntIntHolder> _items = new HashMap();
+    private final Map<Integer, IntIntHolder> _items = new HashMap<>();
 
     protected SummonItemData() {
     }

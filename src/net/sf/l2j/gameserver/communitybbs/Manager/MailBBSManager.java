@@ -29,7 +29,7 @@ public class MailBBSManager extends BaseBBSManager {
     private static final String SET_MAIL_LOC = "UPDATE character_mail SET location = ? WHERE letterId = ?";
     private static final String SELECT_LAST_ID = "SELECT letterId FROM character_mail ORDER BY letterId DESC LIMIT 1";
     private static final String GET_GM_STATUS = "SELECT accesslevel FROM characters WHERE obj_Id = ?";
-    private final Map<Integer, Set<MailBBSManager.Mail>> _mails = new ConcurrentHashMap();
+    private final Map<Integer, Set<MailBBSManager.Mail>> _mails = new ConcurrentHashMap<>();
     private int _lastid = 0;
 
     protected MailBBSManager() {
@@ -57,7 +57,7 @@ public class MailBBSManager extends BaseBBSManager {
     }
 
     private static boolean isBlocked(Player player, int objectId) {
-        Iterator var2 = World.getInstance().getPlayers().iterator();
+        Iterator<Player> var2 = World.getInstance().getPlayers().iterator();
 
         Player playerToTest;
         do {
@@ -65,7 +65,7 @@ public class MailBBSManager extends BaseBBSManager {
                 return false;
             }
 
-            playerToTest = (Player) var2.next();
+            playerToTest = var2.next();
         } while (playerToTest.getObjectId() != objectId);
 
         return BlockList.isInBlockList(playerToTest, player);
@@ -394,7 +394,7 @@ public class MailBBSManager extends BaseBBSManager {
         if (!sType.equals("") && !search.equals("")) {
             mails = ConcurrentHashMap.newKeySet();
             boolean byTitle = sType.equalsIgnoreCase("title");
-            Iterator var8 = this.getPlayerMails(player.getObjectId()).iterator();
+            Iterator<Mail> var8 = this.getPlayerMails(player.getObjectId()).iterator();
 
             label169:
             while (true) {
@@ -403,7 +403,7 @@ public class MailBBSManager extends BaseBBSManager {
                         break label169;
                     }
 
-                    MailBBSManager.Mail mail = (MailBBSManager.Mail) var8.next();
+                    MailBBSManager.Mail mail = var8.next();
                     if (byTitle && mail.subject.toLowerCase().contains(search.toLowerCase())) {
                         ((Set) mails).add(mail);
                     } else if (!byTitle) {
@@ -440,10 +440,9 @@ public class MailBBSManager extends BaseBBSManager {
         content = content.replace("%type%", type.getDescription());
         content = content.replace("%htype%", type.toString().toLowerCase());
         StringBuilder sb = new StringBuilder();
-        Iterator var14 = ((Set) mails).iterator();
 
-        while (var14.hasNext()) {
-            MailBBSManager.Mail mail = (MailBBSManager.Mail) var14.next();
+        for (Object o : (Set) mails) {
+            Mail mail = (Mail) o;
             if (mail.location.equals(type)) {
                 if (index < minIndex) {
                     ++index;
@@ -699,7 +698,7 @@ public class MailBBSManager extends BaseBBSManager {
         int count = 0;
         if (!type.equals("") && !search.equals("")) {
             boolean byTitle = type.equalsIgnoreCase("title");
-            Iterator var11 = this.getPlayerMails(objectId).iterator();
+            Iterator<Mail> var11 = this.getPlayerMails(objectId).iterator();
 
             while (true) {
                 while (true) {
@@ -709,7 +708,7 @@ public class MailBBSManager extends BaseBBSManager {
                             return count;
                         }
 
-                        mail = (MailBBSManager.Mail) var11.next();
+                        mail = var11.next();
                     } while (!mail.location.equals(location));
 
                     if (byTitle && mail.subject.toLowerCase().contains(search.toLowerCase())) {
@@ -723,10 +722,8 @@ public class MailBBSManager extends BaseBBSManager {
                 }
             }
         } else {
-            Iterator var6 = this.getPlayerMails(objectId).iterator();
 
-            while (var6.hasNext()) {
-                MailBBSManager.Mail mail = (MailBBSManager.Mail) var6.next();
+            for (Mail mail : this.getPlayerMails(objectId)) {
                 if (mail.location.equals(location)) {
                     ++count;
                 }
@@ -737,10 +734,8 @@ public class MailBBSManager extends BaseBBSManager {
     }
 
     private void deleteMail(Player player, int mailId) {
-        Iterator var3 = this.getPlayerMails(player.getObjectId()).iterator();
 
-        while (var3.hasNext()) {
-            MailBBSManager.Mail mail = (MailBBSManager.Mail) var3.next();
+        for (Mail mail : this.getPlayerMails(player.getObjectId())) {
             if (mail.mailId == mailId) {
                 this.getPlayerMails(player.getObjectId()).remove(mail);
                 break;

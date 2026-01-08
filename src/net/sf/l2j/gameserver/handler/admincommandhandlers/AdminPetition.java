@@ -13,7 +13,7 @@ public class AdminPetition implements IAdminCommandHandler {
         int petitionId = -1;
         try {
             petitionId = Integer.parseInt(command.split(" ")[1]);
-        } catch (Exception exception) {
+        } catch (Exception ignored) {
         }
         if (command.equals("admin_view_petitions")) {
             PetitionManager.getInstance().sendPendingPetitionList(activeChar);

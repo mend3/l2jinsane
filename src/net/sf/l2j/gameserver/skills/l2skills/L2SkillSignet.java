@@ -13,7 +13,6 @@ import net.sf.l2j.gameserver.model.location.Location;
 
 public final class L2SkillSignet extends L2Skill {
     private final int _effectNpcId;
-
     public int effectId;
 
     public L2SkillSignet(StatSet set) {
@@ -23,17 +22,19 @@ public final class L2SkillSignet extends L2Skill {
     }
 
     public void useSkill(Creature caster, WorldObject[] targets) {
-        if (caster.isAlikeDead())
-            return;
-        NpcTemplate template = NpcData.getInstance().getTemplate(this._effectNpcId);
-        EffectPoint effectPoint = new EffectPoint(IdFactory.getInstance().getNextId(), template, caster);
-        effectPoint.setCurrentHp(effectPoint.getMaxHp());
-        effectPoint.setCurrentMp(effectPoint.getMaxMp());
-        Location worldPosition = null;
-        if (caster instanceof Player && getTargetType() == L2Skill.SkillTargetType.TARGET_GROUND)
-            worldPosition = ((Player) caster).getCurrentSkillWorldPosition();
-        getEffects(caster, effectPoint);
-        effectPoint.setIsInvul(true);
-        effectPoint.spawnMe((worldPosition != null) ? worldPosition : (Location) caster.getPosition());
+        if (!caster.isAlikeDead()) {
+            NpcTemplate template = NpcData.getInstance().getTemplate(this._effectNpcId);
+            EffectPoint effectPoint = new EffectPoint(IdFactory.getInstance().getNextId(), template, caster);
+            effectPoint.setCurrentHp(effectPoint.getMaxHp());
+            effectPoint.setCurrentMp(effectPoint.getMaxMp());
+            Location worldPosition = null;
+            if (caster instanceof Player && this.getTargetType() == SkillTargetType.TARGET_GROUND) {
+                worldPosition = ((Player) caster).getCurrentSkillWorldPosition();
+            }
+
+            this.getEffects(caster, effectPoint);
+            effectPoint.setIsInvul(true);
+            effectPoint.spawnMe(worldPosition != null ? worldPosition : caster.getPosition());
+        }
     }
 }

@@ -14,35 +14,40 @@ import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 public final class GrandBoss extends Monster {
     public GrandBoss(int objectId, NpcTemplate template) {
         super(objectId, template);
-        setRaid(true);
+        this.setRaid(true);
     }
 
     public void onSpawn() {
-        setIsNoRndWalk(true);
+        this.setIsNoRndWalk(true);
         super.onSpawn();
     }
 
     public boolean doDie(Creature killer) {
-        if (!super.doDie(killer))
+        if (!super.doDie(killer)) {
             return false;
-        Player player = killer.getActingPlayer();
-        if (player != null) {
-            broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.RAID_WAS_SUCCESSFUL));
-            broadcastPacket(new PlaySound("systemmsg_e.1209"));
-            Party party = player.getParty();
-            if (party != null) {
-                for (Player member : party.getMembers()) {
-                    RaidPointManager.getInstance().addPoints(member, getNpcId(), getLevel() / 2 + Rnd.get(-5, 5));
-                    if (member.isNoble())
-                        HeroManager.getInstance().setRBkilled(member.getObjectId(), getNpcId());
+        } else {
+            Player player = killer.getActingPlayer();
+            if (player != null) {
+                this.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.RAID_WAS_SUCCESSFUL));
+                this.broadcastPacket(new PlaySound("systemmsg_e.1209"));
+                Party party = player.getParty();
+                if (party != null) {
+                    for (Player member : party.getMembers()) {
+                        RaidPointManager.getInstance().addPoints(member, this.getNpcId(), this.getLevel() / 2 + Rnd.get(-5, 5));
+                        if (member.isNoble()) {
+                            HeroManager.getInstance().setRBkilled(member.getObjectId(), this.getNpcId());
+                        }
+                    }
+                } else {
+                    RaidPointManager.getInstance().addPoints(player, this.getNpcId(), this.getLevel() / 2 + Rnd.get(-5, 5));
+                    if (player.isNoble()) {
+                        HeroManager.getInstance().setRBkilled(player.getObjectId(), this.getNpcId());
+                    }
                 }
-            } else {
-                RaidPointManager.getInstance().addPoints(player, getNpcId(), getLevel() / 2 + Rnd.get(-5, 5));
-                if (player.isNoble())
-                    HeroManager.getInstance().setRBkilled(player.getObjectId(), getNpcId());
             }
+
+            return true;
         }
-        return true;
     }
 
     public boolean returnHome() {

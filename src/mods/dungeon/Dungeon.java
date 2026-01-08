@@ -44,7 +44,7 @@ public class Dungeon {
         if (!this.players.contains(player))
             return;
         if (this.players.size() == 1) {
-            ThreadPool.schedule(() -> cancelDungeon(), 5000L);
+            ThreadPool.schedule(this::cancelDungeon, 5000L);
         } else {
             player.sendMessage("You will be ressurected if your team completes this stage.");
         }

@@ -18,7 +18,7 @@ public class Post {
     private static final String ADD_POST = "INSERT INTO posts (post_id,post_owner_name,post_ownerid,post_date,post_topic_id,post_forum_id,post_txt) values (?,?,?,?,?,?,?)";
     private static final String DELETE_POST = "DELETE FROM posts WHERE post_forum_id=? AND post_topic_id=?";
     private static final String UPDATE_TEXT = "UPDATE posts SET post_txt=? WHERE post_id=? AND post_topic_id=? AND post_forum_id=?";
-    private final List<Post.CPost> _posts = new ArrayList();
+    private final List<Post.CPost> _posts = new ArrayList<>();
 
     public Post(Topic topic) {
         try {
@@ -144,7 +144,7 @@ public class Post {
 
     public Post.CPost getCPost(int id) {
         int i = 0;
-        Iterator var3 = this._posts.iterator();
+        Iterator<CPost> var3 = this._posts.iterator();
 
         Post.CPost cp;
         do {
@@ -152,7 +152,7 @@ public class Post {
                 return null;
             }
 
-            cp = (Post.CPost) var3.next();
+            cp = var3.next();
         } while (i++ != id);
 
         return cp;

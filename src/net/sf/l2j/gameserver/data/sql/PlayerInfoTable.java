@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class PlayerInfoTable {
     private static final CLogger LOGGER = new CLogger(PlayerInfoTable.class.getName());
     private static final String LOAD_DATA = "SELECT account_name, obj_Id, char_name, accesslevel FROM characters";
-    private final Map<Integer, PlayerInfoTable.PlayerInfo> _infos = new ConcurrentHashMap();
+    private final Map<Integer, PlayerInfoTable.PlayerInfo> _infos = new ConcurrentHashMap<>();
 
     private PlayerInfoTable() {
     }

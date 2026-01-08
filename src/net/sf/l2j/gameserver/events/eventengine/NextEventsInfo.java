@@ -8,19 +8,19 @@ import java.util.Calendar;
 
 public class NextEventsInfo {
     private static final CLogger LOGGER = new CLogger(NextEventsInfo.class.getName());
-
-    private static String mensaje;
+    private static String _message;
 
     public static NextEventsInfo getInstance() {
-        return SingletonHolder.instance;
+        return NextEventsInfo.SingletonHolder.instance;
     }
 
     public String NextCtfEvent() {
         try {
-            mensaje = "Evento desactivado.";
+            _message = "Event is disabled.";
             Calendar currentTime = Calendar.getInstance();
             Calendar nextStartTime = null;
-            Calendar testStartTime = null;
+            Calendar testStartTime;
+
             for (String timeOfDay : Config.CTF_EVENT_INTERVAL) {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
@@ -29,28 +29,33 @@ public class NextEventsInfo {
                 testStartTime.set(Calendar.MINUTE, Integer.parseInt(splitTimeOfDay[1]));
                 testStartTime.set(Calendar.SECOND, 0);
                 testStartTime.set(Calendar.MILLISECOND, 0);
-                if (testStartTime.getTimeInMillis() <= currentTime.getTimeInMillis())
+                if (testStartTime.getTimeInMillis() <= currentTime.getTimeInMillis()) {
                     testStartTime.add(Calendar.DATE, 1);
-                if (nextStartTime == null || testStartTime.getTimeInMillis() < nextStartTime.getTimeInMillis())
+                }
+
+                if (nextStartTime == null || testStartTime.getTimeInMillis() < nextStartTime.getTimeInMillis()) {
                     nextStartTime = testStartTime;
+                }
             }
+
             if (nextStartTime != null) {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                String nextEventTime = sdf.format(nextStartTime.getTime());
-                mensaje = nextEventTime;
+                _message = sdf.format(nextStartTime.getTime());
             }
         } catch (Exception e) {
             LOGGER.warn("CTF EventEngine: Error programming next event", e);
         }
-        return mensaje;
+
+        return _message;
     }
 
     public String NextTvtEvent() {
         try {
-            mensaje = "Evento desactivado.";
+            _message = "Event is disabled.";
             Calendar currentTime = Calendar.getInstance();
             Calendar nextStartTime = null;
-            Calendar testStartTime = null;
+            Calendar testStartTime;
+
             for (String timeOfDay : Config.TVT_EVENT_INTERVAL) {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
@@ -59,28 +64,33 @@ public class NextEventsInfo {
                 testStartTime.set(Calendar.MINUTE, Integer.parseInt(splitTimeOfDay[1]));
                 testStartTime.set(Calendar.SECOND, 0);
                 testStartTime.set(Calendar.MILLISECOND, 0);
-                if (testStartTime.getTimeInMillis() <= currentTime.getTimeInMillis())
+                if (testStartTime.getTimeInMillis() <= currentTime.getTimeInMillis()) {
                     testStartTime.add(Calendar.DATE, 1);
-                if (nextStartTime == null || testStartTime.getTimeInMillis() < nextStartTime.getTimeInMillis())
+                }
+
+                if (nextStartTime == null || testStartTime.getTimeInMillis() < nextStartTime.getTimeInMillis()) {
                     nextStartTime = testStartTime;
+                }
             }
+
             if (nextStartTime != null) {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                String nextEventTime = sdf.format(nextStartTime.getTime());
-                mensaje = nextEventTime;
+                _message = sdf.format(nextStartTime.getTime());
             }
         } catch (Exception e) {
             LOGGER.warn("TvT EventEngine: Error programming next event", e);
         }
-        return mensaje;
+
+        return _message;
     }
 
     public String NextDMEvent() {
         try {
-            mensaje = "Evento desactivado.";
+            _message = "Event is disabled.";
             Calendar currentTime = Calendar.getInstance();
             Calendar nextStartTime = null;
-            Calendar testStartTime = null;
+            Calendar testStartTime;
+
             for (String timeOfDay : Config.DM_EVENT_INTERVAL) {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
@@ -89,20 +99,24 @@ public class NextEventsInfo {
                 testStartTime.set(Calendar.MINUTE, Integer.parseInt(splitTimeOfDay[1]));
                 testStartTime.set(Calendar.SECOND, 0);
                 testStartTime.set(Calendar.MILLISECOND, 0);
-                if (testStartTime.getTimeInMillis() <= currentTime.getTimeInMillis())
+                if (testStartTime.getTimeInMillis() <= currentTime.getTimeInMillis()) {
                     testStartTime.add(Calendar.DATE, 1);
-                if (nextStartTime == null || testStartTime.getTimeInMillis() < nextStartTime.getTimeInMillis())
+                }
+
+                if (nextStartTime == null || testStartTime.getTimeInMillis() < nextStartTime.getTimeInMillis()) {
                     nextStartTime = testStartTime;
+                }
             }
+
             if (nextStartTime != null) {
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                String nextEventTime = sdf.format(nextStartTime.getTime());
-                mensaje = nextEventTime;
+                _message = sdf.format(nextStartTime.getTime());
             }
         } catch (Exception e) {
             LOGGER.warn("DM EventEngine: Error programming next event", e);
         }
-        return mensaje;
+
+        return _message;
     }
 
     private static class SingletonHolder {

@@ -10,9 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class MovementTaskManager implements Runnable {
     private static final int MILLIS_PER_UPDATE = 100;
-
     private final Set<Creature> _characters = ConcurrentHashMap.newKeySet();
-
     private long _ticks;
 
     private MovementTaskManager() {
@@ -20,20 +18,22 @@ public final class MovementTaskManager implements Runnable {
     }
 
     public static MovementTaskManager getInstance() {
-        return SingletonHolder.INSTANCE;
+        return MovementTaskManager.SingletonHolder.INSTANCE;
     }
 
     public void run() {
-        this._ticks++;
+        ++this._ticks;
+
         for (Creature character : this._characters) {
-            if (!character.updatePosition())
-                continue;
-            this._characters.remove(character);
-            CreatureAI ai = character.getAI();
-            if (ai == null)
-                continue;
-            ThreadPool.execute(() -> ai.notifyEvent(AiEventType.ARRIVED));
+            if (character.updatePosition()) {
+                this._characters.remove(character);
+                CreatureAI ai = character.getAI();
+                if (ai != null) {
+                    ThreadPool.execute(() -> ai.notifyEvent(AiEventType.ARRIVED));
+                }
+            }
         }
+
     }
 
     public void add(Creature cha) {

@@ -61,7 +61,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
     private int _initCount;
     private long _time;
     private boolean _decrease = false;
-    private ItemInstance.ItemLocation _loc;
+    private ItemLocation _loc;
     private int _locData;
     private int _enchantLevel;
     private L2Augmentation _augmentation = null;
@@ -69,7 +69,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
     private int _type1;
     private int _type2;
     private boolean _destroyProtected;
-    private ItemInstance.ItemState _lastChange;
+    private ItemState _lastChange;
     private boolean _existsInDb;
     private boolean _storedInDb;
     private ScheduledFuture<?> _dropProtection;
@@ -122,7 +122,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         int manaLeft;
         int count;
         long time;
-        ItemInstance.ItemLocation loc;
+        ItemLocation loc;
         try {
             objectId = rs.getInt(1);
             itemId = rs.getInt("item_id");
@@ -134,8 +134,8 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
             type2 = rs.getInt("custom_type2");
             manaLeft = rs.getInt("mana_left");
             time = rs.getLong("time");
-        } catch (Exception var15) {
-            LOGGER.error("Couldn't restore an item owned by {}.", var15, ownerId);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore an item owned by {}.", e, new Object[]{ownerId});
             return null;
         }
 
@@ -215,7 +215,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         }
     }
 
-    public void setLocation(ItemInstance.ItemLocation loc, int loc_data) {
+    public void setLocation(ItemLocation loc, int loc_data) {
         if (loc != this._loc || loc_data != this._locData) {
             this._loc = loc;
             this._locData = loc_data;
@@ -223,11 +223,11 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         }
     }
 
-    public ItemInstance.ItemLocation getLocation() {
+    public ItemLocation getLocation() {
         return this._loc;
     }
 
-    public void setLocation(ItemInstance.ItemLocation loc) {
+    public void setLocation(ItemLocation loc) {
         this.setLocation(loc, 0);
     }
 
@@ -335,7 +335,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         return this._item instanceof Armor ? (Armor) this._item : null;
     }
 
-    public int getCrystalCount() {
+    public final int getCrystalCount() {
         return this._item.getCrystalCount(this._enchantLevel);
     }
 
@@ -347,11 +347,11 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         return this._item.getName();
     }
 
-    public ItemInstance.ItemState getLastChange() {
+    public ItemState getLastChange() {
         return this._lastChange;
     }
 
-    public void setLastChange(ItemInstance.ItemState lastChange) {
+    public void setLastChange(ItemState lastChange) {
         this._lastChange = lastChange;
     }
 
@@ -360,19 +360,19 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
     }
 
     public boolean isDropable() {
-        return !this.isAugmented() && this._item.isDropable();
+        return this.isAugmented() ? false : this._item.isDropable();
     }
 
     public boolean isDestroyable() {
-        return !this.isQuestItem() && this._item.isDestroyable();
+        return this.isQuestItem() ? false : this._item.isDestroyable();
     }
 
     public boolean isTradable() {
-        return !this.isAugmented() && this._item.isTradable();
+        return this.isAugmented() ? false : this._item.isTradable();
     }
 
     public boolean isSellable() {
-        return !this.isAugmented() && this._item.isSellable();
+        return this.isAugmented() ? false : this._item.isSellable();
     }
 
     public boolean isDepositable(boolean isPrivateWareHouse) {
@@ -472,175 +472,61 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         if (this._augmentation != null) {
             this._augmentation = null;
 
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
+            try (
+                    Connection con = ConnectionPool.getConnection();
                     PreparedStatement ps = con.prepareStatement("DELETE FROM augmentations WHERE item_id = ?");
-
-                    try {
-                        ps.setInt(1, this.getObjectId());
-                        ps.executeUpdate();
-                    } catch (Throwable var7) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var6) {
-                                var7.addSuppressed(var6);
-                            }
-                        }
-
-                        throw var7;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (Throwable var8) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var5) {
-                            var8.addSuppressed(var5);
-                        }
-                    }
-
-                    throw var8;
-                }
-
-                if (con != null) {
-                    con.close();
-                }
-            } catch (Exception var9) {
-                LOGGER.error("Couldn't remove augmentation for {}.", var9, this.toString());
+            ) {
+                ps.setInt(1, this.getObjectId());
+                ps.executeUpdate();
+            } catch (Exception e) {
+                LOGGER.error("Couldn't remove augmentation for {}.", e, new Object[]{this.toString()});
             }
 
         }
     }
 
     private void restoreAttributes() {
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
+        try (
+                Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("SELECT attributes,skill_id,skill_level FROM augmentations WHERE item_id=?");
+        ) {
+            ps.setInt(1, this.getObjectId());
 
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ResultSet rs = ps.executeQuery();
-
-                    try {
-                        if (rs.next()) {
-                            this._augmentation = new L2Augmentation(rs.getInt("attributes"), rs.getInt("skill_id"), rs.getInt("skill_level"));
-                        }
-                    } catch (Throwable var9) {
-                        if (rs != null) {
-                            try {
-                                rs.close();
-                            } catch (Throwable var8) {
-                                var9.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    if (rs != null) {
-                        rs.close();
-                    }
-                } catch (Throwable var10) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    this._augmentation = new L2Augmentation(rs.getInt("attributes"), rs.getInt("skill_id"), rs.getInt("skill_level"));
                 }
-
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var11) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var6) {
-                        var11.addSuppressed(var6);
-                    }
-                }
-
-                throw var11;
             }
-
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var12) {
-            LOGGER.error("Couldn't restore augmentation for {}.", var12, this.toString());
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore augmentation for {}.", e, new Object[]{this.toString()});
         }
 
     }
 
     private void updateItemAttributes() {
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
+        try (
+                Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("REPLACE INTO augmentations VALUES(?,?,?,?)");
-
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    if (this._augmentation == null) {
-                        ps.setInt(2, -1);
-                        ps.setInt(3, -1);
-                        ps.setInt(4, -1);
-                    } else {
-                        ps.setInt(2, this._augmentation.getAttributes());
-                        if (this._augmentation.getSkill() == null) {
-                            ps.setInt(3, 0);
-                            ps.setInt(4, 0);
-                        } else {
-                            ps.setInt(3, this._augmentation.getSkill().getId());
-                            ps.setInt(4, this._augmentation.getSkill().getLevel());
-                        }
-                    }
-
-                    ps.executeUpdate();
-                } catch (Throwable var7) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var6) {
-                            var7.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var7;
+        ) {
+            ps.setInt(1, this.getObjectId());
+            if (this._augmentation == null) {
+                ps.setInt(2, -1);
+                ps.setInt(3, -1);
+                ps.setInt(4, -1);
+            } else {
+                ps.setInt(2, this._augmentation.getAttributes());
+                if (this._augmentation.getSkill() == null) {
+                    ps.setInt(3, 0);
+                    ps.setInt(4, 0);
+                } else {
+                    ps.setInt(3, this._augmentation.getSkill().getId());
+                    ps.setInt(4, this._augmentation.getSkill().getLevel());
                 }
-
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var8) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var5) {
-                        var8.addSuppressed(var5);
-                    }
-                }
-
-                throw var8;
             }
 
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var9) {
-            LOGGER.error("Couldn't update attributes for {}.", var9, this.toString());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            LOGGER.error("Couldn't update attributes for {}.", e, new Object[]{this.toString()});
         }
 
     }
@@ -676,12 +562,13 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
                 } else {
                     this.removeFromDb();
                 }
-            } else {
-                if (this._ownerId == 0 || this._loc == ItemInstance.ItemLocation.VOID || this.getCount() == 0 && this._loc != ItemInstance.ItemLocation.LEASE) {
-                    return;
-                }
 
+                return;
+            }
+
+            if (this._ownerId != 0 && this._loc != ItemInstance.ItemLocation.VOID && (this.getCount() != 0 || this._loc == ItemInstance.ItemLocation.LEASE)) {
                 this.insertIntoDb();
+                return;
             }
         } finally {
             this._dbLock.unlock();
@@ -689,11 +576,11 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
 
     }
 
-    public void dropMe(Creature dropper, int x, int y, int z) {
-        ThreadPool.execute(new ItemDropTask(this, this, dropper, x, y, z));
+    public final void dropMe(Creature dropper, int x, int y, int z) {
+        ThreadPool.execute(new ItemDropTask(this, dropper, x, y, z));
     }
 
-    public void pickupMe(Creature player) {
+    public final void pickupMe(Creature player) {
         player.broadcastPacket(new GetItem(this, player.getObjectId()));
         Castle castle = CastleManager.getInstance().getCastle(player);
         if (castle != null && castle.getTicket(this._itemId) != null) {
@@ -717,58 +604,25 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         assert this._existsInDb;
 
         if (!this._storedInDb) {
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
+            try (
+                    Connection con = ConnectionPool.getConnection();
                     PreparedStatement ps = con.prepareStatement("UPDATE items SET owner_id=?,count=?,loc=?,loc_data=?,enchant_level=?,custom_type1=?,custom_type2=?,mana_left=?,time=? WHERE object_id = ?");
-
-                    try {
-                        ps.setInt(1, this._ownerId);
-                        ps.setInt(2, this.getCount());
-                        ps.setString(3, this._loc.name());
-                        ps.setInt(4, this._locData);
-                        ps.setInt(5, this.getEnchantLevel());
-                        ps.setInt(6, this.getCustomType1());
-                        ps.setInt(7, this.getCustomType2());
-                        ps.setInt(8, this._mana);
-                        ps.setLong(9, this.getTime());
-                        ps.setInt(10, this.getObjectId());
-                        ps.executeUpdate();
-                        this._existsInDb = true;
-                        this._storedInDb = true;
-                    } catch (Throwable var7) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var6) {
-                                var7.addSuppressed(var6);
-                            }
-                        }
-
-                        throw var7;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (Throwable var8) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var5) {
-                            var8.addSuppressed(var5);
-                        }
-                    }
-
-                    throw var8;
-                }
-
-                if (con != null) {
-                    con.close();
-                }
-            } catch (Exception var9) {
-                LOGGER.error("Couldn't update {}. ", var9, this.toString());
+            ) {
+                ps.setInt(1, this._ownerId);
+                ps.setInt(2, this.getCount());
+                ps.setString(3, this._loc.name());
+                ps.setInt(4, this._locData);
+                ps.setInt(5, this.getEnchantLevel());
+                ps.setInt(6, this.getCustomType1());
+                ps.setInt(7, this.getCustomType2());
+                ps.setInt(8, this._mana);
+                ps.setLong(9, this.getTime());
+                ps.setInt(10, this.getObjectId());
+                ps.executeUpdate();
+                this._existsInDb = true;
+                this._storedInDb = true;
+            } catch (Exception e) {
+                LOGGER.error("Couldn't update {}. ", e, new Object[]{this.toString()});
             }
 
         }
@@ -777,62 +631,29 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
     private void insertIntoDb() {
         assert !this._existsInDb && this.getObjectId() != 0;
 
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
+        try (
+                Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("INSERT INTO items (owner_id,item_id,count,loc,loc_data,enchant_level,object_id,custom_type1,custom_type2,mana_left,time) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-
-                try {
-                    ps.setInt(1, this._ownerId);
-                    ps.setInt(2, this._itemId);
-                    ps.setInt(3, this.getCount());
-                    ps.setString(4, this._loc.name());
-                    ps.setInt(5, this._locData);
-                    ps.setInt(6, this.getEnchantLevel());
-                    ps.setInt(7, this.getObjectId());
-                    ps.setInt(8, this._type1);
-                    ps.setInt(9, this._type2);
-                    ps.setInt(10, this._mana);
-                    ps.setLong(11, this.getTime());
-                    ps.executeUpdate();
-                    this._existsInDb = true;
-                    this._storedInDb = true;
-                    if (this._augmentation != null) {
-                        this.updateItemAttributes();
-                    }
-                } catch (Throwable var7) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var6) {
-                            var7.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var7;
-                }
-
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var8) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var5) {
-                        var8.addSuppressed(var5);
-                    }
-                }
-
-                throw var8;
+        ) {
+            ps.setInt(1, this._ownerId);
+            ps.setInt(2, this._itemId);
+            ps.setInt(3, this.getCount());
+            ps.setString(4, this._loc.name());
+            ps.setInt(5, this._locData);
+            ps.setInt(6, this.getEnchantLevel());
+            ps.setInt(7, this.getObjectId());
+            ps.setInt(8, this._type1);
+            ps.setInt(9, this._type2);
+            ps.setInt(10, this._mana);
+            ps.setLong(11, this.getTime());
+            ps.executeUpdate();
+            this._existsInDb = true;
+            this._storedInDb = true;
+            if (this._augmentation != null) {
+                this.updateItemAttributes();
             }
-
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var9) {
-            LOGGER.error("Couldn't insert {}.", var9, this.toString());
+        } catch (Exception e) {
+            LOGGER.error("Couldn't insert {}.", e, new Object[]{this.toString()});
         }
 
     }
@@ -840,71 +661,21 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
     private void removeFromDb() {
         assert this._existsInDb;
 
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
-                PreparedStatement ps = con.prepareStatement("DELETE FROM items WHERE object_id=?");
-
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ps.executeUpdate();
-                } catch (Throwable var9) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var7) {
-                            var9.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var9;
-                }
-
-                if (ps != null) {
-                    ps.close();
-                }
-
-                ps = con.prepareStatement("DELETE FROM augmentations WHERE item_id = ?");
-
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ps.executeUpdate();
-                } catch (Throwable var8) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var6) {
-                            var8.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var8;
-                }
-
-                if (ps != null) {
-                    ps.close();
-                }
-
-                this._existsInDb = false;
-                this._storedInDb = false;
-            } catch (Throwable var10) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var5) {
-                        var10.addSuppressed(var5);
-                    }
-                }
-
-                throw var10;
+        try (Connection con = ConnectionPool.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM items WHERE object_id=?")) {
+                ps.setInt(1, this.getObjectId());
+                ps.executeUpdate();
             }
 
-            if (con != null) {
-                con.close();
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM augmentations WHERE item_id = ?")) {
+                ps.setInt(1, this.getObjectId());
+                ps.executeUpdate();
             }
-        } catch (Exception var11) {
-            LOGGER.error("Couldn't delete {}.", var11, this.toString());
+
+            this._existsInDb = false;
+            this._storedInDb = false;
+        } catch (Exception e) {
+            LOGGER.error("Couldn't delete {}.", e, new Object[]{this.toString()});
         }
 
     }
@@ -1019,47 +790,14 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         }
 
         if (this.getItemType() == EtcItemType.PET_COLLAR) {
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
+            try (
+                    Connection con = ConnectionPool.getConnection();
                     PreparedStatement ps = con.prepareStatement("DELETE FROM pets WHERE item_obj_id=?");
-
-                    try {
-                        ps.setInt(1, this.getObjectId());
-                        ps.execute();
-                    } catch (Throwable var10) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var9) {
-                                var10.addSuppressed(var9);
-                            }
-                        }
-
-                        throw var10;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (Throwable var11) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var8) {
-                            var11.addSuppressed(var8);
-                        }
-                    }
-
-                    throw var11;
-                }
-
-                if (con != null) {
-                    con.close();
-                }
-            } catch (Exception var12) {
-                LOGGER.error("Couldn't delete {}.", var12, this.toString());
+            ) {
+                ps.setInt(1, this.getObjectId());
+                ps.execute();
+            } catch (Exception e) {
+                LOGGER.error("Couldn't delete {}.", e, new Object[]{this.toString()});
             }
         }
 
@@ -1104,19 +842,14 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         return time != 0 ? time : Integer.compare(item.getObjectId(), this.getObjectId());
     }
 
-    public enum ItemState {
+    public static enum ItemState {
         UNCHANGED,
         ADDED,
         MODIFIED,
         REMOVED;
-
-        // $FF: synthetic method
-        private static ItemInstance.ItemState[] $values() {
-            return new ItemInstance.ItemState[]{UNCHANGED, ADDED, MODIFIED, REMOVED};
-        }
     }
 
-    public enum ItemLocation {
+    public static enum ItemLocation {
         VOID,
         INVENTORY,
         PAPERDOLL,
@@ -1126,21 +859,16 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         PET_EQUIP,
         LEASE,
         FREIGHT;
-
-        // $FF: synthetic method
-        private static ItemInstance.ItemLocation[] $values() {
-            return new ItemInstance.ItemLocation[]{VOID, INVENTORY, PAPERDOLL, WAREHOUSE, CLANWH, PET, PET_EQUIP, LEASE, FREIGHT};
-        }
     }
 
-    public static class ItemDropTask implements Runnable {
+    public class ItemDropTask implements Runnable {
         private final Creature _dropper;
         private final ItemInstance _itm;
         private int _x;
         private int _y;
         private int _z;
 
-        public ItemDropTask(final ItemInstance item, ItemInstance param2, Creature dropper, int x, int y, int z) {
+        public ItemDropTask(ItemInstance item, Creature dropper, int x, int y, int z) {
             this._x = x;
             this._y = y;
             this._z = z;

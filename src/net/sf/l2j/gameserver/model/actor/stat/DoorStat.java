@@ -7,11 +7,10 @@ import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.instance.Door;
 
 public class DoorStat extends CreatureStat {
-    private int _upgradeHpRatio;
+    private int _upgradeHpRatio = 1;
 
     public DoorStat(Door activeChar) {
         super(activeChar);
-        this._upgradeHpRatio = 1;
     }
 
     public Door getActiveChar() {
@@ -19,28 +18,22 @@ public class DoorStat extends CreatureStat {
     }
 
     public int getMDef(Creature target, L2Skill skill) {
-        double defense = getActiveChar().getTemplate().getBaseMDef();
+        double defense = this.getActiveChar().getTemplate().getBaseMDef();
         switch (SevenSignsManager.getInstance().getSealOwner(SealType.STRIFE)) {
-            case DAWN:
-                defense *= 1.2D;
-                break;
-            case DUSK:
-                defense *= 0.3D;
-                break;
+            case DAWN -> defense *= 1.2;
+            case DUSK -> defense *= 0.3;
         }
+
         return (int) defense;
     }
 
     public int getPDef(Creature target) {
-        double defense = getActiveChar().getTemplate().getBasePDef();
+        double defense = this.getActiveChar().getTemplate().getBasePDef();
         switch (SevenSignsManager.getInstance().getSealOwner(SealType.STRIFE)) {
-            case DAWN:
-                defense *= 1.2D;
-                break;
-            case DUSK:
-                defense *= 0.3D;
-                break;
+            case DAWN -> defense *= 1.2;
+            case DUSK -> defense *= 0.3;
         }
+
         return (int) defense;
     }
 

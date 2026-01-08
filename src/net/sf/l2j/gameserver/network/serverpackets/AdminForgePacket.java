@@ -7,13 +7,11 @@ import java.util.Iterator;
 import java.util.List;
 
 public class AdminForgePacket extends L2GameServerPacket {
-    private final List<AdminForgePacket.Part> _parts = new ArrayList();
+    private final List<AdminForgePacket.Part> _parts = new ArrayList<>();
 
     protected void writeImpl() {
-        Iterator var1 = this._parts.iterator();
 
-        while (var1.hasNext()) {
-            AdminForgePacket.Part p = (AdminForgePacket.Part) var1.next();
+        for (Part p : this._parts) {
             this.generate(p.b, p.str);
         }
 

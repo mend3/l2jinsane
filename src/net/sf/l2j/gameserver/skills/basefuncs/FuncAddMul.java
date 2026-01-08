@@ -9,7 +9,9 @@ public class FuncAddMul extends Func {
     }
 
     public void calc(Env env) {
-        if (this.cond == null || this.cond.test(env))
-            env.mulValue(1.0D - this._lambda.calc(env) / 100.0D);
+        if (this.cond == null || this.cond.test(env)) {
+            env.mulValue((double) 1.0F - this._lambda.calc(env) / (double) 100.0F);
+        }
+
     }
 }

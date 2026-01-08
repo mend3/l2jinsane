@@ -7,46 +7,33 @@ import net.sf.l2j.gameserver.model.item.kind.Item;
 
 public final class Seed {
     private final int _seedId;
-
     private final int _cropId;
-
     private final int _level;
-
     private final int _matureId;
-
     private final int _reward1;
-
     private final int _reward2;
-
     private final int _castleId;
-
     private final boolean _isAlternative;
-
     private final int _limitSeeds;
-
     private final int _limitCrops;
-
     private final int _seedReferencePrice;
-
     private final int _cropReferencePrice;
 
     public Seed(StatSet set) {
-
-        this._seedId = set.getInteger("seedId");
-        this._matureId = set.getInteger("matureId");
+        this._seedId = set.getInteger("id");
+        this._cropId = set.getInteger("cropId");
         this._level = set.getInteger("level");
+        this._matureId = set.getInteger("matureId");
         this._reward1 = set.getInteger("reward1");
         this._reward2 = set.getInteger("reward2");
-        this._isAlternative = set.getBool("isAlternative");
-        this._limitSeeds = set.getInteger("seedsLimit");
-        this._limitCrops = set.getInteger("cropsLimit");
-
-        this._cropId = set.getInteger("cropId");
         this._castleId = set.getInteger("castleId");
+        this._isAlternative = set.getBool("isAlternative");
+        this._limitCrops = set.getInteger("cropsLimit");
+        this._limitSeeds = set.getInteger("seedsLimit");
         Item item = ItemTable.getInstance().getTemplate(this._cropId);
-        this._cropReferencePrice = (item != null) ? item.getReferencePrice() : 1;
+        this._cropReferencePrice = item != null ? item.getReferencePrice() : 1;
         item = ItemTable.getInstance().getTemplate(this._seedId);
-        this._seedReferencePrice = (item != null) ? item.getReferencePrice() : 1;
+        this._seedReferencePrice = item != null ? item.getReferencePrice() : 1;
     }
 
     public int getCastleId() {
@@ -66,7 +53,7 @@ public final class Seed {
     }
 
     public int getReward(int type) {
-        return (type == 1) ? this._reward1 : this._reward2;
+        return type == 1 ? this._reward1 : this._reward2;
     }
 
     public int getLevel() {
@@ -94,7 +81,7 @@ public final class Seed {
     }
 
     public int getSeedMinPrice() {
-        return (int) (this._seedReferencePrice * 0.6D);
+        return (int) ((double) this._seedReferencePrice * 0.6);
     }
 
     public int getCropReferencePrice() {
@@ -106,7 +93,7 @@ public final class Seed {
     }
 
     public int getCropMinPrice() {
-        return (int) (this._cropReferencePrice * 0.6D);
+        return (int) ((double) this._cropReferencePrice * 0.6);
     }
 
     public String toString() {

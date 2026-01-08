@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SkillBalanceHolder {
     private final int _skillId;
     private final int _targetId;
-    private final Map<SkillChangeType, Double> _list = new ConcurrentHashMap();
-    private final Map<SkillChangeType, Double> _olyList = new ConcurrentHashMap();
+    private final Map<SkillChangeType, Double> _list = new ConcurrentHashMap<>();
+    private final Map<SkillChangeType, Double> _olyList = new ConcurrentHashMap<>();
 
     public SkillBalanceHolder(int SkillId, int target) {
         this._skillId = SkillId;
@@ -32,13 +32,13 @@ public class SkillBalanceHolder {
     }
 
     public Map<SkillChangeType, Double> getNormalBalance() {
-        Map<SkillChangeType, Double> map = new TreeMap(new AttackTypeComparator(this));
+        Map<SkillChangeType, Double> map = new TreeMap<>(new AttackTypeComparator(this));
         map.putAll(this._list);
         return map;
     }
 
     public Map<SkillChangeType, Double> getOlyBalance() {
-        Map<SkillChangeType, Double> map = new TreeMap(new AttackTypeComparator(this));
+        Map<SkillChangeType, Double> map = new TreeMap<>(new AttackTypeComparator(this));
         map.putAll(this._olyList);
         return map;
     }

@@ -18,33 +18,38 @@ public class Doorman extends Folk {
 
     public void onBypassFeedback(Player player, String command) {
         if (command.startsWith("open_doors")) {
-            if (isOwnerClan(player))
-                if (isUnderSiege()) {
-                    cannotManageDoors(player);
+            if (this.isOwnerClan(player)) {
+                if (this.isUnderSiege()) {
+                    this.cannotManageDoors(player);
                     player.sendPacket(SystemMessageId.GATES_NOT_OPENED_CLOSED_DURING_SIEGE);
                 } else {
-                    openDoors(player, command);
+                    this.openDoors(player, command);
                 }
+            }
         } else if (command.startsWith("close_doors")) {
-            if (isOwnerClan(player))
-                if (isUnderSiege()) {
-                    cannotManageDoors(player);
+            if (this.isOwnerClan(player)) {
+                if (this.isUnderSiege()) {
+                    this.cannotManageDoors(player);
                     player.sendPacket(SystemMessageId.GATES_NOT_OPENED_CLOSED_DURING_SIEGE);
                 } else {
-                    closeDoors(player, command);
+                    this.closeDoors(player, command);
                 }
+            }
         } else if (command.startsWith("tele")) {
-            if (isOwnerClan(player))
-                doTeleport(player, command);
+            if (this.isOwnerClan(player)) {
+                this.doTeleport(player, command);
+            }
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 
     public void showChatWindow(Player player) {
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-        html.setFile("data/html/doormen/" + getTemplate().getNpcId() + (!isOwnerClan(player) ? "-no.htm" : ".htm"));
-        html.replace("%objectId%", getObjectId());
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+        int var10001 = this.getTemplate().getNpcId();
+        html.setFile("data/html/doormen/" + var10001 + (!this.isOwnerClan(player) ? "-no.htm" : ".htm"));
+        html.replace("%objectId%", this.getObjectId());
         player.sendPacket(html);
         player.sendPacket(ActionFailed.STATIC_PACKET);
     }
@@ -52,19 +57,25 @@ public class Doorman extends Folk {
     protected void openDoors(Player player, String command) {
         StringTokenizer st = new StringTokenizer(command.substring(10), ", ");
         st.nextToken();
-        while (st.hasMoreTokens())
+
+        while (st.hasMoreTokens()) {
             DoorData.getInstance().getDoor(Integer.parseInt(st.nextToken())).openMe();
+        }
+
     }
 
     protected void closeDoors(Player player, String command) {
         StringTokenizer st = new StringTokenizer(command.substring(11), ", ");
         st.nextToken();
-        while (st.hasMoreTokens())
+
+        while (st.hasMoreTokens()) {
             DoorData.getInstance().getDoor(Integer.parseInt(st.nextToken())).closeMe();
+        }
+
     }
 
     protected void cannotManageDoors(Player player) {
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile("data/html/doormen/busy.htm");
         player.sendPacket(html);
         player.sendPacket(ActionFailed.STATIC_PACKET);
@@ -72,8 +83,10 @@ public class Doorman extends Folk {
 
     protected void doTeleport(Player player, String command) {
         TeleportLocation list = TeleportLocationData.getInstance().getTeleportLocation(Integer.parseInt(command.substring(5).trim()));
-        if (list != null && !player.isAlikeDead())
+        if (list != null && !player.isAlikeDead()) {
             player.teleportTo(list, 0);
+        }
+
         player.sendPacket(ActionFailed.STATIC_PACKET);
     }
 

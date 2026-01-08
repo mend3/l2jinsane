@@ -8,15 +8,13 @@ import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.SpecialCamera;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class MovieMakerManager {
-    protected static final MovieMakerManager INSTANCE = new MovieMakerManager();
-    protected final Map<Integer, MovieMakerManager.Sequence> _sequences = new HashMap();
+    protected final Map<Integer, Sequence> _sequences = new HashMap<>();
 
     public static MovieMakerManager getInstance() {
-        return MovieMakerManager.INSTANCE;
+        return MovieMakerManager.SingletonHolder.INSTANCE;
     }
 
     public void mainHtm(Player player) {
@@ -25,10 +23,8 @@ public class MovieMakerManager {
             html.setFile("data/html/admin/movie/main_empty.htm");
         } else {
             StringBuilder sb = new StringBuilder();
-            Iterator var4 = this._sequences.values().iterator();
 
-            while (var4.hasNext()) {
-                MovieMakerManager.Sequence sequence = (MovieMakerManager.Sequence) var4.next();
+            for (Sequence sequence : this._sequences.values()) {
                 StringUtil.append(sb, "<tr><td>", sequence._sequenceId, ": (", sequence._dist, ", ", sequence._yaw, ", ", sequence._pitch, ", ", sequence._time, ", ", sequence._duration, ", ", sequence._turn, ", ", sequence._rise, ", ", sequence._widescreen, ")</td></tr>");
             }
 
@@ -40,7 +36,7 @@ public class MovieMakerManager {
     }
 
     public void playSequence(int id, Player player) {
-        MovieMakerManager.Sequence sequence = this._sequences.get(id);
+        Sequence sequence = this._sequences.get(id);
         if (sequence == null) {
             player.sendMessage("Wrong sequence id.");
             this.mainHtm(player);
@@ -50,7 +46,7 @@ public class MovieMakerManager {
     }
 
     public void broadcastSequence(int id, Player player) {
-        MovieMakerManager.Sequence sequence = this._sequences.get(id);
+        Sequence sequence = this._sequences.get(id);
         if (sequence == null) {
             player.sendMessage("Wrong sequence id.");
             this.mainHtm(player);
@@ -67,7 +63,7 @@ public class MovieMakerManager {
         if (this._sequences.containsKey(seqId)) {
             player.sendMessage("This sequence already exists.");
         } else {
-            MovieMakerManager.Sequence sequence = new Sequence(this);
+            Sequence sequence = new Sequence();
             sequence._sequenceId = seqId;
             sequence._objid = objid;
             sequence._dist = dist;
@@ -91,7 +87,7 @@ public class MovieMakerManager {
     }
 
     public void editSequence(int id, Player player) {
-        MovieMakerManager.Sequence sequence = this._sequences.get(id);
+        Sequence sequence = this._sequences.get(id);
         if (sequence == null) {
             player.sendMessage("The sequence couldn't be updated.");
             this.mainHtm(player);
@@ -112,7 +108,7 @@ public class MovieMakerManager {
     }
 
     public void updateSequence(Player player, int seqId, int objid, int dist, int yaw, int pitch, int time, int duration, int turn, int rise, int screen) {
-        MovieMakerManager.Sequence sequence = this._sequences.get(seqId);
+        Sequence sequence = this._sequences.get(seqId);
         if (sequence == null) {
             player.sendMessage("This sequence doesn't exist.");
         } else {
@@ -143,10 +139,13 @@ public class MovieMakerManager {
             player.sendMessage("There is nothing to play.");
             this.mainHtm(player);
         } else {
-            ThreadPool.schedule(new MovieMakerManager.Play(1, broadcast, player), 500L);
+            ThreadPool.schedule(new Play(1, broadcast, player), 500L);
         }
     }
 
+    private static class SingletonHolder {
+        protected static final MovieMakerManager INSTANCE = new MovieMakerManager();
+    }
 
     protected static class Sequence {
         protected int _sequenceId;
@@ -159,9 +158,6 @@ public class MovieMakerManager {
         protected int _turn;
         protected int _rise;
         protected int _widescreen;
-
-        protected Sequence(final MovieMakerManager param1) {
-        }
     }
 
     private class Play implements Runnable {
@@ -176,7 +172,7 @@ public class MovieMakerManager {
         }
 
         public void run() {
-            MovieMakerManager.Sequence sequence = MovieMakerManager.this._sequences.get(this._id);
+            Sequence sequence = MovieMakerManager.this._sequences.get(this._id);
             if (sequence == null) {
                 this._player.sendMessage("Movie ended on sequence: " + (this._id - 1) + ".");
                 MovieMakerManager.this.mainHtm(this._player);

@@ -10,7 +10,6 @@ import net.sf.l2j.gameserver.network.serverpackets.InventoryUpdate;
 import net.sf.l2j.gameserver.network.serverpackets.StatusUpdate;
 
 public class AugmenterShop extends Folk {
-    private final int augmenterCoin = 57;
 
     public AugmenterShop(int objectId, NpcTemplate template) {
         super(objectId, template);
@@ -22,25 +21,30 @@ public class AugmenterShop extends Folk {
             int id = Integer.parseInt(args[0]);
             int count = 2000;
             if (player.getInventory().getPaperdollItem(7) == null) {
-                showChatWindow(player, 0);
+                this.showChatWindow(player, 0);
                 player.sendMessage("You need to equip a weapon to learn a skill.");
                 return;
             }
+
             if (!player.getInventory().getPaperdollItem(7).isWeapon()) {
-                showChatWindow(player, 0);
+                this.showChatWindow(player, 0);
                 player.sendMessage("You need to equip a weapon to learn a skill.");
                 return;
             }
+
             if (player.getInventory().getPaperdollItem(7).getAugmentation() != null) {
-                showChatWindow(player, 0);
+                this.showChatWindow(player, 0);
                 player.sendMessage("Your weapon is already augmented.");
                 return;
             }
-            if (player.getInventory().getItemByItemId(this.augmenterCoin) == null || player.getInventory().getItemByItemId(this.augmenterCoin).getCount() < count) {
+
+            int augmenterCoin = 57;
+            if (player.getInventory().getItemByItemId(augmenterCoin) == null || player.getInventory().getItemByItemId(augmenterCoin).getCount() < count) {
                 player.sendMessage("Incorrect item count.");
                 return;
             }
-            player.destroyItemByItemId("donation shop", this.augmenterCoin, count, this, true);
+
+            player.destroyItemByItemId("donation shop", augmenterCoin, count, this, true);
             ItemInstance wep = player.getInventory().getPaperdollItem(7);
             player.disarmWeapons();
             L2Augmentation aug = AugmentationData.getInstance().generateAugmentationWithSkill(id, SkillTable.getInstance().getMaxLevel(id));
@@ -50,6 +54,7 @@ public class AugmenterShop extends Folk {
                 iu.addModifiedItem(wep);
                 player.sendPacket(iu);
             }
+
             wep.setAugmentation(aug);
             InventoryUpdate iuu = new InventoryUpdate();
             iuu.addModifiedItem(wep);
@@ -57,11 +62,12 @@ public class AugmenterShop extends Folk {
             StatusUpdate su = new StatusUpdate(player);
             su.addAttribute(14, player.getCurrentLoad());
             player.sendPacket(su);
-            showChatWindow(player, 0);
+            this.showChatWindow(player, 0);
             player.store();
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 
     public String getHtmlPath(int npcId, int val) {
@@ -69,8 +75,9 @@ public class AugmenterShop extends Folk {
         if (val == 0) {
             filename = "" + npcId;
         } else {
-            filename = npcId + "-" + npcId;
+            filename = npcId + "-" + val;
         }
+
         return "data/html/mods/augmentershop/" + filename + ".htm";
     }
 }

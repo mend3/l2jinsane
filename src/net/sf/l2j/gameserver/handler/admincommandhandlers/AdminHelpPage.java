@@ -18,7 +18,7 @@ public class AdminHelpPage implements IAdminCommandHandler {
             try {
                 String val = command.substring(11);
                 showHelpPage(activeChar, val);
-            } catch (StringIndexOutOfBoundsException stringIndexOutOfBoundsException) {
+            } catch (StringIndexOutOfBoundsException ignored) {
             }
         return true;
     }

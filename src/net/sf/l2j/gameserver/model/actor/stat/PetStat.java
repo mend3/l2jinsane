@@ -16,30 +16,38 @@ public class PetStat extends SummonStat {
     }
 
     public boolean addExp(int value) {
-        if (!addExp(value))
+        if (!super.addExp((long) value)) {
             return false;
-        getActiveChar().updateAndBroadcastStatus(1);
-        return true;
+        } else {
+            this.getActiveChar().updateAndBroadcastStatus(1);
+            return true;
+        }
     }
 
     public boolean addExpAndSp(long addToExp, int addToSp) {
-        if (!super.addExpAndSp(addToExp, addToSp))
+        if (!super.addExpAndSp(addToExp, addToSp)) {
             return false;
-        getActiveChar().getOwner().sendPacket(SystemMessage.getSystemMessage(SystemMessageId.PET_EARNED_S1_EXP).addNumber((int) addToExp));
-        return true;
+        } else {
+            this.getActiveChar().getOwner().sendPacket(SystemMessage.getSystemMessage(SystemMessageId.PET_EARNED_S1_EXP).addNumber((int) addToExp));
+            return true;
+        }
     }
 
     public final boolean addLevel(byte value) {
-        if (getLevel() + value > getMaxLevel() - 1)
+        if (this.getLevel() + value > this.getMaxLevel() - 1) {
             return false;
-        boolean levelIncreased = super.addLevel(value);
-        if (levelIncreased)
-            getActiveChar().broadcastPacket(new SocialAction(getActiveChar(), 15));
-        return levelIncreased;
+        } else {
+            boolean levelIncreased = super.addLevel(value);
+            if (levelIncreased) {
+                this.getActiveChar().broadcastPacket(new SocialAction(this.getActiveChar(), 15));
+            }
+
+            return levelIncreased;
+        }
     }
 
     public final long getExpForLevel(int level) {
-        return getActiveChar().getTemplate().getPetDataEntry(level).getMaxExp();
+        return this.getActiveChar().getTemplate().getPetDataEntry(level).getMaxExp();
     }
 
     public Pet getActiveChar() {
@@ -47,56 +55,63 @@ public class PetStat extends SummonStat {
     }
 
     public void setLevel(byte value) {
-        getActiveChar().setPetData(value);
+        this.getActiveChar().setPetData(value);
         super.setLevel(value);
-        ItemInstance controlItem = getActiveChar().getControlItem();
-        if (controlItem != null && controlItem.getEnchantLevel() != getLevel()) {
-            getActiveChar().sendPetInfosToOwner();
-            controlItem.setEnchantLevel(getLevel());
+        ItemInstance controlItem = this.getActiveChar().getControlItem();
+        if (controlItem != null && controlItem.getEnchantLevel() != this.getLevel()) {
+            this.getActiveChar().sendPetInfosToOwner();
+            controlItem.setEnchantLevel(this.getLevel());
             InventoryUpdate iu = new InventoryUpdate();
             iu.addModifiedItem(controlItem);
-            getActiveChar().getOwner().sendPacket(iu);
+            this.getActiveChar().getOwner().sendPacket(iu);
         }
+
     }
 
     public int getMaxHp() {
-        return (int) calcStat(Stats.MAX_HP, getActiveChar().getPetData().getMaxHp(), null, null);
+        return (int) this.calcStat(Stats.MAX_HP, this.getActiveChar().getPetData().getMaxHp(), (Creature) null, (L2Skill) null);
     }
 
     public int getMaxMp() {
-        return (int) calcStat(Stats.MAX_MP, getActiveChar().getPetData().getMaxMp(), null, null);
+        return (int) this.calcStat(Stats.MAX_MP, this.getActiveChar().getPetData().getMaxMp(), (Creature) null, (L2Skill) null);
     }
 
     public int getMAtk(Creature target, L2Skill skill) {
-        double attack = getActiveChar().getPetData().getMAtk();
-        if (skill != null)
+        double attack = this.getActiveChar().getPetData().getMAtk();
+        if (skill != null) {
             attack += skill.getPower();
-        return (int) calcStat(Stats.MAGIC_ATTACK, attack, target, skill);
+        }
+
+        return (int) this.calcStat(Stats.MAGIC_ATTACK, attack, target, skill);
     }
 
     public int getMAtkSpd() {
-        double base = 333.0D;
-        if (getActiveChar().checkHungryState())
-            base /= 2.0D;
-        return (int) calcStat(Stats.MAGIC_ATTACK_SPEED, base, null, null);
+        double base = (double) 333.0F;
+        if (this.getActiveChar().checkHungryState()) {
+            base /= (double) 2.0F;
+        }
+
+        return (int) this.calcStat(Stats.MAGIC_ATTACK_SPEED, base, (Creature) null, (L2Skill) null);
     }
 
     public int getMDef(Creature target, L2Skill skill) {
-        return (int) calcStat(Stats.MAGIC_DEFENCE, getActiveChar().getPetData().getMDef(), target, skill);
+        return (int) this.calcStat(Stats.MAGIC_DEFENCE, this.getActiveChar().getPetData().getMDef(), target, skill);
     }
 
     public int getPAtk(Creature target) {
-        return (int) calcStat(Stats.POWER_ATTACK, getActiveChar().getPetData().getPAtk(), target, null);
+        return (int) this.calcStat(Stats.POWER_ATTACK, this.getActiveChar().getPetData().getPAtk(), target, (L2Skill) null);
     }
 
     public int getPAtkSpd() {
-        double base = getActiveChar().getTemplate().getBasePAtkSpd();
-        if (getActiveChar().checkHungryState())
-            base /= 2.0D;
-        return (int) calcStat(Stats.POWER_ATTACK_SPEED, base, null, null);
+        double base = (double) this.getActiveChar().getTemplate().getBasePAtkSpd();
+        if (this.getActiveChar().checkHungryState()) {
+            base /= (double) 2.0F;
+        }
+
+        return (int) this.calcStat(Stats.POWER_ATTACK_SPEED, base, (Creature) null, (L2Skill) null);
     }
 
     public int getPDef(Creature target) {
-        return (int) calcStat(Stats.POWER_DEFENCE, getActiveChar().getPetData().getPDef(), target, null);
+        return (int) this.calcStat(Stats.POWER_DEFENCE, this.getActiveChar().getPetData().getPDef(), target, (L2Skill) null);
     }
 }

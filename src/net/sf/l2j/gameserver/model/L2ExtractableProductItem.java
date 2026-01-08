@@ -6,7 +6,6 @@ import java.util.List;
 
 public class L2ExtractableProductItem {
     private final List<IntIntHolder> _items;
-
     private final double _chance;
 
     public L2ExtractableProductItem(List<IntIntHolder> items, double chance) {

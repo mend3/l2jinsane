@@ -29,10 +29,8 @@ import net.sf.l2j.gameserver.model.item.kind.Weapon;
 import net.sf.l2j.gameserver.model.itemcontainer.PetInventory;
 import net.sf.l2j.gameserver.model.olympiad.OlympiadGameManager;
 import net.sf.l2j.gameserver.network.SystemMessageId;
-import net.sf.l2j.gameserver.network.serverpackets.AbstractNpcInfo.SummonInfo;
 import net.sf.l2j.gameserver.network.serverpackets.*;
 
-import java.util.Iterator;
 import java.util.List;
 
 public abstract class Summon extends Playable {
@@ -43,10 +41,8 @@ public abstract class Summon extends Playable {
 
     public Summon(int objectId, NpcTemplate template, Player owner) {
         super(objectId, template);
-        Iterator var4 = template.getSkills(SkillType.PASSIVE).iterator();
 
-        while (var4.hasNext()) {
-            L2Skill skill = (L2Skill) var4.next();
+        for (L2Skill skill : template.getSkills(SkillType.PASSIVE)) {
             this.addStatFuncs(skill.getStatFuncs(this));
         }
 
@@ -92,11 +88,8 @@ public abstract class Summon extends Playable {
     public abstract int getSummonType();
 
     public void updateAbnormalEffect() {
-        Iterator var1 = this.getKnownType(Player.class).iterator();
-
-        while (var1.hasNext()) {
-            Player player = (Player) var1.next();
-            player.sendPacket(new SummonInfo(this, player, 1));
+        for (Player player : this.getKnownType(Player.class)) {
+            player.sendPacket(new AbstractNpcInfo.SummonInfo(this, player, 1));
         }
 
     }
@@ -222,10 +215,7 @@ public abstract class Summon extends Playable {
         if (!super.doDie(killer)) {
             return false;
         } else {
-            Iterator var2 = this.getOwner().getAutoSoulShot().iterator();
-
-            while (var2.hasNext()) {
-                int itemId = (Integer) var2.next();
+            for (int itemId : this.getOwner().getAutoSoulShot()) {
                 switch (ItemTable.getInstance().getTemplate(itemId).getDefaultAction()) {
                     case summon_soulshot:
                     case summon_spiritshot:
@@ -267,10 +257,8 @@ public abstract class Summon extends Playable {
             owner.sendPacket(new PetDelete(this.getSummonType(), this.getObjectId()));
             this.decayMe();
             super.deleteMe();
-            Iterator var2 = owner.getAutoSoulShot().iterator();
 
-            while (var2.hasNext()) {
-                int itemId = (Integer) var2.next();
+            for (int itemId : owner.getAutoSoulShot()) {
                 switch (ItemTable.getInstance().getTemplate(itemId).getDefaultAction()) {
                     case summon_soulshot:
                     case summon_spiritshot:
@@ -355,9 +343,10 @@ public abstract class Summon extends Playable {
             } else {
                 this.getOwner().setCurrentPetSkill(skill, forceUse, dontMove);
                 WorldObject target = null;
+                WorldObject var5;
                 switch (skill.getTargetType()) {
                     case TARGET_OWNER_PET:
-                        target = this.getOwner();
+                        var5 = this.getOwner();
                         break;
                     case TARGET_PARTY:
                     case TARGET_AURA:
@@ -366,13 +355,13 @@ public abstract class Summon extends Playable {
                     case TARGET_AURA_UNDEAD:
                     case TARGET_SELF:
                     case TARGET_CORPSE_ALLY:
-                        target = this;
+                        var5 = this;
                         break;
                     default:
-                        target = skill.getFirstOfTargetList(this);
+                        var5 = skill.getFirstOfTargetList(this);
                 }
 
-                if (target == null) {
+                if (var5 == null) {
                     this.sendPacket(SystemMessageId.TARGET_CANT_FOUND);
                     return false;
                 } else if (this.isSkillDisabled(skill)) {
@@ -386,7 +375,7 @@ public abstract class Summon extends Playable {
                     return false;
                 } else {
                     if (skill.isOffensive()) {
-                        if (isInsidePeaceZone(this, target)) {
+                        if (isInsidePeaceZone(this, var5)) {
                             this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.TARGET_IN_PEACEZONE));
                             return false;
                         }
@@ -396,22 +385,22 @@ public abstract class Summon extends Playable {
                             return false;
                         }
 
-                        if (target instanceof Door) {
-                            if (!target.isAutoAttackable(this.getOwner())) {
+                        if (var5 instanceof Door) {
+                            if (!var5.isAutoAttackable(this.getOwner())) {
                                 return false;
                             }
                         } else {
-                            if (!target.isAttackable() && this.getOwner() != null && !this.getOwner().getAccessLevel().allowPeaceAttack()) {
+                            if (!(var5).isAttackable() && this.getOwner() != null && !this.getOwner().getAccessLevel().allowPeaceAttack()) {
                                 return false;
                             }
 
-                            if (!target.isAutoAttackable(this) && !forceUse && skill.getTargetType() != SkillTargetType.TARGET_AURA && skill.getTargetType() != SkillTargetType.TARGET_FRONT_AURA && skill.getTargetType() != SkillTargetType.TARGET_BEHIND_AURA && skill.getTargetType() != SkillTargetType.TARGET_AURA_UNDEAD && skill.getTargetType() != SkillTargetType.TARGET_CLAN && skill.getTargetType() != SkillTargetType.TARGET_ALLY && skill.getTargetType() != SkillTargetType.TARGET_PARTY && skill.getTargetType() != SkillTargetType.TARGET_SELF) {
+                            if (!(var5).isAutoAttackable(this) && !forceUse && skill.getTargetType() != SkillTargetType.TARGET_AURA && skill.getTargetType() != SkillTargetType.TARGET_FRONT_AURA && skill.getTargetType() != SkillTargetType.TARGET_BEHIND_AURA && skill.getTargetType() != SkillTargetType.TARGET_AURA_UNDEAD && skill.getTargetType() != SkillTargetType.TARGET_CLAN && skill.getTargetType() != SkillTargetType.TARGET_ALLY && skill.getTargetType() != SkillTargetType.TARGET_PARTY && skill.getTargetType() != SkillTargetType.TARGET_SELF) {
                                 return false;
                             }
                         }
                     }
 
-                    this.getAI().setIntention(IntentionType.CAST, skill, target);
+                    this.getAI().setIntention(IntentionType.CAST, skill, var5);
                     return true;
                 }
             }
@@ -496,7 +485,7 @@ public abstract class Summon extends Playable {
 
     public String toString() {
         String var10000 = super.toString();
-        return var10000 + "(" + this.getNpcId() + ") Owner: " + this.getOwner();
+        return var10000 + "(" + this.getNpcId() + ") Owner: " + String.valueOf(this.getOwner());
     }
 
     public void sendPacket(L2GameServerPacket mov) {
@@ -535,12 +524,9 @@ public abstract class Summon extends Playable {
     public void updateAndBroadcastStatus(int val) {
         this.sendPacket(new PetStatusUpdate(this));
         if (this.isVisible()) {
-            Iterator var2 = this.getKnownType(Player.class).iterator();
-
-            while (var2.hasNext()) {
-                Player player = (Player) var2.next();
+            for (Player player : this.getKnownType(Player.class)) {
                 if (player != this.getOwner()) {
-                    player.sendPacket(new SummonInfo(this, player, val));
+                    player.sendPacket(new AbstractNpcInfo.SummonInfo(this, player, val));
                 }
             }
         }
@@ -550,7 +536,7 @@ public abstract class Summon extends Playable {
     public void onSpawn() {
         super.onSpawn();
         if (Config.SHOW_SUMMON_CREST) {
-            this.sendPacket(new SummonInfo(this, this.getOwner(), 0));
+            this.sendPacket(new AbstractNpcInfo.SummonInfo(this, this.getOwner(), 0));
         }
 
         this.sendPacket(new RelationChanged(this, this.getOwner().getRelation(this.getOwner()), false));
@@ -558,10 +544,7 @@ public abstract class Summon extends Playable {
     }
 
     public void broadcastRelationsChanges() {
-        Iterator var1 = this.getOwner().getKnownType(Player.class).iterator();
-
-        while (var1.hasNext()) {
-            Player player = (Player) var1.next();
+        for (Player player : this.getOwner().getKnownType(Player.class)) {
             player.sendPacket(new RelationChanged(this, this.getOwner().getRelation(player), this.isAutoAttackable(player)));
         }
 
@@ -575,7 +558,7 @@ public abstract class Summon extends Playable {
                 activeChar.sendPacket(new PetItemList((Pet) this));
             }
         } else {
-            activeChar.sendPacket(new SummonInfo(this, activeChar, 0));
+            activeChar.sendPacket(new AbstractNpcInfo.SummonInfo(this, activeChar, 0));
         }
 
     }
@@ -595,22 +578,18 @@ public abstract class Summon extends Playable {
 
     public void rechargeShots(boolean physical, boolean magic) {
         if (this.getOwner().getAutoSoulShot() != null && !this.getOwner().getAutoSoulShot().isEmpty()) {
-            Iterator var3 = this.getOwner().getAutoSoulShot().iterator();
-
-            while (var3.hasNext()) {
-                int itemId = (Integer) var3.next();
+            for (int itemId : this.getOwner().getAutoSoulShot()) {
                 ItemInstance item = this.getOwner().getInventory().getItemByItemId(itemId);
                 if (item != null) {
-                    IItemHandler handler;
                     if (magic && item.getItem().getDefaultAction() == ActionType.summon_spiritshot) {
-                        handler = ItemHandler.getInstance().getHandler(item.getEtcItem());
+                        IItemHandler handler = ItemHandler.getInstance().getHandler(item.getEtcItem());
                         if (handler != null) {
                             handler.useItem(this.getOwner(), item, false);
                         }
                     }
 
                     if (physical && item.getItem().getDefaultAction() == ActionType.summon_soulshot) {
-                        handler = ItemHandler.getInstance().getHandler(item.getEtcItem());
+                        IItemHandler handler = ItemHandler.getInstance().getHandler(item.getEtcItem());
                         if (handler != null) {
                             handler.useItem(this.getOwner(), item, false);
                         }
@@ -624,14 +603,8 @@ public abstract class Summon extends Playable {
     }
 
     public int getSkillLevel(int skillId) {
-        Iterator var2 = this.getTemplate().getSkills().values().iterator();
-
-        while (var2.hasNext()) {
-            List<L2Skill> list = (List) var2.next();
-            Iterator var4 = list.iterator();
-
-            while (var4.hasNext()) {
-                L2Skill skill = (L2Skill) var4.next();
+        for (List<L2Skill> list : this.getTemplate().getSkills().values()) {
+            for (L2Skill skill : list) {
                 if (skill.getId() == skillId) {
                     return skill.getLevel();
                 }
@@ -642,14 +615,8 @@ public abstract class Summon extends Playable {
     }
 
     public L2Skill getSkill(int skillId) {
-        Iterator var2 = this.getTemplate().getSkills().values().iterator();
-
-        while (var2.hasNext()) {
-            List<L2Skill> list = (List) var2.next();
-            Iterator var4 = list.iterator();
-
-            while (var4.hasNext()) {
-                L2Skill skill = (L2Skill) var4.next();
+        for (List<L2Skill> list : this.getTemplate().getSkills().values()) {
+            for (L2Skill skill : list) {
                 if (skill.getId() == skillId) {
                     return skill;
                 }

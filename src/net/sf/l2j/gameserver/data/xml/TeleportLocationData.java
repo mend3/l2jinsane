@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TeleportLocationData implements IXmlReader {
-    private final Map<Integer, TeleportLocation> _teleports = new HashMap();
+    private final Map<Integer, TeleportLocation> _teleports = new HashMap<>();
 
     protected TeleportLocationData() {
     }

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class FloodProtectedListener extends Thread {
     private static final CLogger LOGGER = new CLogger(FloodProtectedListener.class.getName());
-    private final Map<String, FloodProtectedListener.ForeignConnection> _flooders = new ConcurrentHashMap();
+    private final Map<String, FloodProtectedListener.ForeignConnection> _flooders = new ConcurrentHashMap<>();
     private final ServerSocket _serverSocket;
 
     public FloodProtectedListener(String listenIp, int port) throws IOException {
@@ -69,7 +69,7 @@ public abstract class FloodProtectedListener extends Thread {
                         if (connection != null) {
                             connection.close();
                         }
-                    } catch (Exception var7) {
+                    } catch (Exception ignored) {
                     }
 
                     if (this.isInterrupted()) {

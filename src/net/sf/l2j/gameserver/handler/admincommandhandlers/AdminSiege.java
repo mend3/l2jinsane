@@ -120,7 +120,7 @@ public class AdminSiege implements IAdminCommandHandler {
             }
             html.replace("%ft%", sb.toString());
             activeChar.sendPacket(html);
-        } catch (Exception exception) {
+        } catch (Exception ignored) {
         }
         return true;
     }

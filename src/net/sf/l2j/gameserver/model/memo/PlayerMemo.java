@@ -10,131 +10,167 @@ import java.util.Map;
 
 public class PlayerMemo extends AbstractMemo {
     private static final CLogger LOGGER = new CLogger(PlayerMemo.class.getName());
-
     private static final String SELECT_QUERY = "SELECT * FROM character_memo WHERE charId = ?";
-
     private static final String DELETE_QUERY = "DELETE FROM character_memo WHERE charId = ?";
-
     private static final String INSERT_QUERY = "INSERT INTO character_memo (charId, var, val) VALUES (?, ?, ?)";
-
     private final int _objectId;
 
     public PlayerMemo(int objectId) {
         this._objectId = objectId;
-        load();
+        this.restoreMe();
     }
 
-    public boolean load() {
+    public boolean restoreMe() {
         try {
             Connection con = ConnectionPool.getConnection();
+
             try {
                 PreparedStatement ps = con.prepareStatement("SELECT * FROM character_memo WHERE charId = ?");
+
                 try {
                     ps.setInt(1, this._objectId);
                     ResultSet rs = ps.executeQuery();
+
                     try {
-                        while (rs.next())
-                            set(rs.getString("var"), rs.getString("val"));
-                        if (rs != null)
-                            rs.close();
-                    } catch (Throwable throwable) {
-                        if (rs != null)
+                        while (rs.next()) {
+                            this.set(rs.getString("var"), rs.getString("val"));
+                        }
+                    } catch (Throwable var18) {
+                        if (rs != null) {
                             try {
                                 rs.close();
-                            } catch (Throwable throwable1) {
-                                throwable.addSuppressed(throwable1);
+                            } catch (Throwable var17) {
+                                var18.addSuppressed(var17);
                             }
-                        throw throwable;
+                        }
+
+                        throw var18;
                     }
-                    if (ps != null)
-                        ps.close();
-                } catch (Throwable throwable) {
-                    if (ps != null)
+
+                    if (rs != null) {
+                        rs.close();
+                    }
+                } catch (Throwable var19) {
+                    if (ps != null) {
                         try {
                             ps.close();
-                        } catch (Throwable throwable1) {
-                            throwable.addSuppressed(throwable1);
+                        } catch (Throwable var16) {
+                            var19.addSuppressed(var16);
                         }
-                    throw throwable;
+                    }
+
+                    throw var19;
                 }
-                if (con != null)
-                    con.close();
-            } catch (Throwable throwable) {
-                if (con != null)
+
+                if (ps != null) {
+                    ps.close();
+                }
+            } catch (Throwable var20) {
+                if (con != null) {
                     try {
                         con.close();
-                    } catch (Throwable throwable1) {
-                        throwable.addSuppressed(throwable1);
+                    } catch (Throwable var15) {
+                        var20.addSuppressed(var15);
                     }
-                throw throwable;
+                }
+
+                throw var20;
             }
+
+            if (con != null) {
+                con.close();
+            }
+
+            return true;
         } catch (Exception e) {
-            LOGGER.error("Couldn't restore variables for player id {}.", e, this._objectId);
-            return false;
+            LOGGER.error("Couldn't restore variables for player id {}.", e, new Object[]{this._objectId});
         } finally {
-            compareAndSetChanges(true, false);
+            this.compareAndSetChanges(true, false);
         }
-        return true;
+
+        return false;
     }
 
     public boolean storeMe() {
-        if (!hasChanges())
+        if (!this.hasChanges()) {
             return false;
-        try {
-            Connection con = ConnectionPool.getConnection();
+        } else {
             try {
-                PreparedStatement ps = con.prepareStatement("DELETE FROM character_memo WHERE charId = ?");
+                Connection con = ConnectionPool.getConnection();
+
                 try {
-                    ps.setInt(1, this._objectId);
-                    ps.execute();
-                    if (ps != null)
-                        ps.close();
-                } catch (Throwable throwable) {
-                    if (ps != null)
-                        try {
-                            ps.close();
-                        } catch (Throwable throwable1) {
-                            throwable.addSuppressed(throwable1);
-                        }
-                    throw throwable;
-                }
-                ps = con.prepareStatement("INSERT INTO character_memo (charId, var, val) VALUES (?, ?, ?)");
-                try {
-                    ps.setInt(1, this._objectId);
-                    for (Map.Entry<String, Object> entry : entrySet()) {
-                        ps.setString(2, entry.getKey());
-                        ps.setString(3, String.valueOf(entry.getValue()));
-                        ps.addBatch();
-                    }
-                    ps.executeBatch();
-                    if (ps != null)
-                        ps.close();
-                } catch (Throwable throwable) {
-                    if (ps != null)
-                        try {
-                            ps.close();
-                        } catch (Throwable throwable1) {
-                            throwable.addSuppressed(throwable1);
-                        }
-                    throw throwable;
-                }
-                if (con != null)
-                    con.close();
-            } catch (Throwable throwable) {
-                if (con != null)
+                    PreparedStatement ps = con.prepareStatement("DELETE FROM character_memo WHERE charId = ?");
+
                     try {
-                        con.close();
-                    } catch (Throwable throwable1) {
-                        throwable.addSuppressed(throwable1);
+                        ps.setInt(1, this._objectId);
+                        ps.execute();
+                    } catch (Throwable var17) {
+                        if (ps != null) {
+                            try {
+                                ps.close();
+                            } catch (Throwable var16) {
+                                var17.addSuppressed(var16);
+                            }
+                        }
+
+                        throw var17;
                     }
-                throw throwable;
+
+                    if (ps != null) {
+                        ps.close();
+                    }
+
+                    ps = con.prepareStatement("INSERT INTO character_memo (charId, var, val) VALUES (?, ?, ?)");
+
+                    try {
+                        ps.setInt(1, this._objectId);
+
+                        for (Map.Entry<String, Object> entry : this.entrySet()) {
+                            ps.setString(2, (String) entry.getKey());
+                            ps.setString(3, String.valueOf(entry.getValue()));
+                            ps.addBatch();
+                        }
+
+                        ps.executeBatch();
+                    } catch (Throwable var18) {
+                        if (ps != null) {
+                            try {
+                                ps.close();
+                            } catch (Throwable var15) {
+                                var18.addSuppressed(var15);
+                            }
+                        }
+
+                        throw var18;
+                    }
+
+                    if (ps != null) {
+                        ps.close();
+                    }
+                } catch (Throwable var19) {
+                    if (con != null) {
+                        try {
+                            con.close();
+                        } catch (Throwable var14) {
+                            var19.addSuppressed(var14);
+                        }
+                    }
+
+                    throw var19;
+                }
+
+                if (con != null) {
+                    con.close();
+                }
+
+                return true;
+            } catch (Exception e) {
+                LOGGER.error("Couldn't update variables for player id {}.", e, new Object[]{this._objectId});
+            } finally {
+                this.compareAndSetChanges(true, false);
             }
-        } catch (Exception e) {
-            LOGGER.error("Couldn't update variables for player id {}.", e, this._objectId);
+
             return false;
-        } finally {
-            compareAndSetChanges(true, false);
         }
-        return true;
     }
 }

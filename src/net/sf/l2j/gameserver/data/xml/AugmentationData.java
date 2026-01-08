@@ -29,11 +29,11 @@ public class AugmentationData implements IXmlReader {
     private static final int BASESTAT_CON = 16342;
     private static final int BASESTAT_INT = 16343;
     private static final int BASESTAT_MEN = 16344;
-    private final List<List<AugmentationData.AugmentationStat>> _augStats = new ArrayList(4);
-    private final List<List<Integer>> _blueSkills = new ArrayList(10);
-    private final List<List<Integer>> _purpleSkills = new ArrayList(10);
-    private final List<List<Integer>> _redSkills = new ArrayList(10);
-    private final Map<Integer, IntIntHolder> _allSkills = new HashMap();
+    private final List<List<AugmentationData.AugmentationStat>> _augStats = new ArrayList<>(4);
+    private final List<List<Integer>> _blueSkills = new ArrayList<>(10);
+    private final List<List<Integer>> _purpleSkills = new ArrayList<>(10);
+    private final List<List<Integer>> _redSkills = new ArrayList<>(10);
+    private final Map<Integer, IntIntHolder> _allSkills = new HashMap<>();
 
     protected AugmentationData() {
     }
@@ -58,13 +58,13 @@ public class AugmentationData implements IXmlReader {
         }
 
         for (i = 0; i < 4; ++i) {
-            this._augStats.add(new ArrayList());
+            this._augStats.add(new ArrayList<>());
         }
 
         for (i = 0; i < 10; ++i) {
-            this._blueSkills.add(new ArrayList());
-            this._purpleSkills.add(new ArrayList());
-            this._redSkills.add(new ArrayList());
+            this._blueSkills.add(new ArrayList<>());
+            this._purpleSkills.add(new ArrayList<>());
+            this._redSkills.add(new ArrayList<>());
         }
         this.parseFile("./data/xml/augmentation");
         LOGGER.info("Loaded {} sets of augmentation stats.", this._augStats.size());
@@ -117,8 +117,8 @@ public class AugmentationData implements IXmlReader {
                 List<AugmentationData.AugmentationStat> statList = this._augStats.get(order);
                 this.forEach(setNode, "stat", (statNode) -> {
                     String statName = this.parseString(statNode.getAttributes(), "name");
-                    List<Float> soloValues = new ArrayList();
-                    List<Float> combinedValues = new ArrayList();
+                    List<Float> soloValues = new ArrayList<>();
+                    List<Float> combinedValues = new ArrayList<>();
                     this.forEach(statNode, "table", (tableNode) -> {
                         String tableName = this.parseString(tableNode.getAttributes(), "name");
                         StringTokenizer data = new StringTokenizer(tableNode.getFirstChild().getNodeValue());
@@ -254,7 +254,7 @@ public class AugmentationData implements IXmlReader {
     }
 
     public List<AugmentationData.AugStat> getAugStatsById(int augmentationId) {
-        List<AugmentationData.AugStat> temp = new ArrayList();
+        List<AugmentationData.AugStat> temp = new ArrayList<>();
         int[] stats = new int[]{'\uffff' & augmentationId, augmentationId >> 16};
 
         for (int i = 0; i < 2; ++i) {
@@ -303,10 +303,8 @@ public class AugmentationData implements IXmlReader {
         int lifeStoneGrade = 3;
         int resultColor = 3;
         L2Skill skill = null;
-        Iterator var9 = this._allSkills.keySet().iterator();
 
-        while (var9.hasNext()) {
-            int i = (Integer) var9.next();
+        for (int i : this._allSkills.keySet()) {
             L2Skill sk = this._allSkills.get(i).getSkill();
             if (sk.getId() == id) {
                 if (sk.getLevel() == level) {

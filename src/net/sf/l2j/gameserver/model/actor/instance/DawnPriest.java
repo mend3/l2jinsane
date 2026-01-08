@@ -15,10 +15,11 @@ public class DawnPriest extends SignsPriest {
 
     public void onBypassFeedback(Player player, String command) {
         if (command.startsWith("Chat")) {
-            showChatWindow(player);
+            this.showChatWindow(player);
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 
     public void showChatWindow(Player player) {
@@ -29,64 +30,52 @@ public class DawnPriest extends SignsPriest {
             case DAWN:
                 if (SevenSignsManager.getInstance().isCompResultsPeriod()) {
                     filename = filename + "dawn_priest_5.htm";
-                    break;
-                }
-                if (SevenSignsManager.getInstance().isRecruitingPeriod()) {
+                } else if (SevenSignsManager.getInstance().isRecruitingPeriod()) {
                     filename = filename + "dawn_priest_6.htm";
-                    break;
-                }
-                if (SevenSignsManager.getInstance().isSealValidationPeriod()) {
+                } else if (SevenSignsManager.getInstance().isSealValidationPeriod()) {
                     if (winningCabal == CabalType.DAWN) {
                         if (winningCabal != SevenSignsManager.getInstance().getSealOwner(SealType.GNOSIS)) {
                             filename = filename + "dawn_priest_2c.htm";
-                            break;
+                        } else {
+                            filename = filename + "dawn_priest_2a.htm";
                         }
-                        filename = filename + "dawn_priest_2a.htm";
-                        break;
-                    }
-                    if (winningCabal == CabalType.NORMAL) {
+                    } else if (winningCabal == CabalType.NORMAL) {
                         filename = filename + "dawn_priest_2d.htm";
-                        break;
+                    } else {
+                        filename = filename + "dawn_priest_2b.htm";
                     }
-                    filename = filename + "dawn_priest_2b.htm";
-                    break;
+                } else {
+                    filename = filename + "dawn_priest_1b.htm";
                 }
-                filename = filename + "dawn_priest_1b.htm";
                 break;
             case DUSK:
                 if (SevenSignsManager.getInstance().isSealValidationPeriod()) {
                     filename = filename + "dawn_priest_3a.htm";
-                    break;
+                } else {
+                    filename = filename + "dawn_priest_3b.htm";
                 }
-                filename = filename + "dawn_priest_3b.htm";
                 break;
             default:
                 if (SevenSignsManager.getInstance().isCompResultsPeriod()) {
                     filename = filename + "dawn_priest_5.htm";
-                    break;
-                }
-                if (SevenSignsManager.getInstance().isRecruitingPeriod()) {
+                } else if (SevenSignsManager.getInstance().isRecruitingPeriod()) {
                     filename = filename + "dawn_priest_6.htm";
-                    break;
-                }
-                if (SevenSignsManager.getInstance().isSealValidationPeriod()) {
+                } else if (SevenSignsManager.getInstance().isSealValidationPeriod()) {
                     if (winningCabal == CabalType.DAWN) {
                         filename = filename + "dawn_priest_4.htm";
-                        break;
-                    }
-                    if (winningCabal == CabalType.NORMAL) {
+                    } else if (winningCabal == CabalType.NORMAL) {
                         filename = filename + "dawn_priest_2d.htm";
-                        break;
+                    } else {
+                        filename = filename + "dawn_priest_2b.htm";
                     }
-                    filename = filename + "dawn_priest_2b.htm";
-                    break;
+                } else {
+                    filename = filename + "dawn_priest_1a.htm";
                 }
-                filename = filename + "dawn_priest_1a.htm";
-                break;
         }
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile(filename);
-        html.replace("%objectId%", getObjectId());
+        html.replace("%objectId%", this.getObjectId());
         player.sendPacket(html);
     }
 }

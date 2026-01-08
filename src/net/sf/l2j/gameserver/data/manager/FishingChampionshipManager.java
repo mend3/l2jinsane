@@ -27,12 +27,12 @@ public class FishingChampionshipManager {
     private static final String INSERT = "INSERT INTO fishing_championship(player_name,fish_length,rewarded) VALUES (?,?,?)";
     private static final String DELETE = "DELETE FROM fishing_championship";
     private static final String SELECT = "SELECT `player_name`, `fish_length`, `rewarded` FROM fishing_championship";
-    private final List<String> _playersName = new ArrayList();
-    private final List<String> _fishLength = new ArrayList();
-    private final List<String> _winPlayersName = new ArrayList();
-    private final List<String> _winFishLength = new ArrayList();
-    private final List<FishingChampionshipManager.Fisher> _tmpPlayers = new ArrayList();
-    private final List<FishingChampionshipManager.Fisher> _winPlayers = new ArrayList();
+    private final List<String> _playersName = new ArrayList<>();
+    private final List<String> _fishLength = new ArrayList<>();
+    private final List<String> _winPlayersName = new ArrayList<>();
+    private final List<String> _winFishLength = new ArrayList<>();
+    private final List<FishingChampionshipManager.Fisher> _tmpPlayers = new ArrayList<>();
+    private final List<FishingChampionshipManager.Fisher> _winPlayers = new ArrayList<>();
     private long _endDate = 0L;
     private double _minFishLength = 0.0D;
     private boolean _needRefresh = true;
@@ -188,10 +188,8 @@ public class FishingChampionshipManager {
 
     private void finishChamp() {
         this._winPlayers.clear();
-        Iterator var1 = this._tmpPlayers.iterator();
 
-        while (var1.hasNext()) {
-            FishingChampionshipManager.Fisher fisher = (FishingChampionshipManager.Fisher) var1.next();
+        for (Fisher fisher : this._tmpPlayers) {
             fisher.setRewardType(1);
             this._winPlayers.add(fisher);
         }
@@ -208,10 +206,8 @@ public class FishingChampionshipManager {
 
     private void recalculateMinLength() {
         double minLen = 99999.0D;
-        Iterator var3 = this._tmpPlayers.iterator();
 
-        while (var3.hasNext()) {
-            FishingChampionshipManager.Fisher fisher = (FishingChampionshipManager.Fisher) var3.next();
+        for (Fisher fisher : this._tmpPlayers) {
             if (fisher.getLength() < minLen) {
                 minLen = fisher.getLength();
             }
@@ -267,10 +263,9 @@ public class FishingChampionshipManager {
 
                 FishingChampionshipManager.Fisher minFisher = null;
                 double minLen = 99999.0D;
-                Iterator var8 = this._tmpPlayers.iterator();
 
-                while (var8.hasNext()) {
-                    fisher = (FishingChampionshipManager.Fisher) var8.next();
+                for (Fisher tmpPlayer : this._tmpPlayers) {
+                    fisher = tmpPlayer;
                     if (fisher.getLength() < minLen) {
                         minFisher = fisher;
                         minLen = fisher.getLength();
@@ -307,7 +302,7 @@ public class FishingChampionshipManager {
     }
 
     public boolean isWinner(String playerName) {
-        Iterator var2 = this._winPlayersName.iterator();
+        Iterator<String> var2 = this._winPlayersName.iterator();
 
         String name;
         do {
@@ -315,14 +310,14 @@ public class FishingChampionshipManager {
                 return false;
             }
 
-            name = (String) var2.next();
+            name = var2.next();
         } while (!name.equals(playerName));
 
         return true;
     }
 
     public void getReward(Player player) {
-        Iterator var2 = this._winPlayers.iterator();
+        Iterator<Fisher> var2 = this._winPlayers.iterator();
 
         while (true) {
             FishingChampionshipManager.Fisher fisher;
@@ -332,7 +327,7 @@ public class FishingChampionshipManager {
                         return;
                     }
 
-                    fisher = (FishingChampionshipManager.Fisher) var2.next();
+                    fisher = var2.next();
                 } while (!fisher.getName().equalsIgnoreCase(player.getName()));
             } while (fisher.getRewardType() == 2);
 
@@ -437,11 +432,11 @@ public class FishingChampionshipManager {
                     try {
                         ps.execute();
                         ps.close();
-                        Iterator var4 = this._winPlayers.iterator();
+                        Iterator<Fisher> var4 = this._winPlayers.iterator();
 
                         FishingChampionshipManager.Fisher fisher;
                         while (var4.hasNext()) {
-                            fisher = (FishingChampionshipManager.Fisher) var4.next();
+                            fisher = var4.next();
                             ps2.setString(1, fisher.getName());
                             ps2.setDouble(2, fisher.getLength());
                             ps2.setInt(3, fisher.getRewardType());
@@ -456,7 +451,7 @@ public class FishingChampionshipManager {
                                 break;
                             }
 
-                            fisher = (FishingChampionshipManager.Fisher) var4.next();
+                            fisher = var4.next();
                             ps2.setString(1, fisher.getName());
                             ps2.setDouble(2, fisher.getLength());
                             ps2.setInt(3, 0);

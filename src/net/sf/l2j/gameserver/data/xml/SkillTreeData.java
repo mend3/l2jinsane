@@ -123,7 +123,7 @@ public class SkillTreeData implements IXmlReader {
 
     public List<EnchantSkillNode> getEnchantSkillsFor(Player player) {
         List<EnchantSkillNode> result = new ArrayList<>();
-        Iterator var3 = this._enchantSkills.iterator();
+        Iterator<EnchantSkillNode> var3 = this._enchantSkills.iterator();
 
         while (true) {
             EnchantSkillNode esn;
@@ -134,7 +134,7 @@ public class SkillTreeData implements IXmlReader {
                         return result;
                     }
 
-                    esn = (EnchantSkillNode) var3.next();
+                    esn = var3.next();
                     skill = player.getSkill(esn.getId());
                 } while (skill == null);
             } while ((skill.getLevel() != SkillTable.getInstance().getMaxLevel(skill.getId()) || esn.getValue() != 101 && esn.getValue() != 141) && skill.getLevel() != esn.getValue() - 1);

@@ -66,10 +66,10 @@ public class ZoneNPoly extends ZoneForm {
     }
 
     public double getDistanceToZone(int x, int y) {
-        double shortestDist = Math.pow(this._x[0] - x, 2.0D) + Math.pow(this._y[0] - y, 2.0D);
+        double shortestDist = Math.pow(this._x[0] - x, 2.0F) + Math.pow(this._y[0] - y, 2.0F);
 
         for (int i = 1; i < this._y.length; ++i) {
-            double test = Math.pow(this._x[i] - x, 2.0D) + Math.pow(this._y[i] - y, 2.0D);
+            double test = Math.pow(this._x[i] - x, 2.0F) + Math.pow(this._y[i] - y, 2.0F);
             if (test < shortestDist) {
                 shortestDist = test;
             }

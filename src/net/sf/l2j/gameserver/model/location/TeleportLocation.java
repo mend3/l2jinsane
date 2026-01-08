@@ -4,7 +4,6 @@ import net.sf.l2j.commons.util.StatSet;
 
 public class TeleportLocation extends Location {
     private final int _price;
-
     private final boolean _isNoble;
 
     public TeleportLocation(StatSet set) {

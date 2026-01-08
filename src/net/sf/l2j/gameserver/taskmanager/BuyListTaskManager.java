@@ -14,27 +14,31 @@ public final class BuyListTaskManager implements Runnable {
     }
 
     public static BuyListTaskManager getInstance() {
-        return SingletonHolder.INSTANCE;
+        return BuyListTaskManager.SingletonHolder.INSTANCE;
     }
 
     public void run() {
-        if (this._products.isEmpty())
-            return;
-        long time = System.currentTimeMillis();
-        for (Map.Entry<Product, Long> entry : this._products.entrySet()) {
-            if (time < entry.getValue())
-                continue;
-            Product product = entry.getKey();
-            product.setCount(product.getMaxCount());
-            product.delete();
-            this._products.remove(product);
+        if (!this._products.isEmpty()) {
+            long time = System.currentTimeMillis();
+
+            for (Map.Entry<Product, Long> entry : this._products.entrySet()) {
+                if (time >= entry.getValue()) {
+                    Product product = entry.getKey();
+                    product.setCount(product.getMaxCount());
+                    product.delete();
+                    this._products.remove(product);
+                }
+            }
+
         }
     }
 
     public void add(Product product, long interval) {
         long newRestockTime = System.currentTimeMillis() + interval;
-        if (this._products.putIfAbsent(product, newRestockTime) == null)
+        if (this._products.putIfAbsent(product, newRestockTime) == null) {
             product.save(newRestockTime);
+        }
+
     }
 
     public void test(Product product, int currentCount, long nextRestockTime) {
@@ -45,6 +49,7 @@ public final class BuyListTaskManager implements Runnable {
             product.setCount(product.getMaxCount());
             product.delete();
         }
+
     }
 
     private static final class SingletonHolder {

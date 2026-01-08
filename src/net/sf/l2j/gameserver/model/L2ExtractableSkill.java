@@ -4,7 +4,6 @@ import java.util.List;
 
 public class L2ExtractableSkill {
     private final int _hash;
-
     private final List<L2ExtractableProductItem> _product;
 
     public L2ExtractableSkill(int hash, List<L2ExtractableProductItem> products) {

@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class MultisellData implements IXmlReader {
     public static final int PAGE_SIZE = 40;
-    private final Map<Integer, ListContainer> _entries = new HashMap();
+    private final Map<Integer, ListContainer> _entries = new HashMap<>();
 
     public MultisellData() {
     }
@@ -43,8 +43,8 @@ public class MultisellData implements IXmlReader {
             list.setApplyTaxes(this.parseBoolean(attrs, "applyTaxes", false));
             list.setMaintainEnchantment(this.parseBoolean(attrs, "maintainEnchantment", false));
             this.forEach(listNode, "item", (itemNode) -> {
-                List<Ingredient> ingredients = new ArrayList();
-                List<Ingredient> products = new ArrayList();
+                List<Ingredient> ingredients = new ArrayList<>();
+                List<Ingredient> products = new ArrayList<>();
                 this.forEach(itemNode, "ingredient", (ingredientNode) -> {
                     ingredients.add(new Ingredient(this.parseAttributes(ingredientNode)));
                 });

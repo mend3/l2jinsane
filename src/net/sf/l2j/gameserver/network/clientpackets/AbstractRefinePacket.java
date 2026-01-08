@@ -3,6 +3,7 @@ package net.sf.l2j.gameserver.network.clientpackets;
 import net.sf.l2j.gameserver.enums.items.CrystalType;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Weapon;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 
 import java.util.HashMap;
@@ -10,19 +11,12 @@ import java.util.Map;
 
 public abstract class AbstractRefinePacket extends L2GameClientPacket {
     public static final int GRADE_NONE = 0;
-
     public static final int GRADE_MID = 1;
-
     public static final int GRADE_HIGH = 2;
-
     public static final int GRADE_TOP = 3;
-
     protected static final int GEMSTONE_D = 2130;
-
     protected static final int GEMSTONE_C = 2131;
-
     protected static final int GEMSTONE_B = 2132;
-
     private static final Map<Integer, LifeStone> _lifeStones = new HashMap<>();
 
     static {
@@ -73,73 +67,97 @@ public abstract class AbstractRefinePacket extends L2GameClientPacket {
     }
 
     protected static boolean isValid(Player player, ItemInstance item, ItemInstance refinerItem, ItemInstance gemStones) {
-        if (!isValid(player, item, refinerItem))
+        if (!isValid(player, item, refinerItem)) {
             return false;
-        if (gemStones.getOwnerId() != player.getObjectId())
+        } else if (gemStones.getOwnerId() != player.getObjectId()) {
             return false;
-        if (gemStones.getLocation() != ItemInstance.ItemLocation.INVENTORY)
+        } else if (gemStones.getLocation() != ItemInstance.ItemLocation.INVENTORY) {
             return false;
-        CrystalType grade = item.getItem().getCrystalType();
-        if (getGemStoneId(grade) != gemStones.getItemId())
-            return false;
-        return getGemStoneCount(grade) <= gemStones.getCount();
+        } else {
+            CrystalType grade = item.getItem().getCrystalType();
+            if (getGemStoneId(grade) != gemStones.getItemId()) {
+                return false;
+            } else {
+                return getGemStoneCount(grade) <= gemStones.getCount();
+            }
+        }
     }
 
     protected static boolean isValid(Player player, ItemInstance item, ItemInstance refinerItem) {
-        if (!isValid(player, item))
+        if (!isValid(player, item)) {
             return false;
-        if (refinerItem.getOwnerId() != player.getObjectId())
+        } else if (refinerItem.getOwnerId() != player.getObjectId()) {
             return false;
-        if (refinerItem.getLocation() != ItemInstance.ItemLocation.INVENTORY)
+        } else if (refinerItem.getLocation() != ItemInstance.ItemLocation.INVENTORY) {
             return false;
-        LifeStone ls = _lifeStones.get(refinerItem.getItemId());
-        if (ls == null)
-            return false;
-        return player.getLevel() >= ls.getPlayerLevel();
+        } else {
+            LifeStone ls = _lifeStones.get(refinerItem.getItemId());
+            if (ls == null) {
+                return false;
+            } else {
+                return player.getLevel() >= ls.getPlayerLevel();
+            }
+        }
     }
 
     protected static boolean isValid(Player player, ItemInstance item) {
-        if (!isValid(player))
+        if (!isValid(player)) {
             return false;
-        if (item.getOwnerId() != player.getObjectId())
+        } else if (item.getOwnerId() != player.getObjectId()) {
             return false;
-        if (item.isAugmented())
+        } else if (item.isAugmented()) {
             return false;
-        if (item.isHeroItem())
+        } else if (item.isHeroItem()) {
             return false;
-        if (item.isShadowItem())
+        } else if (item.isShadowItem()) {
             return false;
-        return !item.getItem().getCrystalType().isLesser(CrystalType.C);
+        } else if (item.getItem().getCrystalType().isLesser(CrystalType.C)) {
+            return false;
+        } else {
+            switch (item.getLocation()) {
+                case INVENTORY:
+                case PAPERDOLL:
+                    if (item.getItem() instanceof Weapon) {
+                        switch (((Weapon) item.getItem()).getItemType()) {
+                            case NONE:
+                            case FISHINGROD:
+                                return false;
+                            default:
+                                return true;
+                        }
+                    }
+
+                    return false;
+                default:
+                    return false;
+            }
+        }
     }
 
     protected static boolean isValid(Player player) {
         if (player.isInStoreMode()) {
             player.sendPacket(SystemMessageId.YOU_CANNOT_AUGMENT_ITEMS_WHILE_A_PRIVATE_STORE_OR_PRIVATE_WORKSHOP_IS_IN_OPERATION);
             return false;
-        }
-        if (player.getActiveTradeList() != null) {
+        } else if (player.getActiveTradeList() != null) {
             player.sendPacket(SystemMessageId.AUGMENTED_ITEM_CANNOT_BE_DISCARDED);
             return false;
-        }
-        if (player.isDead()) {
+        } else if (player.isDead()) {
             player.sendPacket(SystemMessageId.YOU_CANNOT_AUGMENT_ITEMS_WHILE_DEAD);
             return false;
-        }
-        if (player.isParalyzed()) {
+        } else if (player.isParalyzed()) {
             player.sendPacket(SystemMessageId.YOU_CANNOT_AUGMENT_ITEMS_WHILE_PARALYZED);
             return false;
-        }
-        if (player.isFishing()) {
+        } else if (player.isFishing()) {
             player.sendPacket(SystemMessageId.YOU_CANNOT_AUGMENT_ITEMS_WHILE_FISHING);
             return false;
-        }
-        if (player.isSitting()) {
+        } else if (player.isSitting()) {
             player.sendPacket(SystemMessageId.YOU_CANNOT_AUGMENT_ITEMS_WHILE_SITTING_DOWN);
             return false;
-        }
-        if (player.isCursedWeaponEquipped())
+        } else if (player.isCursedWeaponEquipped()) {
             return false;
-        return !player.isProcessingTransaction();
+        } else {
+            return !player.isProcessingTransaction();
+        }
     }
 
     protected static int getGemStoneId(CrystalType itemGrade) {
@@ -150,29 +168,34 @@ public abstract class AbstractRefinePacket extends L2GameClientPacket {
             case A:
             case S:
                 return 2131;
+            default:
+                return 0;
         }
-        return 0;
     }
 
     protected static int getGemStoneCount(CrystalType itemGrade) {
         switch (itemGrade) {
-            case C:
+            case C -> {
                 return 20;
-            case B:
+            }
+            case B -> {
                 return 30;
-            case A:
+            }
+            case A -> {
                 return 20;
-            case S:
+            }
+            case S -> {
                 return 25;
+            }
+            default -> {
+                return 0;
+            }
         }
-        return 0;
     }
 
     protected static final class LifeStone {
         private static final int[] LEVELS = new int[]{46, 49, 52, 55, 58, 61, 64, 67, 70, 76};
-
         private final int _grade;
-
         private final int _level;
 
         public LifeStone(int grade, int level) {
@@ -180,15 +203,15 @@ public abstract class AbstractRefinePacket extends L2GameClientPacket {
             this._level = level;
         }
 
-        public int getLevel() {
+        public final int getLevel() {
             return this._level;
         }
 
-        public int getGrade() {
+        public final int getGrade() {
             return this._grade;
         }
 
-        public int getPlayerLevel() {
+        public final int getPlayerLevel() {
             return LEVELS[this._level];
         }
     }

@@ -10,15 +10,19 @@ public final class VillageMasterFighter extends VillageMaster {
         super(objectId, template);
     }
 
-    protected boolean checkVillageMasterRace(ClassId pclass) {
-        if (pclass == null)
+    protected final boolean checkVillageMasterRace(ClassId pclass) {
+        if (pclass == null) {
             return false;
-        return (pclass.getRace() == ClassRace.HUMAN || pclass.getRace() == ClassRace.ELF);
+        } else {
+            return pclass.getRace() == ClassRace.HUMAN || pclass.getRace() == ClassRace.ELF;
+        }
     }
 
-    protected boolean checkVillageMasterTeachType(ClassId pclass) {
-        if (pclass == null)
+    protected final boolean checkVillageMasterTeachType(ClassId pclass) {
+        if (pclass == null) {
             return false;
-        return (pclass.getType() == ClassType.FIGHTER);
+        } else {
+            return pclass.getType() == ClassType.FIGHTER;
+        }
     }
 }

@@ -18,34 +18,34 @@ import java.util.List;
 public class TvTEventManager {
     protected static final CLogger LOGGER = new CLogger(TvTEventManager.class.getName());
     protected List<PlayerData> playersData;
-
     protected AbstractEvent activeEvent = null;
     private TvT tvt;
 
-    public static TvTEventManager getInstance() {
-        return SingletonHolder.instance;
+    protected TvTEventManager() {
+        if (!Config.ENABLE_EVENT_ENGINE) {
+            LOGGER.info("Event Manager: Event Engine is disabled");
+        } else {
+            this.playersData = new ArrayList<>();
+            if (Config.ALLOW_TVT_EVENT && Config.TVT_EVENT_INTERVAL != null) {
+                LOGGER.info("Team vs Team Engine: is Started.");
+                this.tvt = new TvT();
+                this.scheduleNextEvent();
+            } else {
+                LOGGER.info("Team vs Team Engine: is disabled.");
+            }
+        }
     }
 
-    public void load() {
-        if (!Config.ENABLE_EVENT_ENGINE) {
-            System.out.println("Event Manager: Event Engine is disabled");
-            return;
-        }
-        this.playersData = new ArrayList<>();
-        if (Config.ALLOW_TVT_EVENT && Config.TVT_EVENT_INTERVAL != null) {
-            LOGGER.info("Team vs Team Engine: is Started.");
-            this.tvt = new TvT();
-            scheduleNextEvent();
-        } else {
-            LOGGER.info("Team vs Team Engine: is disabled.");
-        }
+    public static TvTEventManager getInstance() {
+        return TvTEventManager.SingletonHolder.instance;
     }
 
     public void scheduleNextEvent() {
         try {
             Calendar currentTime = Calendar.getInstance();
             Calendar nextStartTime = null;
-            Calendar testStartTime = null;
+            Calendar testStartTime;
+
             for (String timeOfDay : Config.TVT_EVENT_INTERVAL) {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
@@ -54,11 +54,15 @@ public class TvTEventManager {
                 testStartTime.set(Calendar.MINUTE, Integer.parseInt(splitTimeOfDay[1]));
                 testStartTime.set(Calendar.SECOND, 0);
                 testStartTime.set(Calendar.MILLISECOND, 0);
-                if (testStartTime.getTimeInMillis() <= currentTime.getTimeInMillis())
+                if (testStartTime.getTimeInMillis() <= currentTime.getTimeInMillis()) {
                     testStartTime.add(Calendar.DATE, 1);
-                if (nextStartTime == null || testStartTime.getTimeInMillis() < nextStartTime.getTimeInMillis())
+                }
+
+                if (nextStartTime == null || testStartTime.getTimeInMillis() < nextStartTime.getTimeInMillis()) {
                     nextStartTime = testStartTime;
+                }
             }
+
             if (nextStartTime != null) {
                 long delay = nextStartTime.getTimeInMillis() - currentTime.getTimeInMillis();
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -69,6 +73,7 @@ public class TvTEventManager {
         } catch (Exception e) {
             LOGGER.warn("TvT EventEngine: Error programming next event", e);
         }
+
     }
 
     public int getTotalParticipants() {
@@ -76,38 +81,41 @@ public class TvTEventManager {
     }
 
     public void removePlayer(Player player) {
-        if (this.activeEvent == null || this.activeEvent.getState() != EventState.REGISTERING) {
+        if (this.activeEvent != null && this.activeEvent.getState() == EventState.REGISTERING) {
+            if (!this.activeEvent.isInEvent(player)) {
+                player.sendMessage("You are not registered to the event.");
+            } else {
+                this.activeEvent.removePlayer(player);
+                player.sendMessage("You have successfully unregistered from the event.");
+            }
+        } else {
             player.sendMessage("You cannot unregister now.");
-            return;
         }
-        if (!this.activeEvent.isInEvent(player)) {
-            player.sendMessage("You are not registered to the event.");
-            return;
-        }
-        this.activeEvent.removePlayer(player);
-        player.sendMessage("You have successfully unregistered from the event.");
     }
 
     public void registerPlayer(Player player) {
-        if (this.activeEvent == null || this.activeEvent.getState() != EventState.REGISTERING) {
+        if (this.activeEvent != null && this.activeEvent.getState() == EventState.REGISTERING) {
+            if (this.activeEvent.isInEvent(player)) {
+                player.sendMessage("You are already registered to the event.");
+            } else {
+                this.activeEvent.registerPlayer(player);
+                player.sendMessage("You have successfully registered to the event.");
+            }
+        } else {
             player.sendMessage("You cannot register now.");
-            return;
         }
-        if (this.activeEvent.isInEvent(player)) {
-            player.sendMessage("You are already registered to the event.");
-            return;
-        }
-        this.activeEvent.registerPlayer(player);
-        player.sendMessage("You have successfully registered to the event.");
     }
 
     public void storePlayersData(List<Player> players) {
-        for (Player player : players)
+        for (Player player : players) {
             this.playersData.add(new PlayerData(player));
+        }
+
     }
 
     public void restorePlayer(Player player) {
         PlayerData playerData = null;
+
         for (PlayerData pd : this.playersData) {
             if (pd.getPlayerId() == player.getObjectId()) {
                 playerData = pd;
@@ -115,8 +123,11 @@ public class TvTEventManager {
                 break;
             }
         }
-        if (playerData != null)
+
+        if (playerData != null) {
             this.playersData.remove(playerData);
+        }
+
     }
 
     public AbstractEvent getActiveEvent() {
@@ -129,7 +140,7 @@ public class TvTEventManager {
 
     public void onEventEnd(AbstractEvent event) {
         this.activeEvent = null;
-        scheduleNextEvent();
+        this.scheduleNextEvent();
     }
 
     private static class SingletonHolder {

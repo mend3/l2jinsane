@@ -17,20 +17,19 @@ import net.sf.l2j.gameserver.network.serverpackets.PlaySound;
 import net.sf.l2j.gameserver.network.serverpackets.TutorialShowQuestionMark;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class NpcClassMaster extends AbstractMods {
     private static final int NPC = 60007;
-    private static final List<NpcClassMaster.ClassMasterList> ITEM_LIST = new ArrayList();
-    private static final List<Location> SPAWNS = new ArrayList();
+    private static final List<ClassMasterList> ITEM_LIST = new ArrayList<>();
+    private static final List<Location> SPAWNS = new ArrayList<>();
     private static final String HTML_PATH = "data/html/engine/npc/classmaster/";
 
     public NpcClassMaster() {
-        ITEM_LIST.add(new ClassMasterList(this, 0, 0, 0, 0));
-        ITEM_LIST.add(new ClassMasterList(this, 0, 0, 0, 0));
-        ITEM_LIST.add(new ClassMasterList(this, 0, 0, 0, 0));
-        ITEM_LIST.add(new ClassMasterList(this, 0, 0, 0, 0));
+        ITEM_LIST.add(new ClassMasterList(0, 0, 0, 0));
+        ITEM_LIST.add(new ClassMasterList(0, 0, 0, 0));
+        ITEM_LIST.add(new ClassMasterList(0, 0, 0, 0));
+        ITEM_LIST.add(new ClassMasterList(0, 0, 0, 0));
         SPAWNS.add(new Location(11283, 15951, -4584));
         SPAWNS.add(new Location(115774, -178666, -958));
         SPAWNS.add(new Location(45036, 48384, -3060));
@@ -48,16 +47,13 @@ public class NpcClassMaster extends AbstractMods {
             int minLevel = getMinLevel(currentClassId.level());
             if (player.getLevel() >= minLevel) {
                 StringBuilder menu = new StringBuilder(100);
-                ClassId[] var7 = ClassId.values();
-                int var8 = var7.length;
 
-                for (int var9 = 0; var9 < var8; ++var9) {
-                    ClassId cid = var7[var9];
+                for (ClassId cid : ClassId.values()) {
                     if (validateClassId(currentClassId, cid) && cid.level() == level) {
                         menu.append("<button value=\"");
                         menu.append(PlayerClassData.getInstance().getClassNameById(cid.getId()) + "\" ");
                         menu.append("action=\"bypass -h Engine NpcClassMaster change_class ");
-                        menu.append(cid.getId() + "\"");
+                        menu.append(String.valueOf(cid.getId()) + "\"");
                         menu.append(" width=204 height=20 back=\"sek.cbui77\" fore=\"sek.cbui75\"><br>");
                     }
                 }
@@ -92,14 +88,18 @@ public class NpcClassMaster extends AbstractMods {
 
     private static int getMinLevel(int level) {
         switch (level) {
-            case 0:
+            case 0 -> {
                 return 20;
-            case 1:
+            }
+            case 1 -> {
                 return 40;
-            case 2:
+            }
+            case 2 -> {
                 return 76;
-            default:
+            }
+            default -> {
                 return Integer.MAX_VALUE;
+            }
         }
     }
 
@@ -143,7 +143,7 @@ public class NpcClassMaster extends AbstractMods {
             return false;
         } else {
             int newJobLevel = currentClassId.level() + 1;
-            if (ITEM_LIST.get(newJobLevel).getRewardItemId() == 0 || player.getWeightPenalty() < 3 && (double) player.getInventoryLimit() * 0.8D > (double) player.getInventory().getSize()) {
+            if (ITEM_LIST.get(newJobLevel).getRewardItemId() == 0 || player.getWeightPenalty() < 3 && !((double) player.getInventoryLimit() * 0.8 <= (double) player.getInventory().getSize())) {
                 int priceCount = ITEM_LIST.get(newJobLevel).getPriceItemCount();
                 int priceItemId = ITEM_LIST.get(newJobLevel).getPriceItemId();
                 if (priceCount != 0 && priceItemId != 0 && !player.destroyItemByItemId("ClassMaster", priceItemId, priceCount, player, true)) {
@@ -155,7 +155,7 @@ public class NpcClassMaster extends AbstractMods {
                     player.addItem("ClassMaster", rewardItemId, rewardCount, player, true);
                     player.setClassId(val);
                     if (player.isSubClassActive()) {
-                        player.getSubClasses().get(player.getClassIndex()).setClassId(player.getActiveClass());
+                        (player.getSubClasses().get(player.getClassIndex())).setClassId(player.getActiveClass());
                     } else {
                         player.setBaseClass(player.getActiveClass());
                     }
@@ -181,10 +181,7 @@ public class NpcClassMaster extends AbstractMods {
     public void onModState() {
         switch (this.getState()) {
             case START:
-                Iterator var1 = SPAWNS.iterator();
-
-                while (var1.hasNext()) {
-                    Location loc = (Location) var1.next();
+                for (Location loc : SPAWNS) {
                     this.addSpawn(60007, loc, false, 0L);
                 }
             case END:
@@ -202,26 +199,26 @@ public class NpcClassMaster extends AbstractMods {
             hb.append("<html><body>");
             hb.append(Html.headHtml("CLASS MASTER"));
             hb.append("<br>");
-            hb.append("Welcome my name is ", npc.getName(), " and take care to meet the most famous players in the world.<br>");
+            hb.append(new Object[]{"Welcome my name is ", npc.getName(), " and take care to meet the most famous players in the world.<br>"});
             hb.append("You probably want to know who it is!<br>");
             hb.append("I actually have a list, I can show it to you if you want.<br>");
             hb.append("What would you like to see?<br>");
             hb.append("<center>");
             hb.append("<table width=280>");
             hb.append("<tr>");
-            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
+            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
             hb.append("<td><button value=\"Complete the first class transfer\" action=\"bypass -h Engine NpcClassMaster 1stClass\" width=216 height=32 back=L2UI_CH3.refinegrade3_21 fore=L2UI_CH3.refinegrade3_21></td>");
-            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
+            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
             hb.append("</tr>");
             hb.append("<tr>");
-            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
+            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
             hb.append("<td><button value=\"Complete the second class transfer\" action=\"bypass -h Engine NpcClassMaster 2ndClass\" width=216 height=32 back=L2UI_CH3.refinegrade3_21 fore=L2UI_CH3.refinegrade3_21></td>");
-            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
+            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
             hb.append("</tr>");
             hb.append("<tr>");
-            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
+            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
             hb.append("<td><button value=\"Complete the third class transfer\" action=\"bypass -h Engine NpcClassMaster 3rdClass\" width=216 height=32 back=L2UI_CH3.refinegrade3_21 fore=L2UI_CH3.refinegrade3_21></td>");
-            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
+            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
             hb.append("</tr>");
             hb.append("</table>");
             hb.append("</center>");
@@ -258,13 +255,13 @@ public class NpcClassMaster extends AbstractMods {
         protected static final NpcClassMaster INSTANCE = new NpcClassMaster();
     }
 
-    public static class ClassMasterList {
+    public class ClassMasterList {
         private final int _priceItemId;
         private final int _priceItemCount;
         private final int _rewardItemId;
         private final int _rewardItemCount;
 
-        public ClassMasterList(final NpcClassMaster param1, int priceItemId, int priceItemCount, int rewardItemId, int rewardItemCount) {
+        public ClassMasterList(int priceItemId, int priceItemCount, int rewardItemId, int rewardItemCount) {
             this._priceItemId = priceItemId;
             this._priceItemCount = priceItemCount;
             this._rewardItemId = rewardItemId;

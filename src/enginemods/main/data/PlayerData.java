@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class PlayerData {
     private static final Logger LOG = Logger.getLogger(PlayerData.class.getName());
     private static final String SELECT_CHARACTERS = "SELECT obj_Id,char_name,account_name FROM characters";
-    private static final Map<Integer, PlayerHolder> _players = new ConcurrentHashMap();
+    private static final Map<Integer, PlayerHolder> _players = new ConcurrentHashMap<>();
 
     public static void load() {
         _players.clear();

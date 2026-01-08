@@ -97,7 +97,6 @@ import net.sf.l2j.gameserver.model.zone.type.BossZone;
 import net.sf.l2j.gameserver.model.zone.type.L2MultiFunctionZone;
 import net.sf.l2j.gameserver.network.GameClient;
 import net.sf.l2j.gameserver.network.SystemMessageId;
-import net.sf.l2j.gameserver.network.serverpackets.AbstractNpcInfo.PcMorphInfo;
 import net.sf.l2j.gameserver.network.serverpackets.*;
 import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
@@ -113,10 +112,8 @@ import net.sf.l2j.util.variables.PlayerVar;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -407,13 +404,13 @@ public final class Player extends Playable {
         this._currentSkill = new SkillUseHolder();
         this._currentPetSkill = new SkillUseHolder();
         this._queuedSkill = new SkillUseHolder();
-        this._revivePower = 0.0D;
-        this._cpUpdateIncCheck = 0.0D;
-        this._cpUpdateDecCheck = 0.0D;
-        this._cpUpdateInterval = 0.0D;
-        this._mpUpdateIncCheck = 0.0D;
-        this._mpUpdateDecCheck = 0.0D;
-        this._mpUpdateInterval = 0.0D;
+        this._revivePower = 0.0F;
+        this._cpUpdateIncCheck = 0.0F;
+        this._cpUpdateDecCheck = 0.0F;
+        this._cpUpdateInterval = 0.0F;
+        this._mpUpdateIncCheck = 0.0F;
+        this._mpUpdateDecCheck = 0.0F;
+        this._mpUpdateInterval = 0.0F;
         this._friendList = new ArrayList<>();
         this._selectedFriendList = new ArrayList<>();
         this._selectedBlocksList = new ArrayList<>();
@@ -476,76 +473,46 @@ public final class Player extends Playable {
         player.setBaseClass(player.getClassId());
 
         try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
-                PreparedStatement ps = con.prepareStatement("INSERT INTO characters (account_name,obj_Id,char_name,level,maxHp,curHp,maxCp,curCp,maxMp,curMp,face,hairStyle,hairColor,sex,exp,sp,karma,pvpkills,pkkills,clanid,race,classid,deletetime,cancraft,title,accesslevel,online,isin7sdungeon,clan_privs,wantspeace,base_class,nobless,power_grade) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-
-                try {
-                    ps.setString(1, accountName);
-                    ps.setInt(2, player.getObjectId());
-                    ps.setString(3, player.getName());
-                    ps.setInt(4, player.getLevel());
-                    ps.setInt(5, player.getMaxHp());
-                    ps.setDouble(6, player.getCurrentHp());
-                    ps.setInt(7, player.getMaxCp());
-                    ps.setDouble(8, player.getCurrentCp());
-                    ps.setInt(9, player.getMaxMp());
-                    ps.setDouble(10, player.getCurrentMp());
-                    ps.setInt(11, player.getAppearance().getFace());
-                    ps.setInt(12, player.getAppearance().getHairStyle());
-                    ps.setInt(13, player.getAppearance().getHairColor());
-                    ps.setInt(14, player.getAppearance().getSex().ordinal());
-                    ps.setLong(15, player.getExp());
-                    ps.setInt(16, player.getSp());
-                    ps.setInt(17, player.getKarma());
-                    ps.setInt(18, player.getPvpKills());
-                    ps.setInt(19, player.getPkKills());
-                    ps.setInt(20, player.getClanId());
-                    ps.setInt(21, player.getRace().ordinal());
-                    ps.setInt(22, player.getClassId().getId());
-                    ps.setLong(23, player.getDeleteTimer());
-                    ps.setInt(24, player.hasDwarvenCraft() ? 1 : 0);
-                    ps.setString(25, player.getTitle());
-                    ps.setInt(26, player.getAccessLevel().getLevel());
-                    ps.setInt(27, player.isOnlineInt());
-                    ps.setInt(28, player.isIn7sDungeon() ? 1 : 0);
-                    ps.setInt(29, player.getClanPrivileges());
-                    ps.setInt(30, player.wantsPeace() ? 1 : 0);
-                    ps.setInt(31, player.getBaseClass());
-                    ps.setInt(32, player.isNoble() ? 1 : 0);
-                    ps.setLong(33, 0L);
-                    ps.executeUpdate();
-                } catch (Throwable var16) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var15) {
-                            var16.addSuppressed(var15);
-                        }
-                    }
-
-                    throw var16;
-                }
-
-                ps.close();
-            } catch (Throwable var17) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var14) {
-                        var17.addSuppressed(var14);
-                    }
-                }
-
-                throw var17;
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO characters (account_name,obj_Id,char_name,level,maxHp,curHp,maxCp,curCp,maxMp,curMp,face,hairStyle,hairColor,sex,exp,sp,karma,pvpkills,pkkills,clanid,race,classid,deletetime,cancraft,title,accesslevel,online,isin7sdungeon,clan_privs,wantspeace,base_class,nobless,power_grade) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");) {
+                ps.setString(1, accountName);
+                ps.setInt(2, player.getObjectId());
+                ps.setString(3, player.getName());
+                ps.setInt(4, player.getLevel());
+                ps.setInt(5, player.getMaxHp());
+                ps.setDouble(6, player.getCurrentHp());
+                ps.setInt(7, player.getMaxCp());
+                ps.setDouble(8, player.getCurrentCp());
+                ps.setInt(9, player.getMaxMp());
+                ps.setDouble(10, player.getCurrentMp());
+                ps.setInt(11, player.getAppearance().getFace());
+                ps.setInt(12, player.getAppearance().getHairStyle());
+                ps.setInt(13, player.getAppearance().getHairColor());
+                ps.setInt(14, player.getAppearance().getSex().ordinal());
+                ps.setLong(15, player.getExp());
+                ps.setInt(16, player.getSp());
+                ps.setInt(17, player.getKarma());
+                ps.setInt(18, player.getPvpKills());
+                ps.setInt(19, player.getPkKills());
+                ps.setInt(20, player.getClanId());
+                ps.setInt(21, player.getRace().ordinal());
+                ps.setInt(22, player.getClassId().getId());
+                ps.setLong(23, player.getDeleteTimer());
+                ps.setInt(24, player.hasDwarvenCraft() ? 1 : 0);
+                ps.setString(25, player.getTitle());
+                ps.setInt(26, player.getAccessLevel().getLevel());
+                ps.setInt(27, player.isOnlineInt());
+                ps.setInt(28, player.isIn7sDungeon() ? 1 : 0);
+                ps.setInt(29, player.getClanPrivileges());
+                ps.setInt(30, player.wantsPeace() ? 1 : 0);
+                ps.setInt(31, player.getBaseClass());
+                ps.setInt(32, player.isNoble() ? 1 : 0);
+                ps.setLong(33, 0L);
+                ps.executeUpdate();
             }
 
-            con.close();
-
             return player;
-        } catch (Exception var18) {
-            LOGGER.error("Couldn't create player {} for {} account.", var18, name, accountName);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't create player {} for {} account.", e, name, accountName);
             return null;
         }
     }
@@ -553,215 +520,143 @@ public final class Player extends Playable {
     public static Player restore(int objectId) {
         Player player = null;
 
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE obj_id=?");) {
+            ps.setInt(1, objectId);
 
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE obj_id=?");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int activeClassId = rs.getInt("classid");
+                    PlayerTemplate template = PlayerClassData.getInstance().getTemplate(activeClassId);
+                    Appearance app = new Appearance(rs.getByte("face"), rs.getByte("hairColor"), rs.getByte("hairStyle"), Sex.values()[rs.getInt("sex")]);
+                    player = new Player(objectId, template, rs.getString("account_name"), app);
+                    player.setName(rs.getString("char_name"));
+                    player._lastAccess = rs.getLong("lastAccess");
+                    player.getStat().setExp(rs.getLong("exp"));
+                    player.getStat().setLevel(rs.getByte("level"));
+                    player.getStat().setSp(rs.getInt("sp"));
+                    player.setExpBeforeDeath(rs.getLong("expBeforeDeath"));
+                    player.setWantsPeace(rs.getInt("wantspeace") == 1);
+                    player.setKarma(rs.getInt("karma"));
+                    player.setPvpKills(rs.getInt("pvpkills"));
+                    player.setPkKills(rs.getInt("pkkills"));
+                    player.setOnlineTime(rs.getLong("onlinetime"));
+                    player.setNoble(rs.getInt("nobless") == 1, false);
+                    player.setClanJoinExpiryTime(rs.getLong("clan_join_expiry_time"));
+                    if (player.getClanJoinExpiryTime() < System.currentTimeMillis()) {
+                        player.setClanJoinExpiryTime(0L);
+                    }
 
-                try {
-                    ps.setInt(1, objectId);
-                    ResultSet rs = ps.executeQuery();
+                    player.setClanCreateExpiryTime(rs.getLong("clan_create_expiry_time"));
+                    if (player.getClanCreateExpiryTime() < System.currentTimeMillis()) {
+                        player.setClanCreateExpiryTime(0L);
+                    }
+
+                    player.setPowerGrade(rs.getInt("power_grade"));
+                    player.setPledgeType(rs.getInt("subpledge"));
+                    int clanId = rs.getInt("clanid");
+                    if (clanId > 0) {
+                        player.setClan(ClanTable.getInstance().getClan(clanId));
+                    }
+
+                    if (player.getClan() != null) {
+                        if (player.getClan().getLeaderId() != player.getObjectId()) {
+                            if (player.getPowerGrade() == 0) {
+                                player.setPowerGrade(5);
+                            }
+
+                            player.setClanPrivileges(player.getClan().getPriviledgesByRank(player.getPowerGrade()));
+                        } else {
+                            player.setClanPrivileges(8388606);
+                            player.setPowerGrade(1);
+                        }
+                    } else {
+                        player.setClanPrivileges(0);
+                    }
+
+                    player.setDeleteTimer(rs.getLong("deletetime"));
+                    player.setTitle(rs.getString("title"));
+                    player.setAccessLevel(rs.getInt("accesslevel"));
+                    player.setUptime(System.currentTimeMillis());
+                    player.setRecomHave(rs.getInt("rec_have"));
+                    player.setRecomLeft(rs.getInt("rec_left"));
+                    player._classIndex = 0;
 
                     try {
-                        if (rs.next()) {
-                            int activeClassId = rs.getInt("classid");
-                            PlayerTemplate template = PlayerClassData.getInstance().getTemplate(activeClassId);
-                            Appearance app = new Appearance(rs.getByte("face"), rs.getByte("hairColor"), rs.getByte("hairStyle"), Sex.values()[rs.getInt("sex")]);
-                            player = new Player(objectId, template, rs.getString("account_name"), app);
-                            player.setName(rs.getString("char_name"));
-                            player._lastAccess = rs.getLong("lastAccess");
-                            player.getStat().setExp(rs.getLong("exp"));
-                            player.getStat().setLevel(rs.getByte("level"));
-                            player.getStat().setSp(rs.getInt("sp"));
-                            player.setExpBeforeDeath(rs.getLong("expBeforeDeath"));
-                            player.setWantsPeace(rs.getInt("wantspeace") == 1);
-                            player.setKarma(rs.getInt("karma"));
-                            player.setPvpKills(rs.getInt("pvpkills"));
-                            player.setPkKills(rs.getInt("pkkills"));
-                            player.setOnlineTime(rs.getLong("onlinetime"));
-                            player.setNoble(rs.getInt("nobless") == 1, false);
-                            player.setClanJoinExpiryTime(rs.getLong("clan_join_expiry_time"));
-                            if (player.getClanJoinExpiryTime() < System.currentTimeMillis()) {
-                                player.setClanJoinExpiryTime(0L);
-                            }
-
-                            player.setClanCreateExpiryTime(rs.getLong("clan_create_expiry_time"));
-                            if (player.getClanCreateExpiryTime() < System.currentTimeMillis()) {
-                                player.setClanCreateExpiryTime(0L);
-                            }
-
-                            player.setPowerGrade(rs.getInt("power_grade"));
-                            player.setPledgeType(rs.getInt("subpledge"));
-                            int clanId = rs.getInt("clanid");
-                            if (clanId > 0) {
-                                player.setClan(ClanTable.getInstance().getClan(clanId));
-                            }
-
-                            if (player.getClan() != null) {
-                                if (player.getClan().getLeaderId() != player.getObjectId()) {
-                                    if (player.getPowerGrade() == 0) {
-                                        player.setPowerGrade(5);
-                                    }
-
-                                    player.setClanPrivileges(player.getClan().getPriviledgesByRank(player.getPowerGrade()));
-                                } else {
-                                    player.setClanPrivileges(8388606);
-                                    player.setPowerGrade(1);
-                                }
-                            } else {
-                                player.setClanPrivileges(0);
-                            }
-
-                            player.setDeleteTimer(rs.getLong("deletetime"));
-                            player.setTitle(rs.getString("title"));
-                            player.setAccessLevel(rs.getInt("accesslevel"));
-                            player.setUptime(System.currentTimeMillis());
-                            player.setRecomHave(rs.getInt("rec_have"));
-                            player.setRecomLeft(rs.getInt("rec_left"));
-                            player._classIndex = 0;
-
-                            try {
-                                player.setBaseClass(rs.getInt("base_class"));
-                            } catch (Exception var21) {
-                                player.setBaseClass(activeClassId);
-                            }
-
-                            if (restoreSubClassData(player) && activeClassId != player.getBaseClass()) {
-
-                                for (SubClass subClass : player.getSubClasses().values()) {
-                                    if (subClass.getClassId() == activeClassId) {
-                                        player._classIndex = subClass.getClassIndex();
-                                    }
-                                }
-                            }
-
-                            if (player.getClassIndex() == 0 && activeClassId != player.getBaseClass()) {
-                                player.setClassId(player.getBaseClass());
-                            } else {
-                                player._activeClass = activeClassId;
-                            }
-
-                            player.setApprentice(rs.getInt("apprentice"));
-                            player.setSponsor(rs.getInt("sponsor"));
-                            player.setLvlJoinedAcademy(rs.getInt("lvl_joined_academy"));
-                            player.setIsIn7sDungeon(rs.getInt("isin7sdungeon") == 1);
-                            player.getPunishment().load(rs.getInt("punish_level"), rs.getLong("punish_timer"));
-                            CursedWeaponManager.getInstance().checkPlayer(player);
-                            player.setAllianceWithVarkaKetra(rs.getInt("varka_ketra_ally"));
-                            player.setDeathPenaltyBuffLevel(rs.getInt("death_penalty_level"));
-                            player.setPcBang(rs.getInt("pc_point"));
-                            player.setReceiveNewbieArmor(rs.getInt("newbie_armor") == 1);
-                            player.getPosition().set(rs.getInt("x"), rs.getInt("y"), rs.getInt("z"), rs.getInt("heading"));
-                            if (HeroManager.getInstance().isActiveHero(objectId)) {
-                                player.setHero(true);
-                            }
-
-                            player.setPledgeClass(ClanMember.calculatePledgeClass(player));
-                            player.restoreCharData();
-                            player.giveSkills();
-                            if (Config.STORE_SKILL_COOLTIME) {
-                                player.restoreEffects();
-                            }
-
-                            double currentHp = rs.getDouble("curHp");
-                            player.setCurrentCp(rs.getDouble("curCp"));
-                            player.setCurrentHp(currentHp);
-                            player.setCurrentMp(rs.getDouble("curMp"));
-                            if (currentHp < 0.5D) {
-                                player.setIsDead(true);
-                                player.stopHpMpRegeneration();
-                            }
-
-                            Pet pet = World.getInstance().getPet(player.getObjectId());
-                            if (pet != null) {
-                                player.setSummon(pet);
-                                pet.setOwner(player);
-                            }
-
-                            player.refreshOverloaded();
-                            player.refreshExpertisePenalty();
-                            player.restoreFriendList();
-                            player.restoreDressMeData();
-                            PreparedStatement ps2 = con.prepareStatement("SELECT obj_Id, char_name FROM characters WHERE account_name=? AND obj_Id<>?");
-
-                            try {
-                                ps2.setString(1, player._accountName);
-                                ps2.setInt(2, objectId);
-                                ResultSet rs2 = ps2.executeQuery();
-
-                                try {
-                                    while (rs2.next()) {
-                                        player.getAccountChars().put(rs2.getInt("obj_Id"), rs2.getString("char_name"));
-                                    }
-                                } catch (Throwable var22) {
-                                    if (rs2 != null) {
-                                        try {
-                                            rs2.close();
-                                        } catch (Throwable var20) {
-                                            var22.addSuppressed(var20);
-                                        }
-                                    }
-
-                                    throw var22;
-                                }
-
-                                rs2.close();
-                            } catch (Throwable var23) {
-                                if (ps2 != null) {
-                                    try {
-                                        ps2.close();
-                                    } catch (Throwable var19) {
-                                        var23.addSuppressed(var19);
-                                    }
-                                }
-
-                                throw var23;
-                            }
-
-                            ps2.close();
-                        }
-                    } catch (Throwable var24) {
-                        if (rs != null) {
-                            try {
-                                rs.close();
-                            } catch (Throwable var18) {
-                                var24.addSuppressed(var18);
-                            }
-                        }
-
-                        throw var24;
+                        player.setBaseClass(rs.getInt("base_class"));
+                    } catch (Exception var21) {
+                        player.setBaseClass(activeClassId);
                     }
 
-                    rs.close();
-                } catch (Throwable var25) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var17) {
-                            var25.addSuppressed(var17);
+                    if (restoreSubClassData(player) && activeClassId != player.getBaseClass()) {
+                        for (SubClass subClass : player.getSubClasses().values()) {
+                            if (subClass.getClassId() == activeClassId) {
+                                player._classIndex = subClass.getClassIndex();
+                            }
                         }
                     }
 
-                    throw var25;
-                }
+                    if (player.getClassIndex() == 0 && activeClassId != player.getBaseClass()) {
+                        player.setClassId(player.getBaseClass());
+                    } else {
+                        player._activeClass = activeClassId;
+                    }
 
-                ps.close();
-            } catch (Throwable var26) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var16) {
-                        var26.addSuppressed(var16);
+                    player.setApprentice(rs.getInt("apprentice"));
+                    player.setSponsor(rs.getInt("sponsor"));
+                    player.setLvlJoinedAcademy(rs.getInt("lvl_joined_academy"));
+                    player.setIsIn7sDungeon(rs.getInt("isin7sdungeon") == 1);
+                    player.getPunishment().load(rs.getInt("punish_level"), rs.getLong("punish_timer"));
+                    CursedWeaponManager.getInstance().checkPlayer(player);
+                    player.setAllianceWithVarkaKetra(rs.getInt("varka_ketra_ally"));
+                    player.setDeathPenaltyBuffLevel(rs.getInt("death_penalty_level"));
+                    player.setPcBang(rs.getInt("pc_point"));
+                    player.setReceiveNewbieArmor(rs.getInt("newbie_armor") == 1);
+                    player.getPosition().set(rs.getInt("x"), rs.getInt("y"), rs.getInt("z"), rs.getInt("heading"));
+                    if (HeroManager.getInstance().isActiveHero(objectId)) {
+                        player.setHero(true);
+                    }
+
+                    player.setPledgeClass(ClanMember.calculatePledgeClass(player));
+                    player.restoreCharData();
+                    player.giveSkills();
+                    if (Config.STORE_SKILL_COOLTIME) {
+                        player.restoreEffects();
+                    }
+
+                    double currentHp = rs.getDouble("curHp");
+                    player.setCurrentCp(rs.getDouble("curCp"));
+                    player.setCurrentHp(currentHp);
+                    player.setCurrentMp(rs.getDouble("curMp"));
+                    if (currentHp < (double) 0.5F) {
+                        player.setIsDead(true);
+                        player.stopHpMpRegeneration();
+                    }
+
+                    Pet pet = World.getInstance().getPet(player.getObjectId());
+                    if (pet != null) {
+                        player.setSummon(pet);
+                        pet.setOwner(player);
+                    }
+
+                    player.refreshOverloaded();
+                    player.refreshExpertisePenalty();
+                    player.restoreFriendList();
+                    player.restoreDressMeData();
+
+                    try (PreparedStatement ps2 = con.prepareStatement("SELECT obj_Id, char_name FROM characters WHERE account_name=? AND obj_Id<>?")) {
+                        ps2.setString(1, player._accountName);
+                        ps2.setInt(2, objectId);
+
+                        try (ResultSet rs2 = ps2.executeQuery()) {
+                            while (rs2.next()) {
+                                player.getAccountChars().put(rs2.getInt("obj_Id"), rs2.getString("char_name"));
+                            }
+                        }
                     }
                 }
-
-                throw var26;
             }
-
-            con.close();
-        } catch (Exception var27) {
-            LOGGER.error("Couldn't restore player data.", var27);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore player data.", e);
         }
 
         return player;
@@ -769,64 +664,56 @@ public final class Player extends Playable {
 
     private static boolean restoreSubClassData(Player player) {
         try {
-            Connection con = ConnectionPool.getConnection();
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT class_id,exp,sp,level,class_index FROM character_subclasses WHERE char_obj_id=? ORDER BY class_index ASC");) {
+                ps.setInt(1, player.getObjectId());
 
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT class_id,exp,sp,level,class_index FROM character_subclasses WHERE char_obj_id=? ORDER BY class_index");
-
-                try {
-                    ps.setInt(1, player.getObjectId());
-                    ResultSet rs = ps.executeQuery();
-
-                    try {
-                        while (rs.next()) {
-                            SubClass subClass = new SubClass(rs.getInt("class_id"), rs.getInt("class_index"), rs.getLong("exp"), rs.getInt("sp"), rs.getByte("level"));
-                            player.getSubClasses().put(subClass.getClassIndex(), subClass);
-                        }
-                    } catch (Throwable var9) {
-                        if (rs != null) {
-                            try {
-                                rs.close();
-                            } catch (Throwable var8) {
-                                var9.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    rs.close();
-                } catch (Throwable var10) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
-                }
-
-                ps.close();
-            } catch (Throwable var11) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var6) {
-                        var11.addSuppressed(var6);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        SubClass subClass = new SubClass(rs.getInt("class_id"), rs.getInt("class_index"), rs.getLong("exp"), rs.getInt("sp"), rs.getByte("level"));
+                        player.getSubClasses().put(subClass.getClassIndex(), subClass);
                     }
                 }
-
-                throw var11;
             }
 
-            con.close();
-
             return true;
-        } catch (Exception var12) {
-            LOGGER.error("Couldn't restore subclasses for {}.", var12, player.getName());
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore subclasses for {}.", e, player.getName());
             return false;
+        }
+    }
+
+    private static String getCastleName(int id) {
+        switch (id) {
+            case 1 -> {
+                return "Gludio";
+            }
+            case 2 -> {
+                return "Dion";
+            }
+            case 3 -> {
+                return "Giran";
+            }
+            case 4 -> {
+                return "Oren";
+            }
+            case 5 -> {
+                return "Aden";
+            }
+            case 6 -> {
+                return "Innadril";
+            }
+            case 7 -> {
+                return "Goddard";
+            }
+            case 8 -> {
+                return "Rune";
+            }
+            case 9 -> {
+                return "Schuttgart";
+            }
+            default -> {
+                return "Not found";
+            }
         }
     }
 
@@ -878,10 +765,10 @@ public final class Player extends Playable {
 
     protected void initCharStatusUpdateValues() {
         super.initCharStatusUpdateValues();
-        this._cpUpdateInterval = (double) this.getMaxCp() / 352.0D;
+        this._cpUpdateInterval = (double) this.getMaxCp() / (double) 352.0F;
         this._cpUpdateIncCheck = this.getMaxCp();
         this._cpUpdateDecCheck = (double) this.getMaxCp() - this._cpUpdateInterval;
-        this._mpUpdateInterval = (double) this.getMaxMp() / 352.0D;
+        this._mpUpdateInterval = (double) this.getMaxMp() / (double) 352.0F;
         this._mpUpdateIncCheck = this.getMaxMp();
         this._mpUpdateDecCheck = (double) this.getMaxMp() - this._mpUpdateInterval;
     }
@@ -890,7 +777,7 @@ public final class Player extends Playable {
         this.setStat(new PlayerStat(this));
     }
 
-    public PlayerStat getStat() {
+    public final PlayerStat getStat() {
         return (PlayerStat) super.getStat();
     }
 
@@ -898,19 +785,19 @@ public final class Player extends Playable {
         this.setStatus(new PlayerStatus(this));
     }
 
-    public PlayerStatus getStatus() {
+    public final PlayerStatus getStatus() {
         return (PlayerStatus) super.getStatus();
     }
 
-    public Appearance getAppearance() {
+    public final Appearance getAppearance() {
         return this._appearance;
     }
 
-    public PlayerTemplate getBaseTemplate() {
+    public final PlayerTemplate getBaseTemplate() {
         return PlayerClassData.getInstance().getTemplate(this._baseClass);
     }
 
-    public PlayerTemplate getTemplate() {
+    public final PlayerTemplate getTemplate() {
         return (PlayerTemplate) super.getTemplate();
     }
 
@@ -933,7 +820,7 @@ public final class Player extends Playable {
         }
     }
 
-    public int getLevel() {
+    public final int getLevel() {
         return this.getStat().getLevel();
     }
 
@@ -976,7 +863,9 @@ public final class Player extends Playable {
     public void unregisterRecipeList(int recipeId) {
         if (this._dwarvenRecipeBook.containsKey(recipeId)) {
             this._dwarvenRecipeBook.remove(recipeId);
-        } else this._commonRecipeBook.remove(recipeId);
+        } else if (this._commonRecipeBook.containsKey(recipeId)) {
+            this._commonRecipeBook.remove(recipeId);
+        }
 
         this.getShortcutList().deleteShortcuts(recipeId, ShortcutType.RECIPE);
     }
@@ -990,18 +879,13 @@ public final class Player extends Playable {
     }
 
     public QuestState getQuestState(String name) {
-        Iterator var2 = this._quests.iterator();
-
-        QuestState qs;
-        do {
-            if (!var2.hasNext()) {
-                return null;
+        for (QuestState qs : this._quests) {
+            if (name.equals(qs.getQuest().getName())) {
+                return qs;
             }
+        }
 
-            qs = (QuestState) var2.next();
-        } while (!name.equals(qs.getQuest().getName()));
-
-        return qs;
+        return null;
     }
 
     public void setQuestState(QuestState qs) {
@@ -1014,27 +898,17 @@ public final class Player extends Playable {
 
     public List<Quest> getAllQuests(boolean completed) {
         List<Quest> quests = new ArrayList<>();
-        Iterator<QuestState> var3 = this._quests.iterator();
 
-        while (true) {
-            QuestState qs;
-            do {
-                do {
-                    do {
-                        if (!var3.hasNext()) {
-                            return quests;
-                        }
-
-                        qs = var3.next();
-                    } while (qs == null);
-                } while (completed && qs.isCreated());
-            } while (!completed && !qs.isStarted());
-
-            Quest quest = qs.getQuest();
-            if (quest != null && quest.isRealQuest()) {
-                quests.add(quest);
+        for (QuestState qs : this._quests) {
+            if (qs != null && (!completed || !qs.isCreated()) && (completed || qs.isStarted())) {
+                Quest quest = qs.getQuest();
+                if (quest != null && quest.isRealQuest()) {
+                    quests.add(quest);
+                }
             }
         }
+
+        return quests;
     }
 
     public void processQuestEvent(String questName, String event) {
@@ -1043,10 +917,10 @@ public final class Player extends Playable {
             QuestState qs = this.getQuestState(questName);
             if (qs != null) {
                 WorldObject object = World.getInstance().getObject(this.getLastQuestNpcObject());
-                if (object instanceof Npc npc && this.isInsideRadius(object, 150, false, false)) {
+                if (object instanceof Npc && this.isInsideRadius(object, 150, false, false)) {
+                    Npc npc = (Npc) object;
                     List<Quest> scripts = npc.getTemplate().getEventQuests(ScriptEventType.ON_TALK);
                     if (scripts != null) {
-
                         for (Quest script : scripts) {
                             if (script != null && script.equals(quest)) {
                                 quest.notifyEvent(event, npc, this);
@@ -1075,7 +949,7 @@ public final class Player extends Playable {
         }
     }
 
-    public List<QuestState> getNotifyQuestOfDeath() {
+    public final List<QuestState> getNotifyQuestOfDeath() {
         return this._notifyQuestOfDeathList;
     }
 
@@ -1279,84 +1153,26 @@ public final class Player extends Playable {
         this.decRecomLeft();
         this._recomChars.add(target.getObjectId());
 
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
-                PreparedStatement ps = con.prepareStatement("INSERT INTO character_recommends (char_id,target_id) VALUES (?,?)");
-
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ps.setInt(2, target.getObjectId());
-                    ps.execute();
-                } catch (Throwable var12) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var9) {
-                            var12.addSuppressed(var9);
-                        }
-                    }
-
-                    throw var12;
-                }
-
-                ps.close();
-
-                ps = con.prepareStatement("UPDATE characters SET rec_have=? WHERE obj_Id=?");
-
-                try {
-                    ps.setInt(1, target.getRecomHave());
-                    ps.setInt(2, target.getObjectId());
-                    ps.execute();
-                } catch (Throwable var11) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var8) {
-                            var11.addSuppressed(var8);
-                        }
-                    }
-
-                    throw var11;
-                }
-
-                ps.close();
-
-                ps = con.prepareStatement("UPDATE characters SET rec_left=? WHERE obj_Id=?");
-
-                try {
-                    ps.setInt(1, this.getRecomLeft());
-                    ps.setInt(2, this.getObjectId());
-                    ps.execute();
-                } catch (Throwable var10) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
-                }
-
-                ps.close();
-            } catch (Throwable var13) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var6) {
-                        var13.addSuppressed(var6);
-                    }
-                }
-
-                throw var13;
+        try (Connection con = ConnectionPool.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO character_recommends (char_id,target_id) VALUES (?,?)")) {
+                ps.setInt(1, this.getObjectId());
+                ps.setInt(2, target.getObjectId());
+                ps.execute();
             }
 
-            con.close();
-        } catch (Exception var14) {
-            LOGGER.error("Couldn't update player recommendations.", var14);
+            try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET rec_have=? WHERE obj_Id=?")) {
+                ps.setInt(1, target.getRecomHave());
+                ps.setInt(2, target.getObjectId());
+                ps.execute();
+            }
+
+            try (PreparedStatement ps = con.prepareStatement("UPDATE characters SET rec_left=? WHERE obj_Id=?")) {
+                ps.setInt(1, this.getRecomLeft());
+                ps.setInt(2, this.getObjectId());
+                ps.execute();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Couldn't update player recommendations.", e);
         }
 
     }
@@ -1399,7 +1215,7 @@ public final class Player extends Playable {
         } else if (con > 59) {
             return 176000;
         } else {
-            double baseLoad = Math.pow(1.029993928D, con) * 30495.627366D;
+            double baseLoad = Math.pow(1.029993928, con) * 30495.627366;
             return (int) this.calcStat(Stats.MAX_LOAD, baseLoad * Config.ALT_WEIGHT_LIMIT, this, null);
         }
     }
@@ -1420,7 +1236,7 @@ public final class Player extends Playable {
         int maxLoad = this.getMaxLoad();
         if (maxLoad > 0) {
             int weightproc = this.getCurrentLoad() * 1000 / maxLoad;
-            byte newWeightPenalty;
+            int newWeightPenalty;
             if (weightproc < 500) {
                 newWeightPenalty = 0;
             } else if (weightproc < 666) {
@@ -1732,10 +1548,9 @@ public final class Player extends Playable {
             this.stopFakeDeath(true);
         } else {
             boolean isThrone = target instanceof StaticObject && ((StaticObject) target).getType() == 1;
-            NextAction nextAction;
             if (isThrone && !sittingState && !this.isInsideRadius(target, 150, false, false)) {
                 this.getAI().setIntention(IntentionType.MOVE_TO, new Location(target.getX(), target.getY(), target.getZ()));
-                nextAction = new NextAction(AiEventType.ARRIVED, IntentionType.MOVE_TO, () -> {
+                NextAction nextAction = new NextAction(AiEventType.ARRIVED, IntentionType.MOVE_TO, () -> {
                     if (this.getMountType() == 0) {
                         this.sitDown();
                         if (!((StaticObject) target).isBusy()) {
@@ -1773,7 +1588,7 @@ public final class Player extends Playable {
                         }
                     }
                 } else {
-                    nextAction = new NextAction(AiEventType.ARRIVED, IntentionType.MOVE_TO, () -> {
+                    NextAction nextAction = new NextAction(AiEventType.ARRIVED, IntentionType.MOVE_TO, () -> {
                         if (this.getMountType() == 0) {
                             if (sittingState) {
                                 if (this._throneId != 0) {
@@ -1839,25 +1654,19 @@ public final class Player extends Playable {
     }
 
     public PcFreight getDepositedFreight(int objectId) {
-        Iterator var2 = this._depositedFreight.iterator();
-
-        PcFreight freight;
-        do {
-            if (!var2.hasNext()) {
-                freight = new PcFreight(null);
-                freight.doQuickRestore(objectId);
-                this._depositedFreight.add(freight);
+        for (PcFreight freight : this._depositedFreight) {
+            if (freight != null && freight.getOwnerId() == objectId) {
                 return freight;
             }
+        }
 
-            freight = (PcFreight) var2.next();
-        } while (freight == null || freight.getOwnerId() != objectId);
-
+        PcFreight freight = new PcFreight(null);
+        freight.doQuickRestore(objectId);
+        this._depositedFreight.add(freight);
         return freight;
     }
 
     public void clearDepositedFreight() {
-
         for (PcFreight freight : this._depositedFreight) {
             if (freight != null) {
                 freight.deleteMe();
@@ -2008,9 +1817,8 @@ public final class Player extends Playable {
                 }
             }
 
-            ItemInstance createdItem;
             if (item.getItemType() != EtcItemType.HERB) {
-                createdItem = this._inventory.addItem(process, itemId, count, this, reference);
+                ItemInstance createdItem = this._inventory.addItem(process, itemId, count, this, reference);
                 if (CursedWeaponManager.getInstance().isCursed(createdItem.getItemId())) {
                     CursedWeaponManager.getInstance().activate(this, createdItem);
                 } else if (item.getItemType() == EtcItemType.ARROW && this.getAttackType() == WeaponType.BOW && this.getInventory().getPaperdollItem(8) == null) {
@@ -2020,10 +1828,10 @@ public final class Player extends Playable {
                 return createdItem;
             }
 
-            createdItem = new ItemInstance(0, itemId);
-            IItemHandler handler = ItemHandler.getInstance().getHandler(createdItem.getEtcItem());
+            ItemInstance herb = new ItemInstance(0, itemId);
+            IItemHandler handler = ItemHandler.getInstance().getHandler(herb.getEtcItem());
             if (handler != null) {
-                handler.useItem(this, createdItem, false);
+                handler.useItem(this, herb, false);
             }
         }
 
@@ -2206,7 +2014,11 @@ public final class Player extends Playable {
 
             return null;
         } else {
-            item.setInstance(this.getInstance(), this.getInstance() != null);
+            if (this.getInstance() != null) {
+                item.setInstance(this.getInstance(), true);
+            } else {
+                item.setInstance(this.getInstance(), false);
+            }
 
             item.dropMe(this, x, y, z);
             InventoryUpdate playerIU = new InventoryUpdate();
@@ -2256,7 +2068,7 @@ public final class Player extends Playable {
                 this._protectTask = ThreadPool.schedule(() -> {
                     this.setSpawnProtection(false);
                     this.sendMessage("The spawn protection has ended.");
-                }, Config.PLAYER_SPAWN_PROTECTION * 1000L);
+                }, Config.PLAYER_SPAWN_PROTECTION * 1000);
             }
         } else {
             this._protectTask.cancel(true);
@@ -2271,7 +2083,7 @@ public final class Player extends Playable {
     }
 
     public void setRecentFakeDeath() {
-        this._recentFakeDeathEndTime = System.currentTimeMillis() + (Config.PLAYER_FAKEDEATH_UP_PROTECTION * 1000L);
+        this._recentFakeDeathEndTime = System.currentTimeMillis() + (long) (Config.PLAYER_FAKEDEATH_UP_PROTECTION * 1000);
     }
 
     public void clearRecentFakeDeath() {
@@ -2282,16 +2094,16 @@ public final class Player extends Playable {
         return this._recentFakeDeathEndTime > System.currentTimeMillis();
     }
 
-    public boolean isFakeDeath() {
+    public final boolean isFakeDeath() {
         return this._isFakeDeath;
     }
 
-    public void setIsFakeDeath(boolean value) {
+    public final void setIsFakeDeath(boolean value) {
         this._isFakeDeath = value;
     }
 
-    public boolean isAlikeDead() {
-        return super.isAlikeDead() || this.isFakeDeath();
+    public final boolean isAlikeDead() {
+        return super.isAlikeDead() ? true : this.isFakeDeath();
     }
 
     public GameClient getClient() {
@@ -2415,12 +2227,7 @@ public final class Player extends Playable {
                 return;
             }
 
-            if (!this.isAutoAttackable(player)) {
-                player.sendPacket(ActionFailed.STATIC_PACKET);
-                if (player != this && GeoEngine.getInstance().canSeeTarget(player, this)) {
-                    player.getAI().setIntention(IntentionType.FOLLOW, this);
-                }
-            } else {
+            if (this.isAutoAttackable(player)) {
                 if (this.isCursedWeaponEquipped() && player.getLevel() < 21 || player.isCursedWeaponEquipped() && this.getLevel() < 21) {
                     player.sendPacket(ActionFailed.STATIC_PACKET);
                     return;
@@ -2429,6 +2236,11 @@ public final class Player extends Playable {
                 if (GeoEngine.getInstance().canSeeTarget(player, this)) {
                     player.getAI().setIntention(IntentionType.ATTACK, this);
                     player.onActionRequest();
+                }
+            } else {
+                player.sendPacket(ActionFailed.STATIC_PACKET);
+                if (player != this && GeoEngine.getInstance().canSeeTarget(player, this)) {
+                    player.getAI().setIntention(IntentionType.FOLLOW, this);
                 }
             }
         }
@@ -2443,19 +2255,14 @@ public final class Player extends Playable {
         super.onActionShift(player);
     }
 
-    /**
-     *
-     * @param barPixels pixel size from cp bar
-     * @return true if cp has been or will be updated, false otherwise
-     */
     private boolean needCpUpdate(int barPixels) {
         double currentCp = this.getCurrentCp();
-        if (currentCp > 1.0D && this.getMaxCp() >= barPixels) {
-            if (currentCp > this._cpUpdateDecCheck && currentCp < this._cpUpdateIncCheck) {
+        if (!(currentCp <= (double) 1.0F) && this.getMaxCp() >= barPixels) {
+            if (!(currentCp <= this._cpUpdateDecCheck) && !(currentCp >= this._cpUpdateIncCheck)) {
                 return false;
             } else {
                 if (currentCp == (double) this.getMaxCp()) {
-                    this._cpUpdateIncCheck = currentCp + 1.0D;
+                    this._cpUpdateIncCheck = currentCp + (double) 1.0F;
                     this._cpUpdateDecCheck = currentCp - this._cpUpdateInterval;
                 } else {
                     double doubleMulti = currentCp / this._cpUpdateInterval;
@@ -2471,19 +2278,14 @@ public final class Player extends Playable {
         }
     }
 
-    /**
-     *
-     * @param barPixels pixel size from mp bar
-     * @return true if mp has been or will be updated, false otherwise
-     */
     private boolean needMpUpdate(int barPixels) {
         double currentMp = this.getCurrentMp();
-        if (currentMp > 1.0D && this.getMaxMp() >= barPixels) {
-            if (currentMp > this._mpUpdateDecCheck && currentMp < this._mpUpdateIncCheck) {
+        if (!(currentMp <= (double) 1.0F) && this.getMaxMp() >= barPixels) {
+            if (!(currentMp <= this._mpUpdateDecCheck) && !(currentMp >= this._mpUpdateIncCheck)) {
                 return false;
             } else {
                 if (currentMp == (double) this.getMaxMp()) {
-                    this._mpUpdateIncCheck = currentMp + 1.0D;
+                    this._mpUpdateIncCheck = currentMp + (double) 1.0F;
                     this._mpUpdateDecCheck = currentMp - this._mpUpdateInterval;
                 } else {
                     double doubleMulti = currentMp / this._mpUpdateInterval;
@@ -2539,7 +2341,7 @@ public final class Player extends Playable {
         super.broadcastPacketInRadius(packet, radius);
     }
 
-    public void mikadoPlayerUpdate() {
+    public final void mikadoPlayerUpdate() {
         this.updateAbnormalEffect();
         this.sendPacket(new ItemList(this, false));
         this.sendPacket(new InventoryUpdate());
@@ -2551,18 +2353,17 @@ public final class Player extends Playable {
         this.broadcastUserInfo();
     }
 
-    public void broadcastUserInfo() {
+    public final void broadcastUserInfo() {
         this.sendPacket(new UserInfo(this));
         if (this.getPolyType() == PolyType.NPC) {
-            this.broadcastPacket(new PcMorphInfo(this, this.getPolyTemplate()), false);
+            this.broadcastPacket(new AbstractNpcInfo.PcMorphInfo(this, this.getPolyTemplate()), false);
         } else {
             this.broadcastCharInfo();
         }
 
     }
 
-    public void broadcastCharInfo() {
-
+    public final void broadcastCharInfo() {
         for (Player player : this.getKnownType(Player.class)) {
             player.sendPacket(new CharInfo(this));
             int relation = this.getRelation(player);
@@ -2575,7 +2376,7 @@ public final class Player extends Playable {
 
     }
 
-    public void broadcastTitleInfo() {
+    public final void broadcastTitleInfo() {
         this.sendPacket(new UserInfo(this));
         this.broadcastPacket(new TitleUpdate(this));
     }
@@ -2604,7 +2405,8 @@ public final class Player extends Playable {
     }
 
     public void doInteract(Creature target) {
-        if (target instanceof Player temp) {
+        if (target instanceof Player) {
+            Player temp = (Player) target;
             this.sendPacket(new MoveToPawn(this, temp, 150));
             switch (temp.getStoreType()) {
                 case SELL:
@@ -2637,7 +2439,8 @@ public final class Player extends Playable {
     public void doPickupItem(WorldObject object) {
         if (!this.isAlikeDead() && !this.isFakeDeath()) {
             this.getAI().setIntention(IntentionType.IDLE);
-            if (object instanceof ItemInstance item) {
+            if (object instanceof ItemInstance) {
+                ItemInstance item = (ItemInstance) object;
                 this.sendPacket(ActionFailed.STATIC_PACKET);
                 this.sendPacket(new StopMove(this));
                 synchronized (item) {
@@ -2654,7 +2457,7 @@ public final class Player extends Playable {
                         return;
                     }
 
-                    if ((!this.isInParty() || this.getParty().getLootRule() == LootRule.ITEM_LOOTER) && !this._inventory.validateCapacity(item)) {
+                    if ((this.isInParty() && this.getParty().getLootRule() == LootRule.ITEM_LOOTER || !this.isInParty()) && !this._inventory.validateCapacity(item)) {
                         this.sendPacket(SystemMessageId.SLOTS_FULL);
                         return;
                     }
@@ -2805,11 +2608,11 @@ public final class Player extends Playable {
 
     }
 
-    public PreparedListContainer getMultiSell() {
+    public final PreparedListContainer getMultiSell() {
         return this._currentMultiSell;
     }
 
-    public void setMultiSell(PreparedListContainer list) {
+    public final void setMultiSell(PreparedListContainer list) {
         this._currentMultiSell = list;
     }
 
@@ -2838,7 +2641,8 @@ public final class Player extends Playable {
         if (newTarget instanceof StaticObject) {
             this.sendPacket(new MyTargetSelected(newTarget.getObjectId(), 0));
             this.sendPacket(new StaticObjectInfo((StaticObject) newTarget));
-        } else if (newTarget instanceof Creature target) {
+        } else if (newTarget instanceof Creature) {
+            Creature target = (Creature) newTarget;
             if (newTarget.getObjectId() != this.getObjectId()) {
                 this.sendPacket(new ValidateLocation(target));
             }
@@ -2975,12 +2779,8 @@ public final class Player extends Playable {
                 }
             }
 
-            Iterator var5;
             if (!this._cubics.isEmpty()) {
-                var5 = this._cubics.values().iterator();
-
-                while (var5.hasNext()) {
-                    Cubic cubic = (Cubic) var5.next();
+                for (Cubic cubic : this._cubics.values()) {
                     cubic.stopAction();
                     cubic.cancelDisappear();
                 }
@@ -2992,10 +2792,7 @@ public final class Player extends Playable {
                 this.abortCast();
             }
 
-            var5 = this.getKnownType(Creature.class).iterator();
-
-            while (var5.hasNext()) {
-                Creature character = (Creature) var5.next();
+            for (Creature character : this.getKnownType(Creature.class)) {
                 if (character.getFusionSkill() != null && character.getFusionSkill().getTarget() == this) {
                     character.abortCast();
                 }
@@ -3054,28 +2851,9 @@ public final class Player extends Playable {
                     if (dropPercent > 0 && Rnd.get(100) < dropPercent) {
                         int dropCount = 0;
                         int itemDropPercent = 0;
-                        Iterator var12 = this.getInventory().getItems().iterator();
 
-                        while (true) {
-                            ItemInstance itemDrop;
-                            do {
-                                do {
-                                    do {
-                                        do {
-                                            do {
-                                                if (!var12.hasNext()) {
-                                                    return;
-                                                }
-
-                                                itemDrop = (ItemInstance) var12.next();
-                                            } while (!itemDrop.isDropable());
-                                        } while (itemDrop.isShadowItem());
-                                    } while (itemDrop.getItemId() == 57);
-                                } while (itemDrop.getItem().getType2() == 3);
-                            } while (this._summon != null && this._summon.getControlItemId() == itemDrop.getItemId());
-
-                            if (Arrays.binarySearch(Config.KARMA_LIST_NONDROPPABLE_ITEMS, itemDrop.getItemId()) < 0 && Arrays.binarySearch(Config.KARMA_LIST_NONDROPPABLE_PET_ITEMS, itemDrop.getItemId()) < 0) {
-
+                        for (ItemInstance itemDrop : this.getInventory().getItems()) {
+                            if (itemDrop.isDropable() && !itemDrop.isShadowItem() && itemDrop.getItemId() != 57 && itemDrop.getItem().getType2() != 3 && (this._summon == null || this._summon.getControlItemId() != itemDrop.getItemId()) && Arrays.binarySearch(Config.KARMA_LIST_NONDROPPABLE_ITEMS, itemDrop.getItemId()) < 0 && Arrays.binarySearch(Config.KARMA_LIST_NONDROPPABLE_PET_ITEMS, itemDrop.getItemId()) < 0) {
                                 if (itemDrop.isEquipped()) {
                                     itemDropPercent = itemDrop.getItem().getType2() == 0 ? dropEquipWeapon : dropEquip;
                                     this.getInventory().unEquipItemInSlot(itemDrop.getLocationSlot());
@@ -3208,7 +2986,7 @@ public final class Player extends Playable {
 
     public void restoreExp(double restorePercent) {
         if (this.getExpBeforeDeath() > 0L) {
-            this.getStat().addExp((int) Math.round((double) (this.getExpBeforeDeath() - this.getExp()) * restorePercent / 100.0D));
+            this.getStat().addExp((int) Math.round((double) (this.getExpBeforeDeath() - this.getExp()) * restorePercent / (double) 100.0F));
             this.setExpBeforeDeath(0L);
         }
 
@@ -3226,11 +3004,11 @@ public final class Player extends Playable {
         }
 
         int lvl = this.getLevel();
-        double percentLost = 7.0D;
+        double percentLost = 7.0F;
         if (this.getLevel() >= 76) {
-            percentLost = 2.0D;
+            percentLost = 2.0F;
         } else if (this.getLevel() >= 40) {
-            percentLost = 4.0D;
+            percentLost = 4.0F;
         }
 
         if (this.getKarma() > 0) {
@@ -3238,14 +3016,14 @@ public final class Player extends Playable {
         }
 
         if (this.isFestivalParticipant() || atWar || this.isInsideZone(ZoneId.SIEGE)) {
-            percentLost /= 4.0D;
+            percentLost /= 4.0F;
         }
 
         long lostExp = 0L;
         if (lvl < 81) {
-            lostExp = Math.round((double) (this.getStat().getExpForLevel(lvl + 1) - this.getStat().getExpForLevel(lvl)) * percentLost / 100.0D);
+            lostExp = Math.round((double) (this.getStat().getExpForLevel(lvl + 1) - this.getStat().getExpForLevel(lvl)) * percentLost / (double) 100.0F);
         } else {
-            lostExp = Math.round((double) (this.getStat().getExpForLevel(81) - this.getStat().getExpForLevel(80)) * percentLost / 100.0D);
+            lostExp = Math.round((double) (this.getStat().getExpForLevel(81) - this.getStat().getExpForLevel(80)) * percentLost / (double) 100.0F);
         }
 
         this.setExpBeforeDeath(this.getExp());
@@ -3449,7 +3227,6 @@ public final class Player extends Playable {
         if (Config.AUTO_LEARN_SKILLS) {
             this.rewardSkills();
         } else {
-
             for (GeneralSkillNode skill : this.getAvailableAutoGetSkills()) {
                 this.addSkill(skill.getSkill(), false);
             }
@@ -3465,7 +3242,6 @@ public final class Player extends Playable {
     }
 
     public void rewardSkills() {
-
         for (GeneralSkillNode skill : this.getAllAvailableSkills()) {
             this.addSkill(skill.getSkill(), skill.getCost() != 0);
         }
@@ -3481,33 +3257,26 @@ public final class Player extends Playable {
     private void removeInvalidSkills() {
         if (!this.getSkills().isEmpty()) {
             Map<Integer, Optional<GeneralSkillNode>> availableSkills = this.getTemplate().getSkills().stream().filter((s) -> s.getMinLvl() <= this.getLevel() + (s.getId() == 239 ? 0 : 9)).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL)));
-            Iterator<L2Skill> var2 = this.getSkills().values().iterator();
 
-            while (true) {
-                AtomicReference<L2Skill> skill = new AtomicReference<>();
-                do {
-                    if (!var2.hasNext()) {
-                        return;
-                    }
-
-                    skill.set(var2.next());
-                } while (this.getTemplate().getSkills().stream().noneMatch((s) -> s.getId() == skill.get().getId()));
-
-                Optional<GeneralSkillNode> tempSkill = availableSkills.get(skill.get().getId());
-                if (tempSkill == null) {
-                    this.removeSkill(skill.get().getId(), true);
-                } else if (tempSkill.isPresent()) {
-                    GeneralSkillNode availableSkill = tempSkill.get();
-                    int maxLevel = SkillTable.getInstance().getMaxLevel(skill.get().getId());
-                    if (skill.get().getLevel() > maxLevel) {
-                        if ((this.getLevel() < 76 || availableSkill.getValue() < maxLevel) && skill.get().getLevel() > availableSkill.getValue()) {
+            for (L2Skill skill : this.getSkills().values()) {
+                if (this.getTemplate().getSkills().stream().filter((s) -> s.getId() == skill.getId()).count() != 0L) {
+                    Optional<GeneralSkillNode> tempSkill = availableSkills.get(skill.getId());
+                    if (tempSkill == null) {
+                        this.removeSkill(skill.getId(), true);
+                    } else {
+                        GeneralSkillNode availableSkill = tempSkill.get();
+                        int maxLevel = SkillTable.getInstance().getMaxLevel(skill.getId());
+                        if (skill.getLevel() > maxLevel) {
+                            if ((this.getLevel() < 76 || availableSkill.getValue() < maxLevel) && skill.getLevel() > availableSkill.getValue()) {
+                                this.addSkill(availableSkill.getSkill(), true);
+                            }
+                        } else if (skill.getLevel() > availableSkill.getValue()) {
                             this.addSkill(availableSkill.getSkill(), true);
                         }
-                    } else if (skill.get().getLevel() > availableSkill.getValue()) {
-                        this.addSkill(availableSkill.getSkill(), true);
                     }
                 }
             }
+
         }
     }
 
@@ -3532,18 +3301,14 @@ public final class Player extends Playable {
     }
 
     public void addSiegeSkills() {
-        L2Skill[] var1 = SkillTable.getInstance().getSiegeSkills(this.isNoble());
-
-        for (L2Skill sk : var1) {
+        for (L2Skill sk : SkillTable.getInstance().getSiegeSkills(this.isNoble())) {
             this.addSkill(sk, false);
         }
 
     }
 
     public void removeSiegeSkills() {
-        L2Skill[] var1 = SkillTable.getInstance().getSiegeSkills(this.isNoble());
-
-        for (L2Skill sk : var1) {
+        for (L2Skill sk : SkillTable.getInstance().getSiegeSkills(this.isNoble())) {
             this.removeSkill(sk.getId(), false);
         }
 
@@ -3551,8 +3316,8 @@ public final class Player extends Playable {
 
     public List<GeneralSkillNode> getAvailableAutoGetSkills() {
         List<GeneralSkillNode> result = new ArrayList<>();
-        (this.getTemplate().getSkills().stream().filter((s) -> s.getMinLvl() <= this.getLevel() && s.getCost() == 0).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL)))).forEach((i, s) -> {
-            if (s.isPresent() && this.getSkillLevel(i) < s.get().getValue()) {
+        this.getTemplate().getSkills().stream().filter((s) -> s.getMinLvl() <= this.getLevel() && s.getCost() == 0).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL))).forEach((i, s) -> {
+            if (this.getSkillLevel(i) < s.get().getValue()) {
                 result.add(s.get());
             }
 
@@ -3574,7 +3339,7 @@ public final class Player extends Playable {
     public List<GeneralSkillNode> getAllAvailableSkills() {
         List<GeneralSkillNode> result = new ArrayList<>();
         (this.getTemplate().getSkills().stream().filter((s) -> s.getMinLvl() <= this.getLevel()).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL)))).forEach((i, s) -> {
-            if (s.isPresent() && this.getSkillLevel(i) < s.get().getValue()) {
+            if (this.getSkillLevel(i) < s.get().getValue()) {
                 result.add(s.get());
             }
 
@@ -3654,7 +3419,6 @@ public final class Player extends Playable {
             return false;
         } else {
             ItemInstance wpn = this.getInventory().getPaperdollItem(7);
-            int var6;
             if (wpn != null) {
                 ItemInstance[] unequipped = this.getInventory().unEquipItemInBodySlotAndRecord(wpn);
                 InventoryUpdate iu = new InventoryUpdate();
@@ -3794,7 +3558,7 @@ public final class Player extends Playable {
             }
 
             if (!summon.isDead() && !this.isMounted()) {
-                return this.mount(summon);
+                this.mount(summon);
             }
         } else if (this.isMounted()) {
             if (this.getMountType() == 2 && this.isInsideZone(ZoneId.NO_LANDING)) {
@@ -3832,45 +3596,13 @@ public final class Player extends Playable {
 
     public void storePetFood(int petId) {
         if (this._controlItemId != 0 && petId != 0) {
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
-                    PreparedStatement ps = con.prepareStatement("UPDATE pets SET fed=? WHERE item_obj_id = ?");
-
-                    try {
-                        ps.setInt(1, this.getCurrentFeed());
-                        ps.setInt(2, this._controlItemId);
-                        ps.executeUpdate();
-                        this._controlItemId = 0;
-                    } catch (Throwable var8) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var7) {
-                                var8.addSuppressed(var7);
-                            }
-                        }
-
-                        throw var8;
-                    }
-
-                    ps.close();
-                } catch (Throwable var9) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var6) {
-                            var9.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var9;
-                }
-
-                con.close();
-            } catch (Exception var10) {
-                LOGGER.error("Couldn't store pet food data for {}.", var10, this._controlItemId);
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE pets SET fed=? WHERE item_obj_id = ?");) {
+                ps.setInt(1, this.getCurrentFeed());
+                ps.setInt(2, this._controlItemId);
+                ps.executeUpdate();
+                this._controlItemId = 0;
+            } catch (Exception e) {
+                LOGGER.error("Couldn't store pet food data for {}.", e, this._controlItemId);
             }
         }
 
@@ -3927,7 +3659,7 @@ public final class Player extends Playable {
     }
 
     public boolean checkFoodState(double state) {
-        return this._canFeed && (double) this.getCurrentFeed() < (double) this._petData.getMaxMeal() * state;
+        return this._canFeed ? (double) this.getCurrentFeed() < (double) this._petData.getMaxMeal() * state : false;
     }
 
     public long getUptime() {
@@ -4041,45 +3773,13 @@ public final class Player extends Playable {
     }
 
     public void updateOnlineStatus() {
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
-                PreparedStatement ps = con.prepareStatement("UPDATE characters SET online=?, lastAccess=? WHERE obj_id=?");
-
-                try {
-                    ps.setInt(1, this.isOnlineInt());
-                    ps.setLong(2, System.currentTimeMillis());
-                    ps.setInt(3, this.getObjectId());
-                    ps.execute();
-                } catch (Throwable var7) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var6) {
-                            var7.addSuppressed(var6);
-                        }
-                    }
-
-                    throw var7;
-                }
-
-                ps.close();
-            } catch (Throwable var8) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var5) {
-                        var8.addSuppressed(var5);
-                    }
-                }
-
-                throw var8;
-            }
-
-            con.close();
-        } catch (Exception var9) {
-            LOGGER.error("Couldn't set player online status.", var9);
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET online=?, lastAccess=? WHERE obj_id=?");) {
+            ps.setInt(1, this.isOnlineInt());
+            ps.setLong(2, System.currentTimeMillis());
+            ps.setInt(3, this.getObjectId());
+            ps.execute();
+        } catch (Exception e) {
+            LOGGER.error("Couldn't set player online status.", e);
         }
 
     }
@@ -4112,146 +3812,50 @@ public final class Player extends Playable {
 
     private void storeRecipeBook() {
         if (!this.isSubClassActive()) {
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
-                    PreparedStatement ps = con.prepareStatement("DELETE FROM character_recipebook WHERE charId=?");
-
-                    try {
-                        ps.setInt(1, this.getObjectId());
-                        ps.execute();
-                    } catch (Throwable var8) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var7) {
-                                var8.addSuppressed(var7);
-                            }
-                        }
-
-                        throw var8;
-                    }
-
-                    ps.close();
-
-                    ps = con.prepareStatement("INSERT INTO character_recipebook (charId, recipeId) values(?,?)");
-
-                    try {
-                        Iterator var3 = this.getCommonRecipeBook().iterator();
-
-                        Recipe recipe;
-                        while (var3.hasNext()) {
-                            recipe = (Recipe) var3.next();
-                            ps.setInt(1, this.getObjectId());
-                            ps.setInt(2, recipe.getId());
-                            ps.addBatch();
-                        }
-
-                        var3 = this.getDwarvenRecipeBook().iterator();
-
-                        while (var3.hasNext()) {
-                            recipe = (Recipe) var3.next();
-                            ps.setInt(1, this.getObjectId());
-                            ps.setInt(2, recipe.getId());
-                            ps.addBatch();
-                        }
-
-                        ps.executeBatch();
-                    } catch (Throwable var9) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var6) {
-                                var9.addSuppressed(var6);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    ps.close();
-                } catch (Throwable var10) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var5) {
-                            var10.addSuppressed(var5);
-                        }
-                    }
-
-                    throw var10;
+            try (Connection con = ConnectionPool.getConnection()) {
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_recipebook WHERE charId=?")) {
+                    ps.setInt(1, this.getObjectId());
+                    ps.execute();
                 }
 
-                con.close();
-            } catch (Exception var11) {
-                LOGGER.error("Couldn't store recipe book data.", var11);
+                try (PreparedStatement ps = con.prepareStatement("INSERT INTO character_recipebook (charId, recipeId) values(?,?)")) {
+                    for (Recipe recipe : this.getCommonRecipeBook()) {
+                        ps.setInt(1, this.getObjectId());
+                        ps.setInt(2, recipe.getId());
+                        ps.addBatch();
+                    }
+
+                    for (Recipe recipe : this.getDwarvenRecipeBook()) {
+                        ps.setInt(1, this.getObjectId());
+                        ps.setInt(2, recipe.getId());
+                        ps.addBatch();
+                    }
+
+                    ps.executeBatch();
+                }
+            } catch (Exception e) {
+                LOGGER.error("Couldn't store recipe book data.", e);
             }
 
         }
     }
 
     private void restoreRecipeBook() {
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT recipeId FROM character_recipebook WHERE charId=?");) {
+            ps.setInt(1, this.getObjectId());
 
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT recipeId FROM character_recipebook WHERE charId=?");
-
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ResultSet rs = ps.executeQuery();
-
-                    try {
-                        while (rs.next()) {
-                            Recipe recipe = RecipeData.getInstance().getRecipeList(rs.getInt("recipeId"));
-                            if (recipe.isDwarven()) {
-                                this.registerDwarvenRecipeList(recipe);
-                            } else {
-                                this.registerCommonRecipeList(recipe);
-                            }
-                        }
-                    } catch (Throwable var9) {
-                        if (rs != null) {
-                            try {
-                                rs.close();
-                            } catch (Throwable var8) {
-                                var9.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    rs.close();
-                } catch (Throwable var10) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
-                }
-
-                ps.close();
-            } catch (Throwable var11) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var6) {
-                        var11.addSuppressed(var6);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Recipe recipe = RecipeData.getInstance().getRecipeList(rs.getInt("recipeId"));
+                    if (recipe.isDwarven()) {
+                        this.registerDwarvenRecipeList(recipe);
+                    } else {
+                        this.registerCommonRecipeList(recipe);
                     }
                 }
-
-                throw var11;
             }
-
-            con.close();
-        } catch (Exception var12) {
-            LOGGER.error("Couldn't restore recipe book data.", var12);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore recipe book data.", e);
         }
 
     }
@@ -4280,98 +3884,66 @@ public final class Player extends Playable {
         int sp = this.getStat().getSp();
         this._classIndex = currentClassIndex;
 
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
-                PreparedStatement ps = con.prepareStatement("UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,punish_level=?,punish_timer=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,varka_ketra_ally=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,pc_point=?,newbie_armor=? WHERE obj_id=?");
-
-                try {
-                    ps.setInt(1, level);
-                    ps.setInt(2, this.getMaxHp());
-                    ps.setDouble(3, this.getCurrentHp());
-                    ps.setInt(4, this.getMaxCp());
-                    ps.setDouble(5, this.getCurrentCp());
-                    ps.setInt(6, this.getMaxMp());
-                    ps.setDouble(7, this.getCurrentMp());
-                    ps.setInt(8, this.getAppearance().getFace());
-                    ps.setInt(9, this.getAppearance().getHairStyle());
-                    ps.setInt(10, this.getAppearance().getHairColor());
-                    ps.setInt(11, this.getAppearance().getSex().ordinal());
-                    ps.setInt(12, this.getHeading());
-                    if (!this.isInObserverMode()) {
-                        ps.setInt(13, this.getX());
-                        ps.setInt(14, this.getY());
-                        ps.setInt(15, this.getZ());
-                    } else {
-                        ps.setInt(13, this._savedLocation.getX());
-                        ps.setInt(14, this._savedLocation.getY());
-                        ps.setInt(15, this._savedLocation.getZ());
-                    }
-
-                    ps.setLong(16, exp);
-                    ps.setLong(17, this.getExpBeforeDeath());
-                    ps.setInt(18, sp);
-                    ps.setInt(19, this.getKarma());
-                    ps.setInt(20, this.getPvpKills());
-                    ps.setInt(21, this.getPkKills());
-                    ps.setInt(22, this.getClanId());
-                    ps.setInt(23, this.getRace().ordinal());
-                    ps.setInt(24, this.getClassId().getId());
-                    ps.setLong(25, this.getDeleteTimer());
-                    ps.setString(26, this.getTitle());
-                    ps.setInt(27, this.getAccessLevel().getLevel());
-                    ps.setInt(28, this.isOnlineInt());
-                    ps.setInt(29, this.isIn7sDungeon() ? 1 : 0);
-                    ps.setInt(30, this.getClanPrivileges());
-                    ps.setInt(31, this.wantsPeace() ? 1 : 0);
-                    ps.setInt(32, this.getBaseClass());
-                    ps.setLong(33, this.getOnlineTime());
-                    ps.setInt(34, this._punishment.getType().ordinal());
-                    ps.setLong(35, this._punishment.getTimer());
-                    ps.setInt(36, this.isNoble() ? 1 : 0);
-                    ps.setLong(37, (long) this.getPowerGrade());
-                    ps.setInt(38, this.getPledgeType());
-                    ps.setInt(39, this.getLvlJoinedAcademy());
-                    ps.setLong(40, (long) this.getApprentice());
-                    ps.setLong(41, (long) this.getSponsor());
-                    ps.setInt(42, this.getAllianceWithVarkaKetra());
-                    ps.setLong(43, this.getClanJoinExpiryTime());
-                    ps.setLong(44, this.getClanCreateExpiryTime());
-                    ps.setString(45, this.getName());
-                    ps.setLong(46, (long) this.getDeathPenaltyBuffLevel());
-                    ps.setInt(47, this.getPcBangScore());
-                    ps.setInt(48, this.getReceiveNewbieArmor() ? 1 : 0);
-                    ps.setInt(49, this.getObjectId());
-                    ps.execute();
-                } catch (Throwable var12) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var11) {
-                            var12.addSuppressed(var11);
-                        }
-                    }
-
-                    throw var12;
-                }
-
-                ps.close();
-            } catch (Throwable var13) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var10) {
-                        var13.addSuppressed(var10);
-                    }
-                }
-
-                throw var13;
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,punish_level=?,punish_timer=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,varka_ketra_ally=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,pc_point=?,newbie_armor=? WHERE obj_id=?");) {
+            ps.setInt(1, level);
+            ps.setInt(2, this.getMaxHp());
+            ps.setDouble(3, this.getCurrentHp());
+            ps.setInt(4, this.getMaxCp());
+            ps.setDouble(5, this.getCurrentCp());
+            ps.setInt(6, this.getMaxMp());
+            ps.setDouble(7, this.getCurrentMp());
+            ps.setInt(8, this.getAppearance().getFace());
+            ps.setInt(9, this.getAppearance().getHairStyle());
+            ps.setInt(10, this.getAppearance().getHairColor());
+            ps.setInt(11, this.getAppearance().getSex().ordinal());
+            ps.setInt(12, this.getHeading());
+            if (!this.isInObserverMode()) {
+                ps.setInt(13, this.getX());
+                ps.setInt(14, this.getY());
+                ps.setInt(15, this.getZ());
+            } else {
+                ps.setInt(13, this._savedLocation.getX());
+                ps.setInt(14, this._savedLocation.getY());
+                ps.setInt(15, this._savedLocation.getZ());
             }
 
-            con.close();
-        } catch (Exception var14) {
-            LOGGER.error("Couldn't store player base data.", var14);
+            ps.setLong(16, exp);
+            ps.setLong(17, this.getExpBeforeDeath());
+            ps.setInt(18, sp);
+            ps.setInt(19, this.getKarma());
+            ps.setInt(20, this.getPvpKills());
+            ps.setInt(21, this.getPkKills());
+            ps.setInt(22, this.getClanId());
+            ps.setInt(23, this.getRace().ordinal());
+            ps.setInt(24, this.getClassId().getId());
+            ps.setLong(25, this.getDeleteTimer());
+            ps.setString(26, this.getTitle());
+            ps.setInt(27, this.getAccessLevel().getLevel());
+            ps.setInt(28, this.isOnlineInt());
+            ps.setInt(29, this.isIn7sDungeon() ? 1 : 0);
+            ps.setInt(30, this.getClanPrivileges());
+            ps.setInt(31, this.wantsPeace() ? 1 : 0);
+            ps.setInt(32, this.getBaseClass());
+            ps.setLong(33, this.getOnlineTime());
+            ps.setInt(34, this._punishment.getType().ordinal());
+            ps.setLong(35, this._punishment.getTimer());
+            ps.setInt(36, this.isNoble() ? 1 : 0);
+            ps.setLong(37, (long) this.getPowerGrade());
+            ps.setInt(38, this.getPledgeType());
+            ps.setInt(39, this.getLvlJoinedAcademy());
+            ps.setLong(40, (long) this.getApprentice());
+            ps.setLong(41, (long) this.getSponsor());
+            ps.setInt(42, this.getAllianceWithVarkaKetra());
+            ps.setLong(43, this.getClanJoinExpiryTime());
+            ps.setLong(44, this.getClanCreateExpiryTime());
+            ps.setString(45, this.getName());
+            ps.setLong(46, (long) this.getDeathPenaltyBuffLevel());
+            ps.setInt(47, this.getPcBangScore());
+            ps.setInt(48, this.getReceiveNewbieArmor() ? 1 : 0);
+            ps.setInt(49, this.getObjectId());
+            ps.execute();
+        } catch (Exception e) {
+            LOGGER.error("Couldn't store player base data.", e);
         }
 
     }
@@ -4392,53 +3964,20 @@ public final class Player extends Playable {
 
     private void storeCharSub() {
         if (!this._subClasses.isEmpty()) {
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
-                    PreparedStatement ps = con.prepareStatement("UPDATE character_subclasses SET exp=?,sp=?,level=?,class_id=? WHERE char_obj_id=? AND class_index =?");
-
-                    try {
-
-                        for (SubClass subClass : this._subClasses.values()) {
-                            ps.setLong(1, subClass.getExp());
-                            ps.setInt(2, subClass.getSp());
-                            ps.setInt(3, subClass.getLevel());
-                            ps.setInt(4, subClass.getClassId());
-                            ps.setInt(5, this.getObjectId());
-                            ps.setInt(6, subClass.getClassIndex());
-                            ps.addBatch();
-                        }
-
-                        ps.executeBatch();
-                    } catch (Throwable var7) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var6) {
-                                var7.addSuppressed(var6);
-                            }
-                        }
-
-                        throw var7;
-                    }
-
-                    ps.close();
-                } catch (Throwable var8) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var5) {
-                            var8.addSuppressed(var5);
-                        }
-                    }
-
-                    throw var8;
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE character_subclasses SET exp=?,sp=?,level=?,class_id=? WHERE char_obj_id=? AND class_index =?");) {
+                for (SubClass subClass : this._subClasses.values()) {
+                    ps.setLong(1, subClass.getExp());
+                    ps.setInt(2, subClass.getSp());
+                    ps.setInt(3, subClass.getLevel());
+                    ps.setInt(4, subClass.getClassId());
+                    ps.setInt(5, this.getObjectId());
+                    ps.setInt(6, subClass.getClassIndex());
+                    ps.addBatch();
                 }
 
-                con.close();
-            } catch (Exception var9) {
-                LOGGER.error("Couldn't store subclass data.", var9);
+                ps.executeBatch();
+            } catch (Exception e) {
+                LOGGER.error("Couldn't store subclass data.", e);
             }
 
         }
@@ -4446,130 +3985,81 @@ public final class Player extends Playable {
 
     private void storeEffect(boolean storeEffects) {
         if (Config.STORE_SKILL_COOLTIME) {
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
-                    PreparedStatement ps = con.prepareStatement("DELETE FROM character_skills_save WHERE char_obj_id=? AND class_index=?");
-
-                    try {
-                        ps.setInt(1, this.getObjectId());
-                        ps.setInt(2, this.getClassIndex());
-                        ps.executeUpdate();
-                    } catch (Throwable var15) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var14) {
-                                var15.addSuppressed(var14);
-                            }
-                        }
-
-                        throw var15;
-                    }
-
-                    ps.close();
-
-                    int buff_index = 0;
-                    List<Integer> storedSkills = new ArrayList<>();
-                    ps = con.prepareStatement("INSERT INTO character_skills_save (char_obj_id,skill_id,skill_level,effect_count,effect_cur_time,reuse_delay,systime,restore_type,class_index,buff_index) VALUES (?,?,?,?,?,?,?,?,?,?)");
-
-                    try {
-                        int hash;
-                        if (storeEffects) {
-                            L2Effect[] var6 = this.getAllEffects();
-                            int var7 = var6.length;
-
-                            for (hash = 0; hash < var7; ++hash) {
-                                L2Effect effect = var6[hash];
-                                if (effect != null) {
-                                    switch (effect.getEffectType()) {
-                                        case HEAL_OVER_TIME:
-                                        case COMBAT_POINT_HEAL_OVER_TIME:
-                                            break;
-                                        default:
-                                            L2Skill skill = effect.getSkill();
-                                            if (!storedSkills.contains(skill.getReuseHashCode())) {
-                                                storedSkills.add(skill.getReuseHashCode());
-                                                if (!effect.isHerbEffect() && effect.getInUse() && !skill.isToggle()) {
-                                                    ps.setInt(1, this.getObjectId());
-                                                    ps.setInt(2, skill.getId());
-                                                    ps.setInt(3, skill.getLevel());
-                                                    ps.setInt(4, effect.getCount());
-                                                    ps.setInt(5, effect.getTime());
-                                                    Timestamp t = this._reuseTimeStamps.get(skill.getReuseHashCode());
-                                                    if (t != null && t.hasNotPassed()) {
-                                                        ps.setLong(6, t.getReuse());
-                                                        ps.setDouble(7, (double) t.getStamp());
-                                                    } else {
-                                                        ps.setLong(6, 0L);
-                                                        ps.setDouble(7, 0.0D);
-                                                    }
-
-                                                    ps.setInt(8, 0);
-                                                    ps.setInt(9, this.getClassIndex());
-                                                    ++buff_index;
-                                                    ps.setInt(10, buff_index);
-                                                    ps.addBatch();
-                                                }
-                                            }
-                                    }
-                                }
-                            }
-                        }
-
-                        for (Entry<Integer, Timestamp> integerTimestampEntry : this._reuseTimeStamps.entrySet()) {
-                            Entry<Integer, Timestamp> entry = integerTimestampEntry;
-                            hash = entry.getKey();
-                            if (!storedSkills.contains(hash)) {
-                                Timestamp t = entry.getValue();
-                                if (t != null && t.hasNotPassed()) {
-                                    storedSkills.add(hash);
-                                    ps.setInt(1, this.getObjectId());
-                                    ps.setInt(2, t.getId());
-                                    ps.setInt(3, t.getValue());
-                                    ps.setInt(4, -1);
-                                    ps.setInt(5, -1);
-                                    ps.setLong(6, t.getReuse());
-                                    ps.setDouble(7, (double) t.getStamp());
-                                    ps.setInt(8, 1);
-                                    ps.setInt(9, this.getClassIndex());
-                                    ++buff_index;
-                                    ps.setInt(10, buff_index);
-                                    ps.addBatch();
-                                }
-                            }
-                        }
-
-                        ps.executeBatch();
-                    } catch (Throwable var16) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var13) {
-                                var16.addSuppressed(var13);
-                            }
-                        }
-
-                        throw var16;
-                    }
-
-                    ps.close();
-                } catch (Throwable var17) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var12) {
-                            var17.addSuppressed(var12);
-                        }
-                    }
-
-                    throw var17;
+            try (Connection con = ConnectionPool.getConnection()) {
+                try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_skills_save WHERE char_obj_id=? AND class_index=?")) {
+                    ps.setInt(1, this.getObjectId());
+                    ps.setInt(2, this.getClassIndex());
+                    ps.executeUpdate();
                 }
 
-                con.close();
-            } catch (Exception var18) {
-                LOGGER.error("Couldn't store player effects.", var18);
+                int buff_index = 0;
+                List<Integer> storedSkills = new ArrayList<>();
+
+                try (PreparedStatement ps = con.prepareStatement("INSERT INTO character_skills_save (char_obj_id,skill_id,skill_level,effect_count,effect_cur_time,reuse_delay,systime,restore_type,class_index,buff_index) VALUES (?,?,?,?,?,?,?,?,?,?)")) {
+                    if (storeEffects) {
+                        for (L2Effect effect : this.getAllEffects()) {
+                            if (effect != null) {
+                                switch (effect.getEffectType()) {
+                                    case HEAL_OVER_TIME:
+                                    case COMBAT_POINT_HEAL_OVER_TIME:
+                                        break;
+                                    default:
+                                        L2Skill skill = effect.getSkill();
+                                        if (!storedSkills.contains(skill.getReuseHashCode())) {
+                                            storedSkills.add(skill.getReuseHashCode());
+                                            if (!effect.isHerbEffect() && effect.getInUse() && !skill.isToggle()) {
+                                                ps.setInt(1, this.getObjectId());
+                                                ps.setInt(2, skill.getId());
+                                                ps.setInt(3, skill.getLevel());
+                                                ps.setInt(4, effect.getCount());
+                                                ps.setInt(5, effect.getTime());
+                                                Timestamp t = this._reuseTimeStamps.get(skill.getReuseHashCode());
+                                                if (t != null && t.hasNotPassed()) {
+                                                    ps.setLong(6, t.getReuse());
+                                                    ps.setDouble(7, (double) t.getStamp());
+                                                } else {
+                                                    ps.setLong(6, 0L);
+                                                    ps.setDouble(7, (double) 0.0F);
+                                                }
+
+                                                ps.setInt(8, 0);
+                                                ps.setInt(9, this.getClassIndex());
+                                                ++buff_index;
+                                                ps.setInt(10, buff_index);
+                                                ps.addBatch();
+                                            }
+                                        }
+                                }
+                            }
+                        }
+                    }
+
+                    for (Map.Entry<Integer, Timestamp> entry : this._reuseTimeStamps.entrySet()) {
+                        int hash = entry.getKey();
+                        if (!storedSkills.contains(hash)) {
+                            Timestamp t = entry.getValue();
+                            if (t != null && t.hasNotPassed()) {
+                                storedSkills.add(hash);
+                                ps.setInt(1, this.getObjectId());
+                                ps.setInt(2, t.getId());
+                                ps.setInt(3, t.getValue());
+                                ps.setInt(4, -1);
+                                ps.setInt(5, -1);
+                                ps.setLong(6, t.getReuse());
+                                ps.setDouble(7, (double) t.getStamp());
+                                ps.setInt(8, 1);
+                                ps.setInt(9, this.getClassIndex());
+                                ++buff_index;
+                                ps.setInt(10, buff_index);
+                                ps.addBatch();
+                            }
+                        }
+                    }
+
+                    ps.executeBatch();
+                }
+            } catch (Exception e) {
+                LOGGER.error("Couldn't store player effects.", e);
             }
 
         }
@@ -4665,45 +4155,13 @@ public final class Player extends Playable {
             }
 
             if (store) {
-                try {
-                    Connection con = ConnectionPool.getConnection();
-
-                    try {
-                        PreparedStatement ps = con.prepareStatement("DELETE FROM character_skills WHERE skill_id=? AND char_obj_id=? AND class_index=?");
-
-                        try {
-                            ps.setInt(1, skillId);
-                            ps.setInt(2, this.getObjectId());
-                            ps.setInt(3, this.getClassIndex());
-                            ps.execute();
-                        } catch (Throwable var11) {
-                            if (ps != null) {
-                                try {
-                                    ps.close();
-                                } catch (Throwable var10) {
-                                    var11.addSuppressed(var10);
-                                }
-                            }
-
-                            throw var11;
-                        }
-
-                        ps.close();
-                    } catch (Throwable var12) {
-                        if (con != null) {
-                            try {
-                                con.close();
-                            } catch (Throwable var9) {
-                                var12.addSuppressed(var9);
-                            }
-                        }
-
-                        throw var12;
-                    }
-
-                    con.close();
-                } catch (Exception var13) {
-                    LOGGER.error("Couldn't delete player skill.", var13);
+                try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("DELETE FROM character_skills WHERE skill_id=? AND char_obj_id=? AND class_index=?");) {
+                    ps.setInt(1, skillId);
+                    ps.setInt(2, this.getObjectId());
+                    ps.setInt(3, this.getClassIndex());
+                    ps.execute();
+                } catch (Exception e) {
+                    LOGGER.error("Couldn't delete player skill.", e);
                 }
 
                 if (!oldSkill.isPassive()) {
@@ -4716,276 +4174,98 @@ public final class Player extends Playable {
     }
 
     private void storeSkill(L2Skill skill, int classIndex) {
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
-                PreparedStatement ps = con.prepareStatement("INSERT INTO character_skills (char_obj_id,skill_id,skill_level,class_index) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE skill_level=VALUES(skill_level)");
-
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ps.setInt(2, skill.getId());
-                    ps.setInt(3, skill.getLevel());
-                    ps.setInt(4, classIndex > -1 ? classIndex : this._classIndex);
-                    ps.executeUpdate();
-                } catch (Throwable var9) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var8) {
-                            var9.addSuppressed(var8);
-                        }
-                    }
-
-                    throw var9;
-                }
-
-                ps.close();
-            } catch (Throwable var10) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var7) {
-                        var10.addSuppressed(var7);
-                    }
-                }
-
-                throw var10;
-            }
-
-            con.close();
-        } catch (Exception var11) {
-            LOGGER.error("Couldn't store player skill.", var11);
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO character_skills (char_obj_id,skill_id,skill_level,class_index) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE skill_level=VALUES(skill_level)");) {
+            ps.setInt(1, this.getObjectId());
+            ps.setInt(2, skill.getId());
+            ps.setInt(3, skill.getLevel());
+            ps.setInt(4, classIndex > -1 ? classIndex : this._classIndex);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            LOGGER.error("Couldn't store player skill.", e);
         }
 
     }
 
     private void restoreSkills() {
         EngineModsManager.onRestoreSkills(this);
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT skill_id,skill_level FROM character_skills WHERE char_obj_id=? AND class_index=?");) {
+            ps.setInt(1, this.getObjectId());
+            ps.setInt(2, this.getClassIndex());
 
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT skill_id,skill_level FROM character_skills WHERE char_obj_id=? AND class_index=?");
-
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ps.setInt(2, this.getClassIndex());
-                    ResultSet rs = ps.executeQuery();
-
-                    try {
-                        while (rs.next()) {
-                            this.addSkill(SkillTable.getInstance().getInfo(rs.getInt("skill_id"), rs.getInt("skill_level")), false);
-                        }
-                    } catch (Throwable var9) {
-                        if (rs != null) {
-                            try {
-                                rs.close();
-                            } catch (Throwable var8) {
-                                var9.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    rs.close();
-                } catch (Throwable var10) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    this.addSkill(SkillTable.getInstance().getInfo(rs.getInt("skill_id"), rs.getInt("skill_level")), false);
                 }
-
-                ps.close();
-            } catch (Throwable var11) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var6) {
-                        var11.addSuppressed(var6);
-                    }
-                }
-
-                throw var11;
             }
-
-            con.close();
-        } catch (Exception var12) {
-            LOGGER.error("Couldn't restore player skills.", var12);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore player skills.", e);
         }
+
     }
 
     public void restoreEffects() {
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT skill_id,skill_level,effect_count,effect_cur_time, reuse_delay, systime, restore_type FROM character_skills_save WHERE char_obj_id=? AND class_index=? ORDER BY buff_index ASC")) {
+                ps.setInt(1, this.getObjectId());
+                ps.setInt(2, this.getClassIndex());
 
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT skill_id,skill_level,effect_count,effect_cur_time, reuse_delay, systime, restore_type FROM character_skills_save WHERE char_obj_id=? AND class_index=? ORDER BY buff_index ASC");
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int effectCount = rs.getInt("effect_count");
+                        int effectCurTime = rs.getInt("effect_cur_time");
+                        long reuseDelay = rs.getLong("reuse_delay");
+                        long systime = rs.getLong("systime");
+                        int restoreType = rs.getInt("restore_type");
+                        L2Skill skill = SkillTable.getInstance().getInfo(rs.getInt("skill_id"), rs.getInt("skill_level"));
+                        if (skill != null) {
+                            long remainingTime = systime - System.currentTimeMillis();
+                            if (remainingTime > 10L) {
+                                this.disableSkill(skill, remainingTime);
+                                this.addTimeStamp(skill, reuseDelay, systime);
+                            }
 
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ps.setInt(2, this.getClassIndex());
-                    ResultSet rs = ps.executeQuery();
+                            if (restoreType <= 0 && skill.hasEffects()) {
+                                Env env = new Env();
+                                env.setCharacter(this);
+                                env.setTarget(this);
+                                env.setSkill(skill);
 
-                    try {
-                        while (rs.next()) {
-                            int effectCount = rs.getInt("effect_count");
-                            int effectCurTime = rs.getInt("effect_cur_time");
-                            long reuseDelay = rs.getLong("reuse_delay");
-                            long systime = rs.getLong("systime");
-                            int restoreType = rs.getInt("restore_type");
-                            L2Skill skill = SkillTable.getInstance().getInfo(rs.getInt("skill_id"), rs.getInt("skill_level"));
-                            if (skill != null) {
-                                long remainingTime = systime - System.currentTimeMillis();
-                                if (remainingTime > 10L) {
-                                    this.disableSkill(skill, remainingTime);
-                                    this.addTimeStamp(skill, reuseDelay, systime);
-                                }
-
-                                if (restoreType <= 0 && skill.hasEffects()) {
-                                    Env env = new Env();
-                                    env.setCharacter(this);
-                                    env.setTarget(this);
-                                    env.setSkill(skill);
-
-                                    for (EffectTemplate et : skill.getEffectTemplates()) {
-                                        L2Effect ef = et.getEffect(env);
-                                        if (ef != null) {
-                                            ef.setCount(effectCount);
-                                            ef.setFirstTime(effectCurTime);
-                                            ef.scheduleEffect();
-                                        }
+                                for (EffectTemplate et : skill.getEffectTemplates()) {
+                                    L2Effect ef = et.getEffect(env);
+                                    if (ef != null) {
+                                        ef.setCount(effectCount);
+                                        ef.setFirstTime(effectCurTime);
+                                        ef.scheduleEffect();
                                     }
                                 }
                             }
                         }
-                    } catch (Throwable var23) {
-                        if (rs != null) {
-                            try {
-                                rs.close();
-                            } catch (Throwable var21) {
-                                var23.addSuppressed(var21);
-                            }
-                        }
-
-                        throw var23;
-                    }
-
-                    rs.close();
-                } catch (Throwable var24) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var20) {
-                            var24.addSuppressed(var20);
-                        }
-                    }
-
-                    throw var24;
-                }
-
-                ps.close();
-
-                ps = con.prepareStatement("DELETE FROM character_skills_save WHERE char_obj_id=? AND class_index=?");
-
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ps.setInt(2, this.getClassIndex());
-                    ps.executeUpdate();
-                } catch (Throwable var22) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var19) {
-                            var22.addSuppressed(var19);
-                        }
-                    }
-
-                    throw var22;
-                }
-
-                ps.close();
-            } catch (Throwable var25) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var18) {
-                        var25.addSuppressed(var18);
                     }
                 }
-
-                throw var25;
             }
 
-            con.close();
-        } catch (Exception var26) {
-            LOGGER.error("Couldn't restore effects.", var26);
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM character_skills_save WHERE char_obj_id=? AND class_index=?")) {
+                ps.setInt(1, this.getObjectId());
+                ps.setInt(2, this.getClassIndex());
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore effects.", e);
         }
 
     }
 
     private void restoreRecom() {
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT char_id,target_id FROM character_recommends WHERE char_id=?");) {
+            ps.setInt(1, this.getObjectId());
 
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT char_id,target_id FROM character_recommends WHERE char_id=?");
-
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ResultSet rset = ps.executeQuery();
-
-                    try {
-                        while (rset.next()) {
-                            this._recomChars.add(rset.getInt("target_id"));
-                        }
-                    } catch (Throwable var9) {
-                        if (rset != null) {
-                            try {
-                                rset.close();
-                            } catch (Throwable var8) {
-                                var9.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    rset.close();
-                } catch (Throwable var10) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
+            try (ResultSet rset = ps.executeQuery()) {
+                while (rset.next()) {
+                    this._recomChars.add(rset.getInt("target_id"));
                 }
-
-                ps.close();
-            } catch (Throwable var11) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var6) {
-                        var11.addSuppressed(var6);
-                    }
-                }
-
-                throw var11;
             }
-
-            con.close();
-        } catch (Exception var12) {
-            LOGGER.error("Couldn't restore recommendations.", var12);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore recommendations.", e);
         }
 
     }
@@ -5090,13 +4370,23 @@ public final class Player extends Playable {
                 this.setIsCastingNow(false);
                 return false;
             } else {
-                WorldObject target = switch (skill.getTargetType()) {
-                    case TARGET_AURA, TARGET_FRONT_AURA, TARGET_BEHIND_AURA, TARGET_GROUND, TARGET_SELF,
-                         TARGET_CORPSE_ALLY, TARGET_AURA_UNDEAD -> this;
-                    default -> skill.getFirstOfTargetList(this);
-                };
+                WorldObject target = null;
+                Object var5;
+                switch (skill.getTargetType()) {
+                    case TARGET_AURA:
+                    case TARGET_FRONT_AURA:
+                    case TARGET_BEHIND_AURA:
+                    case TARGET_GROUND:
+                    case TARGET_SELF:
+                    case TARGET_CORPSE_ALLY:
+                    case TARGET_AURA_UNDEAD:
+                        var5 = this;
+                        break;
+                    default:
+                        var5 = skill.getFirstOfTargetList(this);
+                }
 
-                this.getAI().setIntention(IntentionType.CAST, skill, target);
+                this.getAI().setIntention(IntentionType.CAST, skill, var5);
                 return true;
             }
         }
@@ -5118,9 +4408,8 @@ public final class Player extends Playable {
                 this.sendPacket(ActionFailed.STATIC_PACKET);
                 return false;
             } else {
-                L2Effect effect;
                 if (skill.isToggle()) {
-                    effect = this.getFirstEffect(skill.getId());
+                    L2Effect effect = this.getFirstEffect(skill.getId());
                     if (effect != null) {
                         if (skill.getId() != 60) {
                             effect.exit();
@@ -5135,29 +4424,39 @@ public final class Player extends Playable {
                     this.sendPacket(ActionFailed.STATIC_PACKET);
                     return false;
                 } else {
-                    effect = null;
-                    SkillTargetType sklTargetType = skill.getTargetType();
+                    WorldObject target = null;
+                    L2Skill.SkillTargetType sklTargetType = skill.getTargetType();
                     Location worldPosition = this.getCurrentSkillWorldPosition();
                     if (sklTargetType == SkillTargetType.TARGET_GROUND && worldPosition == null) {
                         this.sendPacket(ActionFailed.STATIC_PACKET);
                         return false;
                     } else {
-                        WorldObject target = switch (sklTargetType) {
-                            case TARGET_AURA, TARGET_FRONT_AURA, TARGET_BEHIND_AURA, TARGET_GROUND, TARGET_SELF,
-                                 TARGET_CORPSE_ALLY, TARGET_AURA_UNDEAD, TARGET_PARTY, TARGET_ALLY, TARGET_CLAN,
-                                 TARGET_AREA_SUMMON -> this;
-                            case TARGET_PET, TARGET_SUMMON -> this._summon;
-                            default -> this.getTarget();
-                        };
+                        switch (sklTargetType) {
+                            case TARGET_AURA:
+                            case TARGET_FRONT_AURA:
+                            case TARGET_BEHIND_AURA:
+                            case TARGET_GROUND:
+                            case TARGET_SELF:
+                            case TARGET_CORPSE_ALLY:
+                            case TARGET_AURA_UNDEAD:
+                            case TARGET_PARTY:
+                            case TARGET_ALLY:
+                            case TARGET_CLAN:
+                            case TARGET_AREA_SUMMON:
+                                target = this;
+                                break;
+                            case TARGET_PET:
+                            case TARGET_SUMMON:
+                                target = this._summon;
+                                break;
+                            default:
+                                target = this.getTarget();
+                        }
 
                         if (target == null) {
                             this.sendPacket(ActionFailed.STATIC_PACKET);
                             return false;
-                        } else if (target instanceof Door && (!target.isAutoAttackable(this) || ((Door) target).isUnlockable() && skill.getSkillType() != L2SkillType.UNLOCK)) {
-                            this.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                            this.sendPacket(ActionFailed.STATIC_PACKET);
-                            return false;
-                        } else {
+                        } else if (!(target instanceof Door) || target.isAutoAttackable(this) && (!((Door) target).isUnlockable() || skill.getSkillType() == L2SkillType.UNLOCK)) {
                             if (this.isInDuel() && target instanceof Playable) {
                                 Player cha = target.getActingPlayer();
                                 if (cha.getDuelId() != this.getDuelId()) {
@@ -5337,6 +4636,10 @@ public final class Player extends Playable {
                                     }
                                 }
                             }
+                        } else {
+                            this.sendPacket(SystemMessageId.INCORRECT_TARGET);
+                            this.sendPacket(ActionFailed.STATIC_PACKET);
+                            return false;
                         }
                     }
                 }
@@ -5434,11 +4737,19 @@ public final class Player extends Playable {
                         boolean isCtrlPressed = this.getCurrentSkill() != null && this.getCurrentSkill().isCtrlPressed() || this.getCurrentPetSkill() != null && this.getCurrentPetSkill().isCtrlPressed();
                         if (this.isInParty() && targetPlayer.isInParty()) {
                             if (this.getParty().getLeader() == targetPlayer.getParty().getLeader()) {
-                                return skill.getEffectRange() > 0 && isCtrlPressed && this.getTarget() == target && skill.isDamage();
+                                if (skill.getEffectRange() > 0 && isCtrlPressed && this.getTarget() == target && skill.isDamage()) {
+                                    return true;
+                                }
+
+                                return false;
                             }
 
                             if (this.getParty().getCommandChannel() != null && this.getParty().getCommandChannel().containsPlayer(targetPlayer)) {
-                                return skill.getEffectRange() > 0 && isCtrlPressed && this.getTarget() == target && skill.isDamage();
+                                if (skill.getEffectRange() > 0 && isCtrlPressed && this.getTarget() == target && skill.isDamage()) {
+                                    return true;
+                                }
+
+                                return false;
                             }
                         }
 
@@ -5464,9 +4775,15 @@ public final class Player extends Playable {
                             }
 
                             if (targetPlayer.getPvpFlag() == 0 && targetPlayer.getKarma() == 0) {
-                                return skill.getEffectRange() > 0 && isCtrlPressed && this.getTarget() == target && skill.isDamage();
+                                if (skill.getEffectRange() > 0 && isCtrlPressed && this.getTarget() == target && skill.isDamage()) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            } else if (targetPlayer.getPvpFlag() <= 0 && targetPlayer.getKarma() <= 0) {
+                                return false;
                             } else {
-                                return targetPlayer.getPvpFlag() > 0 || targetPlayer.getKarma() > 0;
+                                return true;
                             }
                         }
                     }
@@ -5521,28 +4838,28 @@ public final class Player extends Playable {
         return this._mountType;
     }
 
-    public void stopAllEffects() {
+    public final void stopAllEffects() {
         super.stopAllEffects();
         this.updateAndBroadcastStatus(2);
     }
 
-    public void stopAllEffectsExceptThoseThatLastThroughDeath() {
+    public final void stopAllEffectsExceptThoseThatLastThroughDeath() {
         super.stopAllEffectsExceptThoseThatLastThroughDeath();
         this.updateAndBroadcastStatus(2);
     }
 
-    public void stopAllToggles() {
+    public final void stopAllToggles() {
         this._effects.stopAllToggles();
     }
 
-    public void stopCubics() {
+    public final void stopCubics() {
         if (this.getCubics() != null) {
             boolean removed = false;
 
-            for (Iterator<Cubic> var2 = this.getCubics().values().iterator(); var2.hasNext(); removed = true) {
-                Cubic cubic = var2.next();
+            for (Cubic cubic : this.getCubics().values()) {
                 cubic.stopAction();
                 this.delCubic(cubic.getId());
+                removed = true;
             }
 
             if (removed) {
@@ -5552,7 +4869,7 @@ public final class Player extends Playable {
 
     }
 
-    public void stopCubicsByOthers() {
+    public final void stopCubicsByOthers() {
         if (this.getCubics() != null) {
             boolean removed = false;
 
@@ -5649,20 +4966,18 @@ public final class Player extends Playable {
 
     public void rechargeShots(boolean physical, boolean magic) {
         if (!this._activeSoulShots.isEmpty()) {
-
             for (int itemId : this._activeSoulShots) {
                 ItemInstance item = this.getInventory().getItemByItemId(itemId);
                 if (item != null) {
-                    IItemHandler handler;
                     if (magic && item.getItem().getDefaultAction() == ActionType.spiritshot) {
-                        handler = ItemHandler.getInstance().getHandler(item.getEtcItem());
+                        IItemHandler handler = ItemHandler.getInstance().getHandler(item.getEtcItem());
                         if (handler != null) {
                             handler.useItem(this, item, false);
                         }
                     }
 
                     if (physical && item.getItem().getDefaultAction() == ActionType.soulshot) {
-                        handler = ItemHandler.getInstance().getHandler(item.getEtcItem());
+                        IItemHandler handler = ItemHandler.getInstance().getHandler(item.getEtcItem());
                         if (handler != null) {
                             handler.useItem(this, item, false);
                         }
@@ -5687,7 +5002,6 @@ public final class Player extends Playable {
     }
 
     public void disableAutoShotsAll() {
-
         for (int itemId : this._activeSoulShots) {
             this.sendPacket(new ExAutoSoulShot(itemId, 0));
             this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.AUTO_USE_OF_S1_CANCELLED).addItemName(itemId));
@@ -5912,24 +5226,12 @@ public final class Player extends Playable {
     }
 
     public void setHero(boolean hero) {
-        L2Skill[] var2;
-        int var3;
-        int var4;
-        L2Skill skill;
         if (hero && this._baseClass == this._activeClass) {
-            var2 = SkillTable.getHeroSkills();
-            var3 = var2.length;
-
-            for (var4 = 0; var4 < var3; ++var4) {
-                skill = var2[var4];
+            for (L2Skill skill : SkillTable.getHeroSkills()) {
                 this.addSkill(skill, false);
             }
         } else {
-            var2 = SkillTable.getHeroSkills();
-            var3 = var2.length;
-
-            for (var4 = 0; var4 < var3; ++var4) {
-                skill = var2[var4];
+            for (L2Skill skill : SkillTable.getHeroSkills()) {
                 this.removeSkill(skill.getId(), false);
             }
         }
@@ -5994,7 +5296,7 @@ public final class Player extends Playable {
 
     public boolean canDuel() {
         if (!this.isInCombat() && this._punishment.getType() != PunishmentType.JAIL) {
-            if (!this.isDead() && !this.isAlikeDead() && this.getCurrentHp() >= (double) (this.getMaxHp() / 2) && this.getCurrentMp() >= (double) (this.getMaxMp() / 2)) {
+            if (!this.isDead() && !this.isAlikeDead() && !(this.getCurrentHp() < (double) (this.getMaxHp() / 2)) && !(this.getCurrentMp() < (double) (this.getMaxMp() / 2))) {
                 if (this.isInDuel()) {
                     this._noDuelReason = SystemMessageId.S1_CANNOT_DUEL_BECAUSE_S1_IS_ALREADY_ENGAGED_IN_A_DUEL;
                 } else if (this.isInOlympiadMode()) {
@@ -6033,24 +5335,12 @@ public final class Player extends Playable {
     }
 
     public void setNoble(boolean val, boolean store) {
-        L2Skill[] var3;
-        int var4;
-        int var5;
-        L2Skill skill;
         if (val) {
-            var3 = SkillTable.getNobleSkills();
-            var4 = var3.length;
-
-            for (var5 = 0; var5 < var4; ++var5) {
-                skill = var3[var5];
+            for (L2Skill skill : SkillTable.getNobleSkills()) {
                 this.addSkill(skill, false);
             }
         } else {
-            var3 = SkillTable.getNobleSkills();
-            var4 = var3.length;
-
-            for (var5 = 0; var5 < var4; ++var5) {
-                skill = var3[var5];
+            for (L2Skill skill : SkillTable.getNobleSkills()) {
                 this.removeSkill(skill.getId(), false);
             }
         }
@@ -6058,44 +5348,12 @@ public final class Player extends Playable {
         this._isNoble = val;
         this.sendSkillList();
         if (store) {
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
-                    PreparedStatement ps = con.prepareStatement("UPDATE characters SET nobless=? WHERE obj_Id=?");
-
-                    try {
-                        ps.setBoolean(1, val);
-                        ps.setInt(2, this.getObjectId());
-                        ps.executeUpdate();
-                    } catch (Throwable var9) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var8) {
-                                var9.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    ps.close();
-                } catch (Throwable var10) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
-                }
-
-                con.close();
-            } catch (Exception var11) {
-                LOGGER.error("Couldn't update nobless status for {}.", var11, this.getName());
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET nobless=? WHERE obj_Id=?");) {
+                ps.setBoolean(1, val);
+                ps.setInt(2, this.getObjectId());
+                ps.executeUpdate();
+            } catch (Exception e) {
+                LOGGER.error("Couldn't update nobless status for {}.", e, this.getName());
             }
         }
 
@@ -6214,14 +5472,16 @@ public final class Player extends Playable {
                         }
 
                         con.close();
-                    } catch (Exception var19) {
-                        LOGGER.error("Couldn't add subclass for {}.", var19, this.getName());
-                        return false;
+                    } catch (Exception e) {
+                        LOGGER.error("Couldn't add subclass for {}.", e, this.getName());
+                        boolean ps = false;
+                        return ps;
                     }
 
                     this._subClasses.put(subclass.getClassIndex(), subclass);
-                    (PlayerClassData.getInstance().getTemplate(classId).getSkills().stream().filter((s) -> s.getMinLvl() <= 40).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL)))).forEach((i, s) -> this.storeSkill(s.get().getSkill(), classIndex));
-                    return true;
+                    PlayerClassData.getInstance().getTemplate(classId).getSkills().stream().filter((s) -> s.getMinLvl() <= 40).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL))).forEach((i, s) -> this.storeSkill(s.get().getSkill(), classIndex));
+                    boolean e = true;
+                    return e;
                 }
 
                 var3 = false;
@@ -6268,46 +5528,6 @@ public final class Player extends Playable {
                             ps.setInt(1, this.getObjectId());
                             ps.setInt(2, classIndex);
                             ps.execute();
-                        } catch (Throwable var29) {
-                            if (ps != null) {
-                                try {
-                                    ps.close();
-                                } catch (Throwable var24) {
-                                    var29.addSuppressed(var24);
-                                }
-                            }
-
-                            throw var29;
-                        }
-
-                        ps.close();
-
-                        ps = con.prepareStatement("DELETE FROM character_skills_save WHERE char_obj_id=? AND class_index=?");
-
-                        try {
-                            ps.setInt(1, this.getObjectId());
-                            ps.setInt(2, classIndex);
-                            ps.execute();
-                        } catch (Throwable var28) {
-                            if (ps != null) {
-                                try {
-                                    ps.close();
-                                } catch (Throwable var25) {
-                                    var28.addSuppressed(var25);
-                                }
-                            }
-
-                            throw var28;
-                        }
-
-                        ps.close();
-
-                        ps = con.prepareStatement("DELETE FROM character_skills WHERE char_obj_id=? AND class_index=?");
-
-                        try {
-                            ps.setInt(1, this.getObjectId());
-                            ps.setInt(2, classIndex);
-                            ps.execute();
                         } catch (Throwable var31) {
                             if (ps != null) {
                                 try {
@@ -6322,7 +5542,7 @@ public final class Player extends Playable {
 
                         ps.close();
 
-                        ps = con.prepareStatement("DELETE FROM character_subclasses WHERE char_obj_id=? AND class_index=?");
+                        ps = con.prepareStatement("DELETE FROM character_skills_save WHERE char_obj_id=? AND class_index=?");
 
                         try {
                             ps.setInt(1, this.getObjectId());
@@ -6332,12 +5552,52 @@ public final class Player extends Playable {
                             if (ps != null) {
                                 try {
                                     ps.close();
-                                } catch (Throwable var23) {
-                                    var30.addSuppressed(var23);
+                                } catch (Throwable var25) {
+                                    var30.addSuppressed(var25);
                                 }
                             }
 
                             throw var30;
+                        }
+
+                        ps.close();
+
+                        ps = con.prepareStatement("DELETE FROM character_skills WHERE char_obj_id=? AND class_index=?");
+
+                        try {
+                            ps.setInt(1, this.getObjectId());
+                            ps.setInt(2, classIndex);
+                            ps.execute();
+                        } catch (Throwable var29) {
+                            if (ps != null) {
+                                try {
+                                    ps.close();
+                                } catch (Throwable var24) {
+                                    var29.addSuppressed(var24);
+                                }
+                            }
+
+                            throw var29;
+                        }
+
+                        ps.close();
+
+                        ps = con.prepareStatement("DELETE FROM character_subclasses WHERE char_obj_id=? AND class_index=?");
+
+                        try {
+                            ps.setInt(1, this.getObjectId());
+                            ps.setInt(2, classIndex);
+                            ps.execute();
+                        } catch (Throwable var28) {
+                            if (ps != null) {
+                                try {
+                                    ps.close();
+                                } catch (Throwable var23) {
+                                    var28.addSuppressed(var23);
+                                }
+                            }
+
+                            throw var28;
                         }
 
                         ps.close();
@@ -6354,10 +5614,11 @@ public final class Player extends Playable {
                     }
 
                     con.close();
-                } catch (Exception var34) {
-                    LOGGER.error("Couldn't modify subclass for {} to class index {}.", var34, this.getName(), classIndex);
+                } catch (Exception e) {
+                    LOGGER.error("Couldn't modify subclass for {} to class index {}.", e, this.getName(), classIndex);
                     this._subClasses.remove(classIndex);
-                    return false;
+                    boolean ps = false;
+                    return ps;
                 }
 
                 this._subClasses.remove(classIndex);
@@ -6406,19 +5667,15 @@ public final class Player extends Playable {
             return false;
         } else {
             try {
-                ItemInstance[] var2 = this.getInventory().getAugmentedItems();
-                int var3 = var2.length;
-
-                for (ItemInstance item : var2) {
+                for (ItemInstance item : this.getInventory().getAugmentedItems()) {
                     if (item != null && item.isEquipped()) {
                         item.getAugmentation().removeBonus(this);
                     }
                 }
 
                 this.abortCast();
-                Iterator<?> var11 = this.getKnownType(Creature.class).iterator();
-                while (var11.hasNext()) {
-                    Creature character = (Creature) var11.next();
+
+                for (Creature character : this.getKnownType(Creature.class)) {
                     if (character.getFusionSkill() != null && character.getFusionSkill().getTarget() == this) {
                         character.abortCast();
                     }
@@ -6433,9 +5690,10 @@ public final class Player extends Playable {
                 } else {
                     try {
                         this.setClassTemplate(this._subClasses.get(classIndex).getClassId());
-                    } catch (Exception var9) {
-                        LOGGER.error("Could not switch {}'s subclass to class index {}.", var9, this.getName(), classIndex);
-                        return false;
+                    } catch (Exception e) {
+                        LOGGER.error("Could not switch {}'s subclass to class index {}.", e, this.getName(), classIndex);
+                        boolean item = false;
+                        return item;
                     }
                 }
 
@@ -6448,10 +5706,7 @@ public final class Player extends Playable {
                     this._summon.unSummon(this);
                 }
 
-                var11 = this.getSkills().values().iterator();
-
-                while (var11.hasNext()) {
-                    L2Skill skill = (L2Skill) var11.next();
+                for (L2Skill skill : this.getSkills().values()) {
                     this.removeSkill(skill.getId(), false);
                 }
 
@@ -6504,7 +5759,8 @@ public final class Player extends Playable {
                 this.sendPacket(new ShortCutInit(this));
                 this.broadcastPacket(new SocialAction(this, 15));
                 this.sendPacket(new SkillCoolTime(this));
-                return true;
+                boolean var18 = true;
+                return var18;
             } finally {
                 this._subclassLock.unlock();
             }
@@ -6516,9 +5772,8 @@ public final class Player extends Playable {
     }
 
     private void sendSiegeInfo() {
-
         for (Castle castle : CastleManager.getInstance().getCastles()) {
-            this.sendMessage(String.format("Castle : %s will have its siege on: %s", CastleManager.getCastleName(castle.getCastleId()), castle.getSiegeDate().getTime()));
+            this.sendMessage(String.format("Castle : %s will have its siege on: %s", getCastleName(castle.getCastleId()), castle.getSiegeDate().getTime()));
         }
 
     }
@@ -6570,7 +5825,7 @@ public final class Player extends Playable {
         this.stopEffects(L2EffectType.CHARMOFCOURAGE);
         this.sendPacket(new EtcStatusUpdate(this));
         this._reviveRequested = 0;
-        this._revivePower = 0.0D;
+        this._revivePower = 0.0F;
         if (this.isMounted()) {
             this.startFeed(this._mountNpcId);
         }
@@ -6598,9 +5853,9 @@ public final class Player extends Playable {
             if (Pet && this._summon != null && this._summon.isDead() || !Pet && this.isDead()) {
                 this._reviveRequested = 1;
                 if (this.isPhoenixBlessed()) {
-                    this._revivePower = 100.0D;
+                    this._revivePower = 100.0F;
                 } else if (this.isAffected(L2EffectFlag.CHARM_OF_COURAGE)) {
-                    this._revivePower = 0.0D;
+                    this._revivePower = 0.0F;
                 } else {
                     this._revivePower = Formulas.calculateSkillResurrectRestorePercent(skill.getPower(), Reviver);
                 }
@@ -6623,13 +5878,13 @@ public final class Player extends Playable {
                 this.stopPhoenixBlessing(null);
             } else if (answer == 1) {
                 if (!this._revivePet) {
-                    if (this._revivePower != 0.0D) {
+                    if (this._revivePower != (double) 0.0F) {
                         this.doRevive(this._revivePower);
                     } else {
                         this.doRevive();
                     }
                 } else if (this._summon != null) {
-                    if (this._revivePower != 0.0D) {
+                    if (this._revivePower != (double) 0.0F) {
                         this._summon.doRevive(this._revivePower);
                     } else {
                         this._summon.doRevive();
@@ -6638,7 +5893,7 @@ public final class Player extends Playable {
             }
 
             this._reviveRequested = 0;
-            this._revivePower = 0.0D;
+            this._revivePower = 0.0F;
         }
     }
 
@@ -6652,7 +5907,7 @@ public final class Player extends Playable {
 
     public void removeReviving() {
         this._reviveRequested = 0;
-        this._revivePower = 0.0D;
+        this._revivePower = 0.0F;
     }
 
     public void onActionRequest() {
@@ -6663,7 +5918,7 @@ public final class Player extends Playable {
 
     }
 
-    public void onTeleported() {
+    public final void onTeleported() {
         super.onTeleported();
         if (Config.PLAYER_SPAWN_PROTECTION > 0) {
             this.setSpawnProtection(true);
@@ -6726,28 +5981,19 @@ public final class Player extends Playable {
     }
 
     public synchronized boolean validateBypass(String cmd) {
-        Iterator<String> var2 = this._validBypass.iterator();
-
-        String bp;
-        do {
-            if (!var2.hasNext()) {
-                var2 = this._validBypass2.iterator();
-
-                do {
-                    if (!var2.hasNext()) {
-                        return false;
-                    }
-
-                    bp = var2.next();
-                } while (bp == null || !cmd.startsWith(bp));
-
+        for (String bp : this._validBypass) {
+            if (bp != null && bp.equals(cmd)) {
                 return true;
             }
+        }
 
-            bp = var2.next();
-        } while (bp == null || !bp.equals(cmd));
+        for (String bp : this._validBypass2) {
+            if (bp != null && cmd.startsWith(bp)) {
+                return true;
+            }
+        }
 
-        return true;
+        return false;
     }
 
     public ItemInstance validateItemManipulation(int objectId) {
@@ -6840,10 +6086,7 @@ public final class Player extends Playable {
                 }
             }
 
-            L2Effect[] var6 = this.getAllEffects();
-            int var9 = var6.length;
-
-            for (L2Effect effect : var6) {
+            for (L2Effect effect : this.getAllEffects()) {
                 if (effect.getSkill().isToggle()) {
                     effect.exit();
                 } else {
@@ -6915,8 +6158,8 @@ public final class Player extends Playable {
             World.getInstance().removePlayer(this);
             this.notifyFriends(false);
             this.getBlockList().playerLogout();
-        } catch (Exception var5) {
-            LOGGER.error("Couldn't disconnect correctly the player.", var5);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't disconnect correctly the player.", e);
         }
 
     }
@@ -6926,31 +6169,31 @@ public final class Player extends Playable {
     }
 
     public int getInventoryLimit() {
-        return (this.getRace() == ClassRace.DWARF ? Config.INVENTORY_MAXIMUM_DWARF : Config.INVENTORY_MAXIMUM_NO_DWARF) + (int) this.getStat().calcStat(Stats.INV_LIM, 0.0D, null, null);
+        return (this.getRace() == ClassRace.DWARF ? Config.INVENTORY_MAXIMUM_DWARF : Config.INVENTORY_MAXIMUM_NO_DWARF) + (int) this.getStat().calcStat(Stats.INV_LIM, 0.0F, null, null);
     }
 
     public int getWareHouseLimit() {
-        return (this.getRace() == ClassRace.DWARF ? Config.WAREHOUSE_SLOTS_DWARF : Config.WAREHOUSE_SLOTS_NO_DWARF) + (int) this.getStat().calcStat(Stats.WH_LIM, 0.0D, null, null);
+        return (this.getRace() == ClassRace.DWARF ? Config.WAREHOUSE_SLOTS_DWARF : Config.WAREHOUSE_SLOTS_NO_DWARF) + (int) this.getStat().calcStat(Stats.WH_LIM, 0.0F, null, null);
     }
 
     public int getPrivateSellStoreLimit() {
-        return (this.getRace() == ClassRace.DWARF ? Config.MAX_PVTSTORE_SLOTS_DWARF : Config.MAX_PVTSTORE_SLOTS_OTHER) + (int) this.getStat().calcStat(Stats.P_SELL_LIM, 0.0D, null, null);
+        return (this.getRace() == ClassRace.DWARF ? Config.MAX_PVTSTORE_SLOTS_DWARF : Config.MAX_PVTSTORE_SLOTS_OTHER) + (int) this.getStat().calcStat(Stats.P_SELL_LIM, 0.0F, null, null);
     }
 
     public int getPrivateBuyStoreLimit() {
-        return (this.getRace() == ClassRace.DWARF ? Config.MAX_PVTSTORE_SLOTS_DWARF : Config.MAX_PVTSTORE_SLOTS_OTHER) + (int) this.getStat().calcStat(Stats.P_BUY_LIM, 0.0D, null, null);
+        return (this.getRace() == ClassRace.DWARF ? Config.MAX_PVTSTORE_SLOTS_DWARF : Config.MAX_PVTSTORE_SLOTS_OTHER) + (int) this.getStat().calcStat(Stats.P_BUY_LIM, 0.0F, null, null);
     }
 
     public int getFreightLimit() {
-        return Config.FREIGHT_SLOTS + (int) this.getStat().calcStat(Stats.FREIGHT_LIM, 0.0D, null, null);
+        return Config.FREIGHT_SLOTS + (int) this.getStat().calcStat(Stats.FREIGHT_LIM, 0.0F, null, null);
     }
 
     public int getDwarfRecipeLimit() {
-        return Config.DWARF_RECIPE_LIMIT + (int) this.getStat().calcStat(Stats.REC_D_LIM, 0.0D, null, null);
+        return Config.DWARF_RECIPE_LIMIT + (int) this.getStat().calcStat(Stats.REC_D_LIM, 0.0F, null, null);
     }
 
     public int getCommonRecipeLimit() {
-        return Config.COMMON_RECIPE_LIMIT + (int) this.getStat().calcStat(Stats.REC_C_LIM, 0.0D, null, null);
+        return Config.COMMON_RECIPE_LIMIT + (int) this.getStat().calcStat(Stats.REC_C_LIM, 0.0F, null, null);
     }
 
     public int getMountNpcId() {
@@ -7044,7 +6287,7 @@ public final class Player extends Playable {
         this._shortBuffTask = ThreadPool.schedule(() -> {
             this.sendPacket(new ShortBuffStatusUpdate(0, 0, 0));
             this.setShortBuffTaskSkillId(0);
-        }, time * 1000L);
+        }, time * 1000);
         this.setShortBuffTaskSkillId(magicId);
         this.sendPacket(new ShortBuffStatusUpdate(magicId, level, time));
     }
@@ -7123,7 +6366,7 @@ public final class Player extends Playable {
         return this;
     }
 
-    public void sendDamageMessage(Creature target, int damage, boolean mcrit, boolean pcrit, boolean miss) {
+    public final void sendDamageMessage(Creature target, int damage, boolean mcrit, boolean pcrit, boolean miss) {
         if (miss) {
             this.sendPacket(SystemMessageId.MISSED_TARGET);
         } else {
@@ -7157,7 +6400,6 @@ public final class Player extends Playable {
     }
 
     public void checkItemRestriction() {
-
         for (ItemInstance equippedItem : this.getInventory().getPaperdollItems()) {
             if (!equippedItem.getItem().checkCondition(this, this, false)) {
                 this.useEquippableItem(equippedItem, equippedItem.isWeapon());
@@ -7179,7 +6421,7 @@ public final class Player extends Playable {
 
     public void enteredNoLanding(int delay) {
         if (this._dismountTask == null) {
-            this._dismountTask = ThreadPool.schedule(this::dismount, delay * 1000L);
+            this._dismountTask = ThreadPool.schedule(this::dismount, delay * 1000);
         }
 
     }
@@ -7201,7 +6443,6 @@ public final class Player extends Playable {
     }
 
     public void removeFromBossZone() {
-
         for (BossZone zone : ZoneManager.getInstance().getAllZones(BossZone.class)) {
             zone.removePlayer(this);
         }
@@ -7301,7 +6542,9 @@ public final class Player extends Playable {
                     if (this.getClan().isAtWarWith(target.getClanId())) {
                         return true;
                     }
-                } else return target.getPvpFlag() != 0 || target.getKarma() != 0;
+                } else if (target.getPvpFlag() == 0 && target.getKarma() == 0) {
+                    return false;
+                }
             }
 
             return true;
@@ -7341,56 +6584,54 @@ public final class Player extends Playable {
     public boolean checkSummonTargetStatus(WorldObject target) {
         if (!(target instanceof Player player)) {
             return false;
-        } else {
-            if (player.isAlikeDead()) {
-                this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_IS_DEAD_AT_THE_MOMENT_AND_CANNOT_BE_SUMMONED).addCharName(player));
+        } else if (player.isAlikeDead()) {
+            this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_IS_DEAD_AT_THE_MOMENT_AND_CANNOT_BE_SUMMONED).addCharName(player));
+            return false;
+        } else if (player.isInStoreMode()) {
+            this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_CURRENTLY_TRADING_OR_OPERATING_PRIVATE_STORE_AND_CANNOT_BE_SUMMONED).addCharName(player));
+            return false;
+        } else if (!player.isRooted() && !player.isInCombat()) {
+            if (player.isInOlympiadMode()) {
+                this.sendPacket(SystemMessageId.YOU_CANNOT_SUMMON_PLAYERS_WHO_ARE_IN_OLYMPIAD);
                 return false;
-            } else if (player.isInStoreMode()) {
-                this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_CURRENTLY_TRADING_OR_OPERATING_PRIVATE_STORE_AND_CANNOT_BE_SUMMONED).addCharName(player));
-                return false;
-            } else if (!player.isRooted() && !player.isInCombat()) {
-                if (player.isInOlympiadMode()) {
-                    this.sendPacket(SystemMessageId.YOU_CANNOT_SUMMON_PLAYERS_WHO_ARE_IN_OLYMPIAD);
-                    return false;
-                } else if (!player.isFestivalParticipant() && !player.isMounted()) {
-                    if (!player.isInObserverMode() && !player.isInsideZone(ZoneId.NO_SUMMON_FRIEND)) {
-                        return true;
-                    } else {
-                        this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_IN_SUMMON_BLOCKING_AREA).addCharName(player));
-                        return false;
-                    }
+            } else if (!player.isFestivalParticipant() && !player.isMounted()) {
+                if (!player.isInObserverMode() && !player.isInsideZone(ZoneId.NO_SUMMON_FRIEND)) {
+                    return true;
                 } else {
-                    this.sendPacket(SystemMessageId.YOUR_TARGET_IS_IN_AN_AREA_WHICH_BLOCKS_SUMMONING);
+                    this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_IN_SUMMON_BLOCKING_AREA).addCharName(player));
                     return false;
                 }
             } else {
-                this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_IS_ENGAGED_IN_COMBAT_AND_CANNOT_BE_SUMMONED).addCharName(player));
+                this.sendPacket(SystemMessageId.YOUR_TARGET_IS_IN_AN_AREA_WHICH_BLOCKS_SUMMONING);
                 return false;
             }
+        } else {
+            this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_IS_ENGAGED_IN_COMBAT_AND_CANNOT_BE_SUMMONED).addCharName(player));
+            return false;
         }
     }
 
-    public int getClientX() {
+    public final int getClientX() {
         return this._clientX;
     }
 
-    public void setClientX(int val) {
+    public final void setClientX(int val) {
         this._clientX = val;
     }
 
-    public int getClientY() {
+    public final int getClientY() {
         return this._clientY;
     }
 
-    public void setClientY(int val) {
+    public final void setClientY(int val) {
         this._clientY = val;
     }
 
-    public int getClientZ() {
+    public final int getClientZ() {
         return this._clientZ;
     }
 
-    public void setClientZ(int val) {
+    public final void setClientZ(int val) {
         this._clientZ = val;
     }
 
@@ -7402,7 +6643,7 @@ public final class Player extends Playable {
         this._mailPosition = mailPosition;
     }
 
-    public boolean isFalling(int z) {
+    public final boolean isFalling(int z) {
         if (!this.isDead() && !this.isFlying() && !this.isInsideZone(ZoneId.WATER)) {
             if (System.currentTimeMillis() < this._fallingTimestamp) {
                 return true;
@@ -7413,7 +6654,7 @@ public final class Player extends Playable {
                 } else {
                     int damage = (int) Formulas.calcFallDam(this, deltaZ);
                     if (damage > 0) {
-                        this.reduceCurrentHp(Math.min(damage, this.getCurrentHp() - 1.0D), null, false, true, null);
+                        this.reduceCurrentHp(Math.min(damage, this.getCurrentHp() - (double) 1.0F), null, false, true, null);
                         this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.FALL_DAMAGE_S1).addNumber(damage));
                     }
 
@@ -7426,7 +6667,7 @@ public final class Player extends Playable {
         }
     }
 
-    public void setFalling() {
+    public final void setFalling() {
         this._fallingTimestamp = System.currentTimeMillis() + 10000L;
     }
 
@@ -7454,7 +6695,9 @@ public final class Player extends Playable {
     }
 
     public void deselectFriend(Integer friendId) {
-        this._selectedFriendList.remove(friendId);
+        if (this._selectedFriendList.contains(friendId)) {
+            this._selectedFriendList.remove(friendId);
+        }
 
     }
 
@@ -7465,70 +6708,24 @@ public final class Player extends Playable {
     private void restoreFriendList() {
         this._friendList.clear();
 
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT friend_id FROM character_friends WHERE char_id = ? AND relation = 0");) {
+            ps.setInt(1, this.getObjectId());
 
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT friend_id FROM character_friends WHERE char_id = ? AND relation = 0");
-
-                try {
-                    ps.setInt(1, this.getObjectId());
-                    ResultSet rset = ps.executeQuery();
-
-                    try {
-                        while (rset.next()) {
-                            int friendId = rset.getInt("friend_id");
-                            if (friendId != this.getObjectId()) {
-                                this._friendList.add(friendId);
-                            }
-                        }
-                    } catch (Throwable var9) {
-                        if (rset != null) {
-                            try {
-                                rset.close();
-                            } catch (Throwable var8) {
-                                var9.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    rset.close();
-                } catch (Throwable var10) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
-                }
-
-                ps.close();
-            } catch (Throwable var11) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var6) {
-                        var11.addSuppressed(var6);
+            try (ResultSet rset = ps.executeQuery()) {
+                while (rset.next()) {
+                    int friendId = rset.getInt("friend_id");
+                    if (friendId != this.getObjectId()) {
+                        this._friendList.add(friendId);
                     }
                 }
-
-                throw var11;
             }
-
-            con.close();
-        } catch (Exception var12) {
-            LOGGER.error("Couldn't restore {}'s friendlist.", var12, this.getName());
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore {}'s friendlist.", e, this.getName());
         }
 
     }
 
     private void notifyFriends(boolean login) {
-
         for (int id : this._friendList) {
             Player friend = World.getInstance().getPlayer(id);
             if (friend != null) {
@@ -7549,7 +6746,9 @@ public final class Player extends Playable {
     }
 
     public void deselectBlock(Integer friendId) {
-        this._selectedBlocksList.remove(friendId);
+        if (this._selectedBlocksList.contains(friendId)) {
+            this._selectedBlocksList.remove(friendId);
+        }
 
     }
 
@@ -7558,7 +6757,6 @@ public final class Player extends Playable {
     }
 
     public void broadcastRelationsChanges() {
-
         for (Player player : this.getKnownType(Player.class)) {
             int relation = this.getRelation(player);
             boolean isAutoAttackable = this.isAutoAttackable(player);
@@ -7576,7 +6774,7 @@ public final class Player extends Playable {
         }
 
         if (this.getPolyType() == PolyType.NPC) {
-            player.sendPacket(new PcMorphInfo(this, this.getPolyTemplate()));
+            player.sendPacket(new AbstractNpcInfo.PcMorphInfo(this, this.getPolyTemplate()));
         } else {
             player.sendPacket(new CharInfo(this));
             if (this.isSeated()) {
@@ -7702,29 +6900,21 @@ public final class Player extends Playable {
         this.sendPacket(new DeleteObject(object, object instanceof Player && ((Player) object).isSeated()));
     }
 
-    public void refreshInfos() {
-        Iterator<WorldObject> var1 = this.getKnownType(WorldObject.class).iterator();
-
-        while (true) {
-            WorldObject object;
-            do {
-                if (!var1.hasNext()) {
-                    return;
-                }
-
-                object = var1.next();
-            } while (object instanceof Player && ((Player) object).isInObserverMode());
-
-            this.sendInfoFrom(object);
+    public final void refreshInfos() {
+        for (WorldObject object : this.getKnownType(WorldObject.class)) {
+            if (!(object instanceof Player) || !((Player) object).isInObserverMode()) {
+                this.sendInfoFrom(object);
+            }
         }
+
     }
 
-    public void teleToLocation(Location loc) {
+    public final void teleToLocation(Location loc) {
         super.teleportTo(loc, 0);
         this.respawnAgathion();
     }
 
-    public void teleportTo(Location loc, int randomOffset) {
+    public final void teleportTo(Location loc, int randomOffset) {
         if (DimensionalRiftManager.getInstance().checkIfInRiftZone(this.getX(), this.getY(), this.getZ(), true)) {
             this.sendMessage("You have been sent to the waiting room.");
             if (this.isInParty() && this.getParty().isInDimensionalRift()) {
@@ -7738,12 +6928,13 @@ public final class Player extends Playable {
         this.respawnAgathion();
     }
 
-    private void sendInfoFrom(WorldObject object) {
+    private final void sendInfoFrom(WorldObject object) {
         if (object.getPolyType() == PolyType.ITEM) {
             this.sendPacket(new SpawnItem(object));
         } else {
             object.sendInfo(this);
-            if (object instanceof Creature obj) {
+            if (object instanceof Creature) {
+                Creature obj = (Creature) object;
                 if (obj.hasAI()) {
                     obj.getAI().describeStateToPlayer(this);
                 }
@@ -7753,14 +6944,11 @@ public final class Player extends Playable {
     }
 
     public void checkEquipmentXPvps() {
-        boolean send;
-        int i;
-        ItemInstance equippedItem;
         if (Config.ENABLE_KILLS_LIMIT_A && this.getPvpKills() < Config.PVP_A_GRADE) {
-            send = false;
+            boolean send = false;
 
-            for (i = 0; i < 17; ++i) {
-                equippedItem = this.getInventory().getPaperdollItem(i);
+            for (int i = 0; i < 17; ++i) {
+                ItemInstance equippedItem = this.getInventory().getPaperdollItem(i);
                 if (equippedItem != null && equippedItem.getItem().getCrystalType() == CrystalType.A && equippedItem.isEquipped()) {
                     this.getInventory().unEquipItemInSlot(i);
                     send = true;
@@ -7776,10 +6964,10 @@ public final class Player extends Playable {
         }
 
         if (Config.ENABLE_KILLS_LIMIT_S && this.getPvpKills() < Config.PVP_S_GRADE) {
-            send = false;
+            boolean send = false;
 
-            for (i = 0; i < 17; ++i) {
-                equippedItem = this.getInventory().getPaperdollItem(i);
+            for (int i = 0; i < 17; ++i) {
+                ItemInstance equippedItem = this.getInventory().getPaperdollItem(i);
                 if (equippedItem != null && equippedItem.getItem().getCrystalType() == CrystalType.S && equippedItem.isEquipped()) {
                     this.getInventory().unEquipItemInSlot(i);
                     send = true;
@@ -7890,7 +7078,9 @@ public final class Player extends Playable {
     }
 
     public void activeMonster(Integer npcId) {
-        this._ignoredMonster.remove(npcId);
+        if (this._ignoredMonster.contains(npcId)) {
+            this._ignoredMonster.remove(npcId);
+        }
 
     }
 
@@ -7907,133 +7097,62 @@ public final class Player extends Playable {
     }
 
     public void saveAutoFarmSettings() {
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection()) {
+            String updateSql = "REPLACE INTO character_autofarm (char_id, char_name,  radius, short_cut, heal_percent, buff_protection, anti_ks_protection, summon_attack, summon_skill_percent, hp_potion_percent, mp_potion_percent) VALUES (?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            try {
-                String updateSql = "REPLACE INTO character_autofarm (char_id, char_name,  radius, short_cut, heal_percent, buff_protection, anti_ks_protection, summon_attack, summon_skill_percent, hp_potion_percent, mp_potion_percent) VALUES (?, ?, ?,  ?, ?, ?, ?, ?, ?, ?, ?)";
-                PreparedStatement updateStatement = con.prepareStatement(updateSql);
-
-                try {
-                    updateStatement.setInt(1, this.getObjectId());
-                    updateStatement.setString(2, this.getName());
-                    updateStatement.setInt(3, this.autoFarmRadius);
-                    updateStatement.setInt(4, this.autoFarmShortCut);
-                    updateStatement.setInt(5, this.autoFarmHealPercente);
-                    updateStatement.setBoolean(6, this.autoFarmBuffProtection);
-                    updateStatement.setBoolean(7, this.autoAntiKsProtection);
-                    updateStatement.setBoolean(8, this.autoFarmSummonAttack);
-                    updateStatement.setInt(9, this.autoFarmSummonSkillPercente);
-                    updateStatement.setInt(10, this.hpPotionPercent);
-                    updateStatement.setInt(11, this.mpPotionPercent);
-                    updateStatement.executeUpdate();
-                } catch (Throwable var8) {
-                    if (updateStatement != null) {
-                        try {
-                            updateStatement.close();
-                        } catch (Throwable var7) {
-                            var8.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var8;
-                }
-
-                updateStatement.close();
-            } catch (Throwable var9) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var6) {
-                        var9.addSuppressed(var6);
-                    }
-                }
-
-                throw var9;
+            try (PreparedStatement updateStatement = con.prepareStatement(updateSql)) {
+                updateStatement.setInt(1, this.getObjectId());
+                updateStatement.setString(2, this.getName());
+                updateStatement.setInt(3, this.autoFarmRadius);
+                updateStatement.setInt(4, this.autoFarmShortCut);
+                updateStatement.setInt(5, this.autoFarmHealPercente);
+                updateStatement.setBoolean(6, this.autoFarmBuffProtection);
+                updateStatement.setBoolean(7, this.autoAntiKsProtection);
+                updateStatement.setBoolean(8, this.autoFarmSummonAttack);
+                updateStatement.setInt(9, this.autoFarmSummonSkillPercente);
+                updateStatement.setInt(10, this.hpPotionPercent);
+                updateStatement.setInt(11, this.mpPotionPercent);
+                updateStatement.executeUpdate();
             }
-
-            con.close();
-        } catch (SQLException var10) {
-            var10.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
     }
 
     public void loadAutoFarmSettings() {
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection()) {
+            String selectSql = "SELECT * FROM character_autofarm WHERE char_id = ?";
 
-            try {
-                String selectSql = "SELECT * FROM character_autofarm WHERE char_id = ?";
-                PreparedStatement selectStatement = con.prepareStatement(selectSql);
+            try (PreparedStatement selectStatement = con.prepareStatement(selectSql)) {
+                selectStatement.setInt(1, this.getObjectId());
 
-                try {
-                    selectStatement.setInt(1, this.getObjectId());
-                    ResultSet resultSet = selectStatement.executeQuery();
-
-                    try {
-                        if (resultSet.next()) {
-                            this.autoFarmRadius = resultSet.getInt("radius");
-                            this.autoFarmShortCut = resultSet.getInt("short_cut");
-                            this.autoFarmHealPercente = resultSet.getInt("heal_percent");
-                            this.autoFarmBuffProtection = resultSet.getBoolean("buff_protection");
-                            this.autoAntiKsProtection = resultSet.getBoolean("anti_ks_protection");
-                            this.autoFarmSummonAttack = resultSet.getBoolean("summon_attack");
-                            this.autoFarmSummonSkillPercente = resultSet.getInt("summon_skill_percent");
-                            this.hpPotionPercent = resultSet.getInt("hp_potion_percent");
-                            this.mpPotionPercent = resultSet.getInt("mp_potion_percent");
-                        } else {
-                            this.autoFarmRadius = 1200;
-                            this.autoFarmShortCut = 9;
-                            this.autoFarmHealPercente = 30;
-                            this.autoFarmBuffProtection = false;
-                            this.autoAntiKsProtection = false;
-                            this.autoFarmSummonAttack = false;
-                            this.autoFarmSummonSkillPercente = 0;
-                            this.hpPotionPercent = 60;
-                            this.mpPotionPercent = 60;
-                        }
-                    } catch (Throwable var10) {
-                        if (resultSet != null) {
-                            try {
-                                resultSet.close();
-                            } catch (Throwable var9) {
-                                var10.addSuppressed(var9);
-                            }
-                        }
-
-                        throw var10;
-                    }
-
-                    resultSet.close();
-                } catch (Throwable var11) {
-                    if (selectStatement != null) {
-                        try {
-                            selectStatement.close();
-                        } catch (Throwable var8) {
-                            var11.addSuppressed(var8);
-                        }
-                    }
-
-                    throw var11;
-                }
-
-                selectStatement.close();
-            } catch (Throwable var12) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var7) {
-                        var12.addSuppressed(var7);
+                try (ResultSet resultSet = selectStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        this.autoFarmRadius = resultSet.getInt("radius");
+                        this.autoFarmShortCut = resultSet.getInt("short_cut");
+                        this.autoFarmHealPercente = resultSet.getInt("heal_percent");
+                        this.autoFarmBuffProtection = resultSet.getBoolean("buff_protection");
+                        this.autoAntiKsProtection = resultSet.getBoolean("anti_ks_protection");
+                        this.autoFarmSummonAttack = resultSet.getBoolean("summon_attack");
+                        this.autoFarmSummonSkillPercente = resultSet.getInt("summon_skill_percent");
+                        this.hpPotionPercent = resultSet.getInt("hp_potion_percent");
+                        this.mpPotionPercent = resultSet.getInt("mp_potion_percent");
+                    } else {
+                        this.autoFarmRadius = 1200;
+                        this.autoFarmShortCut = 9;
+                        this.autoFarmHealPercente = 30;
+                        this.autoFarmBuffProtection = false;
+                        this.autoAntiKsProtection = false;
+                        this.autoFarmSummonAttack = false;
+                        this.autoFarmSummonSkillPercente = 0;
+                        this.hpPotionPercent = 60;
+                        this.mpPotionPercent = 60;
                     }
                 }
-
-                throw var12;
             }
-
-            con.close();
-        } catch (SQLException var13) {
-            var13.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
     }
@@ -8150,20 +7269,15 @@ public final class Player extends Playable {
             return true;
         } else {
             if (ArenaTask.is_started()) {
-                label64:
-                {
-                    if (!Arena2x2.getInstance().isRegistered(this) && !this.isInsideZone(ZoneId.ARENA_EVENT)) {
-                        if (Arena4x4.getInstance().isRegistered(this) || this.isInsideZone(ZoneId.ARENA_EVENT)) {
-                            return true;
-                        }
+                if (Arena2x2.getInstance().isRegistered(this) || this.isInsideZone(ZoneId.ARENA_EVENT)) {
+                    return true;
+                }
 
-                        if (!Arena9x9.getInstance().isRegistered(this) && !this.isInsideZone(ZoneId.ARENA_EVENT)) {
-                            break label64;
-                        }
+                if (Arena4x4.getInstance().isRegistered(this) || this.isInsideZone(ZoneId.ARENA_EVENT)) {
+                    return true;
+                }
 
-                        return true;
-                    }
-
+                if (Arena9x9.getInstance().isRegistered(this) || this.isInsideZone(ZoneId.ARENA_EVENT)) {
                     return true;
                 }
             }
@@ -8175,10 +7289,12 @@ public final class Player extends Playable {
     }
 
     public String getHWID() {
-        if (this.getClient() != null) {
+        if (this.getClient() == null) {
+            return this._hwid;
+        } else {
             this._hwid = this.getClient().getHWID();
+            return this._hwid;
         }
-        return this._hwid;
     }
 
     public void addSpoilSkillinZone() {
@@ -8218,312 +7334,196 @@ public final class Player extends Playable {
     }
 
     private synchronized void storeDressMeData() {
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement statement = con.prepareStatement("INSERT INTO characters_dressme_data (obj_Id, armor_skins, armor_skin_option, weapon_skins, weapon_skin_option, hair_skins, hair_skin_option, face_skins, face_skin_option) VALUES (?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE obj_Id=?, armor_skins=?, armor_skin_option=?, weapon_skins=?, weapon_skin_option=?, hair_skins=?, hair_skin_option=?, face_skins=?, face_skin_option=?, shield_skins=?, shield_skin_option=?");) {
+            statement.setInt(1, this.getObjectId());
+            if (this._armorSkins.isEmpty()) {
+                statement.setString(2, "");
+            } else {
+                StringBuilder s = new StringBuilder();
 
-            try {
-                PreparedStatement statement = con.prepareStatement("INSERT INTO characters_dressme_data (obj_Id, armor_skins, armor_skin_option, weapon_skins, weapon_skin_option, hair_skins, hair_skin_option, face_skins, face_skin_option) VALUES (?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE obj_Id=?, armor_skins=?, armor_skin_option=?, weapon_skins=?, weapon_skin_option=?, hair_skins=?, hair_skin_option=?, face_skins=?, face_skin_option=?, shield_skins=?, shield_skin_option=?");
-
-                try {
-                    statement.setInt(1, this.getObjectId());
-                    String s;
-                    Iterator<Integer> var4;
-                    int i;
-                    if (this._armorSkins.isEmpty()) {
-                        statement.setString(2, "");
-                    } else {
-                        s = "";
-
-                        for (var4 = this._armorSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = var4.next();
-                        }
-
-                        statement.setString(2, s);
-                    }
-
-                    statement.setInt(3, this.getArmorSkinOption());
-                    if (this._weaponSkins.isEmpty()) {
-                        statement.setString(4, "");
-                    } else {
-                        s = "";
-
-                        for (var4 = this._weaponSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = var4.next();
-                        }
-
-                        statement.setString(4, s);
-                    }
-
-                    statement.setInt(5, this.getWeaponSkinOption());
-                    if (this._hairSkins.isEmpty()) {
-                        statement.setString(6, "");
-                    } else {
-                        s = "";
-
-                        for (var4 = this._hairSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = var4.next();
-                        }
-
-                        statement.setString(6, s);
-                    }
-
-                    statement.setInt(7, this.getHairSkinOption());
-                    if (this._faceSkins.isEmpty()) {
-                        statement.setString(8, "");
-                    } else {
-                        s = "";
-
-                        for (var4 = this._faceSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = var4.next();
-                        }
-
-                        statement.setString(8, s);
-                    }
-
-                    statement.setInt(9, this.getFaceSkinOption());
-                    if (this._shieldSkins.isEmpty()) {
-                        statement.setString(10, "");
-                    } else {
-                        s = "";
-
-                        for (var4 = this._shieldSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = var4.next();
-                        }
-
-                        statement.setString(10, s);
-                    }
-
-                    statement.setInt(11, this.getShieldSkinOption());
-                    statement.setInt(10, this.getObjectId());
-                    if (this._armorSkins.isEmpty()) {
-                        statement.setString(11, "");
-                    } else {
-                        s = "";
-
-                        for (var4 = this._armorSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = var4.next();
-                        }
-
-                        statement.setString(11, s);
-                    }
-
-                    statement.setInt(12, this.getArmorSkinOption());
-                    if (this._weaponSkins.isEmpty()) {
-                        statement.setString(13, "");
-                    } else {
-                        s = "";
-
-                        for (var4 = this._weaponSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = var4.next();
-                        }
-
-                        statement.setString(13, s);
-                    }
-
-                    statement.setInt(14, this.getWeaponSkinOption());
-                    if (this._hairSkins.isEmpty()) {
-                        statement.setString(15, "");
-                    } else {
-                        s = "";
-
-                        for (var4 = this._hairSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = var4.next();
-                        }
-
-                        statement.setString(15, s);
-                    }
-
-                    statement.setInt(16, this.getHairSkinOption());
-                    if (this._faceSkins.isEmpty()) {
-                        statement.setString(17, "");
-                    } else {
-                        s = "";
-
-                        for (var4 = this._faceSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = var4.next();
-                        }
-
-                        statement.setString(17, s);
-                    }
-
-                    statement.setInt(18, this.getFaceSkinOption());
-                    if (this._shieldSkins.isEmpty()) {
-                        statement.setString(19, "");
-                    } else {
-                        s = "";
-
-                        for (var4 = this._shieldSkins.iterator(); var4.hasNext(); s = s + i + ",") {
-                            i = var4.next();
-                        }
-
-                        statement.setString(19, s);
-                    }
-
-                    statement.setInt(20, this.getShieldSkinOption());
-                    statement.execute();
-                    statement.close();
-                } catch (Throwable var8) {
-                    if (statement != null) {
-                        try {
-                            statement.close();
-                        } catch (Throwable var7) {
-                            var8.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var8;
+                for (int i : this._armorSkins) {
+                    s.append(i).append(",");
                 }
 
-                statement.close();
-            } catch (Throwable var9) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var6) {
-                        var9.addSuppressed(var6);
-                    }
-                }
-
-                throw var9;
+                statement.setString(2, s.toString());
             }
 
-            con.close();
-        } catch (Exception var10) {
+            statement.setInt(3, this.getArmorSkinOption());
+            if (this._weaponSkins.isEmpty()) {
+                statement.setString(4, "");
+            } else {
+                StringBuilder s = new StringBuilder();
+
+                for (int i : this._weaponSkins) {
+                    s.append(i).append(",");
+                }
+
+                statement.setString(4, s.toString());
+            }
+
+            statement.setInt(5, this.getWeaponSkinOption());
+            if (this._hairSkins.isEmpty()) {
+                statement.setString(6, "");
+            } else {
+                StringBuilder s = new StringBuilder();
+
+                for (int i : this._hairSkins) {
+                    s.append(i).append(",");
+                }
+
+                statement.setString(6, s.toString());
+            }
+
+            statement.setInt(7, this.getHairSkinOption());
+            if (this._faceSkins.isEmpty()) {
+                statement.setString(8, "");
+            } else {
+                StringBuilder s = new StringBuilder();
+
+                for (int i : this._faceSkins) {
+                    s.append(i).append(",");
+                }
+
+                statement.setString(8, s.toString());
+            }
+
+            statement.setInt(9, this.getFaceSkinOption());
+            if (this._shieldSkins.isEmpty()) {
+                statement.setString(10, "");
+            } else {
+                StringBuilder s = new StringBuilder();
+
+                for (int i : this._shieldSkins) {
+                    s.append(i).append(",");
+                }
+
+                statement.setString(10, s.toString());
+            }
+
+            statement.setInt(11, this.getShieldSkinOption());
+            statement.setInt(10, this.getObjectId());
+            if (this._armorSkins.isEmpty()) {
+                statement.setString(11, "");
+            } else {
+                StringBuilder s = new StringBuilder();
+
+                for (int i : this._armorSkins) {
+                    s.append(i).append(",");
+                }
+
+                statement.setString(11, s.toString());
+            }
+
+            statement.setInt(12, this.getArmorSkinOption());
+            if (this._weaponSkins.isEmpty()) {
+                statement.setString(13, "");
+            } else {
+                StringBuilder s = new StringBuilder();
+
+                for (int i : this._weaponSkins) {
+                    s.append(i).append(",");
+                }
+
+                statement.setString(13, s.toString());
+            }
+
+            statement.setInt(14, this.getWeaponSkinOption());
+            if (this._hairSkins.isEmpty()) {
+                statement.setString(15, "");
+            } else {
+                StringBuilder s = new StringBuilder();
+
+                for (int i : this._hairSkins) {
+                    s.append(i).append(",");
+                }
+
+                statement.setString(15, s.toString());
+            }
+
+            statement.setInt(16, this.getHairSkinOption());
+            if (this._faceSkins.isEmpty()) {
+                statement.setString(17, "");
+            } else {
+                StringBuilder s = new StringBuilder();
+
+                for (int i : this._faceSkins) {
+                    s.append(i).append(",");
+                }
+
+                statement.setString(17, s.toString());
+            }
+
+            statement.setInt(18, this.getFaceSkinOption());
+            if (this._shieldSkins.isEmpty()) {
+                statement.setString(19, "");
+            } else {
+                StringBuilder s = new StringBuilder();
+
+                for (int i : this._shieldSkins) {
+                    s.append(i).append(",");
+                }
+
+                statement.setString(19, s.toString());
+            }
+
+            statement.setInt(20, this.getShieldSkinOption());
+            statement.execute();
+        } catch (Exception e) {
             LOGGER.warn("Could not store storeDressMeData():");
-            var10.printStackTrace();
+            e.printStackTrace();
         }
 
     }
 
     private void restoreDressMeData() {
-        try {
-            Connection con = ConnectionPool.getConnection();
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement statement = con.prepareStatement("SELECT obj_Id, armor_skins, armor_skin_option, weapon_skins, weapon_skin_option, hair_skins, hair_skin_option, face_skins, face_skin_option, shield_skins, shield_skin_option FROM characters_dressme_data WHERE obj_id=?");) {
+            statement.setInt(1, this.getObjectId());
 
-            try {
-                PreparedStatement statement = con.prepareStatement("SELECT obj_Id, armor_skins, armor_skin_option, weapon_skins, weapon_skin_option, hair_skins, hair_skin_option, face_skins, face_skin_option, shield_skins, shield_skin_option FROM characters_dressme_data WHERE obj_id=?");
-
-                try {
-                    statement.setInt(1, this.getObjectId());
-                    ResultSet rset = statement.executeQuery();
-
-                    try {
-                        for (; rset.next(); this.setShieldSkinOption(rset.getInt("shield_skin_option"))) {
-                            String armorskinIds = rset.getString("armor_skins");
-                            int var7;
-                            String shieldkinIds;
-                            if (armorskinIds != null && !armorskinIds.isEmpty()) {
-                                String[] var5 = armorskinIds.split(",");
-                                int var6 = var5.length;
-
-                                for (var7 = 0; var7 < var6; ++var7) {
-                                    shieldkinIds = var5[var7];
-                                    if (shieldkinIds != null) {
-                                        this.buyArmorSkin(Integer.parseInt(shieldkinIds));
-                                    }
-                                }
-                            }
-
-                            this.setArmorSkinOption(rset.getInt("armor_skin_option"));
-                            String weaponskinIds = rset.getString("weapon_skins");
-                            int var24;
-                            if (weaponskinIds != null && !weaponskinIds.isEmpty()) {
-                                String[] var21 = weaponskinIds.split(",");
-                                var7 = var21.length;
-
-                                for (var24 = 0; var24 < var7; ++var24) {
-                                    String s = var21[var24];
-                                    if (s != null) {
-                                        this.buyWeaponSkin(Integer.parseInt(s));
-                                    }
-                                }
-                            }
-
-                            this.setWeaponSkinOption(rset.getInt("weapon_skin_option"));
-                            String hairskinIds = rset.getString("hair_skins");
-                            int var26;
-                            if (hairskinIds != null && !hairskinIds.isEmpty()) {
-                                String[] var23 = hairskinIds.split(",");
-                                var24 = var23.length;
-
-                                for (var26 = 0; var26 < var24; ++var26) {
-                                    String s = var23[var26];
-                                    if (s != null) {
-                                        this.buyHairSkin(Integer.parseInt(s));
-                                    }
-                                }
-                            }
-
-                            this.setHairSkinOption(rset.getInt("hair_skin_option"));
-                            String faceskinIds = rset.getString("face_skins");
-                            int var28;
-                            if (faceskinIds != null && !faceskinIds.isEmpty()) {
-                                String[] var27 = faceskinIds.split(",");
-                                var26 = var27.length;
-
-                                for (var28 = 0; var28 < var26; ++var28) {
-                                    String s = var27[var28];
-                                    if (s != null) {
-                                        this.buyFaceSkin(Integer.parseInt(s));
-                                    }
-                                }
-                            }
-
-                            this.setFaceSkinOption(rset.getInt("face_skin_option"));
-                            shieldkinIds = rset.getString("shield_skins");
-                            if (shieldkinIds != null && !shieldkinIds.isEmpty()) {
-                                String[] var29 = shieldkinIds.split(",");
-                                var28 = var29.length;
-
-                                for (int var30 = 0; var30 < var28; ++var30) {
-                                    String s = var29[var30];
-                                    if (s != null) {
-                                        this.buyShieldSkin(Integer.parseInt(s));
-                                    }
-                                }
-                            }
-                        }
-                    } catch (Throwable var16) {
-                        if (rset != null) {
-                            try {
-                                rset.close();
-                            } catch (Throwable var15) {
-                                var16.addSuppressed(var15);
-                            }
-                        }
-
-                        throw var16;
-                    }
-
-                    rset.close();
-                } catch (Throwable var17) {
-                    if (statement != null) {
-                        try {
-                            statement.close();
-                        } catch (Throwable var14) {
-                            var17.addSuppressed(var14);
+            try (ResultSet rset = statement.executeQuery()) {
+                for (; rset.next(); this.setShieldSkinOption(rset.getInt("shield_skin_option"))) {
+                    String armorskinIds = rset.getString("armor_skins");
+                    if (armorskinIds != null && !armorskinIds.isEmpty()) {
+                        for (String s : armorskinIds.split(",")) {
+                            this.buyArmorSkin(Integer.parseInt(s));
                         }
                     }
 
-                    throw var17;
-                }
+                    this.setArmorSkinOption(rset.getInt("armor_skin_option"));
+                    String weaponskinIds = rset.getString("weapon_skins");
+                    if (weaponskinIds != null && !weaponskinIds.isEmpty()) {
+                        for (String s : weaponskinIds.split(",")) {
+                            this.buyWeaponSkin(Integer.parseInt(s));
+                        }
+                    }
 
-                statement.close();
-            } catch (Throwable var18) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var13) {
-                        var18.addSuppressed(var13);
+                    this.setWeaponSkinOption(rset.getInt("weapon_skin_option"));
+                    String hairskinIds = rset.getString("hair_skins");
+                    if (hairskinIds != null && !hairskinIds.isEmpty()) {
+                        for (String s : hairskinIds.split(",")) {
+                            this.buyHairSkin(Integer.parseInt(s));
+                        }
+                    }
+
+                    this.setHairSkinOption(rset.getInt("hair_skin_option"));
+                    String faceskinIds = rset.getString("face_skins");
+                    if (faceskinIds != null && !faceskinIds.isEmpty()) {
+                        for (String s : faceskinIds.split(",")) {
+                            this.buyFaceSkin(Integer.parseInt(s));
+                        }
+                    }
+
+                    this.setFaceSkinOption(rset.getInt("face_skin_option"));
+                    String shieldkinIds = rset.getString("shield_skins");
+                    if (shieldkinIds != null && !shieldkinIds.isEmpty()) {
+                        for (String s : shieldkinIds.split(",")) {
+                            this.buyShieldSkin(Integer.parseInt(s));
+                        }
                     }
                 }
-
-                throw var18;
             }
-
-            con.close();
-        } catch (Exception var19) {
+        } catch (Exception e) {
             LOGGER.warn("Could not restore char data:");
-            var19.printStackTrace();
+            e.printStackTrace();
         }
 
     }
@@ -8671,7 +7671,7 @@ public final class Player extends Playable {
         return !this._completedAchievements.isEmpty();
     }
 
-    public void getAchievementData() {
+    public void refreshCompletedAchievements() {
         this._completedAchievements.clear();
         try {
             Connection con = ConnectionPool.getConnection();
@@ -8731,6 +7731,7 @@ public final class Player extends Playable {
             LOGGER.error("[ACHIEVEMENTS SAVE GETDATA]" + var11);
         }
 
+
     }
 
     public List<Integer> getCompletedAchievements() {
@@ -8751,8 +7752,9 @@ public final class Player extends Playable {
 
     public void setAgathion(Npc npc) {
         if (npc instanceof Agathion) {
-            this.setAgathion((Agathion) npc);
+            this.setAgathion(npc);
         }
+
     }
 
     public void setAgathion(Agathion agathion) {
@@ -8760,6 +7762,7 @@ public final class Player extends Playable {
         if (agathion != null) {
             this._lastAgathionNpcId = agathion.getNpcId();
         }
+
     }
 
     public void despawnAgathion() {
@@ -8767,6 +7770,7 @@ public final class Player extends Playable {
             this._agathion.deleteMe();
             this._agathion = null;
         }
+
     }
 
     public long getLastAgathionUse() {
@@ -8784,7 +7788,6 @@ public final class Player extends Playable {
                 this.setAgathion(null);
             }
 
-            AgathionData.getInstance();
             AgathionData.spawnAgathion(this, this._lastAgathionNpcId);
         }
 
@@ -8793,9 +7796,7 @@ public final class Player extends Playable {
     public void deleteTempItem(int itemObjectID) {
         boolean destroyed = false;
         if (this.getInventory().getItemByObjectId(itemObjectID) != null) {
-            ItemTable var10001 = ItemTable.getInstance();
-            int var10002 = this.getInventory().getItemByObjectId(itemObjectID).getItemId();
-            this.sendMessage("Your " + var10001.getTemplate(var10002).getName() + " has expired.");
+            this.sendMessage("Your " + this.getInventory().getItemByObjectId(itemObjectID).getName() + " has expired.");
             this.destroyItem("tempItemDestroy", itemObjectID, 1, this, true);
             this.getInventory().updateDatabase();
             this.sendPacket(new ItemList(this, true));
@@ -8803,43 +7804,11 @@ public final class Player extends Playable {
         }
 
         if (!destroyed) {
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
-                    PreparedStatement statement = con.prepareStatement("DELETE FROM items WHERE object_id=?");
-
-                    try {
-                        statement.setInt(1, itemObjectID);
-                        statement.execute();
-                    } catch (Throwable var9) {
-                        if (statement != null) {
-                            try {
-                                statement.close();
-                            } catch (Throwable var8) {
-                                var9.addSuppressed(var8);
-                            }
-                        }
-
-                        throw var9;
-                    }
-
-                    statement.close();
-                } catch (Throwable var10) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var7) {
-                            var10.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var10;
-                }
-
-                con.close();
-            } catch (Exception var11) {
-                var11.printStackTrace();
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement statement = con.prepareStatement("DELETE FROM items WHERE object_id=?");) {
+                statement.setInt(1, itemObjectID);
+                statement.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -8888,5 +7857,4 @@ public final class Player extends Playable {
             }
         }
     }
-
 }

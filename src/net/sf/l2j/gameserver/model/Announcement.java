@@ -6,21 +6,13 @@ import java.util.concurrent.ScheduledFuture;
 
 public class Announcement implements Runnable {
     protected final String _message;
-
     protected boolean _critical;
-
     protected boolean _auto;
-
     protected boolean _unlimited;
-
     protected int _initialDelay;
-
     protected int _delay;
-
     protected int _limit;
-
     protected int _tempLimit;
-
     protected ScheduledFuture<?> _task;
 
     public Announcement(String message, boolean critical) {
@@ -38,22 +30,27 @@ public class Announcement implements Runnable {
         if (this._auto) {
             switch (this._limit) {
                 case 0:
-                    this._task = ThreadPool.scheduleAtFixedRate(this, (this._initialDelay * 1000L), (this._delay * 1000L));
+                    this._task = ThreadPool.scheduleAtFixedRate(this, this._initialDelay * 1000L, this._delay * 1000L);
                     this._unlimited = true;
-                    return;
+                    break;
+                default:
+                    this._task = ThreadPool.schedule(this, this._initialDelay * 1000L);
+                    this._tempLimit = this._limit;
             }
-            this._task = ThreadPool.schedule(this, (this._initialDelay * 1000L));
-            this._tempLimit = this._limit;
         }
+
     }
 
     public void run() {
         if (!this._unlimited) {
-            if (this._tempLimit == 0)
+            if (this._tempLimit == 0) {
                 return;
-            this._task = ThreadPool.schedule(this, (this._delay * 1000L));
-            this._tempLimit--;
+            }
+
+            this._task = ThreadPool.schedule(this, this._delay * 1000L);
+            --this._tempLimit;
         }
+
         World.announceToOnlinePlayers(this._message, this._critical);
     }
 
@@ -86,19 +83,22 @@ public class Announcement implements Runnable {
             this._task.cancel(true);
             this._task = null;
         }
+
     }
 
     public void reloadTask() {
-        stopTask();
+        this.stopTask();
         if (this._auto) {
             switch (this._limit) {
                 case 0:
-                    this._task = ThreadPool.scheduleAtFixedRate(this, (this._initialDelay * 1000L), (this._delay * 1000L));
+                    this._task = ThreadPool.scheduleAtFixedRate(this, this._initialDelay * 1000L, this._delay * 1000L);
                     this._unlimited = true;
-                    return;
+                    break;
+                default:
+                    this._task = ThreadPool.schedule(this, this._initialDelay * 1000L);
+                    this._tempLimit = this._limit;
             }
-            this._task = ThreadPool.schedule(this, (this._initialDelay * 1000L));
-            this._tempLimit = this._limit;
         }
+
     }
 }

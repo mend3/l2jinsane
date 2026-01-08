@@ -177,7 +177,7 @@ public class AdminSpawn implements IAdminCommandHandler {
                 int from = 0;
                 try {
                     from = Integer.parseInt(st.nextToken());
-                } catch (NoSuchElementException noSuchElementException) {
+                } catch (NoSuchElementException ignored) {
                 }
                 showMonsters(activeChar, level, from);
             } catch (Exception e) {
@@ -193,7 +193,7 @@ public class AdminSpawn implements IAdminCommandHandler {
                 int from = 0;
                 try {
                     from = Integer.parseInt(st.nextToken());
-                } catch (NoSuchElementException noSuchElementException) {
+                } catch (NoSuchElementException ignored) {
                 }
                 showNpcs(activeChar, letter, from);
             } catch (Exception e) {

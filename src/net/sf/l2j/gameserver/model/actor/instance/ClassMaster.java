@@ -22,35 +22,36 @@ public final class ClassMaster extends Folk {
     }
 
     public static void onTutorialLink(Player player, String request) {
-        if (!Config.ALTERNATE_CLASS_MASTER || request == null || !request.startsWith("CO"))
-            return;
-        if (!FloodProtectors.performAction(player.getClient(), FloodProtectors.Action.SERVER_BYPASS))
-            return;
-        try {
-            int val = Integer.parseInt(request.substring(2));
-            checkAndChangeClass(player, val);
-        } catch (NumberFormatException numberFormatException) {
+        if (Config.ALTERNATE_CLASS_MASTER && request != null && request.startsWith("CO")) {
+            if (FloodProtectors.performAction(player.getClient(), FloodProtectors.Action.SERVER_BYPASS)) {
+                try {
+                    int val = Integer.parseInt(request.substring(2));
+                    checkAndChangeClass(player, val);
+                } catch (NumberFormatException ignored) {
+                }
+
+                player.sendPacket(TutorialCloseHtml.STATIC_PACKET);
+            }
         }
-        player.sendPacket(TutorialCloseHtml.STATIC_PACKET);
     }
 
     public static void onTutorialQuestionMark(Player player, int number) {
-        if (!Config.ALTERNATE_CLASS_MASTER || number != 1001)
-            return;
-        showTutorialHtml(player);
+        if (Config.ALTERNATE_CLASS_MASTER && number == 1001) {
+            showTutorialHtml(player);
+        }
     }
 
     public static void showQuestionMark(Player player) {
-        if (!Config.ALLOW_CLASS_MASTERS)
-            return;
-        if (!Config.ALTERNATE_CLASS_MASTER)
-            return;
-        ClassId classId = player.getClassId();
-        if (getMinLevel(classId.level()) > player.getLevel())
-            return;
-        if (!Config.CLASS_MASTER_SETTINGS.isAllowed(classId.level() + 1))
-            return;
-        player.sendPacket(new TutorialShowQuestionMark(1001));
+        if (Config.ALLOW_CLASS_MASTERS) {
+            if (Config.ALTERNATE_CLASS_MASTER) {
+                ClassId classId = player.getClassId();
+                if (getMinLevel(classId.level()) <= player.getLevel()) {
+                    if (Config.CLASS_MASTER_SETTINGS.isAllowed(classId.level() + 1)) {
+                        player.sendPacket(new TutorialShowQuestionMark(1001));
+                    }
+                }
+            }
+        }
     }
 
     static void showHtmlMenu(Player player, int objectId, int level) {
@@ -62,40 +63,34 @@ public final class ClassMaster extends Folk {
                 case 0:
                     if (Config.CLASS_MASTER_SETTINGS.isAllowed(1)) {
                         sb.append("Come back here when you reached level 20 to change your class.<br>");
-                        break;
-                    }
-                    if (Config.CLASS_MASTER_SETTINGS.isAllowed(2)) {
+                    } else if (Config.CLASS_MASTER_SETTINGS.isAllowed(2)) {
                         sb.append("Come back after your first occupation change.<br>");
-                        break;
-                    }
-                    if (Config.CLASS_MASTER_SETTINGS.isAllowed(3)) {
+                    } else if (Config.CLASS_MASTER_SETTINGS.isAllowed(3)) {
                         sb.append("Come back after your second occupation change.<br>");
-                        break;
+                    } else {
+                        sb.append("I can't change your occupation.<br>");
                     }
-                    sb.append("I can't change your occupation.<br>");
                     break;
                 case 1:
                     if (Config.CLASS_MASTER_SETTINGS.isAllowed(2)) {
                         sb.append("Come back here when you reached level 40 to change your class.<br>");
-                        break;
-                    }
-                    if (Config.CLASS_MASTER_SETTINGS.isAllowed(3)) {
+                    } else if (Config.CLASS_MASTER_SETTINGS.isAllowed(3)) {
                         sb.append("Come back after your second occupation change.<br>");
-                        break;
+                    } else {
+                        sb.append("I can't change your occupation.<br>");
                     }
-                    sb.append("I can't change your occupation.<br>");
                     break;
                 case 2:
                     if (Config.CLASS_MASTER_SETTINGS.isAllowed(3)) {
                         sb.append("Come back here when you reached level 76 to change your class.<br>");
-                        break;
+                    } else {
+                        sb.append("I can't change your occupation.<br>");
                     }
-                    sb.append("I can't change your occupation.<br>");
                     break;
                 case 3:
                     sb.append("There is no class change available for you anymore.<br>");
-                    break;
             }
+
             sb.append("</body></html>");
             html.setHtml(sb.toString());
         } else {
@@ -104,13 +99,22 @@ public final class ClassMaster extends Folk {
                 html.setFile("data/html/classmaster/nomore.htm");
             } else {
                 int minLevel = getMinLevel(currentClassId.level());
-                if (player.getLevel() >= minLevel || Config.ALLOW_ENTIRE_TREE) {
-                    StringBuilder menu = new StringBuilder(100);
-                    for (ClassId cid : ClassId.VALUES) {
-                        if (cid.level() == level)
-                            if (validateClassId(currentClassId, cid))
-                                StringUtil.append(menu, "<a action=\"bypass -h npc_%objectId%_change_class ", cid.getId(), "\">", PlayerClassData.getInstance().getClassNameById(cid.getId()), "</a><br>");
+                if (player.getLevel() < minLevel && !Config.ALLOW_ENTIRE_TREE) {
+                    if (minLevel < Integer.MAX_VALUE) {
+                        html.setFile("data/html/classmaster/comebacklater.htm");
+                        html.replace("%level%", minLevel);
+                    } else {
+                        html.setFile("data/html/classmaster/nomore.htm");
                     }
+                } else {
+                    StringBuilder menu = new StringBuilder(100);
+
+                    for (ClassId cid : ClassId.VALUES) {
+                        if (cid.level() == level && validateClassId(currentClassId, cid)) {
+                            StringUtil.append(menu, new Object[]{"<a action=\"bypass -h npc_%objectId%_change_class ", cid.getId(), "\">", PlayerClassData.getInstance().getClassNameById(cid.getId()), "</a><br>"});
+                        }
+                    }
+
                     if (menu.length() > 0) {
                         html.setFile("data/html/classmaster/template.htm");
                         html.replace("%name%", PlayerClassData.getInstance().getClassNameById(currentClassId.getId()));
@@ -119,14 +123,10 @@ public final class ClassMaster extends Folk {
                         html.setFile("data/html/classmaster/comebacklater.htm");
                         html.replace("%level%", getMinLevel(level - 1));
                     }
-                } else if (minLevel < Integer.MAX_VALUE) {
-                    html.setFile("data/html/classmaster/comebacklater.htm");
-                    html.replace("%level%", minLevel);
-                } else {
-                    html.setFile("data/html/classmaster/nomore.htm");
                 }
             }
         }
+
         html.replace("%objectId%", objectId);
         html.replace("%req_items%", getRequiredItems(level));
         player.sendPacket(html);
@@ -134,146 +134,175 @@ public final class ClassMaster extends Folk {
 
     private static void showTutorialHtml(Player player) {
         ClassId currentClassId = player.getClassId();
-        if (getMinLevel(currentClassId.level()) > player.getLevel() && !Config.ALLOW_ENTIRE_TREE)
-            return;
-        String msg = HtmCache.getInstance().getHtm("data/html/classmaster/tutorialtemplate.htm");
-        msg = msg.replaceAll("%name%", PlayerClassData.getInstance().getClassNameById(currentClassId.getId()));
-        StringBuilder menu = new StringBuilder(100);
-        for (ClassId cid : ClassId.values()) {
-            if (validateClassId(currentClassId, cid))
-                StringUtil.append(menu, "<a action=\"link CO", String.valueOf(cid.getId()), "\">", PlayerClassData.getInstance().getClassNameById(cid.getId()), "</a><br>");
+        if (getMinLevel(currentClassId.level()) <= player.getLevel() || Config.ALLOW_ENTIRE_TREE) {
+            String msg = HtmCache.getInstance().getHtm("data/html/classmaster/tutorialtemplate.htm");
+            msg = msg.replaceAll("%name%", PlayerClassData.getInstance().getClassNameById(currentClassId.getId()));
+            StringBuilder menu = new StringBuilder(100);
+
+            for (ClassId cid : ClassId.values()) {
+                if (validateClassId(currentClassId, cid)) {
+                    StringUtil.append(menu, new Object[]{"<a action=\"link CO", String.valueOf(cid.getId()), "\">", PlayerClassData.getInstance().getClassNameById(cid.getId()), "</a><br>"});
+                }
+            }
+
+            msg = msg.replaceAll("%menu%", menu.toString());
+            msg = msg.replace("%req_items%", getRequiredItems(currentClassId.level() + 1));
+            player.sendPacket(new TutorialShowHtml(msg));
+            player.mikadoPlayerUpdate();
         }
-        msg = msg.replaceAll("%menu%", menu.toString());
-        msg = msg.replace("%req_items%", getRequiredItems(currentClassId.level() + 1));
-        player.sendPacket(new TutorialShowHtml(msg));
-        player.mikadoPlayerUpdate();
     }
 
     static boolean checkAndChangeClass(Player player, int val) {
         ClassId currentClassId = player.getClassId();
-        if (getMinLevel(currentClassId.level()) > player.getLevel() && !Config.ALLOW_ENTIRE_TREE)
+        if (getMinLevel(currentClassId.level()) > player.getLevel() && !Config.ALLOW_ENTIRE_TREE) {
             return false;
-        if (!validateClassId(currentClassId, val))
+        } else if (!validateClassId(currentClassId, val)) {
             return false;
-        int newJobLevel = currentClassId.level() + 1;
-        if (!Config.CLASS_MASTER_SETTINGS.getRewardItems(newJobLevel).isEmpty())
-            if (player.getWeightPenalty() > 2) {
+        } else {
+            int newJobLevel = currentClassId.level() + 1;
+            if (!Config.CLASS_MASTER_SETTINGS.getRewardItems(newJobLevel).isEmpty() && player.getWeightPenalty() > 2) {
                 player.sendPacket(SystemMessageId.INVENTORY_LESS_THAN_80_PERCENT);
                 return false;
+            } else {
+                List<IntIntHolder> neededItems = Config.CLASS_MASTER_SETTINGS.getRequiredItems(newJobLevel);
+
+                for (IntIntHolder item : neededItems) {
+                    if (player.getInventory().getInventoryItemCount(item.getId(), -1) < item.getValue()) {
+                        player.sendPacket(SystemMessageId.NOT_ENOUGH_ITEMS);
+                        return false;
+                    }
+                }
+
+                for (IntIntHolder item : neededItems) {
+                    if (!player.destroyItemByItemId("ClassMaster", item.getId(), item.getValue(), player, true)) {
+                        return false;
+                    }
+                }
+
+                for (IntIntHolder item : Config.CLASS_MASTER_SETTINGS.getRewardItems(newJobLevel)) {
+                    player.addItem("ClassMaster", item.getId(), item.getValue(), player, true);
+                }
+
+                player.setClassId(val);
+                if (player.isSubClassActive()) {
+                    (player.getSubClasses().get(player.getClassIndex())).setClassId(player.getActiveClass());
+                } else {
+                    player.setBaseClass(player.getActiveClass());
+                }
+
+                if (Config.REWARD_NOBLE_IN_3RCHANGE_JOB && newJobLevel == 3 && !player.isSubClassActive()) {
+                    player.setNoble(true, true);
+                }
+
+                DollsData.refreshAllDollSkills(player);
+                player.sendPacket(new HennaInfo(player));
+                player.broadcastUserInfo();
+                if (Config.ALTERNATE_CLASS_MASTER && (player.getClassId().level() == 1 && player.getLevel() >= 40 || player.getClassId().level() == 2 && player.getLevel() >= 76)) {
+                    showQuestionMark(player);
+                }
+
+                return true;
             }
-        List<IntIntHolder> neededItems = Config.CLASS_MASTER_SETTINGS.getRequiredItems(newJobLevel);
-        for (IntIntHolder item : neededItems) {
-            if (player.getInventory().getInventoryItemCount(item.getId(), -1) < item.getValue()) {
-                player.sendPacket(SystemMessageId.NOT_ENOUGH_ITEMS);
-                return false;
-            }
         }
-        for (IntIntHolder item : neededItems) {
-            if (!player.destroyItemByItemId("ClassMaster", item.getId(), item.getValue(), player, true))
-                return false;
-        }
-        for (IntIntHolder item : Config.CLASS_MASTER_SETTINGS.getRewardItems(newJobLevel))
-            player.addItem("ClassMaster", item.getId(), item.getValue(), player, true);
-        player.setClassId(val);
-        if (player.isSubClassActive()) {
-            player.getSubClasses().get(player.getClassIndex()).setClassId(player.getActiveClass());
-        } else {
-            player.setBaseClass(player.getActiveClass());
-        }
-        if (Config.REWARD_NOBLE_IN_3RCHANGE_JOB &&
-                newJobLevel == 3 && !player.isSubClassActive())
-            player.setNoble(true, true);
-        DollsData.refreshAllDollSkills(player);
-        player.sendPacket(new HennaInfo(player));
-        player.broadcastUserInfo();
-        if (Config.ALTERNATE_CLASS_MASTER && ((player.getClassId().level() == 1 && player.getLevel() >= 40) || (player.getClassId().level() == 2 && player.getLevel() >= 76)))
-            showQuestionMark(player);
-        return true;
     }
 
     private static int getMinLevel(int level) {
         switch (level) {
-            case 0:
+            case 0 -> {
                 return 20;
-            case 1:
+            }
+            case 1 -> {
                 return 40;
-            case 2:
+            }
+            case 2 -> {
                 return 76;
+            }
+            default -> {
+                return Integer.MAX_VALUE;
+            }
         }
-        return Integer.MAX_VALUE;
     }
 
     private static boolean validateClassId(ClassId oldCID, int val) {
         try {
             return validateClassId(oldCID, ClassId.VALUES[val]);
-        } catch (Exception exception) {
+        } catch (Exception var3) {
             return false;
         }
     }
 
     private static boolean validateClassId(ClassId oldCID, ClassId newCID) {
-        if (newCID == null)
+        if (newCID == null) {
             return false;
-        if (oldCID == newCID.getParent())
+        } else if (oldCID == newCID.getParent()) {
             return true;
-        return Config.ALLOW_ENTIRE_TREE && newCID.childOf(oldCID);
+        } else {
+            return Config.ALLOW_ENTIRE_TREE && newCID.childOf(oldCID);
+        }
     }
 
     private static String getRequiredItems(int level) {
         List<IntIntHolder> neededItems = Config.CLASS_MASTER_SETTINGS.getRequiredItems(level);
-        if (neededItems == null || neededItems.isEmpty())
+        if (neededItems != null && !neededItems.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+
+            for (IntIntHolder item : neededItems) {
+                StringUtil.append(sb, new Object[]{"<tr><td><font color=\"LEVEL\">", item.getValue(), "</font></td><td>", ItemTable.getInstance().getTemplate(item.getId()).getName(), "</td></tr>"});
+            }
+
+            return sb.toString();
+        } else {
             return "<tr><td>none</td></r>";
-        StringBuilder sb = new StringBuilder();
-        for (IntIntHolder item : neededItems) {
-            StringUtil.append(sb, "<tr><td><font color=\"LEVEL\">", item.getValue(), "</font></td><td>", ItemTable.getInstance().getTemplate(item.getId()).getName(), "</td></tr>");
         }
-        return sb.toString();
     }
 
     public void showChatWindow(Player player) {
         player.sendPacket(ActionFailed.STATIC_PACKET);
         String filename = "data/html/classmaster/disabled.htm";
-        if (Config.ALLOW_CLASS_MASTERS)
-            filename = "data/html/classmaster/" + getNpcId() + ".htm";
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+        if (Config.ALLOW_CLASS_MASTERS) {
+            filename = "data/html/classmaster/" + this.getNpcId() + ".htm";
+        }
+
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile(filename);
-        html.replace("%objectId%", getObjectId());
+        html.replace("%objectId%", this.getObjectId());
         player.sendPacket(html);
     }
 
     public void onBypassFeedback(Player player, String command) {
-        if (!Config.ALLOW_CLASS_MASTERS)
-            return;
-        if (command.startsWith("1stClass")) {
-            showHtmlMenu(player, getObjectId(), 1);
-        } else if (command.startsWith("2ndClass")) {
-            showHtmlMenu(player, getObjectId(), 2);
-        } else if (command.startsWith("3rdClass")) {
-            showHtmlMenu(player, getObjectId(), 3);
-        } else if (command.startsWith("change_class")) {
-            int val = Integer.parseInt(command.substring(13));
-            if (checkAndChangeClass(player, val)) {
-                NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-                html.setFile("data/html/classmaster/ok.htm");
-                html.replace("%name%", PlayerClassData.getInstance().getClassNameById(val));
-                player.sendPacket(html);
-                DollsData.refreshAllDollSkills(player);
-            }
-        } else if (command.startsWith("become_noble")) {
-            NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-            if (!player.isNoble()) {
-                player.setNoble(true, true);
-                player.sendPacket(new UserInfo(player));
-                html.setFile("data/html/classmaster/nobleok.htm");
-                player.sendPacket(html);
+        if (Config.ALLOW_CLASS_MASTERS) {
+            if (command.startsWith("1stClass")) {
+                showHtmlMenu(player, this.getObjectId(), 1);
+            } else if (command.startsWith("2ndClass")) {
+                showHtmlMenu(player, this.getObjectId(), 2);
+            } else if (command.startsWith("3rdClass")) {
+                showHtmlMenu(player, this.getObjectId(), 3);
+            } else if (command.startsWith("change_class")) {
+                int val = Integer.parseInt(command.substring(13));
+                if (checkAndChangeClass(player, val)) {
+                    NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                    html.setFile("data/html/classmaster/ok.htm");
+                    html.replace("%name%", PlayerClassData.getInstance().getClassNameById(val));
+                    player.sendPacket(html);
+                    DollsData.refreshAllDollSkills(player);
+                }
+            } else if (command.startsWith("become_noble")) {
+                NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+                if (!player.isNoble()) {
+                    player.setNoble(true, true);
+                    player.sendPacket(new UserInfo(player));
+                    html.setFile("data/html/classmaster/nobleok.htm");
+                    player.sendPacket(html);
+                } else {
+                    html.setFile("data/html/classmaster/alreadynoble.htm");
+                    player.sendPacket(html);
+                }
+            } else if (command.startsWith("learn_skills")) {
+                player.rewardSkills();
             } else {
-                html.setFile("data/html/classmaster/alreadynoble.htm");
-                player.sendPacket(html);
+                super.onBypassFeedback(player, command);
             }
-        } else if (command.startsWith("learn_skills")) {
-            player.rewardSkills();
-        } else {
-            super.onBypassFeedback(player, command);
+
         }
     }
 }

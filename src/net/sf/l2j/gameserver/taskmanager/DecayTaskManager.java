@@ -16,31 +16,33 @@ public final class DecayTaskManager implements Runnable {
     }
 
     public static DecayTaskManager getInstance() {
-        return SingletonHolder.INSTANCE;
+        return DecayTaskManager.SingletonHolder.INSTANCE;
     }
 
     public void run() {
-        if (this._creatures.isEmpty())
-            return;
-        long time = System.currentTimeMillis();
-        for (Map.Entry<Creature, Long> entry : this._creatures.entrySet()) {
-            Creature creature = entry.getKey();
-            if (creature instanceof Summon && ((Summon) creature).getOwner().getSummon() != creature) {
-                this._creatures.remove(creature);
-                continue;
+        if (!this._creatures.isEmpty()) {
+            long time = System.currentTimeMillis();
+
+            for (Map.Entry<Creature, Long> entry : this._creatures.entrySet()) {
+                Creature creature = entry.getKey();
+                if (creature instanceof Summon && ((Summon) creature).getOwner().getSummon() != creature) {
+                    this._creatures.remove(creature);
+                } else if (time >= entry.getValue()) {
+                    creature.onDecay();
+                    this._creatures.remove(creature);
+                }
             }
-            if (time < entry.getValue())
-                continue;
-            creature.onDecay();
-            this._creatures.remove(creature);
+
         }
     }
 
     public void add(Creature creature, int interval) {
         if (creature instanceof Monster monster) {
-            if (monster.getSpoilerId() != 0 || monster.isSeeded())
+            if (monster.getSpoilerId() != 0 || monster.isSeeded()) {
                 interval *= 2;
+            }
         }
+
         this._creatures.put(creature, System.currentTimeMillis() + (interval * 1000L));
     }
 
@@ -50,12 +52,16 @@ public final class DecayTaskManager implements Runnable {
 
     public boolean isCorpseActionAllowed(Monster monster) {
         Long time = this._creatures.get(monster);
-        if (time == null)
+        if (time == null) {
             return false;
-        int corpseTime = monster.getTemplate().getCorpseTime() * 1000 / 2;
-        if (monster.getSpoilerId() != 0 || monster.isSeeded())
-            corpseTime *= 2;
-        return (System.currentTimeMillis() < time - corpseTime);
+        } else {
+            int corpseTime = monster.getTemplate().getCorpseTime() * 1000 / 2;
+            if (monster.getSpoilerId() != 0 || monster.isSeeded()) {
+                corpseTime *= 2;
+            }
+
+            return System.currentTimeMillis() < time - (long) corpseTime;
+        }
     }
 
     private static final class SingletonHolder {

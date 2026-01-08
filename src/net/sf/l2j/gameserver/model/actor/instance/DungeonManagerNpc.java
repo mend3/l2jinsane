@@ -22,47 +22,52 @@ public class DungeonManagerNpc extends Folk {
             long total = ((Long[]) DungeonManager.getInstance().getPlayerData().get(ip))[dungeonId] + 43200000L - System.currentTimeMillis();
             if (total > 0L) {
                 int hours = (int) (total / 1000L / 60L / 60L);
-                int minutes = (int) (total / 1000L / 60L - (hours * 60));
-                int seconds = (int) (total / 1000L - (hours * 60 * 60 + minutes * 60));
+                int minutes = (int) (total / 1000L / 60L - (long) (hours * 60));
+                int seconds = (int) (total / 1000L - (long) (hours * 60 * 60 + minutes * 60));
                 s = String.format("%02d:%02d:%02d", hours, minutes, seconds);
             }
         }
+
         return s;
     }
 
     public void onBypassFeedback(Player player, String command) {
         if (command.startsWith("dungeon")) {
-            if (DungeonManager.getInstance().isInDungeon(player) || player.isInOlympiadMode() || (TvTEventManager.getInstance().getActiveEvent() != null && TvTEventManager.getInstance().getActiveEvent().isInEvent(player)) || (
-                    CtfEventManager.getInstance().getActiveEvent() != null && CtfEventManager.getInstance().getActiveEvent().isInEvent(player)) || (
-                    DmEventManager.getInstance().getActiveEvent() != null && DmEventManager.getInstance().getActiveEvent().isInEvent(player))) {
+            if (DungeonManager.getInstance().isInDungeon(player) || player.isInOlympiadMode() || TvTEventManager.getInstance().getActiveEvent() != null && TvTEventManager.getInstance().getActiveEvent().isInEvent(player) || CtfEventManager.getInstance().getActiveEvent() != null && CtfEventManager.getInstance().getActiveEvent().isInEvent(player) || DmEventManager.getInstance().getActiveEvent() != null && DmEventManager.getInstance().getActiveEvent().isInEvent(player)) {
                 player.sendMessage("You are currently unable to enter a Dungeon. Please try again later.");
                 return;
             }
+
             int dungeonId = Integer.parseInt(command.substring(8));
             int dungeonCount = DungeonManager.getInstance().getDungeonsCount();
-            if (dungeonCount > 0 && dungeonId <= dungeonCount) {
-                DungeonManager.getInstance().enterDungeon(dungeonId, player);
-            } else {
+            if (dungeonCount <= 0 || dungeonId > dungeonCount) {
                 player.sendMessage("Dungeon doesn't exists.");
                 LOGGER.warn("Dungeon:" + dungeonId + " doesn't exists.");
+                return;
             }
+
+            DungeonManager.getInstance().enterDungeon(dungeonId, player);
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 
     public void showChatWindow(Player player, int val) {
-        NpcHtmlMessage htm = new NpcHtmlMessage(getObjectId());
-        htm.setFile("data/html/mods/dungeon/" + getNpcId() + ((val == 0) ? "" : ("-" + val)) + ".htm");
+        NpcHtmlMessage htm = new NpcHtmlMessage(this.getObjectId());
+        int var10001 = this.getNpcId();
+        htm.setFile("data/html/mods/dungeon/" + var10001 + (val == 0 ? "" : "-" + val) + ".htm");
         String[] s = htm.getHtml().split("%");
-        for (int i = 0; i < s.length; i++) {
+
+        for (int i = 0; i < s.length; ++i) {
             if (i % 2 > 0 && s[i].contains("dung ")) {
                 StringTokenizer st = new StringTokenizer(s[i]);
                 st.nextToken();
                 htm.replace("%" + s[i] + "%", getPlayerStatus(player, Integer.parseInt(st.nextToken())));
             }
         }
-        htm.replace("%objectId%", "" + getObjectId());
+
+        htm.replace("%objectId%", "" + this.getObjectId());
         player.sendPacket(htm);
     }
 
@@ -71,8 +76,9 @@ public class DungeonManagerNpc extends Folk {
         if (val == 0) {
             filename = "" + npcId;
         } else {
-            filename = npcId + "-" + npcId;
+            filename = npcId + "-" + val;
         }
+
         return "data/html/mods/dungeon/" + filename + ".htm";
     }
 }

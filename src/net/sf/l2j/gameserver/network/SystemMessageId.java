@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
+@SuppressWarnings("unused")
 public final class SystemMessageId {
     public static final SystemMessageId[] EMPTY_ARRAY = new SystemMessageId[0];
     public static final SystemMessageId YOU_HAVE_BEEN_DISCONNECTED = new SystemMessageId(0);

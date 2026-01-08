@@ -22,11 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Attackable extends Npc {
     private final Map<Creature, AggroInfo> _aggroList = new ConcurrentHashMap<>();
-
     private final Set<Creature> _attackedBy = ConcurrentHashMap.newKeySet();
-
     private boolean _isReturningToSpawnPoint;
-
     private boolean _seeThroughSilentMove;
 
     public Attackable(int objectId, NpcTemplate template) {
@@ -34,7 +31,7 @@ public class Attackable extends Npc {
     }
 
     public void initCharStatus() {
-        setStatus(new AttackableStatus(this));
+        this.setStatus(new AttackableStatus(this));
     }
 
     public AttackableStatus getStatus() {
@@ -43,59 +40,77 @@ public class Attackable extends Npc {
 
     public CreatureAI getAI() {
         CreatureAI ai = this._ai;
-        if (ai == null)
+        if (ai == null) {
             synchronized (this) {
-                if (this._ai == null)
+                if (this._ai == null) {
                     this._ai = new AttackableAI(this);
+                }
+
                 return this._ai;
             }
-        return ai;
+        } else {
+            return ai;
+        }
     }
 
     public void addKnownObject(WorldObject object) {
-        if (object instanceof Player && getAI().getDesire().getIntention() == IntentionType.IDLE)
-            getAI().setIntention(IntentionType.ACTIVE, null);
+        if (object instanceof Player && this.getAI().getDesire().getIntention() == IntentionType.IDLE) {
+            this.getAI().setIntention(IntentionType.ACTIVE, null);
+        }
+
     }
 
     public void removeKnownObject(WorldObject object) {
         super.removeKnownObject(object);
-        if (object instanceof Creature)
-            getAggroList().remove(object);
+        if (object instanceof Creature) {
+            this.getAggroList().remove(object);
+        }
+
     }
 
     public void reduceCurrentHp(double damage, Creature attacker, L2Skill skill) {
-        reduceCurrentHp(damage, attacker, true, false, skill);
+        this.reduceCurrentHp(damage, attacker, true, false, skill);
     }
 
     public void reduceCurrentHp(double damage, Creature attacker, boolean awake, boolean isDOT, L2Skill skill) {
-        if (attacker != null && !isDead()) {
-            List<Quest> scripts = getTemplate().getEventQuests(ScriptEventType.ON_ATTACK);
-            if (scripts != null)
-                for (Quest quest : scripts)
+        if (attacker != null && !this.isDead()) {
+            List<Quest> scripts = this.getTemplate().getEventQuests(ScriptEventType.ON_ATTACK);
+            if (scripts != null) {
+                for (Quest quest : scripts) {
                     quest.notifyAttack(this, attacker, (int) damage, skill);
+                }
+            }
         }
+
         super.reduceCurrentHp(damage, attacker, awake, isDOT, skill);
     }
 
     public boolean doDie(Creature killer) {
-        if (!super.doDie(killer))
+        if (!super.doDie(killer)) {
             return false;
-        EngineModsManager.onKill(killer, this, killer instanceof Summon);
-        SoloBossManager.getInstance().onKill(this);
-        List<Quest> scripts = getTemplate().getEventQuests(ScriptEventType.ON_KILL);
-        if (scripts != null)
-            for (Quest quest : scripts)
-                ThreadPool.schedule(() -> quest.notifyKill(this, killer), 3000L);
-        this._attackedBy.clear();
-        return true;
+        } else {
+            EngineModsManager.onKill(killer, this, killer instanceof Summon);
+            SoloBossManager.getInstance().onKill(this);
+            List<Quest> scripts = this.getTemplate().getEventQuests(ScriptEventType.ON_KILL);
+            if (scripts != null) {
+                for (Quest quest : scripts) {
+                    ThreadPool.schedule(() -> quest.notifyKill(this, killer), 3000L);
+                }
+            }
+
+            this._attackedBy.clear();
+            return true;
+        }
     }
 
     public void onSpawn() {
         super.onSpawn();
         this._aggroList.clear();
-        setWalking();
-        if (!isInActiveRegion() && hasAI())
-            getAI().stopAITask();
+        this.setWalking();
+        if (!this.isInActiveRegion() && this.hasAI()) {
+            this.getAI().stopAITask();
+        }
+
     }
 
     public int calculateRandomAnimationTimer() {
@@ -103,166 +118,188 @@ public class Attackable extends Npc {
     }
 
     public boolean hasRandomAnimation() {
-        return (Config.MAX_MONSTER_ANIMATION > 0 && !isRaidRelated());
+        return Config.MAX_MONSTER_ANIMATION > 0 && !this.isRaidRelated();
     }
 
     public void addAttacker(Creature attacker) {
-        if (attacker == null || attacker == this)
-            return;
-        this._attackedBy.add(attacker);
+        if (attacker != null && attacker != this) {
+            this._attackedBy.add(attacker);
+        }
     }
 
     public void addDamageHate(Creature attacker, int damage, int aggro) {
-        if (attacker == null)
-            return;
-        AggroInfo ai = this._aggroList.computeIfAbsent(attacker, AggroInfo::new);
-        ai.addDamage(damage);
-        ai.addHate(aggro);
-        if (aggro == 0) {
-            Player targetPlayer = attacker.getActingPlayer();
-            if (targetPlayer != null) {
-                List<Quest> scripts = getTemplate().getEventQuests(ScriptEventType.ON_AGGRO);
-                if (scripts != null)
-                    for (Quest quest : scripts)
-                        quest.notifyAggro(this, targetPlayer, attacker instanceof Summon);
-            } else {
-                aggro = 1;
-                ai.addHate(1);
+        if (attacker != null) {
+            AggroInfo ai = this._aggroList.computeIfAbsent(attacker, AggroInfo::new);
+            ai.addDamage(damage);
+            ai.addHate(aggro);
+            if (aggro == 0) {
+                Player targetPlayer = attacker.getActingPlayer();
+                if (targetPlayer != null) {
+                    List<Quest> scripts = this.getTemplate().getEventQuests(ScriptEventType.ON_AGGRO);
+                    if (scripts != null) {
+                        for (Quest quest : scripts) {
+                            quest.notifyAggro(this, targetPlayer, attacker instanceof Summon);
+                        }
+                    }
+                } else {
+                    aggro = 1;
+                    ai.addHate(1);
+                }
+            } else if (aggro > 0 && this.getAI().getDesire().getIntention() == IntentionType.IDLE) {
+                this.getAI().setIntention(IntentionType.ACTIVE);
             }
-        } else if (aggro > 0 && getAI().getDesire().getIntention() == IntentionType.IDLE) {
-            getAI().setIntention(IntentionType.ACTIVE);
+
         }
     }
 
     public void reduceHate(Creature target, int amount) {
-        if (target == null) {
-            Creature mostHated = getMostHated();
+        if (target != null) {
+            AggroInfo ai = this._aggroList.get(target);
+            if (ai != null) {
+                ai.addHate(-amount);
+                if (ai.getHate() <= 0 && this.getMostHated() == null) {
+                    ((AttackableAI) this.getAI()).setGlobalAggro(-25);
+                    this._aggroList.clear();
+                    this.getAI().setIntention(IntentionType.ACTIVE);
+                    this.setWalking();
+                }
+
+            }
+        } else {
+            Creature mostHated = this.getMostHated();
             if (mostHated == null) {
-                ((AttackableAI) getAI()).setGlobalAggro(-25);
-                return;
+                ((AttackableAI) this.getAI()).setGlobalAggro(-25);
+            } else {
+                for (AggroInfo ai : this._aggroList.values()) {
+                    ai.addHate(-amount);
+                }
+
+                amount = this.getHating(mostHated);
+                if (amount <= 0) {
+                    ((AttackableAI) this.getAI()).setGlobalAggro(-25);
+                    this._aggroList.clear();
+                    this.getAI().setIntention(IntentionType.ACTIVE);
+                    this.setWalking();
+                }
+
             }
-            for (AggroInfo aggroInfo : this._aggroList.values())
-                aggroInfo.addHate(-amount);
-            amount = getHating(mostHated);
-            if (amount <= 0) {
-                ((AttackableAI) getAI()).setGlobalAggro(-25);
-                this._aggroList.clear();
-                getAI().setIntention(IntentionType.ACTIVE);
-                setWalking();
-            }
-            return;
-        }
-        AggroInfo ai = this._aggroList.get(target);
-        if (ai == null)
-            return;
-        ai.addHate(-amount);
-        if (ai.getHate() <= 0 && getMostHated() == null) {
-            ((AttackableAI) getAI()).setGlobalAggro(-25);
-            this._aggroList.clear();
-            getAI().setIntention(IntentionType.ACTIVE);
-            setWalking();
         }
     }
 
     public void stopHating(Creature target) {
-        if (target == null)
-            return;
-        AggroInfo ai = this._aggroList.get(target);
-        if (ai != null)
-            ai.stopHate();
+        if (target != null) {
+            AggroInfo ai = this._aggroList.get(target);
+            if (ai != null) {
+                ai.stopHate();
+            }
+
+        }
     }
 
     public void cleanAllHate() {
-        for (AggroInfo ai : this._aggroList.values())
+        for (AggroInfo ai : this._aggroList.values()) {
             ai.stopHate();
+        }
+
     }
 
     public Creature getMostHated() {
-        if (this._aggroList.isEmpty() || isAlikeDead())
-            return null;
-        Creature mostHated = null;
-        int maxHate = 0;
-        for (AggroInfo ai : this._aggroList.values()) {
-            if (ai.checkHate(this) > maxHate) {
-                mostHated = ai.getAttacker();
-                maxHate = ai.getHate();
+        if (!this._aggroList.isEmpty() && !this.isAlikeDead()) {
+            Creature mostHated = null;
+            int maxHate = 0;
+
+            for (AggroInfo ai : this._aggroList.values()) {
+                if (ai.checkHate(this) > maxHate) {
+                    mostHated = ai.getAttacker();
+                    maxHate = ai.getHate();
+                }
             }
+
+            return mostHated;
+        } else {
+            return null;
         }
-        return mostHated;
     }
 
     public List<Creature> getHateList() {
-        if (this._aggroList.isEmpty() || isAlikeDead())
+        if (!this._aggroList.isEmpty() && !this.isAlikeDead()) {
+            List<Creature> result = new ArrayList<>();
+
+            for (AggroInfo ai : this._aggroList.values()) {
+                ai.checkHate(this);
+                result.add(ai.getAttacker());
+            }
+
+            return result;
+        } else {
             return Collections.emptyList();
-        List<Creature> result = new ArrayList<>();
-        for (AggroInfo ai : this._aggroList.values()) {
-            ai.checkHate(this);
-            result.add(ai.getAttacker());
         }
-        return result;
     }
 
     public int getHating(Creature target) {
-        if (this._aggroList.isEmpty() || target == null)
-            return 0;
-        AggroInfo ai = this._aggroList.get(target);
-        if (ai == null)
-            return 0;
-        if (ai.getAttacker() instanceof Player && ((Player) ai.getAttacker()).getAppearance().getInvisible()) {
-            this._aggroList.remove(target);
+        if (!this._aggroList.isEmpty() && target != null) {
+            AggroInfo ai = this._aggroList.get(target);
+            if (ai == null) {
+                return 0;
+            } else if (ai.getAttacker() instanceof Player && ((Player) ai.getAttacker()).getAppearance().getInvisible()) {
+                this._aggroList.remove(target);
+                return 0;
+            } else if (!ai.getAttacker().isVisible()) {
+                this._aggroList.remove(target);
+                return 0;
+            } else if (ai.getAttacker().isAlikeDead()) {
+                ai.stopHate();
+                return 0;
+            } else {
+                return ai.getHate();
+            }
+        } else {
             return 0;
         }
-        if (!ai.getAttacker().isVisible()) {
-            this._aggroList.remove(target);
-            return 0;
-        }
-        if (ai.getAttacker().isAlikeDead()) {
-            ai.stopHate();
-            return 0;
-        }
-        return ai.getHate();
     }
 
     public void useMagic(L2Skill skill) {
-        if (skill == null || isAlikeDead())
-            return;
-        if (skill.isPassive())
-            return;
-        if (isCastingNow())
-            return;
-        if (isSkillDisabled(skill))
-            return;
-        if (getCurrentMp() < (getStat().getMpConsume(skill) + getStat().getMpInitialConsume(skill)))
-            return;
-        if (getCurrentHp() <= skill.getHpConsume())
-            return;
-        if (skill.isMagic()) {
-            if (isMuted())
-                return;
-        } else if (isPhysicalMuted()) {
-            return;
+        if (skill != null && !this.isAlikeDead()) {
+            if (!skill.isPassive()) {
+                if (!this.isCastingNow()) {
+                    if (!this.isSkillDisabled(skill)) {
+                        if (!(this.getCurrentMp() < (double) (this.getStat().getMpConsume(skill) + this.getStat().getMpInitialConsume(skill)))) {
+                            if (!(this.getCurrentHp() <= (double) skill.getHpConsume())) {
+                                if (skill.isMagic()) {
+                                    if (this.isMuted()) {
+                                        return;
+                                    }
+                                } else if (this.isPhysicalMuted()) {
+                                    return;
+                                }
+
+                                WorldObject target = skill.getFirstOfTargetList(this);
+                                if (target != null) {
+                                    this.getAI().setIntention(IntentionType.CAST, skill, target);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-        WorldObject target = skill.getFirstOfTargetList(this);
-        if (target == null)
-            return;
-        getAI().setIntention(IntentionType.CAST, skill, target);
     }
 
     public boolean returnHome() {
-        if (isDead())
+        if (this.isDead()) {
             return false;
-        if (isMinion() && !isRaidRelated()) {
-            deleteMe();
+        } else if (this.isMinion() && !this.isRaidRelated()) {
+            this.deleteMe();
             return true;
-        }
-        if (getSpawn() != null && !isInsideRadius(getSpawn().getLocX(), getSpawn().getLocY(), getDriftRange(), false)) {
-            cleanAllHate();
-            setIsReturningToSpawnPoint(true);
-            setWalking();
-            getAI().setIntention(IntentionType.MOVE_TO, getSpawn().getLoc());
+        } else if (this.getSpawn() != null && !this.isInsideRadius(this.getSpawn().getLocX(), this.getSpawn().getLocY(), this.getDriftRange(), false)) {
+            this.cleanAllHate();
+            this.setIsReturningToSpawnPoint(true);
+            this.setWalking();
+            this.getAI().setIntention(IntentionType.MOVE_TO, this.getSpawn().getLoc());
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     public int getDriftRange() {

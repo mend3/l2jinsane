@@ -13,7 +13,7 @@ import java.util.Map;
 public class CrestCache {
     private static final CLogger LOGGER = new CLogger(CrestCache.class.getName());
     private static final String CRESTS_DIR = "./data/crests/";
-    private final Map<Integer, byte[]> _crests = new HashMap();
+    private final Map<Integer, byte[]> _crests = new HashMap<>();
     private final FileFilter _ddsFilter = new DdsFilter(this);
 
     public CrestCache() {

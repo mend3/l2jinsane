@@ -47,10 +47,10 @@ public abstract class AbstractMemo extends StatSet {
 
     public final void remove(String name) {
         this._hasChanges.compareAndSet(false, true);
-        getSet().remove(name);
+        this.unset(name);
     }
 
-    protected abstract boolean load();
+    protected abstract boolean restoreMe();
 
     protected abstract boolean storeMe();
 }

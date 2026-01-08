@@ -14,24 +14,29 @@ public class L2SkillSeed extends L2Skill {
     }
 
     public void useSkill(Creature caster, WorldObject[] targets) {
-        if (caster.isAlikeDead())
-            return;
-        for (WorldObject obj : targets) {
-            if (obj instanceof Creature target) {
-                if (!target.isAlikeDead() || getTargetType() == L2Skill.SkillTargetType.TARGET_CORPSE_MOB) {
-                    EffectSeed oldEffect = (EffectSeed) target.getFirstEffect(getId());
-                    if (oldEffect == null) {
-                        getEffects(caster, target);
-                    } else {
-                        oldEffect.increasePower();
-                    }
-                    L2Effect[] effects = target.getAllEffects();
-                    for (L2Effect effect : effects) {
-                        if (effect.getEffectType() == L2EffectType.SEED)
-                            effect.rescheduleEffect();
+        if (!caster.isAlikeDead()) {
+            for (WorldObject obj : targets) {
+                if (obj instanceof Creature) {
+                    Creature target = (Creature) obj;
+                    if (!target.isAlikeDead() || this.getTargetType() == SkillTargetType.TARGET_CORPSE_MOB) {
+                        EffectSeed oldEffect = (EffectSeed) target.getFirstEffect(this.getId());
+                        if (oldEffect == null) {
+                            this.getEffects(caster, target);
+                        } else {
+                            oldEffect.increasePower();
+                        }
+
+                        L2Effect[] effects = target.getAllEffects();
+
+                        for (L2Effect effect : effects) {
+                            if (effect.getEffectType() == L2EffectType.SEED) {
+                                effect.rescheduleEffect();
+                            }
+                        }
                     }
                 }
             }
+
         }
     }
 }

@@ -92,7 +92,7 @@ public class AdminTeleport implements IAdminCommandHandler {
                     return false;
                 }
                 teleportCharacter(player, activeChar.getX(), activeChar.getY(), activeChar.getZ());
-            } catch (StringIndexOutOfBoundsException stringIndexOutOfBoundsException) {
+            } catch (StringIndexOutOfBoundsException ignored) {
             }
         } else if (command.startsWith("admin_recall_party")) {
             try {
@@ -111,7 +111,7 @@ public class AdminTeleport implements IAdminCommandHandler {
                     activeChar.sendMessage("You recall " + player.getName() + ", but he isn't in a party.");
                     teleportCharacter(player, activeChar.getX(), activeChar.getY(), activeChar.getZ());
                 }
-            } catch (StringIndexOutOfBoundsException stringIndexOutOfBoundsException) {
+            } catch (StringIndexOutOfBoundsException ignored) {
             }
         } else if (command.startsWith("admin_recall_clan")) {
             try {
@@ -130,7 +130,7 @@ public class AdminTeleport implements IAdminCommandHandler {
                     activeChar.sendMessage("You recall " + player.getName() + ", but he isn't a clan member.");
                     teleportCharacter(player, activeChar.getX(), activeChar.getY(), activeChar.getZ());
                 }
-            } catch (StringIndexOutOfBoundsException stringIndexOutOfBoundsException) {
+            } catch (StringIndexOutOfBoundsException ignored) {
             }
         } else if (command.startsWith("admin_move_to")) {
             try {

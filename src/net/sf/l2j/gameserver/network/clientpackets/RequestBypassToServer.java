@@ -70,7 +70,7 @@ public final class RequestBypassToServer extends L2GameClientPacket {
             String lastPart = parts[parts.length - 1];
             try {
                 return Integer.parseInt(lastPart);
-            } catch (NumberFormatException numberFormatException) {
+            } catch (NumberFormatException ignored) {
             }
         }
         return -1;
@@ -343,7 +343,7 @@ public final class RequestBypassToServer extends L2GameClientPacket {
                 if (object != null && object instanceof Npc && endOfId > 0 && ((Npc) object).canInteract(player))
                     ((Npc) object).onBypassFeedback(player, this._command.substring(endOfId + 1));
                 player.sendPacket(ActionFailed.STATIC_PACKET);
-            } catch (NumberFormatException numberFormatException) {
+            } catch (NumberFormatException ignored) {
             }
         } else if (this._command.startsWith("manor_menu_select?")) {
             WorldObject object = player.getTarget();

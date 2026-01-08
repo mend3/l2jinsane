@@ -12,28 +12,26 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public final class DocumentItem extends DocumentBase {
-    private final List<Item> _itemsInFile = new ArrayList<>();
+    private final List<Item> _itemsInFile = new ArrayList();
     private NewItem _currentItem;
 
     public DocumentItem(File file) {
         super(file);
     }
 
-    @Override
     protected StatSet getStatsSet() {
         return this._currentItem.set;
     }
 
-    @Override
     protected String getTableValue(String name) {
-        return _tables.get(name)[_currentItem.currentLevel];
+        return ((String[]) this._tables.get(name))[this._currentItem.currentLevel];
     }
 
-    @Override
     protected String getTableValue(String name, int idx) {
-        return _tables.get(name)[idx - 1];
+        return ((String[]) this._tables.get(name))[idx - 1];
     }
 
     protected void parseDocument(Document doc) {
@@ -42,12 +40,12 @@ public final class DocumentItem extends DocumentBase {
                 for (Node d = n.getFirstChild(); d != null; d = d.getNextSibling()) {
                     if ("item".equalsIgnoreCase(d.getNodeName())) {
                         try {
-                            _currentItem = new NewItem();
-                            parseItem(d);
-                            _itemsInFile.add(_currentItem.item);
-                            resetTable();
-                        } catch (Exception var5) {
-                            LOGGER.warn("Cannot create item " + this._currentItem.id, var5);
+                            this._currentItem = new NewItem();
+                            this.parseItem(d);
+                            this._itemsInFile.add(this._currentItem.item);
+                            this.resetTable();
+                        } catch (Exception e) {
+                            _log.log(Level.WARNING, "Cannot create item " + this._currentItem.id, e);
                         }
                     }
                 }
@@ -56,61 +54,64 @@ public final class DocumentItem extends DocumentBase {
 
     }
 
-    private void parseItem(Node n) throws InvocationTargetException {
+    protected void parseItem(Node n) throws InvocationTargetException {
         int itemId = Integer.parseInt(n.getAttributes().getNamedItem("id").getNodeValue());
         String className = n.getAttributes().getNamedItem("type").getNodeValue();
         String itemName = n.getAttributes().getNamedItem("name").getNodeValue();
-
-        _currentItem.id = itemId;
-        _currentItem.name = itemName;
-        _currentItem.type = className;
-        _currentItem.set = new StatSet();
-        _currentItem.set.set("item_id", itemId);
-        _currentItem.set.set("name", itemName);
-
+        this._currentItem.id = itemId;
+        this._currentItem.name = itemName;
+        this._currentItem.type = className;
+        this._currentItem.set = new StatSet();
+        this._currentItem.set.set("item_id", itemId);
+        this._currentItem.set.set("name", itemName);
         Node first = n.getFirstChild();
-        for (n = first; n != null; n = n.getNextSibling()) {
-            if ("table".equalsIgnoreCase(n.getNodeName())) {
-                if (_currentItem.item != null)
+
+        for (Node var10 = first; var10 != null; var10 = var10.getNextSibling()) {
+            if ("table".equalsIgnoreCase(var10.getNodeName())) {
+                if (this._currentItem.item != null) {
                     throw new IllegalStateException("Item created but table node found! Item " + itemId);
-                parseTable(n);
-            } else if ("set".equalsIgnoreCase(n.getNodeName())) {
-                if (_currentItem.item != null)
-                    throw new IllegalStateException("Item created but set node found! Item " + itemId);
-                parseBeanSet(n, _currentItem.set, 1);
-            } else if ("for".equalsIgnoreCase(n.getNodeName())) {
-                makeItem();
-                parseTemplate(n, _currentItem.item);
-            } else if ("cond".equalsIgnoreCase(n.getNodeName())) {
-                makeItem();
-                Condition condition = parseCondition(n.getFirstChild(), _currentItem.item);
-                Node msg = n.getAttributes().getNamedItem("msg");
-                Node msgId = n.getAttributes().getNamedItem("msgId");
-
-                if (condition != null && msg != null)
-                    condition.setMessage(msg.getNodeValue());
-                else if (condition != null && msgId != null) {
-                    condition.setMessageId(Integer.decode(getValue(msgId.getNodeValue(), null)));
-                    Node addName = n.getAttributes().getNamedItem("addName");
-
-                    if (addName != null && Integer.decode(getValue(msgId.getNodeValue(), null)) > 0)
-                        condition.addName();
                 }
-                _currentItem.item.attach(condition);
+
+                this.parseTable(var10);
+            } else if ("set".equalsIgnoreCase(var10.getNodeName())) {
+                if (this._currentItem.item != null) {
+                    throw new IllegalStateException("Item created but set node found! Item " + itemId);
+                }
+
+                this.parseBeanSet(var10, this._currentItem.set, 1);
+            } else if ("for".equalsIgnoreCase(var10.getNodeName())) {
+                this.makeItem();
+                this.parseTemplate(var10, this._currentItem.item);
+            } else if ("cond".equalsIgnoreCase(var10.getNodeName())) {
+                this.makeItem();
+                Condition condition = this.parseCondition(var10.getFirstChild(), this._currentItem.item);
+                Node msg = var10.getAttributes().getNamedItem("msg");
+                Node msgId = var10.getAttributes().getNamedItem("msgId");
+                if (condition != null && msg != null) {
+                    condition.setMessage(msg.getNodeValue());
+                } else if (condition != null && msgId != null) {
+                    condition.setMessageId(Integer.decode(this.getValue(msgId.getNodeValue(), null)));
+                    Node addName = var10.getAttributes().getNamedItem("addName");
+                    if (addName != null && Integer.decode(this.getValue(msgId.getNodeValue(), null)) > 0) {
+                        condition.addName();
+                    }
+                }
+
+                this._currentItem.item.attach(condition);
             }
         }
-        // bah! in this point item doesn't have to be still created
-        makeItem();
+
+        this.makeItem();
     }
 
     private void makeItem() throws InvocationTargetException {
-        if (_currentItem.item != null)
-            return; // item is already created
-        try {
-            Constructor<?> c = Class.forName("net.sf.l2j.gameserver.model.item.kind." + _currentItem.type).getConstructor(StatSet.class);
-            _currentItem.item = (Item) c.newInstance(_currentItem.set);
-        } catch (Exception e) {
-            throw new InvocationTargetException(e);
+        if (this._currentItem.item == null) {
+            try {
+                Constructor<?> c = Class.forName("net.sf.l2j.gameserver.model.item.kind." + this._currentItem.type).getConstructor(StatSet.class);
+                this._currentItem.item = (Item) c.newInstance(this._currentItem.set);
+            } catch (Exception e) {
+                throw new InvocationTargetException(e);
+            }
         }
     }
 
@@ -118,7 +119,7 @@ public final class DocumentItem extends DocumentBase {
         return this._itemsInFile;
     }
 
-    public static class NewItem {
+    public class NewItem {
         public int id;
         public String type;
         public String name;

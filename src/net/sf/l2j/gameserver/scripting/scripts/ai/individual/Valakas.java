@@ -112,10 +112,8 @@ public class Valakas extends L2AttackableAIScript {
             npc = this.addSpawn(29028, 212852, -114842, -1632, 0, false, 0L, false);
             GrandBossManager.getInstance().addBoss((GrandBoss) npc);
             npc.setIsInvul(true);
-            Iterator var4 = VALAKAS_LAIR.getKnownTypeInside(Player.class).iterator();
 
-            while (var4.hasNext()) {
-                Player plyr = (Player) var4.next();
+            for (Player plyr : VALAKAS_LAIR.getKnownTypeInside(Player.class)) {
                 plyr.sendPacket(new PlaySound(1, "B03_A", npc));
                 plyr.sendPacket(new SocialAction(npc, 3));
             }

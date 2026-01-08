@@ -39,18 +39,20 @@ public class Servitor extends Summon {
             this._timeLostIdle = summonSkill.getTimeLostIdle();
             this._timeLostActive = summonSkill.getTimeLostActive();
         }
+
         this._timeRemaining = this._totalLifeTime;
         this.lastShowntimeRemaining = this._totalLifeTime;
-        if (this._itemConsumeId == 0 || this._itemConsumeSteps == 0) {
-            this._nextItemConsumeTime = -1;
-        } else {
+        if (this._itemConsumeId != 0 && this._itemConsumeSteps != 0) {
             this._nextItemConsumeTime = this._totalLifeTime - this._totalLifeTime / (this._itemConsumeSteps + 1);
+        } else {
+            this._nextItemConsumeTime = -1;
         }
-        this._summonLifeTask = ThreadPool.scheduleAtFixedRate(new SummonLifetime(getOwner(), this), 1000L, 1000L);
+
+        this._summonLifeTask = ThreadPool.scheduleAtFixedRate(new SummonLifetime(this.getOwner(), this), 1000L, 1000L);
     }
 
     public final int getLevel() {
-        return (getTemplate() != null) ? getTemplate().getLevel() : 0;
+        return this.getTemplate() != null ? this.getTemplate().getLevel() : 0;
     }
 
     public int getSummonType() {
@@ -110,27 +112,34 @@ public class Servitor extends Summon {
     }
 
     public void addExpAndSp(int addToExp, int addToSp) {
-        getOwner().addExpAndSp(addToExp, addToSp);
+        this.getOwner().addExpAndSp(addToExp, addToSp);
     }
 
     public boolean doDie(Creature killer) {
-        if (!super.doDie(killer))
+        if (!super.doDie(killer)) {
             return false;
-        for (Attackable mob : getKnownType(Attackable.class)) {
-            if (mob.isDead())
-                continue;
-            AggroInfo info = mob.getAggroList().get(this);
-            if (info != null)
-                mob.addDamageHate(getOwner(), info.getDamage(), info.getHate());
+        } else {
+            for (Attackable mob : this.getKnownType(Attackable.class)) {
+                if (!mob.isDead()) {
+                    AggroInfo info = mob.getAggroList().get(this);
+                    if (info != null) {
+                        mob.addDamageHate(this.getOwner(), info.getDamage(), info.getHate());
+                    }
+                }
+            }
+
+            if (this.isPhoenixBlessed()) {
+                this.getOwner().reviveRequest(this.getOwner(), null, true);
+            }
+
+            DecayTaskManager.getInstance().add(this, this.getTemplate().getCorpseTime());
+            if (this._summonLifeTask != null) {
+                this._summonLifeTask.cancel(false);
+                this._summonLifeTask = null;
+            }
+
+            return true;
         }
-        if (isPhoenixBlessed())
-            getOwner().reviveRequest(getOwner(), null, true);
-        DecayTaskManager.getInstance().add(this, getTemplate().getCorpseTime());
-        if (this._summonLifeTask != null) {
-            this._summonLifeTask.cancel(false);
-            this._summonLifeTask = null;
-        }
-        return true;
     }
 
     public void unSummon(Player owner) {
@@ -138,21 +147,29 @@ public class Servitor extends Summon {
             this._summonLifeTask.cancel(false);
             this._summonLifeTask = null;
         }
+
         super.unSummon(owner);
     }
 
     public boolean destroyItem(String process, int objectId, int count, WorldObject reference, boolean sendMessage) {
-        return getOwner().destroyItem(process, objectId, count, reference, sendMessage);
+        return this.getOwner().destroyItem(process, objectId, count, reference, sendMessage);
     }
 
     public boolean destroyItemByItemId(String process, int itemId, int count, WorldObject reference, boolean sendMessage) {
-        return getOwner().destroyItemByItemId(process, itemId, count, reference, sendMessage);
+        return this.getOwner().destroyItemByItemId(process, itemId, count, reference, sendMessage);
     }
 
     public void doPickupItem(WorldObject object) {
     }
 
-    private record SummonLifetime(Player _player, Servitor _summon) implements Runnable {
+    private static class SummonLifetime implements Runnable {
+        private final Player _player;
+        private final Servitor _summon;
+
+        protected SummonLifetime(Player activeChar, Servitor summon) {
+            this._player = activeChar;
+            this._summon = summon;
+        }
 
         public void run() {
             double oldTimeRemaining = this._summon.getTimeRemaining();
@@ -162,19 +179,23 @@ public class Servitor extends Summon {
             } else {
                 this._summon.decTimeRemaining(this._summon.getTimeLostIdle());
             }
+
             double newTimeRemaining = this._summon.getTimeRemaining();
-            if (newTimeRemaining < 0.0D) {
+            if (newTimeRemaining < (double) 0.0F) {
                 this._summon.unSummon(this._player);
-            } else if (newTimeRemaining <= this._summon.getNextItemConsumeTime() && oldTimeRemaining > this._summon.getNextItemConsumeTime()) {
+            } else if (newTimeRemaining <= (double) this._summon.getNextItemConsumeTime() && oldTimeRemaining > (double) this._summon.getNextItemConsumeTime()) {
                 this._summon.decNextItemConsumeTime(maxTime / (this._summon.getItemConsumeSteps() + 1));
-                if (this._summon.getItemConsumeCount() > 0 && this._summon.getItemConsumeId() != 0 && !this._summon.isDead() && !this._summon.destroyItemByItemId("Consume", this._summon.getItemConsumeId(), this._summon.getItemConsumeCount(), this._player, true))
+                if (this._summon.getItemConsumeCount() > 0 && this._summon.getItemConsumeId() != 0 && !this._summon.isDead() && !this._summon.destroyItemByItemId("Consume", this._summon.getItemConsumeId(), this._summon.getItemConsumeCount(), this._player, true)) {
                     this._summon.unSummon(this._player);
+                }
             }
-            if (this._summon.lastShowntimeRemaining - newTimeRemaining > (maxTime / 352)) {
+
+            if ((double) this._summon.lastShowntimeRemaining - newTimeRemaining > (double) (maxTime / 352)) {
                 this._player.sendPacket(new SetSummonRemainTime(maxTime, (int) newTimeRemaining));
                 this._summon.lastShowntimeRemaining = (int) newTimeRemaining;
                 this._summon.updateEffectIcons();
             }
+
         }
     }
 }

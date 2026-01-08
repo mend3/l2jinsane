@@ -50,7 +50,7 @@ public class Pet extends Summon {
     private static final String LOAD_PET = "SELECT item_obj_id, name, level, curHp, curMp, exp, sp, fed FROM pets WHERE item_obj_id=?";
     private static final String STORE_PET = "INSERT INTO pets (name,level,curHp,curMp,exp,sp,fed,item_obj_id) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE name=VALUES(name),level=VALUES(level),curHp=VALUES(curHp),curMp=VALUES(curMp),exp=VALUES(exp),sp=VALUES(sp),fed=VALUES(fed)";
     private static final String DELETE_PET = "DELETE FROM pets WHERE item_obj_id=?";
-    private final Map<Integer, Timestamp> _reuseTimeStamps = new ConcurrentHashMap();
+    private final Map<Integer, Timestamp> _reuseTimeStamps = new ConcurrentHashMap<>();
     private final PetInventory _inventory;
     private final int _controlItemId;
     private final boolean _isMountable;
@@ -69,7 +69,7 @@ public class Pet extends Summon {
     }
 
     public static Pet restore(ItemInstance control, NpcTemplate template, Player owner) {
-        Object pet;
+        Pet pet;
         if (template.isType("BabyPet")) {
             pet = new BabyPet(IdFactory.getInstance().getNextId(), template, owner, control);
         } else {
@@ -77,86 +77,40 @@ public class Pet extends Summon {
         }
 
         try {
-            Connection con = ConnectionPool.getConnection();
+            try (
+                    Connection con = ConnectionPool.getConnection();
+                    PreparedStatement ps = con.prepareStatement("SELECT item_obj_id, name, level, curHp, curMp, exp, sp, fed FROM pets WHERE item_obj_id=?");
+            ) {
+                ps.setInt(1, control.getObjectId());
 
-            try {
-                PreparedStatement ps = con.prepareStatement("SELECT item_obj_id, name, level, curHp, curMp, exp, sp, fed FROM pets WHERE item_obj_id=?");
-
-                try {
-                    ps.setInt(1, control.getObjectId());
-                    ResultSet rs = ps.executeQuery();
-
-                    try {
-                        if (rs.next()) {
-                            ((Pet) pet).setName(rs.getString("name"));
-                            ((Pet) pet).getStat().setLevel(rs.getByte("level"));
-                            ((Pet) pet).getStat().setExp(rs.getLong("exp"));
-                            ((Pet) pet).getStat().setSp(rs.getInt("sp"));
-                            ((Pet) pet).getStatus().setCurrentHp(rs.getDouble("curHp"));
-                            ((Pet) pet).getStatus().setCurrentMp(rs.getDouble("curMp"));
-                            if (rs.getDouble("curHp") < 0.5D) {
-                                ((Pet) pet).setIsDead(true);
-                                ((Pet) pet).stopHpMpRegeneration();
-                            }
-
-                            ((Pet) pet).setCurrentFed(rs.getInt("fed"));
-                        } else {
-                            ((Pet) pet).getStat().setLevel(template.getNpcId() == 12564 ? (byte) ((Pet) pet).getOwner().getLevel() : template.getLevel());
-                            ((Pet) pet).getStat().setExp(((Pet) pet).getExpForThisLevel());
-                            ((Pet) pet).getStatus().setCurrentHp(((Pet) pet).getMaxHp());
-                            ((Pet) pet).getStatus().setCurrentMp(((Pet) pet).getMaxMp());
-                            ((Pet) pet).setCurrentFed(((Pet) pet).getPetData().getMaxMeal());
-                            ((Pet) pet).store();
-                        }
-                    } catch (Throwable var12) {
-                        if (rs != null) {
-                            try {
-                                rs.close();
-                            } catch (Throwable var11) {
-                                var12.addSuppressed(var11);
-                            }
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        pet.setName(rs.getString("name"));
+                        pet.getStat().setLevel(rs.getByte("level"));
+                        pet.getStat().setExp(rs.getLong("exp"));
+                        pet.getStat().setSp(rs.getInt("sp"));
+                        pet.getStatus().setCurrentHp(rs.getDouble("curHp"));
+                        pet.getStatus().setCurrentMp(rs.getDouble("curMp"));
+                        if (rs.getDouble("curHp") < (double) 0.5F) {
+                            pet.setIsDead(true);
+                            pet.stopHpMpRegeneration();
                         }
 
-                        throw var12;
-                    }
-
-                    if (rs != null) {
-                        rs.close();
-                    }
-                } catch (Throwable var13) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var10) {
-                            var13.addSuppressed(var10);
-                        }
-                    }
-
-                    throw var13;
-                }
-
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var14) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var9) {
-                        var14.addSuppressed(var9);
+                        pet.setCurrentFed(rs.getInt("fed"));
+                    } else {
+                        pet.getStat().setLevel(template.getNpcId() == 12564 ? (byte) pet.getOwner().getLevel() : template.getLevel());
+                        pet.getStat().setExp(pet.getExpForThisLevel());
+                        pet.getStatus().setCurrentHp(pet.getMaxHp());
+                        pet.getStatus().setCurrentMp(pet.getMaxMp());
+                        pet.setCurrentFed(pet.getPetData().getMaxMeal());
+                        pet.store();
                     }
                 }
-
-                throw var14;
             }
 
-            if (con != null) {
-                con.close();
-            }
-
-            return (Pet) pet;
-        } catch (Exception var15) {
-            LOGGER.error("Couldn't restore pet data for {}.", var15, owner.getName());
+            return pet;
+        } catch (Exception e) {
+            LOGGER.error("Couldn't restore pet data for {}.", e, new Object[]{owner.getName()});
             return null;
         }
     }
@@ -257,8 +211,9 @@ public class Pet extends Summon {
     public void doPickupItem(WorldObject object) {
         if (!this.isDead()) {
             this.getAI().setIntention(IntentionType.IDLE);
-            if (object instanceof ItemInstance target) {
+            if (object instanceof ItemInstance) {
                 this.broadcastPacket(new StopMove(this.getObjectId(), this.getX(), this.getY(), this.getZ(), this.getHeading()));
+                ItemInstance target = (ItemInstance) object;
                 if (CursedWeaponManager.getInstance().isCursed(target.getItemId())) {
                     this.getOwner().sendPacket(SystemMessage.getSystemMessage(SystemMessageId.FAILED_TO_PICKUP_S1).addItemName(target.getItemId()));
                 } else if (target.getItem().getItemType() != EtcItemType.ARROW && target.getItem().getItemType() != EtcItemType.SHOT) {
@@ -312,17 +267,18 @@ public class Pet extends Summon {
                         target.destroyMe("Consume", this.getOwner(), null);
                         this.broadcastStatusUpdate();
                     } else {
-                        SystemMessage sm2;
                         if (target.getItemType() instanceof ArmorType || target.getItemType() instanceof WeaponType) {
+                            SystemMessage msg;
                             if (target.getEnchantLevel() > 0) {
-                                sm2 = SystemMessage.getSystemMessage(SystemMessageId.ATTENTION_S1_PET_PICKED_UP_S2_S3).addCharName(this.getOwner()).addNumber(target.getEnchantLevel()).addItemName(target.getItemId());
+                                msg = SystemMessage.getSystemMessage(SystemMessageId.ATTENTION_S1_PET_PICKED_UP_S2_S3).addCharName(this.getOwner()).addNumber(target.getEnchantLevel()).addItemName(target.getItemId());
                             } else {
-                                sm2 = SystemMessage.getSystemMessage(SystemMessageId.ATTENTION_S1_PET_PICKED_UP_S2).addCharName(this.getOwner()).addItemName(target.getItemId());
+                                msg = SystemMessage.getSystemMessage(SystemMessageId.ATTENTION_S1_PET_PICKED_UP_S2).addCharName(this.getOwner()).addItemName(target.getItemId());
                             }
 
-                            this.getOwner().broadcastPacketInRadius(sm2, 1400);
+                            this.getOwner().broadcastPacketInRadius(msg, 1400);
                         }
 
+                        SystemMessage sm2;
                         if (target.getItemId() == 57) {
                             sm2 = SystemMessage.getSystemMessage(SystemMessageId.PET_PICKED_S1_ADENA).addItemNumber(target.getCount());
                         } else if (target.getEnchantLevel() > 0) {
@@ -413,54 +369,21 @@ public class Pet extends Summon {
 
     public void store() {
         if (this._controlItemId != 0) {
-            try {
-                Connection con = ConnectionPool.getConnection();
-
-                try {
+            try (
+                    Connection con = ConnectionPool.getConnection();
                     PreparedStatement ps = con.prepareStatement("INSERT INTO pets (name,level,curHp,curMp,exp,sp,fed,item_obj_id) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE name=VALUES(name),level=VALUES(level),curHp=VALUES(curHp),curMp=VALUES(curMp),exp=VALUES(exp),sp=VALUES(sp),fed=VALUES(fed)");
-
-                    try {
-                        ps.setString(1, this.getName());
-                        ps.setInt(2, this.getStat().getLevel());
-                        ps.setDouble(3, this.getStatus().getCurrentHp());
-                        ps.setDouble(4, this.getStatus().getCurrentMp());
-                        ps.setLong(5, this.getStat().getExp());
-                        ps.setInt(6, this.getStat().getSp());
-                        ps.setInt(7, this.getCurrentFed());
-                        ps.setInt(8, this._controlItemId);
-                        ps.executeUpdate();
-                    } catch (Throwable var7) {
-                        if (ps != null) {
-                            try {
-                                ps.close();
-                            } catch (Throwable var6) {
-                                var7.addSuppressed(var6);
-                            }
-                        }
-
-                        throw var7;
-                    }
-
-                    if (ps != null) {
-                        ps.close();
-                    }
-                } catch (Throwable var8) {
-                    if (con != null) {
-                        try {
-                            con.close();
-                        } catch (Throwable var5) {
-                            var8.addSuppressed(var5);
-                        }
-                    }
-
-                    throw var8;
-                }
-
-                if (con != null) {
-                    con.close();
-                }
-            } catch (Exception var9) {
-                LOGGER.error("Couldn't store pet data for {}.", var9, this.getObjectId());
+            ) {
+                ps.setString(1, this.getName());
+                ps.setInt(2, this.getStat().getLevel());
+                ps.setDouble(3, this.getStatus().getCurrentHp());
+                ps.setDouble(4, this.getStatus().getCurrentMp());
+                ps.setLong(5, this.getStat().getExp());
+                ps.setInt(6, this.getStat().getSp());
+                ps.setInt(7, this.getCurrentFed());
+                ps.setInt(8, this._controlItemId);
+                ps.executeUpdate();
+            } catch (Exception e) {
+                LOGGER.error("Couldn't store pet data for {}.", e, new Object[]{this.getObjectId()});
             }
 
             ItemInstance itemInst = this.getControlItem();
@@ -607,47 +530,14 @@ public class Pet extends Summon {
         World.getInstance().removePet(owner.getObjectId());
         owner.destroyItem("PetDestroy", this._controlItemId, 1, this.getOwner(), false);
 
-        try {
-            Connection con = ConnectionPool.getConnection();
-
-            try {
+        try (
+                Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("DELETE FROM pets WHERE item_obj_id=?");
-
-                try {
-                    ps.setInt(1, this._controlItemId);
-                    ps.executeUpdate();
-                } catch (Throwable var8) {
-                    if (ps != null) {
-                        try {
-                            ps.close();
-                        } catch (Throwable var7) {
-                            var8.addSuppressed(var7);
-                        }
-                    }
-
-                    throw var8;
-                }
-
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (Throwable var9) {
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (Throwable var6) {
-                        var9.addSuppressed(var6);
-                    }
-                }
-
-                throw var9;
-            }
-
-            if (con != null) {
-                con.close();
-            }
-        } catch (Exception var10) {
-            LOGGER.error("Couldn't delete pet data for {}.", var10, this.getObjectId());
+        ) {
+            ps.setInt(1, this._controlItemId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            LOGGER.error("Couldn't delete pet data for {}.", e, new Object[]{this.getObjectId()});
         }
 
     }
@@ -663,14 +553,14 @@ public class Pet extends Summon {
     public synchronized void startFeed() {
         this.stopFeed();
         if (!this.isDead() && this.getOwner().getSummon() == this) {
-            this._feedTask = ThreadPool.scheduleAtFixedRate(new Pet.FeedTask(), 10000L, 10000L);
+            this._feedTask = ThreadPool.scheduleAtFixedRate(new FeedTask(), 10000L, 10000L);
         }
 
     }
 
     public void restoreExp(double restorePercent) {
         if (this._expBeforeDeath > 0L) {
-            this.getStat().addExp(Math.round((double) (this._expBeforeDeath - this.getStat().getExp()) * restorePercent / 100.0D));
+            this.getStat().addExp(Math.round((double) (this._expBeforeDeath - this.getStat().getExp()) * restorePercent / (double) 100.0F));
             this._expBeforeDeath = 0L;
         }
 
@@ -678,8 +568,8 @@ public class Pet extends Summon {
 
     private void deathPenalty() {
         int lvl = this.getStat().getLevel();
-        double percentLost = -0.07D * (double) lvl + 6.5D;
-        long lostExp = Math.round((double) (this.getStat().getExpForLevel(lvl + 1) - this.getStat().getExpForLevel(lvl)) * percentLost / 100.0D);
+        double percentLost = -0.07 * (double) lvl + (double) 6.5F;
+        long lostExp = Math.round((double) (this.getStat().getExpForLevel(lvl + 1) - this.getStat().getExpForLevel(lvl)) * percentLost / (double) 100.0F);
         this._expBeforeDeath = this.getStat().getExp();
         this.getStat().addExp(-lostExp);
     }
@@ -696,7 +586,7 @@ public class Pet extends Summon {
         int maxLoad = this.getMaxLoad();
         if (maxLoad > 0) {
             int weightproc = this.getCurrentLoad() * 1000 / maxLoad;
-            byte newWeightPenalty;
+            int newWeightPenalty;
             if (weightproc < 500) {
                 newWeightPenalty = 0;
             } else if (weightproc < 666) {
@@ -769,7 +659,7 @@ public class Pet extends Summon {
                         Pet.this.deleteMe(Pet.this.getOwner());
                         return;
                     }
-                } else if ((double) Pet.this.getCurrentFed() < 0.1D * (double) Pet.this.getPetData().getMaxMeal()) {
+                } else if ((double) Pet.this.getCurrentFed() < 0.1 * (double) Pet.this.getPetData().getMaxMeal()) {
                     Pet.this.getOwner().sendPacket(SystemMessageId.YOUR_PET_IS_VERY_HUNGRY_PLEASE_BE_CAREFUL);
                     if (Rnd.get(100) < 3) {
                         Pet.this.stopFeed();

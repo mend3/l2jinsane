@@ -59,7 +59,7 @@ public class VoicedAchievement implements IVoicedCommandHandler {
     public boolean useVoicedCommand(String command, Player player, String target) {
         StringTokenizer st = new StringTokenizer(command, " ");
         String actualCommand = st.nextToken();
-        player.getAchievementData();
+        player.refreshCompletedAchievements();
         if (actualCommand.startsWith("showMyAchievements")) {
             showMyAchievements(player);
         } else if (actualCommand.startsWith("achievementInfo")) {

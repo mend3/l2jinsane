@@ -18,23 +18,23 @@ public abstract class ZoneType {
     protected final Map<Integer, Creature> _characters = new ConcurrentHashMap<>();
     private final int _id;
     private Map<ScriptEventType, List<Quest>> _questEvents;
-
     private ZoneForm _zone;
 
     protected ZoneType(int id) {
         this._id = id;
     }
 
-    protected abstract void onEnter(Creature paramCreature);
+    protected abstract void onEnter(Creature var1);
 
-    protected abstract void onExit(Creature paramCreature);
+    protected abstract void onExit(Creature var1);
 
-    public abstract void onDieInside(Creature paramCreature);
+    public abstract void onDieInside(Creature var1);
 
-    public abstract void onReviveInside(Creature paramCreature);
+    public abstract void onReviveInside(Creature var1);
 
     public String toString() {
-        return getClass().getSimpleName() + "[" + getClass().getSimpleName() + "]";
+        String var10000 = this.getClass().getSimpleName();
+        return var10000 + "[" + this._id + "]";
     }
 
     public int getId() {
@@ -46,9 +46,11 @@ public abstract class ZoneType {
     }
 
     public void setZone(ZoneForm zone) {
-        if (this._zone != null)
+        if (this._zone != null) {
             throw new IllegalStateException("Zone already set");
-        this._zone = zone;
+        } else {
+            this._zone = zone;
+        }
     }
 
     public boolean isInsideZone(int x, int y) {
@@ -60,7 +62,7 @@ public abstract class ZoneType {
     }
 
     public boolean isInsideZone(WorldObject object) {
-        return isInsideZone(object.getX(), object.getY(), object.getZ());
+        return this.isInsideZone(object.getX(), object.getY(), object.getZ());
     }
 
     public double getDistanceToZone(int x, int y) {
@@ -76,32 +78,40 @@ public abstract class ZoneType {
     }
 
     public void revalidateInZone(Creature character) {
-        if (!isAffected(character))
-            return;
-        if (isInsideZone(character)) {
-            if (!this._characters.containsKey(character.getObjectId())) {
-                List<Quest> quests = getQuestByEvent(ScriptEventType.ON_ENTER_ZONE);
-                if (quests != null)
-                    for (Quest quest : quests)
-                        quest.notifyEnterZone(character, this);
-                this._characters.put(character.getObjectId(), character);
-                onEnter(character);
-                EngineModsManager.onEnterZone(character, this);
+        if (this.isAffected(character)) {
+            if (this.isInsideZone(character)) {
+                if (!this._characters.containsKey(character.getObjectId())) {
+                    List<Quest> quests = this.getQuestByEvent(ScriptEventType.ON_ENTER_ZONE);
+                    if (quests != null) {
+                        for (Quest quest : quests) {
+                            quest.notifyEnterZone(character, this);
+                        }
+                    }
+
+                    this._characters.put(character.getObjectId(), character);
+                    this.onEnter(character);
+                    EngineModsManager.onEnterZone(character, this);
+                }
+            } else {
+                this.removeCharacter(character);
             }
-        } else {
-            removeCharacter(character);
+
         }
     }
 
     public void removeCharacter(Creature character) {
         if (this._characters.remove(character.getObjectId()) != null) {
-            List<Quest> quests = getQuestByEvent(ScriptEventType.ON_EXIT_ZONE);
-            if (quests != null)
-                for (Quest quest : quests)
+            List<Quest> quests = this.getQuestByEvent(ScriptEventType.ON_EXIT_ZONE);
+            if (quests != null) {
+                for (Quest quest : quests) {
                     quest.notifyExitZone(character, this);
-            onExit(character);
+                }
+            }
+
+            this.onExit(character);
             EngineModsManager.onExitZone(character, this);
         }
+
     }
 
     public boolean isCharacterInZone(Creature character) {
@@ -113,19 +123,26 @@ public abstract class ZoneType {
     }
 
     public final <A> List<A> getKnownTypeInside(Class<A> type) {
-        if (this._characters.isEmpty())
+        if (this._characters.isEmpty()) {
             return Collections.emptyList();
-        List<A> result = new ArrayList<>();
-        for (WorldObject obj : this._characters.values()) {
-            if (type.isAssignableFrom(obj.getClass()))
-                result.add((A) obj);
+        } else {
+            List<A> result = new ArrayList<>();
+
+            for (WorldObject obj : this._characters.values()) {
+                if (type.isAssignableFrom(obj.getClass())) {
+                    result.add((A) obj);
+                }
+            }
+
+            return result;
         }
-        return result;
     }
 
     public void addQuestEvent(ScriptEventType type, Quest quest) {
-        if (this._questEvents == null)
+        if (this._questEvents == null) {
             this._questEvents = new HashMap<>();
+        }
+
         List<Quest> eventList = this._questEvents.get(type);
         if (eventList == null) {
             eventList = new ArrayList<>();
@@ -135,21 +152,24 @@ public abstract class ZoneType {
             eventList.remove(quest);
             eventList.add(quest);
         }
+
     }
 
     public List<Quest> getQuestByEvent(ScriptEventType type) {
-        return (this._questEvents == null) ? null : this._questEvents.get(type);
+        return this._questEvents == null ? null : this._questEvents.get(type);
     }
 
     public void broadcastPacket(L2GameServerPacket packet) {
         for (Creature character : this._characters.values()) {
-            if (character instanceof Player)
+            if (character instanceof Player) {
                 character.sendPacket(packet);
+            }
         }
+
     }
 
     public void setParameter(String name, String value) {
-        LOGGER.warn("Unknown name/values couple {}, {} for {}.", name, value, toString());
+        LOGGER.warn("Unknown name/values couple {}, {} for {}.", new Object[]{name, value, this.toString()});
     }
 
     protected boolean isAffected(Creature character) {
@@ -157,14 +177,16 @@ public abstract class ZoneType {
     }
 
     public void movePlayersTo(int x, int y, int z) {
-        for (Player player : getKnownTypeInside(Player.class)) {
-            if (player.isOnline())
+        for (Player player : this.getKnownTypeInside(Player.class)) {
+            if (player.isOnline()) {
                 player.teleportTo(x, y, z, 0);
+            }
         }
+
     }
 
     public void movePlayersTo(Location loc) {
-        movePlayersTo(loc.getX(), loc.getY(), loc.getZ());
+        this.movePlayersTo(loc.getX(), loc.getY(), loc.getZ());
     }
 
     public void addKnownObject(WorldObject object) {

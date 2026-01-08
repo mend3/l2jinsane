@@ -15,31 +15,31 @@ public final class PvpFlagTaskManager implements Runnable {
     }
 
     public static PvpFlagTaskManager getInstance() {
-        return SingletonHolder.INSTANCE;
+        return PvpFlagTaskManager.SingletonHolder.INSTANCE;
     }
 
     public void run() {
-        if (this._players.isEmpty())
-            return;
-        long currentTime = System.currentTimeMillis();
-        for (Map.Entry<Player, Long> entry : this._players.entrySet()) {
-            Player player = entry.getKey();
-            long timeLeft = entry.getValue();
-            if (player.isInsideZone(ZoneId.MULTI_FUNCTION) || player.isInsideZone(ZoneId.PVPEVENT) || player.isInsideZone(ZoneId.RANDOMZONE) || player.isInsideZone(ZoneId.ARENA_EVENT)) {
-                this._players.remove(player);
-                player.updatePvPFlag(1);
-                continue;
+        if (!this._players.isEmpty()) {
+            long currentTime = System.currentTimeMillis();
+
+            for (Map.Entry<Player, Long> entry : this._players.entrySet()) {
+                Player player = entry.getKey();
+                long timeLeft = entry.getValue();
+                if (!player.isInsideZone(ZoneId.MULTI_FUNCTION) && !player.isInsideZone(ZoneId.PVPEVENT) && !player.isInsideZone(ZoneId.RANDOMZONE) && !player.isInsideZone(ZoneId.ARENA_EVENT)) {
+                    if (currentTime > timeLeft) {
+                        player.updatePvPFlag(0);
+                        this._players.remove(player);
+                    } else if (currentTime > timeLeft - 5000L) {
+                        player.updatePvPFlag(2);
+                    } else {
+                        player.updatePvPFlag(1);
+                    }
+                } else {
+                    this._players.remove(player);
+                    player.updatePvPFlag(1);
+                }
             }
-            if (currentTime > timeLeft) {
-                player.updatePvPFlag(0);
-                this._players.remove(player);
-                continue;
-            }
-            if (currentTime > timeLeft - 5000L) {
-                player.updatePvPFlag(2);
-                continue;
-            }
-            player.updatePvPFlag(1);
+
         }
     }
 

@@ -18,17 +18,21 @@ public final class SiegeGuard extends Attackable {
 
     public CreatureAI getAI() {
         CreatureAI ai = this._ai;
-        if (ai == null)
+        if (ai == null) {
             synchronized (this) {
-                if (this._ai == null)
+                if (this._ai == null) {
                     this._ai = new SiegeGuardAI(this);
+                }
+
                 return this._ai;
             }
-        return ai;
+        } else {
+            return ai;
+        }
     }
 
     public boolean isAutoAttackable(Creature attacker) {
-        return (attacker != null && attacker.getActingPlayer() != null && getCastle() != null && getCastle().getSiege().isInProgress() && !getCastle().getSiege().checkSides(attacker.getActingPlayer().getClan(), SiegeSide.DEFENDER, SiegeSide.OWNER));
+        return attacker != null && attacker.getActingPlayer() != null && this.getCastle() != null && this.getCastle().getSiege().isInProgress() && !this.getCastle().getSiege().checkSides(attacker.getActingPlayer().getClan(), new SiegeSide[]{SiegeSide.DEFENDER, SiegeSide.OWNER});
     }
 
     public boolean hasRandomAnimation() {
@@ -38,29 +42,33 @@ public final class SiegeGuard extends Attackable {
     public void onAction(Player player) {
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (isAutoAttackable(player)) {
-            if (!isAlikeDead() && Math.abs(player.getZ() - getZ()) < 600)
+        } else if (this.isAutoAttackable(player)) {
+            if (!this.isAlikeDead() && Math.abs(player.getZ() - this.getZ()) < 600) {
                 player.getAI().setIntention(IntentionType.ATTACK, this);
-        } else if (!canInteract(player)) {
+            }
+        } else if (!this.canInteract(player)) {
             player.getAI().setIntention(IntentionType.INTERACT, this);
         } else {
-            if (player.isMoving() || player.isInCombat())
+            if (player.isMoving() || player.isInCombat()) {
                 player.getAI().setIntention(IntentionType.IDLE);
+            }
+
             player.sendPacket(new MoveToPawn(player, this, 150));
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 
     public void addDamageHate(Creature attacker, int damage, int aggro) {
-        if (attacker instanceof SiegeGuard)
-            return;
-        super.addDamageHate(attacker, damage, aggro);
+        if (!(attacker instanceof SiegeGuard)) {
+            super.addDamageHate(attacker, damage, aggro);
+        }
     }
 
     public void reduceHate(Creature target, int amount) {
-        stopHating(target);
-        setTarget(null);
-        getAI().setIntention(IntentionType.ACTIVE);
+        this.stopHating(target);
+        this.setTarget(null);
+        this.getAI().setIntention(IntentionType.ACTIVE);
     }
 
     public boolean isGuard() {

@@ -30,26 +30,28 @@ public class DailyReward {
     }
 
     public static String format(long value) {
-        if (value == Long.MIN_VALUE)
+        if (value == Long.MIN_VALUE) {
             return format(-9223372036854775807L);
-        if (value < 0L)
+        } else if (value < 0L) {
             return "-" + format(-value);
-        if (value < 1000L)
+        } else if (value < 1000L) {
             return Long.toString(value);
-        Map.Entry<Long, String> e = suffixes.floorEntry(value);
-        Long divideBy = e.getKey();
-        String suffix = e.getValue();
-        long truncated = value / divideBy / 10L;
-        boolean hasDecimal = (truncated < 100L && truncated / 10.0D != (truncated / 10L));
-        return hasDecimal ? ("" + truncated / 10.0D + truncated / 10.0D) : ("" + truncated / 10L + truncated / 10L);
+        } else {
+            Map.Entry<Long, String> e = suffixes.floorEntry(value);
+            Long divideBy = e.getKey();
+            String suffix = e.getValue();
+            long truncated = value / (divideBy / 10L);
+            boolean hasDecimal = truncated < 100L && (double) truncated / (double) 10.0F != (double) (truncated / 10L);
+            return hasDecimal ? (double) truncated / (double) 10.0F + suffix : truncated / 10L + suffix;
+        }
     }
 
     public String getIcon() {
-        return getItem().getIcon();
+        return this.getItem().getIcon();
     }
 
     public String getAmountTxt() {
-        return format(getAmount());
+        return format(this.getAmount());
     }
 
     public Item getItem() {

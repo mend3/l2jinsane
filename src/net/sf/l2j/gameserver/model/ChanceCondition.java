@@ -26,23 +26,23 @@ public final class ChanceCondition {
     public static final int EVT_ON_ACTION_TIME = 32768;
     public static final int EVT_ON_EXIT = 65536;
     private static final Logger _log = Logger.getLogger(ChanceCondition.class.getName());
-    private final ChanceCondition.TriggerType _triggerType;
+    private final TriggerType _triggerType;
     private final int _chance;
 
-    private ChanceCondition(ChanceCondition.TriggerType trigger, int chance) {
+    private ChanceCondition(TriggerType trigger, int chance) {
         this._triggerType = trigger;
         this._chance = chance;
     }
 
     public static ChanceCondition parse(StatSet set) {
         try {
-            ChanceCondition.TriggerType trigger = set.getEnum("chanceType", TriggerType.class, null);
+            TriggerType trigger = set.getEnum("chanceType", TriggerType.class, null);
             int chance = set.getInteger("activationChance", -1);
             if (trigger != null) {
                 return new ChanceCondition(trigger, chance);
             }
-        } catch (Exception var3) {
-            _log.log(Level.WARNING, "", var3);
+        } catch (Exception e) {
+            _log.log(Level.WARNING, "", e);
         }
 
         return null;
@@ -54,12 +54,12 @@ public final class ChanceCondition {
                 return null;
             }
 
-            ChanceCondition.TriggerType trigger = Enum.valueOf(TriggerType.class, chanceType);
+            TriggerType trigger = Enum.valueOf(TriggerType.class, chanceType);
             if (trigger != null) {
                 return new ChanceCondition(trigger, chance);
             }
-        } catch (Exception var3) {
-            _log.log(Level.WARNING, "", var3);
+        } catch (Exception e) {
+            _log.log(Level.WARNING, "", e);
         }
 
         return null;
@@ -74,7 +74,7 @@ public final class ChanceCondition {
         return "Trigger[" + var10000 + ";" + this._triggerType.toString() + "]";
     }
 
-    public enum TriggerType {
+    public static enum TriggerType {
         ON_HIT(1),
         ON_CRIT(2),
         ON_CAST(4),
@@ -95,13 +95,8 @@ public final class ChanceCondition {
 
         private final int _mask;
 
-        TriggerType(int mask) {
+        private TriggerType(int mask) {
             this._mask = mask;
-        }
-
-        // $FF: synthetic method
-        private static ChanceCondition.TriggerType[] $values() {
-            return new ChanceCondition.TriggerType[]{ON_HIT, ON_CRIT, ON_CAST, ON_PHYSICAL, ON_MAGIC, ON_MAGIC_GOOD, ON_MAGIC_OFFENSIVE, ON_ATTACKED, ON_ATTACKED_HIT, ON_ATTACKED_CRIT, ON_HIT_BY_SKILL, ON_HIT_BY_OFFENSIVE_SKILL, ON_HIT_BY_GOOD_MAGIC, ON_EVADED_HIT, ON_START, ON_ACTION_TIME, ON_EXIT};
         }
 
         public final boolean check(int event) {

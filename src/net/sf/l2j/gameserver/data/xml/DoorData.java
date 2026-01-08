@@ -19,7 +19,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class DoorData implements IXmlReader {
-    private final Map<Integer, Door> _doors = new HashMap();
+    private final Map<Integer, Door> _doors = new HashMap<>();
 
     protected DoorData() {
         this.load();
@@ -48,7 +48,7 @@ public class DoorData implements IXmlReader {
                     set.set("posY", this.parseInteger(attrs, "y"));
                     set.set("posZ", this.parseInteger(attrs, "z"));
                 });
-                List<int[]> coords = new ArrayList();
+                List<int[]> coords = new ArrayList<>();
                 this.forEach(doorNode, "coordinates", (coordinatesNode) -> {
                     this.forEach(coordinatesNode, "loc", (locNode) -> {
                         NamedNodeMap attrs = locNode.getAttributes();
@@ -61,8 +61,8 @@ public class DoorData implements IXmlReader {
                 int maxY = Integer.MIN_VALUE;
 
                 int[] coord;
-                for (Iterator var9 = coords.iterator(); var9.hasNext(); maxY = Math.max(maxY, coord[1])) {
-                    coord = (int[]) var9.next();
+                for (Iterator<int[]> var9 = coords.iterator(); var9.hasNext(); maxY = Math.max(maxY, coord[1])) {
+                    coord = var9.next();
                     minX = Math.min(minX, coord[0]);
                     maxX = Math.max(maxX, coord[0]);
                     minY = Math.min(minY, coord[1]);
@@ -135,7 +135,7 @@ public class DoorData implements IXmlReader {
     }
 
     public final void reload() {
-        Iterator var1 = this._doors.values().iterator();
+        Iterator<?> var1 = this._doors.values().iterator();
 
         while (var1.hasNext()) {
             Door door = (Door) var1.next();
@@ -155,11 +155,10 @@ public class DoorData implements IXmlReader {
     }
 
     public final void spawn() {
-        Iterator var1 = this._doors.values().iterator();
+        Iterator<?> var1 = this._doors.values().iterator();
 
         while (var1.hasNext()) {
             Door door = (Door) var1.next();
-            door.initResidences();
             door.spawnMe();
         }
 

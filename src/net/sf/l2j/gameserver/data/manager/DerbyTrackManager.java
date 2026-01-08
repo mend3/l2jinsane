@@ -34,10 +34,10 @@ public class DerbyTrackManager {
     private static final String LOAD_BETS = "SELECT * FROM mdt_bets";
     private static final String SAVE_BETS = "REPLACE INTO mdt_bets (lane_id, bet) VALUES (?,?)";
     private static final String CLEAR_BETS = "UPDATE mdt_bets SET bet = 0";
-    protected final List<Npc> _runners = new ArrayList();
-    protected final TreeMap<Integer, HistoryInfo> _history = new TreeMap();
-    protected final Map<Integer, Long> _betsPerLane = new ConcurrentHashMap();
-    protected final List<Double> _odds = new ArrayList();
+    protected final List<Npc> _runners = new ArrayList<>();
+    protected final TreeMap<Integer, HistoryInfo> _history = new TreeMap<>();
+    protected final Map<Integer, Long> _betsPerLane = new ConcurrentHashMap<>();
+    protected final List<Double> _odds = new ArrayList<>();
     protected int _raceNumber = 1;
     protected int _finalCountdown = 0;
     protected DerbyTrackManager.RaceState _state;
@@ -386,10 +386,8 @@ public class DerbyTrackManager {
     }
 
     protected void clearBets() {
-        Iterator var1 = this._betsPerLane.keySet().iterator();
 
-        while (var1.hasNext()) {
-            int key = (Integer) var1.next();
+        for (int key : this._betsPerLane.keySet()) {
             this._betsPerLane.put(key, 0L);
         }
 
@@ -448,7 +446,7 @@ public class DerbyTrackManager {
 
     protected void calculateOdds() {
         this._odds.clear();
-        Map<Integer, Long> sortedLanes = new TreeMap(this._betsPerLane);
+        Map<Integer, Long> sortedLanes = new TreeMap<>(this._betsPerLane);
         long sumOfAllLanes = 0L;
 
         Iterator var4;

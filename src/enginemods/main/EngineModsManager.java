@@ -91,7 +91,7 @@ public class EngineModsManager {
 
         DailyRewardData.getInstance().load();
         DailyLoginRewardManager.getInstance().load();
-        DailyRewardManager.getInstance().load();
+        DailyRewardManager.getInstance();
 
         ColorAccordingAmountPvPorPk.getInstance();
         SubClassAcumulatives.getInstance();
@@ -123,9 +123,9 @@ public class EngineModsManager {
         DungeonManager.getInstance().load();
 
         StringUtil.printSection("Event Engine TvT - CTF - DM");
-        CtfEventManager.getInstance().load();
-        TvTEventManager.getInstance().load();
-        DmEventManager.getInstance().load();
+        CtfEventManager.getInstance();
+        TvTEventManager.getInstance();
+        DmEventManager.getInstance();
         StringUtil.printSection("Solo Boss Event");
         if (Config.SOLOBOSS_EVENT_ENABLE) {
             SoloBossData.getInstance().load();
@@ -153,7 +153,7 @@ public class EngineModsManager {
 
         StringUtil.printSection("Party Farm Event");
         if (Config.PARTY_FARM_BY_TIME_OF_DAY && !Config.START_PARTY) {
-            InitialPartyFarm.getInstance().load();
+            InitialPartyFarm.getInstance();
             LOG.info("[Party Farm Time]: Enabled");
         } else if (Config.START_PARTY && !Config.PARTY_FARM_BY_TIME_OF_DAY) {
             ThreadPool.schedule(new PartyFarmSpawn(), Config.NPC_SERVER_DELAY * 1000L);

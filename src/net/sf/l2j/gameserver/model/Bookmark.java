@@ -2,13 +2,9 @@ package net.sf.l2j.gameserver.model;
 
 public class Bookmark {
     private final String _name;
-
     private final int _objId;
-
     private final int _x;
-
     private final int _y;
-
     private final int _z;
 
     public Bookmark(String name, int objId, int x, int y, int z) {

@@ -15,25 +15,28 @@ public class BossEventNpc extends Folk {
     public void onAction(Player player) {
         if (this != player.getTarget()) {
             player.setTarget(this);
-            player.sendPacket(new MyTargetSelected(getObjectId(), 0));
+            player.sendPacket(new MyTargetSelected(this.getObjectId(), 0));
             player.sendPacket(new ValidateLocation(this));
-        } else if (!canInteract(player)) {
+        } else if (!this.canInteract(player)) {
             player.getAI().setIntention(IntentionType.INTERACT, this);
         } else {
             player.sendPacket(new MoveToPawn(player, this, 150));
-            if (hasRandomAnimation())
-                onRandomAnimation(Rnd.get(8));
-            showMainWindow(player);
+            if (this.hasRandomAnimation()) {
+                this.onRandomAnimation(Rnd.get(8));
+            }
+
+            this.showMainWindow(player);
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 
     private void showMainWindow(Player player) {
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile("data/html/mods/events/ktb/BossEvent.htm");
-        html.replace("%objectId%", String.valueOf(getObjectId()));
-        html.replace("%npcname%", getName());
-        html.replace("%regCount%", String.valueOf((BossEvent.getInstance()).eventPlayers.size()));
+        html.replace("%objectId%", String.valueOf(this.getObjectId()));
+        html.replace("%npcname%", this.getName());
+        html.replace("%regCount%", String.valueOf(BossEvent.getInstance().eventPlayers.size()));
         player.sendPacket(html);
     }
 
@@ -44,12 +47,15 @@ public class BossEventNpc extends Folk {
                 activeChar.sendMessage("Boss Event is not running!");
                 return;
             }
+
             if (!BossEvent.getInstance().isRegistered(activeChar)) {
-                if (BossEvent.getInstance().addPlayer(activeChar))
+                if (BossEvent.getInstance().addPlayer(activeChar)) {
                     activeChar.sendMessage("You have been successfully registered in Boss Event!");
+                }
             } else if (BossEvent.getInstance().removePlayer(activeChar)) {
                 activeChar.sendMessage("You have been successfully removed of Boss Event!");
             }
         }
+
     }
 }

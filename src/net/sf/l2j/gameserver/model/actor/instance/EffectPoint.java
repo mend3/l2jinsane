@@ -11,7 +11,7 @@ public class EffectPoint extends Npc {
 
     public EffectPoint(int objectId, NpcTemplate template, Creature owner) {
         super(objectId, template);
-        this._owner = (owner == null) ? null : owner.getActingPlayer();
+        this._owner = owner == null ? null : owner.getActingPlayer();
     }
 
     public Player getActingPlayer() {

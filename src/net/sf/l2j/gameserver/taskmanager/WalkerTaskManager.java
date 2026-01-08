@@ -14,24 +14,26 @@ public final class WalkerTaskManager implements Runnable {
     }
 
     public static WalkerTaskManager getInstance() {
-        return SingletonHolder.INSTANCE;
+        return WalkerTaskManager.SingletonHolder.INSTANCE;
     }
 
     public void run() {
-        if (this._walkers.isEmpty())
-            return;
-        long time = System.currentTimeMillis();
-        for (Map.Entry<Walker, Long> entry : this._walkers.entrySet()) {
-            if (time < entry.getValue())
-                continue;
-            Walker walker = entry.getKey();
-            walker.getAI().moveToNextPoint();
-            this._walkers.remove(walker);
+        if (!this._walkers.isEmpty()) {
+            long time = System.currentTimeMillis();
+
+            for (Map.Entry<Walker, Long> entry : this._walkers.entrySet()) {
+                if (time >= entry.getValue()) {
+                    Walker walker = entry.getKey();
+                    walker.getAI().moveToNextPoint();
+                    this._walkers.remove(walker);
+                }
+            }
+
         }
     }
 
     public void add(Walker walker, int delay) {
-        this._walkers.put(walker, System.currentTimeMillis() + delay);
+        this._walkers.put(walker, System.currentTimeMillis() + (long) delay);
     }
 
     private static class SingletonHolder {

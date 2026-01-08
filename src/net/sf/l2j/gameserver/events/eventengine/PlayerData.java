@@ -6,11 +6,8 @@ import net.sf.l2j.gameserver.model.location.Location;
 
 public class PlayerData {
     private final int playerId;
-
     private final int playerColor;
-
     private final String playerTitle;
-
     private final Location playerLocation;
 
     public PlayerData(Player player) {
@@ -21,8 +18,10 @@ public class PlayerData {
     }
 
     public void restore(Player player) {
-        if (player.isDead())
+        if (player.isDead()) {
             player.doRevive();
+        }
+
         player.getAppearance().setNameColor(this.playerColor);
         player.setTitle(this.playerTitle);
         player.setTeam(TeamType.NONE);

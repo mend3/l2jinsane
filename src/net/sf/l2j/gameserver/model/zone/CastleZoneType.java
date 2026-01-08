@@ -10,11 +10,8 @@ import net.sf.l2j.gameserver.network.serverpackets.EventTrigger;
 
 public abstract class CastleZoneType extends ZoneType {
     private int _castleId;
-
     private Castle _castle;
-
     private boolean _enabled;
-
     private int _eventId;
 
     protected CastleZoneType(int id) {
@@ -29,21 +26,28 @@ public abstract class CastleZoneType extends ZoneType {
         } else {
             super.setParameter(name, value);
         }
+
     }
 
     public void addKnownObject(WorldObject object) {
-        if (this._eventId > 0 && this._enabled && object instanceof Player)
-            ((Player) object).sendPacket(new EventTrigger(getEventId(), true));
+        if (this._eventId > 0 && this._enabled && object instanceof Player) {
+            ((Player) object).sendPacket(new EventTrigger(this.getEventId(), true));
+        }
+
     }
 
     public void removeKnownObject(WorldObject object) {
-        if (this._eventId > 0 && object instanceof Player)
-            ((Player) object).sendPacket(new EventTrigger(getEventId(), false));
+        if (this._eventId > 0 && object instanceof Player) {
+            ((Player) object).sendPacket(new EventTrigger(this.getEventId(), false));
+        }
+
     }
 
     public Castle getCastle() {
-        if (this._castleId > 0 && this._castle == null)
+        if (this._castleId > 0 && this._castle == null) {
             this._castle = CastleManager.getInstance().getCastleById(this._castleId);
+        }
+
         return this._castle;
     }
 
@@ -59,12 +63,15 @@ public abstract class CastleZoneType extends ZoneType {
         this._enabled = val;
         if (this._eventId > 0) {
             WorldRegion region = World.getInstance().getRegion(this);
+
             for (WorldRegion reg : region.getSurroundingRegions()) {
                 for (WorldObject obj : reg.getObjects()) {
-                    if (obj instanceof Player)
+                    if (obj instanceof Player) {
                         ((Player) obj).sendPacket(new EventTrigger(this._eventId, val));
+                    }
                 }
             }
         }
+
     }
 }

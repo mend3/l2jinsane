@@ -8,21 +8,21 @@ import net.sf.l2j.gameserver.model.WorldObject;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.item.ArmorSet;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
+import net.sf.l2j.gameserver.model.item.kind.Armor;
 import net.sf.l2j.gameserver.model.item.kind.Item;
 import net.sf.l2j.gameserver.model.item.kind.Weapon;
 import net.sf.l2j.gameserver.network.serverpackets.ItemList;
 
 public class AdminEnchant implements IAdminCommandHandler {
-    private static final String[] ADMIN_COMMANDS = new String[]{
-            "admin_seteh", "admin_setec", "admin_seteg", "admin_setel", "admin_seteb", "admin_setew", "admin_setes", "admin_setle", "admin_setre", "admin_setlf",
-            "admin_setrf", "admin_seten", "admin_setun", "admin_setba", "admin_enchant"};
+    private static final String[] ADMIN_COMMANDS = new String[]{"admin_seteh", "admin_setec", "admin_seteg", "admin_setel", "admin_seteb", "admin_setew", "admin_setes", "admin_setle", "admin_setre", "admin_setlf", "admin_setrf", "admin_seten", "admin_setun", "admin_setba", "admin_enchant"};
 
     private static void setEnchant(Player activeChar, int ench, int armorType) {
-        Player player1 = null;
         WorldObject target = activeChar.getTarget();
-        if (!(target instanceof Player))
-            player1 = activeChar;
-        Player player = player1;
+        if (!(target instanceof Player)) {
+            target = activeChar;
+        }
+
+        Player player = (Player) target;
         ItemInstance item = player.getInventory().getPaperdollItem(armorType);
         if (item != null && item.getLocationSlot() == armorType) {
             Item it = item.getItem();
@@ -45,7 +45,7 @@ public class AdminEnchant implements IAdminCommandHandler {
                             player.sendSkillList();
                         }
                     }
-                } else if (it instanceof net.sf.l2j.gameserver.model.item.kind.Armor) {
+                } else if (it instanceof Armor) {
                     if (oldEnchant >= 6 && currentEnchant < 6) {
                         ItemInstance chestItem = player.getInventory().getPaperdollItem(10);
                         if (chestItem != null) {
@@ -76,12 +76,15 @@ public class AdminEnchant implements IAdminCommandHandler {
                     }
                 }
             }
+
             player.sendPacket(new ItemList(player, false));
             player.broadcastUserInfo();
             activeChar.sendMessage("Changed enchantment of " + player.getName() + "'s " + it.getName() + " from " + oldEnchant + " to " + ench + ".");
-            if (player != activeChar)
+            if (player != activeChar) {
                 player.sendMessage("A GM has changed the enchantment of your " + it.getName() + " from " + oldEnchant + " to " + ench + ".");
+            }
         }
+
     }
 
     private static void showMainPage(Player activeChar) {
@@ -122,19 +125,24 @@ public class AdminEnchant implements IAdminCommandHandler {
             } else if (command.startsWith("admin_setba")) {
                 armorType = 13;
             }
-            if (armorType != -1)
+
+            if (armorType != -1) {
                 try {
                     int ench = Integer.parseInt(command.substring(12));
-                    if (ench < 0 || ench > 65535) {
-                        activeChar.sendMessage("You must set the enchant level to be between 0-65535.");
-                    } else {
+                    if (ench >= 0 && ench <= 65535) {
                         setEnchant(activeChar, ench, armorType);
+                    } else {
+                        activeChar.sendMessage("You must set the enchant level to be between 0-65535.");
                     }
-                } catch (Exception e) {
+                } catch (Exception var5) {
                     activeChar.sendMessage("Please specify a new enchant value.");
+                    var5.printStackTrace();
                 }
+            }
+
             showMainPage(activeChar);
         }
+
         return true;
     }
 

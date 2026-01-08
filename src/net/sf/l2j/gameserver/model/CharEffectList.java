@@ -47,15 +47,13 @@ public class CharEffectList {
     }
 
     public final L2Effect[] getAllEffects() {
-        if ((this._buffs == null || this._buffs.isEmpty()) && (this._debuffs == null || this._debuffs.isEmpty())) {
-            return EMPTY_EFFECTS;
-        } else {
+        if (this._buffs != null && !this._buffs.isEmpty() || this._debuffs != null && !this._debuffs.isEmpty()) {
             synchronized (this._buildEffectLock) {
                 if (!this._rebuildCache) {
                     return this._effectCache;
                 } else {
                     this._rebuildCache = false;
-                    List<L2Effect> temp = new ArrayList();
+                    List<L2Effect> temp = new ArrayList<>();
                     if (this._buffs != null && !this._buffs.isEmpty()) {
                         temp.addAll(this._buffs);
                     }
@@ -69,18 +67,15 @@ public class CharEffectList {
                     return this._effectCache = tempArray;
                 }
             }
+        } else {
+            return EMPTY_EFFECTS;
         }
     }
 
     public final L2Effect getFirstEffect(L2EffectType tp) {
         L2Effect effectNotInUse = null;
-        Iterator var3;
-        L2Effect e;
         if (this._buffs != null && !this._buffs.isEmpty()) {
-            var3 = this._buffs.iterator();
-
-            while (var3.hasNext()) {
-                e = (L2Effect) var3.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null && e.getEffectType() == tp) {
                     if (e.getInUse()) {
                         return e;
@@ -92,10 +87,7 @@ public class CharEffectList {
         }
 
         if (effectNotInUse == null && this._debuffs != null && !this._debuffs.isEmpty()) {
-            var3 = this._debuffs.iterator();
-
-            while (var3.hasNext()) {
-                e = (L2Effect) var3.next();
+            for (L2Effect e : this._debuffs) {
                 if (e != null && e.getEffectType() == tp) {
                     if (e.getInUse()) {
                         return e;
@@ -111,14 +103,9 @@ public class CharEffectList {
 
     public final L2Effect getFirstEffect(L2Skill skill) {
         L2Effect effectNotInUse = null;
-        Iterator var3;
-        L2Effect e;
         if (skill.isDebuff()) {
             if (this._debuffs != null && !this._debuffs.isEmpty()) {
-                var3 = this._debuffs.iterator();
-
-                while (var3.hasNext()) {
-                    e = (L2Effect) var3.next();
+                for (L2Effect e : this._debuffs) {
                     if (e != null && e.getSkill() == skill) {
                         if (e.getInUse()) {
                             return e;
@@ -129,10 +116,7 @@ public class CharEffectList {
                 }
             }
         } else if (this._buffs != null && !this._buffs.isEmpty()) {
-            var3 = this._buffs.iterator();
-
-            while (var3.hasNext()) {
-                e = (L2Effect) var3.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null && e.getSkill() == skill) {
                     if (e.getInUse()) {
                         return e;
@@ -148,13 +132,8 @@ public class CharEffectList {
 
     public final L2Effect getFirstEffect(int skillId) {
         L2Effect effectNotInUse = null;
-        Iterator var3;
-        L2Effect e;
         if (this._buffs != null && !this._buffs.isEmpty()) {
-            var3 = this._buffs.iterator();
-
-            while (var3.hasNext()) {
-                e = (L2Effect) var3.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null && e.getSkill().getId() == skillId) {
                     if (e.getInUse()) {
                         return e;
@@ -166,10 +145,7 @@ public class CharEffectList {
         }
 
         if (effectNotInUse == null && this._debuffs != null && !this._debuffs.isEmpty()) {
-            var3 = this._debuffs.iterator();
-
-            while (var3.hasNext()) {
-                e = (L2Effect) var3.next();
+            for (L2Effect e : this._debuffs) {
                 if (e != null && e.getSkill().getId() == skillId) {
                     if (e.getInUse()) {
                         return e;
@@ -188,36 +164,23 @@ public class CharEffectList {
             if (checkSkill._effectTemplates != null && !checkSkill._effectTemplates.isEmpty()) {
                 String stackType = checkSkill._effectTemplates.get(0).stackType;
                 if (stackType != null && !"none".equals(stackType)) {
-                    Iterator var3 = this._buffs.iterator();
-
-                    L2Effect e;
-                    do {
-                        if (!var3.hasNext()) {
-                            return false;
+                    for (L2Effect e : this._buffs) {
+                        if (e.getStackType() != null && e.getStackType().equals(stackType)) {
+                            return true;
                         }
+                    }
 
-                        e = (L2Effect) var3.next();
-                    } while (e.getStackType() == null || !e.getStackType().equals(stackType));
-
-                    return true;
-                } else {
-                    return false;
                 }
-            } else {
-                return false;
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
     public int getBuffCount() {
         if (this._buffs != null && !this._buffs.isEmpty()) {
             int buffCount = 0;
-            Iterator var2 = this._buffs.iterator();
 
-            while (var2.hasNext()) {
-                L2Effect e = (L2Effect) var2.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null && e.getShowIcon() && !e.getSkill().is7Signs()) {
                     switch (e.getSkill().getSkillType()) {
                         case BUFF:
@@ -240,10 +203,8 @@ public class CharEffectList {
     public int getDanceCount() {
         if (this._buffs != null && !this._buffs.isEmpty()) {
             int danceCount = 0;
-            Iterator var2 = this._buffs.iterator();
 
-            while (var2.hasNext()) {
-                L2Effect e = (L2Effect) var2.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null && e.getSkill().isDance() && e.getInUse()) {
                     ++danceCount;
                 }
@@ -257,11 +218,8 @@ public class CharEffectList {
 
     public final void stopAllEffects() {
         L2Effect[] effects = this.getAllEffects();
-        L2Effect[] var2 = effects;
-        int var3 = effects.length;
 
-        for (int var4 = 0; var4 < var3; ++var4) {
-            L2Effect e = var2[var4];
+        for (L2Effect e : effects) {
             if (e != null) {
                 e.exit(true);
             }
@@ -271,11 +229,8 @@ public class CharEffectList {
 
     public final void stopAllEffectsExceptThoseThatLastThroughDeath() {
         L2Effect[] effects = this.getAllEffects();
-        L2Effect[] var2 = effects;
-        int var3 = effects.length;
 
-        for (int var4 = 0; var4 < var3; ++var4) {
-            L2Effect e = var2[var4];
+        for (L2Effect e : effects) {
             if (e != null && !e.getSkill().isStayAfterDeath()) {
                 e.exit(true);
             }
@@ -285,10 +240,7 @@ public class CharEffectList {
 
     public void stopAllToggles() {
         if (this._buffs != null && !this._buffs.isEmpty()) {
-            Iterator var1 = this._buffs.iterator();
-
-            while (var1.hasNext()) {
-                L2Effect e = (L2Effect) var1.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null && e.getSkill().isToggle()) {
                     e.exit();
                 }
@@ -298,13 +250,8 @@ public class CharEffectList {
     }
 
     public final void stopEffects(L2EffectType type) {
-        Iterator var2;
-        L2Effect e;
         if (this._buffs != null && !this._buffs.isEmpty()) {
-            var2 = this._buffs.iterator();
-
-            while (var2.hasNext()) {
-                e = (L2Effect) var2.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null && e.getEffectType() == type) {
                     e.exit();
                 }
@@ -312,10 +259,7 @@ public class CharEffectList {
         }
 
         if (this._debuffs != null && !this._debuffs.isEmpty()) {
-            var2 = this._debuffs.iterator();
-
-            while (var2.hasNext()) {
-                e = (L2Effect) var2.next();
+            for (L2Effect e : this._debuffs) {
                 if (e != null && e.getEffectType() == type) {
                     e.exit();
                 }
@@ -325,13 +269,8 @@ public class CharEffectList {
     }
 
     public final void stopSkillEffects(int skillId) {
-        Iterator var2;
-        L2Effect e;
         if (this._buffs != null && !this._buffs.isEmpty()) {
-            var2 = this._buffs.iterator();
-
-            while (var2.hasNext()) {
-                e = (L2Effect) var2.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null && e.getSkill().getId() == skillId) {
                     e.exit();
                 }
@@ -339,10 +278,7 @@ public class CharEffectList {
         }
 
         if (this._debuffs != null && !this._debuffs.isEmpty()) {
-            var2 = this._debuffs.iterator();
-
-            while (var2.hasNext()) {
-                e = (L2Effect) var2.next();
+            for (L2Effect e : this._debuffs) {
                 if (e != null && e.getSkill().getId() == skillId) {
                     e.exit();
                 }
@@ -352,56 +288,27 @@ public class CharEffectList {
     }
 
     public final void stopSkillEffects(L2SkillType skillType, int negateLvl) {
-        Iterator var3;
-        L2Effect e;
         if (this._buffs != null && !this._buffs.isEmpty()) {
-            var3 = this._buffs.iterator();
-
-            label96:
-            while (true) {
-                do {
-                    do {
-                        do {
-                            if (!var3.hasNext()) {
-                                break label96;
-                            }
-
-                            e = (L2Effect) var3.next();
-                        } while (e == null);
-                    } while (e.getSkill().getSkillType() != skillType && (e.getSkill().getEffectType() == null || e.getSkill().getEffectType() != skillType));
-                } while (negateLvl != -1 && (e.getSkill().getEffectType() == null || e.getSkill().getEffectAbnormalLvl() < 0 || e.getSkill().getEffectAbnormalLvl() > negateLvl) && (e.getSkill().getAbnormalLvl() < 0 || e.getSkill().getAbnormalLvl() > negateLvl));
-
-                e.exit();
+            for (L2Effect e : this._buffs) {
+                if (e != null && (e.getSkill().getSkillType() == skillType || e.getSkill().getEffectType() != null && e.getSkill().getEffectType() == skillType) && (negateLvl == -1 || e.getSkill().getEffectType() != null && e.getSkill().getEffectAbnormalLvl() >= 0 && e.getSkill().getEffectAbnormalLvl() <= negateLvl || e.getSkill().getAbnormalLvl() >= 0 && e.getSkill().getAbnormalLvl() <= negateLvl)) {
+                    e.exit();
+                }
             }
         }
 
         if (this._debuffs != null && !this._debuffs.isEmpty()) {
-            var3 = this._debuffs.iterator();
-
-            while (true) {
-                do {
-                    do {
-                        do {
-                            if (!var3.hasNext()) {
-                                return;
-                            }
-
-                            e = (L2Effect) var3.next();
-                        } while (e == null);
-                    } while (e.getSkill().getSkillType() != skillType && (e.getSkill().getEffectType() == null || e.getSkill().getEffectType() != skillType));
-                } while (negateLvl != -1 && (e.getSkill().getEffectType() == null || e.getSkill().getEffectAbnormalLvl() < 0 || e.getSkill().getEffectAbnormalLvl() > negateLvl) && (e.getSkill().getAbnormalLvl() < 0 || e.getSkill().getAbnormalLvl() > negateLvl));
-
-                e.exit();
+            for (L2Effect e : this._debuffs) {
+                if (e != null && (e.getSkill().getSkillType() == skillType || e.getSkill().getEffectType() != null && e.getSkill().getEffectType() == skillType) && (negateLvl == -1 || e.getSkill().getEffectType() != null && e.getSkill().getEffectAbnormalLvl() >= 0 && e.getSkill().getEffectAbnormalLvl() <= negateLvl || e.getSkill().getAbnormalLvl() >= 0 && e.getSkill().getAbnormalLvl() <= negateLvl)) {
+                    e.exit();
+                }
             }
         }
+
     }
 
     public void stopEffectsOnAction() {
         if (this._hasBuffsRemovedOnAnyAction && this._buffs != null && !this._buffs.isEmpty()) {
-            Iterator var1 = this._buffs.iterator();
-
-            while (var1.hasNext()) {
-                L2Effect e = (L2Effect) var1.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null && e.getSkill().isRemovedOnAnyActionExceptMove()) {
                     e.exit(true);
                 }
@@ -411,48 +318,22 @@ public class CharEffectList {
     }
 
     public void stopEffectsOnDamage(boolean awake) {
-        Iterator var2;
-        L2Effect e;
         if (this._hasBuffsRemovedOnDamage && this._buffs != null && !this._buffs.isEmpty()) {
-            var2 = this._buffs.iterator();
-
-            label67:
-            while (true) {
-                do {
-                    do {
-                        do {
-                            if (!var2.hasNext()) {
-                                break label67;
-                            }
-
-                            e = (L2Effect) var2.next();
-                        } while (e == null);
-                    } while (!e.getSkill().isRemovedOnDamage());
-                } while (!awake && e.getSkill().getSkillType() == L2SkillType.SLEEP);
-
-                e.exit(true);
+            for (L2Effect e : this._buffs) {
+                if (e != null && e.getSkill().isRemovedOnDamage() && (awake || e.getSkill().getSkillType() != L2SkillType.SLEEP)) {
+                    e.exit(true);
+                }
             }
         }
 
         if (this._hasDebuffsRemovedOnDamage && this._debuffs != null && !this._debuffs.isEmpty()) {
-            var2 = this._debuffs.iterator();
-
-            while (true) {
-                do {
-                    do {
-                        do {
-                            if (!var2.hasNext()) {
-                                return;
-                            }
-
-                            e = (L2Effect) var2.next();
-                        } while (e == null);
-                    } while (!e.getSkill().isRemovedOnDamage());
-                } while (!awake && e.getSkill().getSkillType() == L2SkillType.SLEEP);
-
-                e.exit(true);
+            for (L2Effect e : this._debuffs) {
+                if (e != null && e.getSkill().isRemovedOnDamage() && (awake || e.getSkill().getSkillType() != L2SkillType.SLEEP)) {
+                    e.exit(true);
+                }
             }
         }
+
     }
 
     public void updateEffectIcons(boolean partyOnly) {
@@ -483,8 +364,8 @@ public class CharEffectList {
 
     private synchronized void init() {
         if (!this._queuesInitialized) {
-            this._addQueue = new LinkedBlockingQueue();
-            this._removeQueue = new LinkedBlockingQueue();
+            this._addQueue = new LinkedBlockingQueue<>();
+            this._removeQueue = new LinkedBlockingQueue<>();
             this._queuesInitialized = true;
         }
     }
@@ -493,33 +374,30 @@ public class CharEffectList {
         if (this.queueLock.compareAndSet(false, true)) {
             try {
                 do {
-                    do {
-                        L2Effect effect;
-                        while ((effect = this._removeQueue.poll()) != null) {
-                            this.removeEffectFromQueue(effect);
-                            this._partyOnly = false;
-                        }
+                    L2Effect effect;
+                    while ((effect = this._removeQueue.poll()) != null) {
+                        this.removeEffectFromQueue(effect);
+                        this._partyOnly = false;
+                    }
 
-                        if ((effect = this._addQueue.poll()) != null) {
-                            this.addEffectFromQueue(effect);
-                            this._partyOnly = false;
-                        }
-                    } while (!this._addQueue.isEmpty());
-                } while (!this._removeQueue.isEmpty());
+                    if ((effect = this._addQueue.poll()) != null) {
+                        this.addEffectFromQueue(effect);
+                        this._partyOnly = false;
+                    }
+                } while (!this._addQueue.isEmpty() || !this._removeQueue.isEmpty());
 
                 this.computeEffectFlags();
                 this.updateEffectIcons();
             } finally {
                 this.queueLock.set(false);
             }
-
         }
     }
 
     protected void removeEffectFromQueue(L2Effect effect) {
         if (effect != null) {
             this._rebuildCache = true;
-            List effectList;
+            List<L2Effect> effectList;
             if (effect.getSkill().isDebuff()) {
                 if (this._debuffs == null) {
                     return;
@@ -589,19 +467,13 @@ public class CharEffectList {
             if (this.isAffected(newEffect.getEffectFlags()) && !newEffect.onSameEffect(null)) {
                 newEffect.stopEffectTask();
             } else {
-                Iterator var3;
-                L2Effect effectToAdd;
-                L2Effect effectToRemove;
                 if (newSkill.isDebuff()) {
                     if (this._debuffs == null) {
-                        this._debuffs = new CopyOnWriteArrayList();
+                        this._debuffs = new CopyOnWriteArrayList<>();
                     }
 
-                    var3 = this._debuffs.iterator();
-
-                    while (var3.hasNext()) {
-                        effectToAdd = (L2Effect) var3.next();
-                        if (effectToAdd != null && effectToAdd.getSkill().getId() == newEffect.getSkill().getId() && effectToAdd.getEffectType() == newEffect.getEffectType() && effectToAdd.getStackOrder() == newEffect.getStackOrder() && effectToAdd.getStackType().equals(newEffect.getStackType())) {
+                    for (L2Effect e : this._debuffs) {
+                        if (e != null && e.getSkill().getId() == newEffect.getSkill().getId() && e.getEffectType() == newEffect.getEffectType() && e.getStackOrder() == newEffect.getStackOrder() && e.getStackType().equals(newEffect.getStackType())) {
                             newEffect.stopEffectTask();
                             return;
                         }
@@ -610,15 +482,12 @@ public class CharEffectList {
                     this._debuffs.add(newEffect);
                 } else {
                     if (this._buffs == null) {
-                        this._buffs = new CopyOnWriteArrayList();
+                        this._buffs = new CopyOnWriteArrayList<>();
                     }
 
-                    var3 = this._buffs.iterator();
-
-                    while (var3.hasNext()) {
-                        effectToAdd = (L2Effect) var3.next();
-                        if (effectToAdd != null && effectToAdd.getSkill().getId() == newEffect.getSkill().getId() && effectToAdd.getEffectType() == newEffect.getEffectType() && effectToAdd.getStackOrder() == newEffect.getStackOrder() && effectToAdd.getStackType().equals(newEffect.getStackType())) {
-                            effectToAdd.exit();
+                    for (L2Effect e : this._buffs) {
+                        if (e != null && e.getSkill().getId() == newEffect.getSkill().getId() && e.getEffectType() == newEffect.getEffectType() && e.getStackOrder() == newEffect.getStackOrder() && e.getStackType().equals(newEffect.getStackType())) {
+                            e.exit();
                         }
                     }
 
@@ -627,10 +496,8 @@ public class CharEffectList {
                         return;
                     }
 
-                    int effectsToRemove;
-                    Iterator var9;
                     if (!this.doesStack(newSkill) && !newSkill.is7Signs()) {
-                        effectsToRemove = this.getBuffCount() - this._owner.getMaxBuffCount();
+                        int effectsToRemove = this.getBuffCount() - this._owner.getMaxBuffCount();
                         if (effectsToRemove >= 0) {
                             switch (newSkill.getSkillType()) {
                                 case BUFF:
@@ -639,20 +506,17 @@ public class CharEffectList {
                                 case HEAL_PERCENT:
                                 case HEAL_STATIC:
                                 case MANAHEAL_PERCENT:
-                                    var9 = this._buffs.iterator();
-
                                     label156:
-                                    while (var9.hasNext()) {
-                                        effectToRemove = (L2Effect) var9.next();
-                                        if (effectToRemove != null) {
-                                            switch (effectToRemove.getSkill().getSkillType()) {
+                                    for (L2Effect e : this._buffs) {
+                                        if (e != null) {
+                                            switch (e.getSkill().getSkillType()) {
                                                 case BUFF:
                                                 case COMBATPOINTHEAL:
                                                 case REFLECT:
                                                 case HEAL_PERCENT:
                                                 case HEAL_STATIC:
                                                 case MANAHEAL_PERCENT:
-                                                    effectToRemove.exit();
+                                                    e.exit();
                                                     --effectsToRemove;
                                                     if (effectsToRemove < 0) {
                                                         break label156;
@@ -667,17 +531,15 @@ public class CharEffectList {
                     if (newSkill.isToggle()) {
                         this._buffs.add(newEffect);
                     } else {
-                        effectsToRemove = 0;
-                        var9 = this._buffs.iterator();
+                        int pos = 0;
 
-                        while (var9.hasNext()) {
-                            effectToRemove = (L2Effect) var9.next();
-                            if (effectToRemove != null && !effectToRemove.getSkill().isToggle() && !effectToRemove.getSkill().is7Signs()) {
-                                ++effectsToRemove;
+                        for (L2Effect e : this._buffs) {
+                            if (e != null && !e.getSkill().isToggle() && !e.getSkill().is7Signs()) {
+                                ++pos;
                             }
                         }
 
-                        this._buffs.add(effectsToRemove, newEffect);
+                        this._buffs.add(pos, newEffect);
                     }
                 }
 
@@ -687,40 +549,40 @@ public class CharEffectList {
                     }
 
                 } else {
-                    effectToAdd = null;
-                    effectToRemove = null;
+                    L2Effect effectToAdd = null;
+                    L2Effect effectToRemove = null;
                     if (this._stackedEffects == null) {
-                        this._stackedEffects = new HashMap();
+                        this._stackedEffects = new HashMap<>();
                     }
 
                     List<L2Effect> stackQueue = this._stackedEffects.get(newEffect.getStackType());
                     if (stackQueue != null) {
                         int pos = 0;
                         if (!stackQueue.isEmpty()) {
-                            effectToRemove = this.listsContains((L2Effect) ((List) stackQueue).get(0));
+                            effectToRemove = this.listsContains(stackQueue.get(0));
 
-                            for (Iterator queueIterator = ((List) stackQueue).iterator(); queueIterator.hasNext() && newEffect.getStackOrder() < ((L2Effect) queueIterator.next()).getStackOrder(); ++pos) {
+                            for (Iterator<L2Effect> queueIterator = stackQueue.iterator(); queueIterator.hasNext() && newEffect.getStackOrder() < queueIterator.next().getStackOrder(); ++pos) {
                             }
 
                             stackQueue.add(pos, newEffect);
                             if (Config.EFFECT_CANCELING && !newEffect.isHerbEffect() && stackQueue.size() > 1) {
                                 if (newSkill.isDebuff()) {
-                                    this._debuffs.remove(((List) stackQueue).remove(1));
+                                    this._debuffs.remove(stackQueue.remove(1));
                                 } else {
-                                    this._buffs.remove(((List) stackQueue).remove(1));
+                                    this._buffs.remove(stackQueue.remove(1));
                                 }
                             }
                         } else {
                             stackQueue.add(0, newEffect);
                         }
                     } else {
-                        stackQueue = new ArrayList();
+                        stackQueue = new ArrayList<>();
                         stackQueue.add(0, newEffect);
                     }
 
                     this._stackedEffects.put(newEffect.getStackType(), stackQueue);
                     if (!stackQueue.isEmpty()) {
-                        effectToAdd = this.listsContains((L2Effect) ((List) stackQueue).get(0));
+                        effectToAdd = this.listsContains(stackQueue.get(0));
                     }
 
                     if (effectToRemove != effectToAdd) {
@@ -767,13 +629,8 @@ public class CharEffectList {
 
                 boolean foundRemovedOnAction = false;
                 boolean foundRemovedOnDamage = false;
-                Iterator var6;
-                L2Effect e;
                 if (this._buffs != null && !this._buffs.isEmpty()) {
-                    var6 = this._buffs.iterator();
-
-                    while (var6.hasNext()) {
-                        e = (L2Effect) var6.next();
+                    for (L2Effect e : this._buffs) {
                         if (e != null) {
                             if (e.getSkill().isRemovedOnAnyActionExceptMove()) {
                                 foundRemovedOnAction = true;
@@ -811,10 +668,7 @@ public class CharEffectList {
                 this._hasBuffsRemovedOnDamage = foundRemovedOnDamage;
                 foundRemovedOnDamage = false;
                 if (this._debuffs != null && !this._debuffs.isEmpty()) {
-                    var6 = this._debuffs.iterator();
-
-                    while (var6.hasNext()) {
-                        e = (L2Effect) var6.next();
+                    for (L2Effect e : this._debuffs) {
                         if (e != null) {
                             if (e.getSkill().isRemovedOnAnyActionExceptMove()) {
                                 foundRemovedOnAction = true;
@@ -883,13 +737,8 @@ public class CharEffectList {
     protected void updateEffectFlags() {
         boolean foundRemovedOnAction = false;
         boolean foundRemovedOnDamage = false;
-        Iterator var3;
-        L2Effect e;
         if (this._buffs != null && !this._buffs.isEmpty()) {
-            var3 = this._buffs.iterator();
-
-            while (var3.hasNext()) {
-                e = (L2Effect) var3.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null) {
                     if (e.getSkill().isRemovedOnAnyActionExceptMove()) {
                         foundRemovedOnAction = true;
@@ -906,10 +755,7 @@ public class CharEffectList {
         this._hasBuffsRemovedOnDamage = foundRemovedOnDamage;
         foundRemovedOnDamage = false;
         if (this._debuffs != null && !this._debuffs.isEmpty()) {
-            var3 = this._debuffs.iterator();
-
-            while (var3.hasNext()) {
-                e = (L2Effect) var3.next();
+            for (L2Effect e : this._debuffs) {
                 if (e != null && e.getSkill().isRemovedOnDamage()) {
                     foundRemovedOnDamage = true;
                 }
@@ -929,13 +775,8 @@ public class CharEffectList {
 
     private final void computeEffectFlags() {
         int flags = 0;
-        Iterator var2;
-        L2Effect e;
         if (this._buffs != null) {
-            var2 = this._buffs.iterator();
-
-            while (var2.hasNext()) {
-                e = (L2Effect) var2.next();
+            for (L2Effect e : this._buffs) {
                 if (e != null) {
                     flags |= e.getEffectFlags();
                 }
@@ -943,10 +784,7 @@ public class CharEffectList {
         }
 
         if (this._debuffs != null) {
-            var2 = this._debuffs.iterator();
-
-            while (var2.hasNext()) {
-                e = (L2Effect) var2.next();
+            for (L2Effect e : this._debuffs) {
                 if (e != null) {
                     flags |= e.getEffectFlags();
                 }

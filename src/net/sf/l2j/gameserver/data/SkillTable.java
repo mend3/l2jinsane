@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 
 public class SkillTable {
     private static final Logger _log = Logger.getLogger(SkillTable.class.getName());
-    private static final Map<Integer, L2Skill> _skills = new HashMap();
-    private static final Map<Integer, Integer> _skillMaxLevel = new HashMap();
+    private static final Map<Integer, L2Skill> _skills = new HashMap<>();
+    private static final Map<Integer, Integer> _skillMaxLevel = new HashMap<>();
     private static final L2Skill[] _heroSkills = new L2Skill[5];
     private static final int[] _heroSkillsId = new int[]{395, 396, 1374, 1375, 1376};
     private static final L2Skill[] _nobleSkills = new L2Skill[8];
@@ -66,19 +66,15 @@ public class SkillTable {
             File file = var2[skillLvl];
             DocumentSkill doc = new DocumentSkill(file);
             doc.parse();
-            Iterator var7 = doc.getSkills().iterator();
 
-            while (var7.hasNext()) {
-                L2Skill skill = (L2Skill) var7.next();
+            for (L2Skill skill : doc.getSkills()) {
                 _skills.put(getSkillHashCode(skill), skill);
             }
         }
 
         _log.info("Loaded " + _skills.size() + " skills.");
-        Iterator var9 = _skills.values().iterator();
 
-        while (var9.hasNext()) {
-            L2Skill skill = (L2Skill) var9.next();
+        for (L2Skill skill : _skills.values()) {
             skillLvl = skill.getLevel();
             if (skillLvl < 99) {
                 int skillId = skill.getId();

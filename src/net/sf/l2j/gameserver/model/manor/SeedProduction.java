@@ -4,11 +4,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SeedProduction {
     private final int _seedId;
-
     private final int _price;
-
     private final int _startAmount;
-
     private final AtomicInteger _amount;
 
     public SeedProduction(int id, int amount, int price, int startAmount) {
@@ -44,9 +41,11 @@ public class SeedProduction {
         do {
             current = this._amount.get();
             next = current - val;
-            if (next < 0)
+            if (next < 0) {
                 return false;
+            }
         } while (!this._amount.compareAndSet(current, next));
+
         return true;
     }
 }

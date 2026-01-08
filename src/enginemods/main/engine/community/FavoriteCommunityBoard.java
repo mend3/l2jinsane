@@ -351,10 +351,8 @@ public class FavoriteCommunityBoard extends AbstractMods {
     }
 
     private void readAllRebirths() {
-        Iterator var1 = PlayerData.getAllPlayers().iterator();
 
-        while (var1.hasNext()) {
-            PlayerHolder ph = (PlayerHolder) var1.next();
+        for (PlayerHolder ph : PlayerData.getAllPlayers()) {
             String rebirthCount = this.getValueDB(ph.getObjectId(), "rebirth");
             if (rebirthCount != null) {
                 int rebirth = Integer.parseInt(rebirthCount);

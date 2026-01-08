@@ -15,36 +15,44 @@ public final class MutedFolk extends Folk {
     public void onAction(Player player) {
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (isAutoAttackable(player)) {
+        } else if (this.isAutoAttackable(player)) {
             player.getAI().setIntention(IntentionType.ATTACK, this);
-        } else if (!canInteract(player)) {
+        } else if (!this.canInteract(player)) {
             player.getAI().setIntention(IntentionType.INTERACT, this);
         } else {
-            if (player.isMoving() || player.isInCombat())
+            if (player.isMoving() || player.isInCombat()) {
                 player.getAI().setIntention(IntentionType.IDLE);
+            }
+
             player.sendPacket(new MoveToPawn(player, this, 150));
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 
     public void onActionShift(Player player) {
-        if (player.isGM())
-            sendNpcInfos(player);
+        if (player.isGM()) {
+            this.sendNpcInfos(player);
+        }
+
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (isAutoAttackable(player)) {
+        } else if (this.isAutoAttackable(player)) {
             if (player.isInsideRadius(this, player.getPhysicalAttackRange(), false, false) && GeoEngine.getInstance().canSeeTarget(player, this)) {
                 player.getAI().setIntention(IntentionType.ATTACK, this);
             } else {
                 player.sendPacket(ActionFailed.STATIC_PACKET);
             }
-        } else if (!canInteract(player)) {
+        } else if (!this.canInteract(player)) {
             player.getAI().setIntention(IntentionType.INTERACT, this);
         } else {
-            if (player.isMoving() || player.isInCombat())
+            if (player.isMoving() || player.isInCombat()) {
                 player.getAI().setIntention(IntentionType.IDLE);
+            }
+
             player.sendPacket(new MoveToPawn(player, this, 150));
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 }

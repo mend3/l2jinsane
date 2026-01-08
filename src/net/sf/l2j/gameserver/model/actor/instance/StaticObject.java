@@ -11,11 +11,8 @@ import net.sf.l2j.gameserver.network.serverpackets.StaticObjectInfo;
 
 public class StaticObject extends WorldObject {
     private int _staticObjectId;
-
     private int _type = -1;
-
     private boolean _isBusy;
-
     private ShowTownMap _map;
 
     public StaticObject(int objectId) {
@@ -60,35 +57,39 @@ public class StaticObject extends WorldObject {
         } else if (!player.isInsideRadius(this, 150, false, false)) {
             player.getAI().setIntention(IntentionType.INTERACT, this);
         } else {
-            if (getType() == 2) {
-                NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+            if (this.getType() == 2) {
+                NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
                 html.setFile("data/html/signboard.htm");
                 player.sendPacket(html);
-            } else if (getType() == 0) {
-                player.sendPacket(getMap());
+            } else if (this.getType() == 0) {
+                player.sendPacket(this.getMap());
             }
+
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 
     public void onActionShift(Player player) {
         if (player.isGM()) {
-            NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+            NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
             html.setFile("data/html/admin/staticinfo.htm");
-            html.replace("%x%", getX());
-            html.replace("%y%", getY());
-            html.replace("%z%", getZ());
-            html.replace("%objid%", getObjectId());
-            html.replace("%staticid%", getStaticObjectId());
-            html.replace("%class%", getClass().getSimpleName());
+            html.replace("%x%", this.getX());
+            html.replace("%y%", this.getY());
+            html.replace("%z%", this.getZ());
+            html.replace("%objid%", this.getObjectId());
+            html.replace("%staticid%", this.getStaticObjectId());
+            html.replace("%class%", this.getClass().getSimpleName());
             player.sendPacket(html);
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
         if (player.getTarget() != this) {
             player.setTarget(this);
         } else {
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 
     public boolean isAutoAttackable(Creature attacker) {

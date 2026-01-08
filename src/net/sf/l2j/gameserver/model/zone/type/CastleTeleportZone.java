@@ -7,13 +7,11 @@ import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.zone.ZoneType;
 
 public class CastleTeleportZone extends ZoneType {
-    private final int[] _spawnLoc;
-
+    private final int[] _spawnLoc = new int[5];
     private int _castleId;
 
     public CastleTeleportZone(int id) {
         super(id);
-        this._spawnLoc = new int[5];
     }
 
     public void setParameter(String name, String value) {
@@ -32,6 +30,7 @@ public class CastleTeleportZone extends ZoneType {
         } else {
             super.setParameter(name, value);
         }
+
     }
 
     protected void onEnter(Creature character) {
@@ -43,8 +42,10 @@ public class CastleTeleportZone extends ZoneType {
     }
 
     public void oustAllPlayers() {
-        for (Player player : getKnownTypeInside(Player.class))
+        for (Player player : this.getKnownTypeInside(Player.class)) {
             player.teleportTo(Rnd.get(this._spawnLoc[0], this._spawnLoc[1]), Rnd.get(this._spawnLoc[2], this._spawnLoc[3]), this._spawnLoc[4], 0);
+        }
+
     }
 
     public int getCastleId() {

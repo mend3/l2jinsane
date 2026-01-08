@@ -40,13 +40,13 @@ public class Quest {
     public static final byte STATE_STARTED = 1;
     public static final byte STATE_COMPLETED = 2;
     protected static final CLogger LOGGER = new CLogger(Quest.class.getName());
-    protected static final Map<Integer, Integer> DF_REWARD_35 = new HashMap();
-    protected static final Map<Integer, Integer> DF_REWARD_37 = new HashMap();
-    protected static final Map<Integer, Integer> DF_REWARD_39 = new HashMap();
+    protected static final Map<Integer, Integer> DF_REWARD_35 = new HashMap<>();
+    protected static final Map<Integer, Integer> DF_REWARD_37 = new HashMap<>();
+    protected static final Map<Integer, Integer> DF_REWARD_39 = new HashMap<>();
     private static final String HTML_NONE_AVAILABLE = "<html><body>You are either not on a quest that involves this NPC, or you don't meet this NPC's minimum quest requirements.</body></html>";
     private static final String HTML_ALREADY_COMPLETED = "<html><body>This quest has already been completed.</body></html>";
     private static final String HTML_TOO_MUCH_QUESTS = "<html><body>You have already accepted the maximum number of quests. No more than 25 quests may be undertaken simultaneously.<br>For quest information, enter Alt+U.</body></html>";
-    private final Map<Integer, List<QuestTimer>> _eventTimers = new ConcurrentHashMap();
+    private final Map<Integer, List<QuestTimer>> _eventTimers = new ConcurrentHashMap<>();
     private final int _id;
     private final String _descr;
     private boolean _onEnterWorld;
@@ -216,11 +216,9 @@ public class Quest {
                 QuestState st = this.checkPlayerCondition(player, npc, var, value);
                 return st != null ? List.of(st) : Collections.emptyList();
             } else {
-                List<QuestState> list = new ArrayList();
-                Iterator var7 = party.getMembers().iterator();
+                List<QuestState> list = new ArrayList<>();
 
-                while (var7.hasNext()) {
-                    Player member = (Player) var7.next();
+                for (Player member : party.getMembers()) {
                     QuestState st = this.checkPlayerCondition(member, npc, var, value);
                     if (st != null) {
                         list.add(st);
@@ -264,11 +262,9 @@ public class Quest {
                 QuestState st = this.checkPlayerState(player, npc, state);
                 return st != null ? List.of(st) : Collections.emptyList();
             } else {
-                List<QuestState> list = new ArrayList();
-                Iterator var6 = party.getMembers().iterator();
+                List<QuestState> list = new ArrayList<>();
 
-                while (var6.hasNext()) {
-                    Player member = (Player) var6.next();
+                for (Player member : party.getMembers()) {
                     QuestState st = this.checkPlayerState(member, npc, state);
                     if (st != null) {
                         list.add(st);
@@ -307,14 +303,12 @@ public class Quest {
     public void startQuestTimer(String name, long time, Npc npc, Player player, boolean repeating) {
         List<QuestTimer> timers = this._eventTimers.get(name.hashCode());
         if (timers == null) {
-            timers = new CopyOnWriteArrayList();
+            timers = new CopyOnWriteArrayList<>();
             timers.add(new QuestTimer(this, name, npc, player, time, repeating));
             this._eventTimers.put(name.hashCode(), timers);
         } else {
-            Iterator var8 = timers.iterator();
 
-            while (var8.hasNext()) {
-                QuestTimer timer = (QuestTimer) var8.next();
+            for (QuestTimer timer : timers) {
                 if (timer != null && timer.equals(this, name, npc, player)) {
                     return;
                 }
@@ -328,7 +322,7 @@ public class Quest {
     public QuestTimer getQuestTimer(String name, Npc npc, Player player) {
         List<QuestTimer> timers = this._eventTimers.get(name.hashCode());
         if (timers != null && !timers.isEmpty()) {
-            Iterator var5 = timers.iterator();
+            Iterator<QuestTimer> var5 = timers.iterator();
 
             QuestTimer timer;
             do {
@@ -336,7 +330,7 @@ public class Quest {
                     return null;
                 }
 
-                timer = (QuestTimer) var5.next();
+                timer = var5.next();
             } while (timer == null || !timer.equals(this, name, npc, player));
 
             return timer;
@@ -356,10 +350,8 @@ public class Quest {
     public void cancelQuestTimers(String name) {
         List<QuestTimer> timers = this._eventTimers.get(name.hashCode());
         if (timers != null && !timers.isEmpty()) {
-            Iterator var3 = timers.iterator();
 
-            while (var3.hasNext()) {
-                QuestTimer timer = (QuestTimer) var3.next();
+            for (QuestTimer timer : timers) {
                 if (timer != null) {
                     timer.cancel();
                 }
@@ -501,10 +493,8 @@ public class Quest {
     }
 
     public void addEventIds(Iterable<Integer> npcIds, ScriptEventType... eventTypes) {
-        Iterator var3 = npcIds.iterator();
 
-        while (var3.hasNext()) {
-            int id = (Integer) var3.next();
+        for (int id : npcIds) {
             this.addEventIds(id, eventTypes);
         }
 

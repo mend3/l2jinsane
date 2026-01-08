@@ -22,7 +22,7 @@ public class DropCategory {
     public void addDropData(DropData drop, boolean raid) {
         this._drops.add(drop);
         this._categoryChance += drop.getChance();
-        this._categoryBalancedChance = (int) (this._categoryBalancedChance + Math.min(drop.getChance() * (raid ? Config.RATE_DROP_ITEMS_BY_RAID : Config.RATE_DROP_ITEMS), 1000000.0D));
+        this._categoryBalancedChance = (int) ((double) this._categoryBalancedChance + Math.min((double) drop.getChance() * (raid ? Config.RATE_DROP_ITEMS_BY_RAID : Config.RATE_DROP_ITEMS), 1000000.0F));
     }
 
     public List<DropData> getAllDrops() {
@@ -34,19 +34,15 @@ public class DropCategory {
     }
 
     public boolean isSweep() {
-        return (getCategoryType() == -1);
+        return this.getCategoryType() == -1;
     }
 
     public int getCategoryChance() {
-        if (getCategoryType() >= 0)
-            return this._categoryChance;
-        return 1000000;
+        return this.getCategoryType() >= 0 ? this._categoryChance : 1000000;
     }
 
     public int getCategoryBalancedChance() {
-        if (getCategoryType() >= 0)
-            return this._categoryBalancedChance;
-        return 1000000;
+        return this.getCategoryType() >= 0 ? this._categoryBalancedChance : 1000000;
     }
 
     public int getCategoryType() {
@@ -56,32 +52,42 @@ public class DropCategory {
     public synchronized DropData dropSeedAllowedDropsOnly() {
         List<DropData> drops = new ArrayList<>();
         int subCatChance = 0;
-        for (DropData drop : getAllDrops()) {
+
+        for (DropData drop : this.getAllDrops()) {
             if (drop.getItemId() == 57 || drop.getItemId() == 6360 || drop.getItemId() == 6361 || drop.getItemId() == 6362) {
                 drops.add(drop);
                 subCatChance += drop.getChance();
             }
         }
-        if (subCatChance == 0)
+
+        if (subCatChance == 0) {
             return null;
-        int randomIndex = Rnd.get(subCatChance);
-        int sum = 0;
-        for (DropData drop : drops) {
-            sum += drop.getChance();
-            if (sum > randomIndex)
-                return drop;
+        } else {
+            int randomIndex = Rnd.get(subCatChance);
+            int sum = 0;
+
+            for (DropData drop : drops) {
+                sum += drop.getChance();
+                if (sum > randomIndex) {
+                    return drop;
+                }
+            }
+
+            return null;
         }
-        return null;
     }
 
     public synchronized DropData dropOne(boolean raid) {
-        int randomIndex = Rnd.get(getCategoryBalancedChance());
+        int randomIndex = Rnd.get(this.getCategoryBalancedChance());
         int sum = 0;
-        for (DropData drop : getAllDrops()) {
-            sum = (int) (sum + Math.min(drop.getChance() * (raid ? Config.RATE_DROP_ITEMS_BY_RAID : Config.RATE_DROP_ITEMS), 1000000.0D));
-            if (sum >= randomIndex)
+
+        for (DropData drop : this.getAllDrops()) {
+            sum = (int) ((double) sum + Math.min((double) drop.getChance() * (raid ? Config.RATE_DROP_ITEMS_BY_RAID : Config.RATE_DROP_ITEMS), 1000000.0F));
+            if (sum >= randomIndex) {
                 return drop;
+            }
         }
+
         return null;
     }
 }

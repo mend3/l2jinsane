@@ -19,10 +19,12 @@ public class SymbolMaker extends Folk {
                 player.sendPacket(SystemMessageId.SYMBOL_NOT_FOUND);
                 return;
             }
+
             player.sendPacket(new HennaRemoveList(player));
         } else {
             super.onBypassFeedback(player, command);
         }
+
     }
 
     public String getHtmlPath(int npcId, int val) {

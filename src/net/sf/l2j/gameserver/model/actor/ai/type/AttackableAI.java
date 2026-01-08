@@ -19,9 +19,9 @@ import net.sf.l2j.gameserver.model.actor.instance.*;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate.AIType;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate.SkillType;
 import net.sf.l2j.gameserver.model.location.Location;
+import net.sf.l2j.gameserver.model.location.SpawnLocation;
 import net.sf.l2j.gameserver.scripting.Quest;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -176,48 +176,38 @@ public class AttackableAI extends CreatureAI implements Runnable {
 
         if (this._globalAggro >= 0) {
             List<Quest> scripts = npc.getTemplate().getEventQuests(ScriptEventType.ON_CREATURE_SEE);
-            Iterator var3 = npc.getKnownType(Creature.class).iterator();
 
-            label117:
-            while (true) {
-                Creature target;
-                do {
-                    if (!var3.hasNext()) {
-                        if (!npc.isCoreAIDisabled()) {
-                            Creature hated = (Creature) (npc.isConfused() ? this.getTarget() : npc.getMostHated());
-                            if (hated != null) {
-                                if (npc.getHating(hated) + this._globalAggro > 0) {
-                                    npc.setRunning();
-                                    this.setIntention(IntentionType.ATTACK, hated);
-                                }
+            for (Creature target : npc.getKnownType(Creature.class)) {
+                if (!(npc instanceof FestivalMonster) || !(target instanceof Player) || ((Player) target).isFestivalParticipant()) {
+                    if (scripts != null) {
+                        if (this._seenCreatures.contains(target)) {
+                            if (!npc.isInsideRadius(target, 400, true, false)) {
+                                this._seenCreatures.remove(target);
+                            }
+                        } else if (npc.isInsideRadius(target, 400, true, false)) {
+                            this._seenCreatures.add(target);
 
-                                return;
+                            for (Quest quest : scripts) {
+                                quest.notifyCreatureSee(npc, target);
                             }
                         }
-                        break label117;
                     }
 
-                    target = (Creature) var3.next();
-                } while (npc instanceof FestivalMonster && target instanceof Player && !((Player) target).isFestivalParticipant());
-
-                if (scripts != null) {
-                    if (this._seenCreatures.contains(target)) {
-                        if (!npc.isInsideRadius(target, 400, true, false)) {
-                            this._seenCreatures.remove(target);
-                        }
-                    } else if (npc.isInsideRadius(target, 400, true, false)) {
-                        this._seenCreatures.add(target);
-                        Iterator var5 = scripts.iterator();
-
-                        while (var5.hasNext()) {
-                            Quest quest = (Quest) var5.next();
-                            quest.notifyCreatureSee(npc, target);
-                        }
+                    if (this.autoAttackCondition(target) && npc.getHating(target) == 0) {
+                        npc.addDamageHate(target, 0, 0);
                     }
                 }
+            }
 
-                if (this.autoAttackCondition(target) && npc.getHating(target) == 0) {
-                    npc.addDamageHate(target, 0, 0);
+            if (!npc.isCoreAIDisabled()) {
+                Creature hated = (Creature) (npc.isConfused() ? this.getTarget() : npc.getMostHated());
+                if (hated != null) {
+                    if (npc.getHating(hated) + this._globalAggro > 0) {
+                        npc.setRunning();
+                        this.setIntention(IntentionType.ATTACK, hated);
+                    }
+
+                    return;
                 }
             }
         }
@@ -225,14 +215,10 @@ public class AttackableAI extends CreatureAI implements Runnable {
         if (!(npc instanceof FestivalMonster)) {
             if (!this.checkBuffAndSetBackTarget(this._actor.getTarget())) {
                 Attackable master = npc.getMaster();
-                int offset;
-                int minRadius;
-                int x1;
-                int y1;
                 if (master != null && !master.isAlikeDead()) {
                     if (!npc.isCastingNow()) {
-                        offset = (int) (100.0D + npc.getCollisionRadius() + master.getCollisionRadius());
-                        minRadius = (int) (master.getCollisionRadius() + 30.0D);
+                        int offset = (int) ((double) 100.0F + npc.getCollisionRadius() + master.getCollisionRadius());
+                        int minRadius = (int) (master.getCollisionRadius() + (double) 30.0F);
                         if (master.isRunning()) {
                             npc.setRunning();
                         } else {
@@ -240,8 +226,8 @@ public class AttackableAI extends CreatureAI implements Runnable {
                         }
 
                         if (npc.getPlanDistanceSq(master.getX(), master.getY()) > (double) (offset * offset)) {
-                            x1 = Rnd.get(minRadius * 2, offset * 2);
-                            y1 = Rnd.get(x1, offset * 2);
+                            int x1 = Rnd.get(minRadius * 2, offset * 2);
+                            int y1 = Rnd.get(x1, offset * 2);
                             y1 = (int) Math.sqrt(y1 * y1 - x1 * x1);
                             if (x1 > offset + minRadius) {
                                 x1 = master.getX() + x1 - offset;
@@ -256,6 +242,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
                             }
 
                             this.moveTo(x1, y1, master.getZ());
+                            return;
                         }
                     }
                 } else {
@@ -264,17 +251,17 @@ public class AttackableAI extends CreatureAI implements Runnable {
                     }
 
                     if (npc.getSpawn() != null && !npc.isNoRndWalk() && Rnd.get(30) == 0) {
-                        offset = npc.getSpawn().getLocX();
-                        minRadius = npc.getSpawn().getLocY();
-                        x1 = npc.getSpawn().getLocZ();
-                        y1 = Config.MAX_DRIFT_RANGE;
-                        offset = Rnd.get(y1 * 2);
-                        minRadius = Rnd.get(offset, y1 * 2);
-                        minRadius = (int) Math.sqrt(minRadius * minRadius - offset * offset);
-                        offset += npc.getSpawn().getLocX() - y1;
-                        minRadius += npc.getSpawn().getLocY() - y1;
-                        x1 = npc.getZ();
-                        this.moveTo(offset, minRadius, x1);
+                        int x1 = npc.getSpawn().getLocX();
+                        int y1 = npc.getSpawn().getLocY();
+                        int z1 = npc.getSpawn().getLocZ();
+                        int range = Config.MAX_DRIFT_RANGE;
+                        x1 = Rnd.get(range * 2);
+                        y1 = Rnd.get(x1, range * 2);
+                        y1 = (int) Math.sqrt(y1 * y1 - x1 * x1);
+                        x1 += npc.getSpawn().getLocX() - range;
+                        y1 += npc.getSpawn().getLocY() - range;
+                        z1 = npc.getZ();
+                        this.moveTo(x1, y1, z1);
                     }
                 }
 
@@ -286,7 +273,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
         Attackable npc = this.getActiveChar();
         if (!npc.isCastingNow()) {
             Creature attackTarget = npc.getMostHated();
-            if (attackTarget != null && this._attackTimeout >= System.currentTimeMillis() && MathUtil.calculateDistance(npc, attackTarget, true) <= 2000.0D) {
+            if (attackTarget != null && this._attackTimeout >= System.currentTimeMillis() && !(MathUtil.calculateDistance(npc, attackTarget, true) > (double) 2000.0F)) {
                 if (!npc.isCoreAIDisabled()) {
                     this.setTarget(attackTarget);
                     npc.setTarget(attackTarget);
@@ -302,13 +289,10 @@ public class AttackableAI extends CreatureAI implements Runnable {
                         range += 15;
                     }
 
-                    int newZ;
-                    Attackable master;
                     if (this.willCastASpell()) {
                         List<L2Skill> defaultList = npc.getTemplate().getSkills(SkillType.SUICIDE);
-                        L2Skill skill;
-                        if (!defaultList.isEmpty() && npc.getCurrentHp() / (double) npc.getMaxHp() < 0.15D) {
-                            skill = Rnd.get(defaultList);
+                        if (!defaultList.isEmpty() && npc.getCurrentHp() / (double) npc.getMaxHp() < 0.15) {
+                            L2Skill skill = Rnd.get(defaultList);
                             if (this.cast(skill, dist, range + skill.getSkillRadius())) {
                                 return;
                             }
@@ -316,18 +300,13 @@ public class AttackableAI extends CreatureAI implements Runnable {
 
                         defaultList = npc.getTemplate().getSkills(SkillType.HEAL);
                         if (!defaultList.isEmpty()) {
-                            master = npc.getMaster();
-                            Iterator var10;
-                            L2Skill sk;
-                            if (master != null && !master.isDead() && master.getCurrentHp() / (double) master.getMaxHp() < 0.75D) {
-                                var10 = defaultList.iterator();
-
-                                while (var10.hasNext()) {
-                                    sk = (L2Skill) var10.next();
+                            Attackable master = npc.getMaster();
+                            if (master != null && !master.isDead() && master.getCurrentHp() / (double) master.getMaxHp() < (double) 0.75F) {
+                                for (L2Skill sk : defaultList) {
                                     if (sk.getTargetType() != SkillTargetType.TARGET_SELF && this.checkSkillCastConditions(sk)) {
-                                        newZ = (int) ((double) (sk.getCastRange() + actorCollision) + master.getCollisionRadius());
-                                        if (!MathUtil.checkIfInRange(newZ, npc, master, false) && sk.getTargetType() != SkillTargetType.TARGET_PARTY && !npc.isMovementDisabled()) {
-                                            this.moveToPawn(master, newZ);
+                                        int overallRange = (int) ((double) (sk.getCastRange() + actorCollision) + master.getCollisionRadius());
+                                        if (!MathUtil.checkIfInRange(overallRange, npc, master, false) && sk.getTargetType() != SkillTargetType.TARGET_PARTY && !npc.isMovementDisabled()) {
+                                            this.moveToPawn(master, overallRange);
                                             return;
                                         }
 
@@ -341,11 +320,8 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                 }
                             }
 
-                            if (npc.getCurrentHp() / (double) npc.getMaxHp() < 0.75D) {
-                                var10 = defaultList.iterator();
-
-                                while (var10.hasNext()) {
-                                    sk = (L2Skill) var10.next();
+                            if (npc.getCurrentHp() / (double) npc.getMaxHp() < (double) 0.75F) {
+                                for (L2Skill sk : defaultList) {
                                     if (this.checkSkillCastConditions(sk)) {
                                         this.clientStopMoving(null);
                                         npc.setTarget(npc);
@@ -355,49 +331,31 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                 }
                             }
 
-                            var10 = defaultList.iterator();
+                            for (L2Skill sk : defaultList) {
+                                if (this.checkSkillCastConditions(sk) && sk.getTargetType() == SkillTargetType.TARGET_ONE) {
+                                    String[] actorClans = npc.getTemplate().getClans();
 
-                            label246:
-                            while (true) {
-                                do {
-                                    do {
-                                        if (!var10.hasNext()) {
-                                            break label246;
+                                    for (Attackable obj : npc.getKnownTypeInRadius(Attackable.class, sk.getCastRange() + actorCollision)) {
+                                        if (!obj.isDead() && ArraysUtil.contains(actorClans, obj.getTemplate().getClans()) && obj.getCurrentHp() / (double) obj.getMaxHp() < (double) 0.75F && GeoEngine.getInstance().canSeeTarget(npc, obj)) {
+                                            this.clientStopMoving(null);
+                                            npc.setTarget(obj);
+                                            npc.doCast(sk);
+                                            return;
                                         }
+                                    }
 
-                                        sk = (L2Skill) var10.next();
-                                    } while (!this.checkSkillCastConditions(sk));
-                                } while (sk.getTargetType() != SkillTargetType.TARGET_ONE);
-
-                                String[] actorClans = npc.getTemplate().getClans();
-                                Iterator var13 = npc.getKnownTypeInRadius(Attackable.class, sk.getCastRange() + actorCollision).iterator();
-
-                                while (var13.hasNext()) {
-                                    Attackable obj = (Attackable) var13.next();
-                                    if (!obj.isDead() && ArraysUtil.contains(actorClans, obj.getTemplate().getClans()) && obj.getCurrentHp() / (double) obj.getMaxHp() < 0.75D && GeoEngine.getInstance().canSeeTarget(npc, obj)) {
+                                    if (sk.getTargetType() == SkillTargetType.TARGET_PARTY) {
                                         this.clientStopMoving(null);
-                                        npc.setTarget(obj);
                                         npc.doCast(sk);
                                         return;
                                     }
-                                }
-
-                                if (sk.getTargetType() == SkillTargetType.TARGET_PARTY) {
-                                    this.clientStopMoving(null);
-                                    npc.doCast(sk);
-                                    return;
                                 }
                             }
                         }
 
                         defaultList = npc.getTemplate().getSkills(SkillType.BUFF);
-                        Iterator var16;
-                        L2Skill sk;
                         if (!defaultList.isEmpty()) {
-                            var16 = defaultList.iterator();
-
-                            while (var16.hasNext()) {
-                                sk = (L2Skill) var16.next();
+                            for (L2Skill sk : defaultList) {
                                 if (this.checkSkillCastConditions(sk) && npc.getFirstEffect(sk) == null) {
                                     this.clientStopMoving(null);
                                     npc.setTarget(npc);
@@ -410,21 +368,8 @@ public class AttackableAI extends CreatureAI implements Runnable {
 
                         defaultList = npc.getTemplate().getSkills(SkillType.DEBUFF);
                         if (Rnd.get(100) < 10 && !defaultList.isEmpty()) {
-                            var16 = defaultList.iterator();
-
-                            label217:
-                            while (true) {
-                                do {
-                                    do {
-                                        if (!var16.hasNext()) {
-                                            break label217;
-                                        }
-
-                                        sk = (L2Skill) var16.next();
-                                    } while (!this.checkSkillCastConditions(sk));
-                                } while ((double) sk.getCastRange() + npc.getCollisionRadius() + attackTarget.getCollisionRadius() <= dist && !this.canAura(sk));
-
-                                if (GeoEngine.getInstance().canSeeTarget(npc, attackTarget) && attackTarget.getFirstEffect(sk) == null) {
+                            for (L2Skill sk : defaultList) {
+                                if (this.checkSkillCastConditions(sk) && (!((double) sk.getCastRange() + npc.getCollisionRadius() + attackTarget.getCollisionRadius() <= dist) || this.canAura(sk)) && GeoEngine.getInstance().canSeeTarget(npc, attackTarget) && attackTarget.getFirstEffect(sk) == null) {
                                     this.clientStopMoving(null);
                                     npc.doCast(sk);
                                     return;
@@ -433,15 +378,15 @@ public class AttackableAI extends CreatureAI implements Runnable {
                         }
 
                         defaultList = npc.getTemplate().getSkills(SkillType.SHORT_RANGE);
-                        if (!defaultList.isEmpty() && dist <= 150.0D) {
-                            skill = Rnd.get(defaultList);
+                        if (!defaultList.isEmpty() && dist <= (double) 150.0F) {
+                            L2Skill skill = Rnd.get(defaultList);
                             if (this.cast(skill, dist, skill.getCastRange())) {
                                 return;
                             }
                         } else {
                             defaultList = npc.getTemplate().getSkills(SkillType.LONG_RANGE);
-                            if (!defaultList.isEmpty() && dist > 150.0D) {
-                                skill = Rnd.get(defaultList);
+                            if (!defaultList.isEmpty() && dist > (double) 150.0F) {
+                                L2Skill skill = Rnd.get(defaultList);
                                 if (this.cast(skill, dist, skill.getCastRange())) {
                                     return;
                                 }
@@ -460,29 +405,25 @@ public class AttackableAI extends CreatureAI implements Runnable {
                         }
 
                     } else {
-                        int newX;
                         if (Rnd.get(100) <= 3) {
-                            Iterator var17 = npc.getKnownTypeInRadius(Attackable.class, actorCollision).iterator();
-
-                            while (var17.hasNext()) {
-                                master = (Attackable) var17.next();
-                                if (master != attackTarget) {
-                                    newX = combinedCollision + Rnd.get(40);
+                            for (Attackable nearby : npc.getKnownTypeInRadius(Attackable.class, actorCollision)) {
+                                if (nearby != attackTarget) {
+                                    int newX = combinedCollision + Rnd.get(40);
                                     if (Rnd.nextBoolean()) {
-                                        newX += attackTarget.getX();
+                                        newX = attackTarget.getX() + newX;
                                     } else {
                                         newX = attackTarget.getX() - newX;
                                     }
 
                                     int newY = combinedCollision + Rnd.get(40);
                                     if (Rnd.nextBoolean()) {
-                                        newY += attackTarget.getY();
+                                        newY = attackTarget.getY() + newY;
                                     } else {
                                         newY = attackTarget.getY() - newY;
                                     }
 
                                     if (!npc.isInsideRadius(newX, newY, actorCollision, false)) {
-                                        newZ = npc.getZ() + 30;
+                                        int newZ = npc.getZ() + 30;
                                         if (GeoEngine.getInstance().canMoveToTarget(npc.getX(), npc.getY(), npc.getZ(), newX, newY, newZ)) {
                                             this.moveTo(newX, newY, newZ);
                                         }
@@ -496,14 +437,14 @@ public class AttackableAI extends CreatureAI implements Runnable {
                         if (npc.getTemplate().getAiType() == AIType.ARCHER && dist <= (double) (60 + combinedCollision) && Rnd.get(4) > 1) {
                             int posX = npc.getX() + (attackTarget.getX() < npc.getX() ? 300 : -300);
                             int posY = npc.getY() + (attackTarget.getY() < npc.getY() ? 300 : -300);
-                            newX = npc.getZ() + 30;
-                            if (GeoEngine.getInstance().canMoveToTarget(npc.getX(), npc.getY(), npc.getZ(), posX, posY, newX)) {
-                                this.setIntention(IntentionType.MOVE_TO, new Location(posX, posY, newX));
+                            int posZ = npc.getZ() + 30;
+                            if (GeoEngine.getInstance().canMoveToTarget(npc.getX(), npc.getY(), npc.getZ(), posX, posY, posZ)) {
+                                this.setIntention(IntentionType.MOVE_TO, new Location(posX, posY, posZ));
                                 return;
                             }
                         }
 
-                        if (dist <= (double) range && GeoEngine.getInstance().canSeeTarget(npc, attackTarget)) {
+                        if (!(dist > (double) range) && GeoEngine.getInstance().canSeeTarget(npc, attackTarget)) {
                             this._actor.doAttack((Creature) this.getTarget());
                         } else {
                             if (attackTarget.isMoving()) {
@@ -540,7 +481,6 @@ public class AttackableAI extends CreatureAI implements Runnable {
                 if (attackTarget == null) {
                     return false;
                 } else {
-                    Creature target;
                     switch (sk.getSkillType()) {
                         case BUFF:
                             if (caster.getFirstEffect(sk) == null) {
@@ -555,7 +495,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
                             }
 
                             if (sk.getTargetType() == SkillTargetType.TARGET_ONE) {
-                                target = this.targetReconsider(sk.getCastRange(), true);
+                                Creature target = this.targetReconsider(sk.getCastRange(), true);
                                 if (target != null) {
                                     this.clientStopMoving(null);
                                     caster.setTarget(target);
@@ -580,7 +520,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
                         case BALANCE_LIFE:
                             if (sk.getTargetType() != SkillTargetType.TARGET_SELF) {
                                 Attackable master = caster.getMaster();
-                                if (master != null && !master.isDead() && (double) Rnd.get(100) > master.getCurrentHp() / (double) master.getMaxHp() * 100.0D) {
+                                if (master != null && !master.isDead() && (double) Rnd.get(100) > master.getCurrentHp() / (double) master.getMaxHp() * (double) 100.0F) {
                                     int overallRange = (int) ((double) sk.getCastRange() + caster.getCollisionRadius() + master.getCollisionRadius());
                                     if (!MathUtil.checkIfInRange(overallRange, caster, master, false) && sk.getTargetType() != SkillTargetType.TARGET_PARTY && !caster.isMovementDisabled()) {
                                         this.moveToPawn(master, overallRange);
@@ -595,24 +535,19 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                 }
                             }
 
-                            double percentage = caster.getCurrentHp() / (double) caster.getMaxHp() * 100.0D;
-                            if ((double) Rnd.get(100) < (100.0D - percentage) / 3.0D) {
+                            double percentage = caster.getCurrentHp() / (double) caster.getMaxHp() * (double) 100.0F;
+                            if ((double) Rnd.get(100) < ((double) 100.0F - percentage) / (double) 3.0F) {
                                 this.clientStopMoving(null);
                                 caster.setTarget(caster);
                                 caster.doCast(sk);
                                 return true;
                             }
 
-                            Iterator var9;
-                            Attackable obj;
                             if (sk.getTargetType() == SkillTargetType.TARGET_ONE) {
-                                var9 = caster.getKnownTypeInRadius(Attackable.class, (int) ((double) sk.getCastRange() + caster.getCollisionRadius())).iterator();
-
-                                while (var9.hasNext()) {
-                                    obj = (Attackable) var9.next();
+                                for (Attackable obj : caster.getKnownTypeInRadius(Attackable.class, (int) ((double) sk.getCastRange() + caster.getCollisionRadius()))) {
                                     if (!obj.isDead() && ArraysUtil.contains(caster.getTemplate().getClans(), obj.getTemplate().getClans())) {
-                                        percentage = obj.getCurrentHp() / (double) obj.getMaxHp() * 100.0D;
-                                        if ((double) Rnd.get(100) < (100.0D - percentage) / 10.0D && GeoEngine.getInstance().canSeeTarget(caster, obj)) {
+                                        percentage = obj.getCurrentHp() / (double) obj.getMaxHp() * (double) 100.0F;
+                                        if ((double) Rnd.get(100) < ((double) 100.0F - percentage) / (double) 10.0F && GeoEngine.getInstance().canSeeTarget(caster, obj)) {
                                             this.clientStopMoving(null);
                                             caster.setTarget(obj);
                                             caster.doCast(sk);
@@ -623,10 +558,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
                             }
 
                             if (sk.getTargetType() == SkillTargetType.TARGET_PARTY) {
-                                var9 = caster.getKnownTypeInRadius(Attackable.class, (int) ((double) sk.getSkillRadius() + caster.getCollisionRadius())).iterator();
-
-                                while (var9.hasNext()) {
-                                    obj = (Attackable) var9.next();
+                                for (Attackable obj : caster.getKnownTypeInRadius(Attackable.class, (int) ((double) sk.getSkillRadius() + caster.getCollisionRadius()))) {
                                     if (ArraysUtil.contains(caster.getTemplate().getClans(), obj.getTemplate().getClans()) && obj.getCurrentHp() < (double) obj.getMaxHp() && Rnd.get(100) <= 20) {
                                         this.clientStopMoving(null);
                                         caster.setTarget(caster);
@@ -648,20 +580,19 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                     return true;
                                 }
                             } else if (this.canAOE(sk)) {
-                                if (sk.getTargetType() != SkillTargetType.TARGET_AURA && sk.getTargetType() != SkillTargetType.TARGET_BEHIND_AURA && sk.getTargetType() != SkillTargetType.TARGET_FRONT_AURA) {
-                                    if ((sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
-                                        this.clientStopMoving(null);
-                                        caster.doCast(sk);
-                                        return true;
-                                    }
-                                    break;
+                                if (sk.getTargetType() == SkillTargetType.TARGET_AURA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AURA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AURA) {
+                                    this.clientStopMoving(null);
+                                    caster.doCast(sk);
+                                    return true;
                                 }
 
-                                this.clientStopMoving(null);
-                                caster.doCast(sk);
-                                return true;
+                                if ((sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
+                                    this.clientStopMoving(null);
+                                    caster.doCast(sk);
+                                    return true;
+                                }
                             } else if (sk.getTargetType() == SkillTargetType.TARGET_ONE) {
-                                target = this.targetReconsider(sk.getCastRange(), true);
+                                Creature target = this.targetReconsider(sk.getCastRange(), true);
                                 if (target != null) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
@@ -677,7 +608,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                     return true;
                                 }
 
-                                target = this.targetReconsider(sk.getCastRange(), true);
+                                Creature target = this.targetReconsider(sk.getCastRange(), true);
                                 if (target != null) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
@@ -719,7 +650,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                     return true;
                                 }
                             } else if (sk.getTargetType() == SkillTargetType.TARGET_ONE) {
-                                target = this.targetReconsider(sk.getCastRange(), true);
+                                Creature target = this.targetReconsider(sk.getCastRange(), true);
                                 if (target != null) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
@@ -736,20 +667,19 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                     return true;
                                 }
                             } else if (this.canAOE(sk)) {
-                                if (sk.getTargetType() != SkillTargetType.TARGET_AURA && sk.getTargetType() != SkillTargetType.TARGET_BEHIND_AURA && sk.getTargetType() != SkillTargetType.TARGET_FRONT_AURA) {
-                                    if ((sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
-                                        this.clientStopMoving(null);
-                                        caster.doCast(sk);
-                                        return true;
-                                    }
-                                    break;
+                                if (sk.getTargetType() == SkillTargetType.TARGET_AURA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AURA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AURA) {
+                                    this.clientStopMoving(null);
+                                    caster.doCast(sk);
+                                    return true;
                                 }
 
-                                this.clientStopMoving(null);
-                                caster.doCast(sk);
-                                return true;
+                                if ((sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
+                                    this.clientStopMoving(null);
+                                    caster.doCast(sk);
+                                    return true;
+                                }
                             } else if (sk.getTargetType() == SkillTargetType.TARGET_ONE) {
-                                target = this.targetReconsider(sk.getCastRange(), true);
+                                Creature target = this.targetReconsider(sk.getCastRange(), true);
                                 if (target != null) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
@@ -770,7 +700,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                     return true;
                                 }
 
-                                target = this.targetReconsider(sk.getCastRange(), true);
+                                Creature target = this.targetReconsider(sk.getCastRange(), true);
                                 if (target != null) {
                                     this.clientStopMoving(null);
                                     caster.setTarget(target);
@@ -805,7 +735,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                 return true;
                             }
 
-                            target = this.targetReconsider(sk.getCastRange(), true);
+                            Creature target = this.targetReconsider(sk.getCastRange(), true);
                             if (target != null) {
                                 this.clientStopMoving(null);
                                 caster.setTarget(target);
@@ -856,10 +786,9 @@ public class AttackableAI extends CreatureAI implements Runnable {
             if (!actor.getAggroList().isEmpty()) {
                 previousMostHated = actor.getMostHated();
                 aggroMostHated = actor.getHating(previousMostHated);
-                Iterator var6 = actor.getHateList().iterator();
 
-                while (var6.hasNext()) {
-                    obj = (Creature) var6.next();
+                for (Creature creature : actor.getHateList()) {
+                    obj = creature;
                     if (this.autoAttackCondition(obj)) {
                         if (!rangeCheck) {
                             break label83;
@@ -867,14 +796,14 @@ public class AttackableAI extends CreatureAI implements Runnable {
 
                         double dist = Math.sqrt(actor.getPlanDistanceSq(obj.getX(), obj.getY())) - obj.getCollisionRadius();
                         if (actor.isMoving()) {
-                            dist -= 15.0D;
+                            dist -= 15.0F;
                         }
 
                         if (obj.isMoving()) {
-                            dist -= 15.0D;
+                            dist -= 15.0F;
                         }
 
-                        if (dist <= (double) range) {
+                        if (!(dist > (double) range)) {
                             break label83;
                         }
                     }
@@ -885,10 +814,8 @@ public class AttackableAI extends CreatureAI implements Runnable {
             label84:
             {
                 if (actor.isAggressive()) {
-                    Iterator var10 = actor.getKnownTypeInRadius(Creature.class, actor.getTemplate().getAggroRange()).iterator();
-
-                    while (var10.hasNext()) {
-                        target = (Creature) var10.next();
+                    for (Creature creature : actor.getKnownTypeInRadius(Creature.class, actor.getTemplate().getAggroRange())) {
+                        target = creature;
                         if (this.autoAttackCondition(target)) {
                             if (!rangeCheck) {
                                 break label84;
@@ -896,14 +823,14 @@ public class AttackableAI extends CreatureAI implements Runnable {
 
                             double dist = Math.sqrt(actor.getPlanDistanceSq(target.getX(), target.getY())) - target.getCollisionRadius();
                             if (actor.isMoving()) {
-                                dist -= 15.0D;
+                                dist -= 15.0F;
                             }
 
                             if (target.isMoving()) {
-                                dist -= 15.0D;
+                                dist -= 15.0F;
                             }
 
-                            if (dist <= (double) range) {
+                            if (!(dist > (double) range)) {
                                 break label84;
                             }
                         }
@@ -926,9 +853,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
         Attackable actor = this.getActiveChar();
         if (actor.getHateList().size() > 1) {
             Creature mostHated = actor.getMostHated();
-            Creature victim = (Creature) Rnd.get((List) actor.getHateList().stream().filter((v) -> {
-                return this.autoAttackCondition(v);
-            }).collect(Collectors.toList()));
+            Creature victim = Rnd.get(actor.getHateList().stream().filter((v) -> this.autoAttackCondition(v)).collect(Collectors.toList()));
             if (victim != null && mostHated != victim) {
                 actor.addDamageHate(victim, 0, actor.getHating(mostHated));
                 this.setIntention(IntentionType.ATTACK, victim);
@@ -943,14 +868,9 @@ public class AttackableAI extends CreatureAI implements Runnable {
 
             try {
                 switch (this._desire.getIntention()) {
-                    case ACTIVE:
-                        this.thinkActive();
-                        break;
-                    case ATTACK:
-                        this.thinkAttack();
-                        break;
-                    case CAST:
-                        this.thinkCast();
+                    case ACTIVE -> this.thinkActive();
+                    case ATTACK -> this.thinkAttack();
+                    case CAST -> this.thinkCast();
                 }
             } finally {
                 this._thinking = false;
@@ -986,52 +906,25 @@ public class AttackableAI extends CreatureAI implements Runnable {
         if (attacker != null) {
             String[] actorClans = me.getTemplate().getClans();
             if (actorClans != null && me.getAttackByList().contains(attacker)) {
-                Iterator var4 = me.getKnownTypeInRadius(Attackable.class, me.getTemplate().getClanRange()).iterator();
-
-                label94:
-                while (true) {
-                    Attackable called;
-                    List scripts;
-                    do {
-                        while (true) {
-                            IntentionType calledIntention;
-                            do {
-                                do {
-                                    do {
-                                        do {
-                                            do {
-                                                do {
-                                                    if (!var4.hasNext()) {
-                                                        break label94;
-                                                    }
-
-                                                    called = (Attackable) var4.next();
-                                                } while (!called.hasAI());
-                                            } while (called.isDead());
-                                        } while (!ArraysUtil.contains(actorClans, called.getTemplate().getClans()));
-                                    } while (ArraysUtil.contains(called.getTemplate().getIgnoredIds(), me.getNpcId()));
-
-                                    calledIntention = called.getAI().getDesire().getIntention();
-                                } while (calledIntention != IntentionType.IDLE && calledIntention != IntentionType.ACTIVE && (calledIntention != IntentionType.MOVE_TO || called.isRunning()));
-                            } while (!GeoEngine.getInstance().canSeeTarget(me, called));
-
+                for (Attackable called : me.getKnownTypeInRadius(Attackable.class, me.getTemplate().getClanRange())) {
+                    if (called.hasAI() && !called.isDead() && ArraysUtil.contains(actorClans, called.getTemplate().getClans()) && !ArraysUtil.contains(called.getTemplate().getIgnoredIds(), me.getNpcId())) {
+                        IntentionType calledIntention = called.getAI().getDesire().getIntention();
+                        if ((calledIntention == IntentionType.IDLE || calledIntention == IntentionType.ACTIVE || calledIntention == IntentionType.MOVE_TO && !called.isRunning()) && GeoEngine.getInstance().canSeeTarget(me, called)) {
                             if (attacker instanceof Playable) {
-                                scripts = called.getTemplate().getEventQuests(ScriptEventType.ON_FACTION_CALL);
-                                break;
+                                List<Quest> scripts = called.getTemplate().getEventQuests(ScriptEventType.ON_FACTION_CALL);
+                                if (scripts != null) {
+                                    Player player = attacker.getActingPlayer();
+                                    boolean isSummon = attacker instanceof Summon;
+
+                                    for (Quest quest : scripts) {
+                                        quest.notifyFactionCall(called, me, player, isSummon);
+                                    }
+                                }
+                            } else {
+                                called.addDamageHate(attacker, 0, me.getHating(attacker));
+                                called.getAI().setIntention(IntentionType.ATTACK, attacker);
                             }
-
-                            called.addDamageHate(attacker, 0, me.getHating(attacker));
-                            called.getAI().setIntention(IntentionType.ATTACK, attacker);
                         }
-                    } while (scripts == null);
-
-                    Player player = attacker.getActingPlayer();
-                    boolean isSummon = attacker instanceof Summon;
-                    Iterator var10 = scripts.iterator();
-
-                    while (var10.hasNext()) {
-                        Quest quest = (Quest) var10.next();
-                        quest.notifyFactionCall(called, me, player, isSummon);
                     }
                 }
             }
@@ -1062,54 +955,29 @@ public class AttackableAI extends CreatureAI implements Runnable {
         if (target != null) {
             String[] actorClans = me.getTemplate().getClans();
             if (actorClans != null && me.getAttackByList().contains(target)) {
-                Iterator var5 = me.getKnownTypeInRadius(Attackable.class, me.getTemplate().getClanRange()).iterator();
-
-                while (true) {
-                    Attackable called;
-                    List scripts;
-                    do {
-                        while (true) {
-                            IntentionType calledIntention;
-                            do {
-                                do {
-                                    do {
-                                        do {
-                                            do {
-                                                do {
-                                                    if (!var5.hasNext()) {
-                                                        return;
-                                                    }
-
-                                                    called = (Attackable) var5.next();
-                                                } while (!called.hasAI());
-                                            } while (called.isDead());
-                                        } while (!ArraysUtil.contains(actorClans, called.getTemplate().getClans()));
-                                    } while (ArraysUtil.contains(called.getTemplate().getIgnoredIds(), me.getNpcId()));
-
-                                    calledIntention = called.getAI().getDesire().getIntention();
-                                } while (calledIntention != IntentionType.IDLE && calledIntention != IntentionType.ACTIVE && (calledIntention != IntentionType.MOVE_TO || called.isRunning()));
-                            } while (!GeoEngine.getInstance().canSeeTarget(me, called));
-
+                for (Attackable called : me.getKnownTypeInRadius(Attackable.class, me.getTemplate().getClanRange())) {
+                    if (called.hasAI() && !called.isDead() && ArraysUtil.contains(actorClans, called.getTemplate().getClans()) && !ArraysUtil.contains(called.getTemplate().getIgnoredIds(), me.getNpcId())) {
+                        IntentionType calledIntention = called.getAI().getDesire().getIntention();
+                        if ((calledIntention == IntentionType.IDLE || calledIntention == IntentionType.ACTIVE || calledIntention == IntentionType.MOVE_TO && !called.isRunning()) && GeoEngine.getInstance().canSeeTarget(me, called)) {
                             if (target instanceof Playable) {
-                                scripts = called.getTemplate().getEventQuests(ScriptEventType.ON_FACTION_CALL);
-                                break;
+                                List<Quest> scripts = called.getTemplate().getEventQuests(ScriptEventType.ON_FACTION_CALL);
+                                if (scripts != null) {
+                                    Player player = target.getActingPlayer();
+                                    boolean isSummon = target instanceof Summon;
+
+                                    for (Quest quest : scripts) {
+                                        quest.notifyFactionCall(called, me, player, isSummon);
+                                    }
+                                }
+                            } else {
+                                called.addDamageHate(target, 0, me.getHating(target));
+                                called.getAI().setIntention(IntentionType.ATTACK, target);
                             }
-
-                            called.addDamageHate(target, 0, me.getHating(target));
-                            called.getAI().setIntention(IntentionType.ATTACK, target);
                         }
-                    } while (scripts == null);
-
-                    Player player = target.getActingPlayer();
-                    boolean isSummon = target instanceof Summon;
-                    Iterator var11 = scripts.iterator();
-
-                    while (var11.hasNext()) {
-                        Quest quest = (Quest) var11.next();
-                        quest.notifyFactionCall(called, me, player, isSummon);
                     }
                 }
             }
+
         }
     }
 
@@ -1130,22 +998,17 @@ public class AttackableAI extends CreatureAI implements Runnable {
         if (Rnd.get(30) != 0) {
             return false;
         } else {
-            Iterator var2 = this.getActiveChar().getTemplate().getSkills(SkillType.BUFF).iterator();
-
-            L2Skill sk;
-            do {
-                if (!var2.hasNext()) {
-                    return false;
+            for (L2Skill sk : this.getActiveChar().getTemplate().getSkills(SkillType.BUFF)) {
+                if (this.getActiveChar().getFirstEffect(sk) == null) {
+                    this.clientStopMoving(null);
+                    this._actor.setTarget(this._actor);
+                    this._actor.doCast(sk);
+                    this._actor.setTarget(target);
+                    return true;
                 }
+            }
 
-                sk = (L2Skill) var2.next();
-            } while (this.getActiveChar().getFirstEffect(sk) != null);
-
-            this.clientStopMoving(null);
-            this._actor.setTarget(this._actor);
-            this._actor.doCast(sk);
-            this._actor.setTarget(target);
-            return true;
+            return false;
         }
     }
 }

@@ -28,24 +28,35 @@ public final class World {
     public static final int WORLD_Y_MAX = 262144;
     private static final CLogger LOGGER = new CLogger(World.class.getName());
     private static final int REGION_SIZE = 2048;
-
     private static final int REGIONS_X = 176;
-
     private static final int REGIONS_Y = 256;
-
     private static final int REGION_X_OFFSET = Math.abs(-64);
-
     private static final int REGION_Y_OFFSET = Math.abs(-128);
-
     private final Map<Integer, WorldObject> _objects = new ConcurrentHashMap<>();
-
     private final Map<Integer, Pet> _pets = new ConcurrentHashMap<>();
-
     private final Map<Integer, Player> _players = new ConcurrentHashMap<>();
-
-    private final WorldRegion[][] _worldRegions = new WorldRegion[177][257];
+    private final WorldRegion[][] _worldRegions = new WorldRegion[REGIONS_X + 1][REGIONS_Y + 1];
 
     private World() {
+        for (int i = 0; i <= 176; ++i) {
+            for (int j = 0; j <= 256; ++j) {
+                this._worldRegions[i][j] = new WorldRegion(i, j);
+            }
+        }
+
+        for (int x = 0; x <= 176; ++x) {
+            for (int y = 0; y <= 256; ++y) {
+                for (int a = -1; a <= 1; ++a) {
+                    for (int b = -1; b <= 1; ++b) {
+                        if (validRegion(x + a, y + b)) {
+                            this._worldRegions[x + a][y + b].addSurroundingRegion(this._worldRegions[x][y]);
+                        }
+                    }
+                }
+            }
+        }
+
+        LOGGER.info("World grid ({} by {}) is now set up.", REGIONS_X, REGIONS_Y);
     }
 
     public static int getRegionX(int regionX) {
@@ -57,14 +68,16 @@ public final class World {
     }
 
     private static boolean validRegion(int x, int y) {
-        return (x >= 0 && x <= 176 && y >= 0 && y <= 256);
+        return x >= 0 && x <= 176 && y >= 0 && y <= 256;
     }
 
     public static void toAllOnlinePlayers(L2GameServerPacket packet) {
         for (Player player : getInstance().getPlayers()) {
-            if (player.isOnline())
+            if (player.isOnline()) {
                 player.sendPacket(packet);
+            }
         }
+
     }
 
     public static void announceToOnlinePlayers(String text) {
@@ -76,25 +89,7 @@ public final class World {
     }
 
     public static World getInstance() {
-        return SingletonHolder.INSTANCE;
-    }
-
-    public void init() {
-        for (int i = 0; i <= 176; i++) {
-            for (int j = 0; j <= 256; j++)
-                this._worldRegions[i][j] = new WorldRegion(i, j);
-        }
-        for (int x = 0; x <= 176; x++) {
-            for (int y = 0; y <= 256; y++) {
-                for (int a = -1; a <= 1; a++) {
-                    for (int b = -1; b <= 1; b++) {
-                        if (validRegion(x + a, y + b))
-                            this._worldRegions[x + a][y + b].addSurroundingRegion(this._worldRegions[x][y]);
-                    }
-                }
-            }
-        }
-        LOGGER.info("World grid ({} by {}) is now set up.", 176, 256);
+        return World.SingletonHolder.INSTANCE;
     }
 
     public void addObject(WorldObject object) {
@@ -146,21 +141,23 @@ public final class World {
     }
 
     public WorldRegion getRegion(Location loc) {
-        return getRegion(loc.getX(), loc.getY());
+        return this.getRegion(loc.getX(), loc.getY());
     }
 
     public WorldRegion getRegion(int x, int y) {
-        return this._worldRegions[(x - -131072) / 2048][(y - -262144) / 2048];
+        return this._worldRegions[(x - WORLD_X_MIN) / REGION_SIZE][(y - WORLD_Y_MIN) / REGION_SIZE];
     }
 
     public WorldRegion getRegion(ZoneType zone) {
-        for (int i = 0; i <= 176; i++) {
-            for (int j = 0; j <= 256; j++) {
+        for (int i = 0; i <= 176; ++i) {
+            for (int j = 0; j <= 256; ++j) {
                 WorldRegion region = this._worldRegions[i][j];
-                if (region.containsZone(zone.getId()))
+                if (region.containsZone(zone.getId())) {
                     return region;
+                }
             }
         }
+
         return null;
     }
 
@@ -170,8 +167,9 @@ public final class World {
 
     public void deleteVisibleNpcSpawns() {
         LOGGER.info("Deleting all visible NPCs.");
-        for (int i = 0; i <= 176; i++) {
-            for (int j = 0; j <= 256; j++) {
+
+        for (int i = 0; i <= 176; ++i) {
+            for (int j = 0; j <= 256; ++j) {
                 for (WorldObject obj : this._worldRegions[i][j].getObjects()) {
                     if (obj instanceof Npc) {
                         ((Npc) obj).deleteMe();
@@ -184,6 +182,7 @@ public final class World {
                 }
             }
         }
+
         LOGGER.info("All visibles NPCs are now deleted.");
     }
 

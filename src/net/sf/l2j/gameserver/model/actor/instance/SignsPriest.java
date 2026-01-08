@@ -13,8 +13,7 @@ import net.sf.l2j.gameserver.network.serverpackets.ActionFailed;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class SignsPriest extends Folk {
@@ -28,7 +27,7 @@ public class SignsPriest extends Folk {
                 this.showChatWindow(player, Integer.parseInt(command.substring(15)), null, true);
             } else if (command.startsWith("SevenSigns")) {
                 CabalType cabal = CabalType.NORMAL;
-                int stoneType;
+                int stoneType = 0;
                 long ancientAdenaAmount = player.getAncientAdena();
                 int val = Integer.parseInt(command.substring(11, 12).trim());
                 if (command.length() > 12) {
@@ -47,23 +46,12 @@ public class SignsPriest extends Folk {
                                 st.nextToken();
                                 cabal = CabalType.VALUES[Integer.parseInt(st.nextToken())];
                             } catch (Exception var52) {
-                                LOGGER.warn("Failed to retrieve cabal from bypass command. NpcId: {}, command: {}.", this.getNpcId(), command);
+                                LOGGER.warn("Failed to retrieve cabal from bypass command. NpcId: {}, command: {}.", new Object[]{this.getNpcId(), command});
                             }
                         }
                     }
                 }
 
-                int redContribCount = 0;
-                String path;
-                int blueContribCount;
-                String stoneColor;
-                NpcHtmlMessage html;
-                int convertStoneId;
-                int greenContribCount;
-                int stoneCountContr;
-                int convertCount;
-                int ancientAdenaReward;
-                int ancientAdenaRewardAll;
                 switch (val) {
                     case 2:
                         if (!player.getInventory().validateCapacity(1)) {
@@ -114,14 +102,9 @@ public class SignsPriest extends Folk {
                         }
 
                         switch (newSeal) {
-                            case AVARICE:
-                                player.sendPacket(SystemMessageId.FIGHT_FOR_AVARICE);
-                                break;
-                            case GNOSIS:
-                                player.sendPacket(SystemMessageId.FIGHT_FOR_GNOSIS);
-                                break;
-                            case STRIFE:
-                                player.sendPacket(SystemMessageId.FIGHT_FOR_STRIFE);
+                            case AVARICE -> player.sendPacket(SystemMessageId.FIGHT_FOR_AVARICE);
+                            case GNOSIS -> player.sendPacket(SystemMessageId.FIGHT_FOR_GNOSIS);
+                            case STRIFE -> player.sendPacket(SystemMessageId.FIGHT_FOR_STRIFE);
                         }
 
                         this.showChatWindow(player, 4, cabal.getShortName(), false);
@@ -152,29 +135,29 @@ public class SignsPriest extends Folk {
                         if (contribScore == Config.ALT_MAXIMUM_PLAYER_CONTRIB) {
                             player.sendPacket(SystemMessageId.CONTRIB_SCORE_EXCEEDED);
                         } else {
-                            redContribCount = 0;
-                            greenContribCount = 0;
-                            blueContribCount = 0;
+                            int redContribCount = 0;
+                            int greenContribCount = 0;
+                            int blueContribCount = 0;
                             String contribStoneColor = null;
-                            stoneColor = null;
-                            stoneCountContr = 0;
+                            String stoneColorContr = null;
+                            int stoneCountContr = 0;
                             int stoneIdContr = 0;
                             switch (stoneType) {
                                 case 1:
                                     contribStoneColor = "Blue";
-                                    stoneColor = "blue";
+                                    stoneColorContr = "blue";
                                     stoneIdContr = 6360;
                                     stoneCountContr = blueStoneCount;
                                     break;
                                 case 2:
                                     contribStoneColor = "Green";
-                                    stoneColor = "green";
+                                    stoneColorContr = "green";
                                     stoneIdContr = 6361;
                                     stoneCountContr = greenStoneCount;
                                     break;
                                 case 3:
                                     contribStoneColor = "Red";
-                                    stoneColor = "red";
+                                    stoneColorContr = "red";
                                     stoneIdContr = 6362;
                                     stoneCountContr = redStoneCount;
                                     break;
@@ -184,14 +167,14 @@ public class SignsPriest extends Folk {
                                         redContribCount = redStoneCount;
                                     }
 
-                                    convertStoneId = contribScore + redContribCount * 10;
-                                    greenContribCount = (Config.ALT_MAXIMUM_PLAYER_CONTRIB - convertStoneId) / 5;
+                                    int redStonesAll = contribScore + redContribCount * 10;
+                                    greenContribCount = (Config.ALT_MAXIMUM_PLAYER_CONTRIB - redStonesAll) / 5;
                                     if (greenContribCount > greenStoneCount) {
                                         greenContribCount = greenStoneCount;
                                     }
 
-                                    convertStoneId += greenContribCount * 5;
-                                    blueContribCount = (Config.ALT_MAXIMUM_PLAYER_CONTRIB - convertStoneId) / 3;
+                                    redStonesAll += greenContribCount * 5;
+                                    blueContribCount = (Config.ALT_MAXIMUM_PLAYER_CONTRIB - redStonesAll) / 3;
                                     if (blueContribCount > blueStoneCount) {
                                         blueContribCount = blueStoneCount;
                                     }
@@ -227,16 +210,17 @@ public class SignsPriest extends Folk {
                                     return;
                             }
 
+                            String path;
                             if (this instanceof DawnPriest) {
                                 path = "data/html/seven_signs/signs_6_dawn_contribute.htm";
                             } else {
                                 path = "data/html/seven_signs/signs_6_dusk_contribute.htm";
                             }
 
-                            html = new NpcHtmlMessage(this.getObjectId());
+                            NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
                             html.setFile(path);
                             html.replace("%contribStoneColor%", contribStoneColor);
-                            html.replace("%stoneColor%", stoneColor);
+                            html.replace("%stoneColor%", stoneColorContr);
                             html.replace("%stoneCount%", stoneCountContr);
                             html.replace("%stoneItemId%", stoneIdContr);
                             html.replace("%objectId%", this.getObjectId());
@@ -244,10 +228,10 @@ public class SignsPriest extends Folk {
                         }
                         break;
                     case 7:
-                        redContribCount = 0;
+                        int ancientAdenaConvert = 0;
 
                         try {
-                            redContribCount = Integer.parseInt(command.substring(13).trim());
+                            ancientAdenaConvert = Integer.parseInt(command.substring(13).trim());
                         } catch (NumberFormatException var55) {
                             this.showChatWindow(player, "data/html/seven_signs/blkmrkt_3.htm");
                             break;
@@ -256,27 +240,27 @@ public class SignsPriest extends Folk {
                             break;
                         }
 
-                        if (redContribCount < 1) {
+                        if (ancientAdenaConvert < 1) {
                             this.showChatWindow(player, "data/html/seven_signs/blkmrkt_3.htm");
-                        } else if (ancientAdenaAmount < (long) redContribCount) {
+                        } else if (ancientAdenaAmount < (long) ancientAdenaConvert) {
                             this.showChatWindow(player, "data/html/seven_signs/blkmrkt_4.htm");
                         } else {
-                            player.reduceAncientAdena("SevenSigns", redContribCount, this, true);
-                            player.addAdena("SevenSigns", redContribCount, this, true);
+                            player.reduceAncientAdena("SevenSigns", ancientAdenaConvert, this, true);
+                            player.addAdena("SevenSigns", ancientAdenaConvert, this, true);
                             this.showChatWindow(player, "data/html/seven_signs/blkmrkt_5.htm");
                         }
                         break;
                     case 9:
                         if (SevenSignsManager.getInstance().isSealValidationPeriod() && SevenSignsManager.getInstance().getPlayerCabal(player.getObjectId()) == SevenSignsManager.getInstance().getCabalHighestScore()) {
-                            greenContribCount = SevenSignsManager.getInstance().getAncientAdenaReward(player.getObjectId());
-                            if (greenContribCount < 3) {
+                            int ancientAdenaReward = SevenSignsManager.getInstance().getAncientAdenaReward(player.getObjectId());
+                            if (ancientAdenaReward < 3) {
                                 if (this instanceof DawnPriest) {
                                     this.showChatWindow(player, 9, "dawn_b", false);
                                 } else {
                                     this.showChatWindow(player, 9, "dusk_b", false);
                                 }
                             } else {
-                                player.addAncientAdena("SevenSigns", greenContribCount, this, true);
+                                player.addAncientAdena("SevenSigns", ancientAdenaReward, this, true);
                                 if (this instanceof DawnPriest) {
                                     this.showChatWindow(player, 9, "dawn_a", false);
                                 } else {
@@ -310,13 +294,13 @@ public class SignsPriest extends Folk {
                             StringTokenizer st = new StringTokenizer(portInfo);
                             int x = Integer.parseInt(st.nextToken());
                             int y = Integer.parseInt(st.nextToken());
-                            stoneCountContr = Integer.parseInt(st.nextToken());
+                            int z = Integer.parseInt(st.nextToken());
                             int ancientAdenaCost = Integer.parseInt(st.nextToken());
                             if (ancientAdenaCost <= 0 || player.reduceAncientAdena("SevenSigns", ancientAdenaCost, this, true)) {
-                                player.teleportTo(x, y, stoneCountContr, 0);
+                                player.teleportTo(x, y, z, 0);
                             }
-                        } catch (Exception var58) {
-                            LOGGER.error("An error occurred while teleporting a player.", var58);
+                        } catch (Exception e) {
+                            LOGGER.error("An error occurred while teleporting a player.", e);
                         }
                         break;
                     case 16:
@@ -329,10 +313,9 @@ public class SignsPriest extends Folk {
                     case 17:
                         stoneType = Integer.parseInt(command.substring(14));
                         int stoneId = 0;
-                        blueContribCount = 0;
+                        int stoneCount = 0;
                         int stoneValue = 0;
-                        stoneColor = null;
-                        ItemInstance stoneInstance;
+                        String stoneColor = null;
                         switch (stoneType) {
                             case 1:
                                 stoneColor = "blue";
@@ -350,14 +333,14 @@ public class SignsPriest extends Folk {
                                 stoneValue = 10;
                                 break;
                             case 4:
-                                stoneInstance = player.getInventory().getItemByItemId(6360);
+                                ItemInstance blueStonesAll = player.getInventory().getItemByItemId(6360);
                                 ItemInstance greenStonesAll = player.getInventory().getItemByItemId(6361);
                                 ItemInstance redStonesAll = player.getInventory().getItemByItemId(6362);
-                                convertCount = stoneInstance == null ? 0 : stoneInstance.getCount();
+                                int blueStoneCountAll = blueStonesAll == null ? 0 : blueStonesAll.getCount();
                                 int greenStoneCountAll = greenStonesAll == null ? 0 : greenStonesAll.getCount();
-                                ancientAdenaReward = redStonesAll == null ? 0 : redStonesAll.getCount();
-                                ancientAdenaRewardAll = 0;
-                                ancientAdenaRewardAll = SevenSignsManager.calcScore(convertCount, greenStoneCountAll, ancientAdenaReward);
+                                int redStoneCountAll = redStonesAll == null ? 0 : redStonesAll.getCount();
+                                int ancientAdenaRewardAll = 0;
+                                ancientAdenaRewardAll = SevenSignsManager.calcScore(blueStoneCountAll, greenStoneCountAll, redStoneCountAll);
                                 if (ancientAdenaRewardAll == 0) {
                                     if (this instanceof DawnPriest) {
                                         this.showChatWindow(player, 18, "dawn_no_stones", false);
@@ -368,16 +351,16 @@ public class SignsPriest extends Folk {
                                     return;
                                 }
 
-                                if (convertCount > 0) {
-                                    player.destroyItemByItemId("SevenSigns", 6360, convertCount, this, true);
+                                if (blueStoneCountAll > 0) {
+                                    player.destroyItemByItemId("SevenSigns", 6360, blueStoneCountAll, this, true);
                                 }
 
                                 if (greenStoneCountAll > 0) {
                                     player.destroyItemByItemId("SevenSigns", 6361, greenStoneCountAll, this, true);
                                 }
 
-                                if (ancientAdenaReward > 0) {
-                                    player.destroyItemByItemId("SevenSigns", 6362, ancientAdenaReward, this, true);
+                                if (redStoneCountAll > 0) {
+                                    player.destroyItemByItemId("SevenSigns", 6362, redStoneCountAll, this, true);
                                 }
 
                                 player.addAncientAdena("SevenSigns", ancientAdenaRewardAll, this, true);
@@ -390,29 +373,30 @@ public class SignsPriest extends Folk {
                                 return;
                         }
 
-                        stoneInstance = player.getInventory().getItemByItemId(stoneId);
+                        ItemInstance stoneInstance = player.getInventory().getItemByItemId(stoneId);
                         if (stoneInstance != null) {
-                            blueContribCount = stoneInstance.getCount();
+                            stoneCount = stoneInstance.getCount();
                         }
 
+                        String path;
                         if (this instanceof DawnPriest) {
                             path = "data/html/seven_signs/signs_17_dawn.htm";
                         } else {
                             path = "data/html/seven_signs/signs_17_dusk.htm";
                         }
 
-                        html = new NpcHtmlMessage(this.getObjectId());
+                        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
                         html.setFile(path);
                         html.replace("%stoneColor%", stoneColor);
                         html.replace("%stoneValue%", stoneValue);
-                        html.replace("%stoneCount%", blueContribCount);
+                        html.replace("%stoneCount%", stoneCount);
                         html.replace("%stoneItemId%", stoneId);
                         html.replace("%objectId%", this.getObjectId());
                         player.sendPacket(html);
                         break;
                     case 18:
-                        convertStoneId = Integer.parseInt(command.substring(14, 18));
-                        boolean var43 = false;
+                        int convertStoneId = Integer.parseInt(command.substring(14, 18));
+                        int convertCount = 0;
 
                         try {
                             convertCount = Integer.parseInt(command.substring(19).trim());
@@ -427,18 +411,13 @@ public class SignsPriest extends Folk {
 
                         ItemInstance convertItem = player.getInventory().getItemByItemId(convertStoneId);
                         if (convertItem != null) {
-                            ancientAdenaReward = 0;
-                            ancientAdenaRewardAll = convertItem.getCount();
-                            if (convertCount <= ancientAdenaRewardAll && convertCount > 0) {
+                            int ancientAdenaReward = 0;
+                            int totalCount = convertItem.getCount();
+                            if (convertCount <= totalCount && convertCount > 0) {
                                 switch (convertStoneId) {
-                                    case 6360:
-                                        ancientAdenaReward = SevenSignsManager.calcScore(convertCount, 0, 0);
-                                        break;
-                                    case 6361:
-                                        ancientAdenaReward = SevenSignsManager.calcScore(0, convertCount, 0);
-                                        break;
-                                    case 6362:
-                                        ancientAdenaReward = SevenSignsManager.calcScore(0, 0, convertCount);
+                                    case 6360 -> ancientAdenaReward = SevenSignsManager.calcScore(convertCount, 0, 0);
+                                    case 6361 -> ancientAdenaReward = SevenSignsManager.calcScore(0, convertCount, 0);
+                                    case 6362 -> ancientAdenaReward = SevenSignsManager.calcScore(0, 0, convertCount);
                                 }
 
                                 if (player.destroyItemByItemId("SevenSigns", convertStoneId, convertCount, this, true)) {
@@ -467,30 +446,7 @@ public class SignsPriest extends Folk {
                         this.showChatWindow(player, val, fileSuffix, false);
                         break;
                     case 20:
-                        StringBuilder sb = new StringBuilder();
-                        if (this instanceof DawnPriest) {
-                            sb.append("<html><body>Priest of Dawn:<br><font color=\"LEVEL\">[ Seal Status ]</font><br>");
-                        } else {
-                            sb.append("<html><body>Dusk Priestess:<br><font color=\"LEVEL\">[ Status of the Seals ]</font><br>");
-                        }
-
-                        Iterator var48 = SevenSignsManager.getInstance().getSealOwners().entrySet().iterator();
-
-                        while (var48.hasNext()) {
-                            Entry<SealType, CabalType> entry = (Entry) var48.next();
-                            SealType seal = entry.getKey();
-                            CabalType sealOwner = entry.getValue();
-                            if (sealOwner != CabalType.NORMAL) {
-                                String var10001 = seal.getFullName();
-                                sb.append("[" + var10001 + ": " + sealOwner.getFullName() + "]<br>");
-                            } else {
-                                sb.append("[" + seal.getFullName() + ": Nothingness]<br>");
-                            }
-                        }
-
-                        sb.append("<a action=\"bypass -h npc_" + this.getObjectId() + "_Chat 0\">Go back.</a></body></html>");
-                        html = new NpcHtmlMessage(this.getObjectId());
-                        html.setHtml(sb.toString());
+                        html = getNpcHtmlMessage();
                         player.sendPacket(html);
                         break;
                     case 21:
@@ -608,7 +564,10 @@ public class SignsPriest extends Folk {
                     case 34:
                         ItemInstance adena = player.getInventory().getItemByItemId(57);
                         ItemInstance certif = player.getInventory().getItemByItemId(6388);
-                        boolean fee = player.getClassId().level() >= 2 && (adena == null || adena.getCount() < 50000) && (certif == null || certif.getCount() < 1);
+                        boolean fee = true;
+                        if (player.getClassId().level() < 2 || adena != null && adena.getCount() >= 50000 || certif != null && certif.getCount() >= 1) {
+                            fee = false;
+                        }
 
                         if (fee) {
                             this.showChatWindow(player, "data/html/seven_signs/signs_33_dawn_no.htm");
@@ -621,6 +580,31 @@ public class SignsPriest extends Folk {
             }
 
         }
+    }
+
+    private NpcHtmlMessage getNpcHtmlMessage() {
+        StringBuilder sb = new StringBuilder();
+        if (this instanceof DawnPriest) {
+            sb.append("<html><body>Priest of Dawn:<br><font color=\"LEVEL\">[ Seal Status ]</font><br>");
+        } else {
+            sb.append("<html><body>Dusk Priestess:<br><font color=\"LEVEL\">[ Status of the Seals ]</font><br>");
+        }
+
+        for (Map.Entry<SealType, CabalType> entry : SevenSignsManager.getInstance().getSealOwners().entrySet()) {
+            SealType seal = entry.getKey();
+            CabalType sealOwner = entry.getValue();
+            if (sealOwner != CabalType.NORMAL) {
+                String var10001 = seal.getFullName();
+                sb.append("[").append(var10001).append(": ").append(sealOwner.getFullName()).append("]<br>");
+            } else {
+                sb.append("[").append(seal.getFullName()).append(": Nothingness]<br>");
+            }
+        }
+
+        sb.append("<a action=\"bypass -h npc_").append(this.getObjectId()).append("_Chat 0\">Go back.</a></body></html>");
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+        html.setHtml(sb.toString());
+        return html;
     }
 
     public void showChatWindow(Player player, int val) {
@@ -660,13 +644,12 @@ public class SignsPriest extends Folk {
                 CabalType sealGnosisOwner = SevenSignsManager.getInstance().getSealOwner(SealType.GNOSIS);
                 switch (winningCabal) {
                     case DAWN:
-                        if (playerCabal == winningCabal && playerCabal == sealGnosisOwner) {
-                            break;
+                        if (playerCabal != winningCabal || playerCabal != sealGnosisOwner) {
+                            player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DAWN);
+                            player.sendPacket(ActionFailed.STATIC_PACKET);
+                            return;
                         }
-
-                        player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DAWN);
-                        player.sendPacket(ActionFailed.STATIC_PACKET);
-                        return;
+                        break;
                     case DUSK:
                         if (playerCabal != winningCabal || playerCabal != sealGnosisOwner) {
                             player.sendPacket(SystemMessageId.CAN_BE_USED_BY_DUSK);

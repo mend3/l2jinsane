@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class AdminZoneCreation implements IAdminCommandHandler {
-    private static final List<Location> savedLocs = new ArrayList();
+    private static final List<Location> savedLocs = new ArrayList<>();
     private static final String fileName = "coordinates%s.xml";
     private static final int zDifference = 1000;
     private static final String maxLocs = "You have reached the maximum locations for this shape.";
@@ -57,7 +57,7 @@ public class AdminZoneCreation implements IAdminCommandHandler {
                     File file = new File(fName);
                     filePath = file.getAbsolutePath().replaceAll("\\\\", "/");
                     writer.write(getHeadLine());
-                    Iterator var5 = savedLocs.iterator();
+                    Iterator<Location> var5 = savedLocs.iterator();
 
                     while (true) {
                         if (!var5.hasNext()) {
@@ -65,7 +65,7 @@ public class AdminZoneCreation implements IAdminCommandHandler {
                             break;
                         }
 
-                        Location loc = (Location) var5.next();
+                        Location loc = var5.next();
                         writer.write(String.format("\t<node X=\"%s\" Y=\"%s\" />\r\n", loc.getX(), loc.getY()));
                     }
                 } catch (Throwable var8) {
@@ -270,7 +270,7 @@ public class AdminZoneCreation implements IAdminCommandHandler {
             openHtml(activeChar);
         } else if (command.startsWith("admin_removeLoc")) {
             if (savedLocs.size() > 0) {
-                List var10001 = savedLocs;
+                List<Location> var10001 = savedLocs;
                 int var10002 = savedLocs.size();
                 activeChar.sendMessage(var10001.remove(var10002 - 1) + " removed.");
             }

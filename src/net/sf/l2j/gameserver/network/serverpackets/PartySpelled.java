@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class PartySpelled extends L2GameServerPacket {
-    private final List<PartySpelled.Effect> _effects = new ArrayList();
+    private final List<PartySpelled.Effect> _effects = new ArrayList<>();
     private final Creature _activeChar;
 
     public PartySpelled(Creature cha) {
@@ -23,10 +23,8 @@ public class PartySpelled extends L2GameServerPacket {
             this.writeD(this._activeChar instanceof Servitor ? 2 : (this._activeChar instanceof Pet ? 1 : 0));
             this.writeD(this._activeChar.getObjectId());
             this.writeD(this._effects.size());
-            Iterator var1 = this._effects.iterator();
 
-            while (var1.hasNext()) {
-                PartySpelled.Effect temp = (PartySpelled.Effect) var1.next();
+            for (Effect temp : this._effects) {
                 this.writeD(temp._skillId);
                 this.writeH(temp._dat);
                 this.writeD(temp._duration / 1000);

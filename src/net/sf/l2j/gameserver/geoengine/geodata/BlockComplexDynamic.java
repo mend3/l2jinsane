@@ -27,7 +27,7 @@ public final class BlockComplexDynamic extends BlockComplex implements IBlockDyn
         this._by = by;
         this._original = new byte[192];
         System.arraycopy(this._buffer, 0, this._original, 0, 192);
-        this._objects = new LinkedList();
+        this._objects = new LinkedList<>();
     }
 
     public BlockComplexDynamic(int bx, int by, BlockComplex block) {
@@ -37,7 +37,7 @@ public final class BlockComplexDynamic extends BlockComplex implements IBlockDyn
         this._by = by;
         this._original = new byte[192];
         System.arraycopy(this._buffer, 0, this._original, 0, 192);
-        this._objects = new LinkedList();
+        this._objects = new LinkedList<>();
     }
 
     public short getHeightNearestOriginal(int geoX, int geoY, int worldZ) {
@@ -90,10 +90,8 @@ public final class BlockComplexDynamic extends BlockComplex implements IBlockDyn
         int minBY = this._by * 8;
         int maxBX = minBX + 8;
         int maxBY = minBY + 8;
-        Iterator var5 = this._objects.iterator();
 
-        while (var5.hasNext()) {
-            IGeoObject object = (IGeoObject) var5.next();
+        for (IGeoObject object : this._objects) {
             int minOX = object.getGeoX();
             int minOY = object.getGeoY();
             int minOZ = object.getGeoZ();

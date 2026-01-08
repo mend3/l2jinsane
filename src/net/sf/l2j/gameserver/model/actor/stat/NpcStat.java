@@ -8,7 +8,7 @@ public class NpcStat extends CreatureStat {
     }
 
     public byte getLevel() {
-        return getActiveChar().getTemplate().getLevel();
+        return this.getActiveChar().getTemplate().getLevel();
     }
 
     public Npc getActiveChar() {

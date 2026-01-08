@@ -13,7 +13,6 @@ import net.sf.l2j.gameserver.model.location.Location;
 
 public class L2SkillTeleport extends L2Skill {
     private final String _recallType;
-
     private final Location _loc;
 
     public L2SkillTeleport(StatSet set) {
@@ -26,45 +25,47 @@ public class L2SkillTeleport extends L2Skill {
         } else {
             this._loc = null;
         }
+
     }
 
     public void useSkill(Creature activeChar, WorldObject[] targets) {
-        if (activeChar instanceof Player)
-            if (activeChar.isAfraid() || ((Player) activeChar).isInOlympiadMode() || activeChar.isInsideZone(ZoneId.BOSS))
-                return;
-        boolean bsps = activeChar.isChargedShot(ShotType.BLESSED_SPIRITSHOT);
-        for (WorldObject obj : targets) {
-            if (!(obj instanceof Creature target))
-                continue;
-            if (target instanceof Player targetChar) {
-                if (targetChar.isFestivalParticipant() || targetChar.isInJail() || targetChar.isInDuel())
-                    continue;
-                if (targetChar != activeChar) {
-                    if (targetChar.isInOlympiadMode())
-                        continue;
-                    if (targetChar.isInsideZone(ZoneId.BOSS))
-                        continue;
+        if (!(activeChar instanceof Player) || !activeChar.isAfraid() && !((Player) activeChar).isInOlympiadMode() && !activeChar.isInsideZone(ZoneId.BOSS)) {
+            boolean bsps = activeChar.isChargedShot(ShotType.BLESSED_SPIRITSHOT);
+
+            for (WorldObject obj : targets) {
+                if (obj instanceof Creature) {
+                    Creature target = (Creature) obj;
+                    if (target instanceof Player) {
+                        Player targetChar = (Player) target;
+                        if (targetChar.isFestivalParticipant() || targetChar.isInJail() || targetChar.isInDuel() || targetChar != activeChar && (targetChar.isInOlympiadMode() || targetChar.isInsideZone(ZoneId.BOSS))) {
+                            continue;
+                        }
+                    }
+
+                    Location loc = null;
+                    if (this.getSkillType() == L2SkillType.TELEPORT) {
+                        if (this._loc != null && (!(target instanceof Player) || !target.isFlying())) {
+                            loc = this._loc;
+                        }
+                    } else if (this._recallType.equalsIgnoreCase("Castle")) {
+                        loc = MapRegionData.getInstance().getLocationToTeleport(target, MapRegionData.TeleportType.CASTLE);
+                    } else if (this._recallType.equalsIgnoreCase("ClanHall")) {
+                        loc = MapRegionData.getInstance().getLocationToTeleport(target, MapRegionData.TeleportType.CLAN_HALL);
+                    } else {
+                        loc = MapRegionData.getInstance().getLocationToTeleport(target, MapRegionData.TeleportType.TOWN);
+                    }
+
+                    if (loc != null) {
+                        if (target instanceof Player) {
+                            ((Player) target).setIsIn7sDungeon(false);
+                        }
+
+                        target.teleportTo(loc, 20);
+                    }
                 }
             }
-            Location loc = null;
-            if (getSkillType() == L2SkillType.TELEPORT) {
-                if (this._loc != null)
-                    if (!(target instanceof Player) || !target.isFlying())
-                        loc = this._loc;
-            } else if (this._recallType.equalsIgnoreCase("Castle")) {
-                loc = MapRegionData.getInstance().getLocationToTeleport(target, MapRegionData.TeleportType.CASTLE);
-            } else if (this._recallType.equalsIgnoreCase("ClanHall")) {
-                loc = MapRegionData.getInstance().getLocationToTeleport(target, MapRegionData.TeleportType.CLAN_HALL);
-            } else {
-                loc = MapRegionData.getInstance().getLocationToTeleport(target, MapRegionData.TeleportType.TOWN);
-            }
-            if (loc != null) {
-                if (target instanceof Player)
-                    ((Player) target).setIsIn7sDungeon(false);
-                target.teleportTo(loc, 20);
-            }
-            continue;
+
+            activeChar.setChargedShot(bsps ? ShotType.BLESSED_SPIRITSHOT : ShotType.SPIRITSHOT, this.isStaticReuse());
         }
-        activeChar.setChargedShot(bsps ? ShotType.BLESSED_SPIRITSHOT : ShotType.SPIRITSHOT, isStaticReuse());
     }
 }

@@ -18,7 +18,7 @@ public class TownPet extends Folk {
     public TownPet(int objectId, NpcTemplate template) {
         super(objectId, template);
         this.setRunning();
-        this._aiTask = ThreadPool.scheduleAtFixedRate(new TownPet.RandomWalkTask(), 1000L, 10000L);
+        this._aiTask = ThreadPool.scheduleAtFixedRate(new RandomWalkTask(), 1000L, 10000L);
     }
 
     public void onAction(Player player) {

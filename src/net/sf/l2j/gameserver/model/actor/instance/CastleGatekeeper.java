@@ -9,7 +9,6 @@ import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import net.sf.l2j.gameserver.network.serverpackets.NpcSay;
 
-import java.util.Iterator;
 import java.util.StringTokenizer;
 
 public class CastleGatekeeper extends Folk {
@@ -36,7 +35,7 @@ public class CastleGatekeeper extends Folk {
                 }
 
                 this._currentTask = true;
-                ThreadPool.schedule(new CastleGatekeeper.oustAllPlayers(), this._delay);
+                ThreadPool.schedule(new oustAllPlayers(), this._delay);
             }
 
             NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
@@ -77,10 +76,8 @@ public class CastleGatekeeper extends Folk {
             if (CastleGatekeeper.this.getCastle().getSiege().isInProgress()) {
                 NpcSay cs = new NpcSay(CastleGatekeeper.this.getObjectId(), 1, CastleGatekeeper.this.getNpcId(), "The defenders of " + CastleGatekeeper.this.getCastle().getName() + " castle have been teleported to the inner castle.");
                 int region = MapRegionData.getInstance().getMapRegion(CastleGatekeeper.this.getX(), CastleGatekeeper.this.getY());
-                Iterator var3 = World.getInstance().getPlayers().iterator();
 
-                while (var3.hasNext()) {
-                    Player player = (Player) var3.next();
+                for (Player player : World.getInstance().getPlayers()) {
                     if (region == MapRegionData.getInstance().getMapRegion(player.getX(), player.getY())) {
                         player.sendPacket(cs);
                     }

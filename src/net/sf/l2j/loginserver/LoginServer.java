@@ -65,7 +65,7 @@ public class LoginServer {
         LoginPacketHandler lph = new LoginPacketHandler();
         SelectorHelper sh = new SelectorHelper();
         try {
-            this._selectorThread = new SelectorThread(sc, sh, lph, sh, sh);
+            this._selectorThread = new SelectorThread<>(sc, sh, lph, sh, sh);
         } catch (IOException ioe) {
             LOGGER.error("Failed to open selector.", ioe);
             System.exit(1);

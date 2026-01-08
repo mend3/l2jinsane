@@ -4,11 +4,8 @@ import net.sf.l2j.commons.util.StatSet;
 
 public class Location {
     public static final Location DUMMY_LOC = new Location(0, 0, 0);
-
     protected volatile int _x;
-
     protected volatile int _y;
-
     protected volatile int _z;
 
     public Location(int x, int y, int z) {
@@ -30,7 +27,7 @@ public class Location {
     }
 
     public String toString() {
-        return this._x + ", " + this._x + ", " + this._y;
+        return this._x + ", " + this._y + ", " + this._z;
     }
 
     public int hashCode() {
@@ -38,10 +35,11 @@ public class Location {
     }
 
     public boolean equals(Object o) {
-        if (o instanceof Location loc) {
-            return (loc.getX() == this._x && loc.getY() == this._y && loc.getZ() == this._z);
+        if (!(o instanceof Location loc)) {
+            return false;
+        } else {
+            return loc.getX() == this._x && loc.getY() == this._y && loc.getZ() == this._z;
         }
-        return false;
     }
 
     public int getX() {

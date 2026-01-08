@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NewCharacterCreated extends AbstractMods {
-    private static final List<Integer> _players = new ArrayList<>();
+    private static List<Integer> _players = new ArrayList<>();
 
     public NewCharacterCreated() {
-        registerMod(true);
+        this.registerMod(true);
     }
 
     public static NewCharacterCreated getInstance() {
-        return SingletonHolder.INSTANCE;
+        return NewCharacterCreated.SingletonHolder.INSTANCE;
     }
 
     public void onModState() {
@@ -31,18 +31,24 @@ public class NewCharacterCreated extends AbstractMods {
 
     public void onEnterWorld(Player player) {
         if (_players.contains(player.getObjectId())) {
-            if (ConfigData.NEW_CHARACTER_CREATED_GIVE_BUFF)
+            if (ConfigData.NEW_CHARACTER_CREATED_GIVE_BUFF) {
                 for (IntIntHolder bsh : ConfigData.NEW_CHARACTER_CREATED_BUFFS) {
                     L2Skill skill = bsh.getSkill();
-                    if (skill != null)
+                    if (skill != null) {
                         skill.getEffects(player, player);
+                    }
                 }
-            if (!ConfigData.NEW_CHARACTER_CREATED_SEND_SCREEN_MSG.equals(""))
+            }
+
+            if (!ConfigData.NEW_CHARACTER_CREATED_SEND_SCREEN_MSG.equals("")) {
                 player.sendPacket(new ExShowScreenMessage(ConfigData.NEW_CHARACTER_CREATED_SEND_SCREEN_MSG, 10000, ExShowScreenMessage.SMPOS.TOP_CENTER, false));
+            }
+
             player.setCurrentHpMp(player.getMaxHp(), player.getMaxMp());
             player.setCurrentCp(player.getMaxCp());
-            _players.remove(Integer.valueOf(player.getObjectId()));
+            _players.remove(player.getObjectId());
         }
+
     }
 
     private static class SingletonHolder {

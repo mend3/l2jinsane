@@ -30,7 +30,7 @@ public class Boat extends Creature {
 
     public Boat(int objectId, CreatureTemplate template) {
         super(objectId, template);
-        setAI(new BoatAI(this));
+        this.setAI(new BoatAI(this));
     }
 
     public boolean isFlying() {
@@ -38,7 +38,7 @@ public class Boat extends Creature {
     }
 
     public boolean canBeControlled() {
-        return (this._engine == null);
+        return this._engine == null;
     }
 
     public void registerEngine(Runnable r) {
@@ -46,8 +46,10 @@ public class Boat extends Creature {
     }
 
     public void runEngine(int delay) {
-        if (this._engine != null)
+        if (this._engine != null) {
             ThreadPool.schedule(this._engine, delay);
+        }
+
     }
 
     public void executePath(BoatLocation[] path) {
@@ -55,31 +57,36 @@ public class Boat extends Creature {
         this._currentPath = path;
         if (this._currentPath != null && this._currentPath.length > 0) {
             BoatLocation point = this._currentPath[0];
-            if (point.getMoveSpeed() > 0)
-                getStat().setMoveSpeed(point.getMoveSpeed());
-            if (point.getRotationSpeed() > 0)
-                getStat().setRotationSpeed(point.getRotationSpeed());
-            getAI().setIntention(IntentionType.MOVE_TO, point);
-            return;
+            if (point.getMoveSpeed() > 0) {
+                this.getStat().setMoveSpeed(point.getMoveSpeed());
+            }
+
+            if (point.getRotationSpeed() > 0) {
+                this.getStat().setRotationSpeed(point.getRotationSpeed());
+            }
+
+            this.getAI().setIntention(IntentionType.MOVE_TO, point);
+        } else {
+            this.getAI().setIntention(IntentionType.ACTIVE);
         }
-        getAI().setIntention(IntentionType.ACTIVE);
     }
 
     public boolean moveToNextRoutePoint() {
         this._move = null;
         if (this._currentPath != null) {
-            this._runState++;
+            ++this._runState;
             if (this._runState < this._currentPath.length) {
                 BoatLocation point = this._currentPath[this._runState];
-                if (!isMovementDisabled())
-                    if (point.getMoveSpeed() == 0) {
-                        teleportTo(point, 0);
-                        this._currentPath = null;
-                    } else {
-                        if (point.getMoveSpeed() > 0)
-                            getStat().setMoveSpeed(point.getMoveSpeed());
-                        if (point.getRotationSpeed() > 0)
-                            getStat().setRotationSpeed(point.getRotationSpeed());
+                if (!this.isMovementDisabled()) {
+                    if (point.getMoveSpeed() != 0) {
+                        if (point.getMoveSpeed() > 0) {
+                            this.getStat().setMoveSpeed(point.getMoveSpeed());
+                        }
+
+                        if (point.getRotationSpeed() > 0) {
+                            this.getStat().setRotationSpeed(point.getRotationSpeed());
+                        }
+
                         Creature.MoveData m = new Creature.MoveData();
                         m.disregardingGeodata = false;
                         m.onGeodataPathIndex = -1;
@@ -87,22 +94,29 @@ public class Boat extends Creature {
                         m._yDestination = point.getY();
                         m._zDestination = point.getZ();
                         m._heading = 0;
-                        double dx = (point.getX() - getX());
-                        double dy = (point.getY() - getY());
+                        double dx = point.getX() - this.getX();
+                        double dy = point.getY() - this.getY();
                         double distance = Math.sqrt(dx * dx + dy * dy);
-                        if (distance > 1.0D)
-                            getPosition().setHeading(MathUtil.calculateHeadingFrom(getX(), getY(), point.getX(), point.getY()));
+                        if (distance > (double) 1.0F) {
+                            this.getPosition().setHeading(MathUtil.calculateHeadingFrom(this.getX(), this.getY(), point.getX(), point.getY()));
+                        }
+
                         m._moveStartTime = System.currentTimeMillis();
                         this._move = m;
                         MovementTaskManager.getInstance().add(this);
-                        broadcastPacket(new VehicleDeparture(this));
+                        this.broadcastPacket(new VehicleDeparture(this));
                         return true;
                     }
+
+                    this.teleportTo(point, 0);
+                    this._currentPath = null;
+                }
             } else {
                 this._currentPath = null;
             }
         }
-        runEngine(10);
+
+        this.runEngine(10);
         return false;
     }
 
@@ -111,11 +125,11 @@ public class Boat extends Creature {
     }
 
     public void initCharStat() {
-        setStat(new BoatStat(this));
+        this.setStat(new BoatStat(this));
     }
 
     public boolean isInDock() {
-        return (this._dockId > 0);
+        return this._dockId > 0;
     }
 
     public void setInDock(int d) {
@@ -127,15 +141,19 @@ public class Boat extends Creature {
     }
 
     public void oustPlayers() {
-        for (Player player : this._passengers)
-            oustPlayer(player, false, Location.DUMMY_LOC);
+        for (Player player : this._passengers) {
+            this.oustPlayer(player, false, Location.DUMMY_LOC);
+        }
+
         this._passengers.clear();
     }
 
     public void oustPlayer(Player player, boolean removeFromList, Location location) {
         player.setBoat(null);
-        if (removeFromList)
-            removePassenger(player);
+        if (removeFromList) {
+            this.removePassenger(player);
+        }
+
         player.setInsideZone(ZoneId.PEACE, false);
         player.sendPacket(SystemMessageId.EXIT_PEACEFUL_ZONE);
         Location loc = location.equals(Location.DUMMY_LOC) ? MapRegionData.getInstance().getLocationToTeleport(this, MapRegionData.TeleportType.TOWN) : location;
@@ -144,17 +162,22 @@ public class Boat extends Creature {
         } else {
             player.setXYZInvisible(loc);
         }
+
     }
 
     public boolean addPassenger(Player player) {
-        if (player == null || this._passengers.contains(player))
+        if (player != null && !this._passengers.contains(player)) {
+            if (player.getBoat() != null && player.getBoat() != this) {
+                return false;
+            } else {
+                this._passengers.add(player);
+                player.setInsideZone(ZoneId.PEACE, true);
+                player.sendPacket(SystemMessageId.ENTER_PEACEFUL_ZONE);
+                return true;
+            }
+        } else {
             return false;
-        if (player.getBoat() != null && player.getBoat() != this)
-            return false;
-        this._passengers.add(player);
-        player.setInsideZone(ZoneId.PEACE, true);
-        player.sendPacket(SystemMessageId.ENTER_PEACEFUL_ZONE);
-        return true;
+        }
     }
 
     public void removePassenger(Player player) {
@@ -171,73 +194,88 @@ public class Boat extends Creature {
 
     public void broadcastToPassengers(L2GameServerPacket sm) {
         for (Player player : this._passengers) {
-            if (player != null)
+            if (player != null) {
                 player.sendPacket(sm);
+            }
         }
+
     }
 
     public void payForRide(int itemId, int count, Location loc) {
-        for (Player player : getKnownTypeInRadius(Player.class, 1000)) {
+        for (Player player : this.getKnownTypeInRadius(Player.class, 1000)) {
             if (player.isInBoat() && player.getBoat() == this) {
                 if (itemId > 0) {
                     if (!player.destroyItemByItemId("Boat", itemId, count, this, false)) {
-                        oustPlayer(player, true, loc);
+                        this.oustPlayer(player, true, loc);
                         player.sendPacket(SystemMessageId.NOT_CORRECT_BOAT_TICKET);
                         continue;
                     }
+
                     if (count > 1) {
                         player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S2_S1_DISAPPEARED).addItemName(itemId).addItemNumber(count));
                     } else {
                         player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_DISAPPEARED).addItemName(itemId));
                     }
                 }
-                addPassenger(player);
+
+                this.addPassenger(player);
             }
         }
+
     }
 
     public boolean updatePosition() {
         boolean result = super.updatePosition();
+
         for (Player player : this._passengers) {
             if (player != null && player.getBoat() == this) {
-                player.setXYZ(getX(), getY(), getZ());
+                player.setXYZ(this.getX(), this.getY(), this.getZ());
                 player.revalidateZone(false);
             }
         }
+
         return result;
     }
 
     public void teleportTo(int x, int y, int z, int randomOffset) {
-        if (isMoving())
-            stopMove(null);
-        setIsTeleporting(true);
-        getAI().setIntention(IntentionType.ACTIVE);
-        for (Player player : this._passengers) {
-            if (player != null)
-                player.teleportTo(x, y, z, randomOffset);
+        if (this.isMoving()) {
+            this.stopMove(null);
         }
-        decayMe();
-        setXYZ(x, y, z);
-        onTeleported();
-        revalidateZone(true);
+
+        this.setIsTeleporting(true);
+        this.getAI().setIntention(IntentionType.ACTIVE);
+
+        for (Player player : this._passengers) {
+            if (player != null) {
+                player.teleportTo(x, y, z, randomOffset);
+            }
+        }
+
+        this.decayMe();
+        this.setXYZ(x, y, z);
+        this.onTeleported();
+        this.revalidateZone(true);
     }
 
     public void stopMove(SpawnLocation loc) {
         this._move = null;
         if (loc != null) {
-            setXYZ(loc);
-            revalidateZone(true);
+            this.setXYZ(loc);
+            this.revalidateZone(true);
         }
-        broadcastPacket(new VehicleStarted(this, 0));
-        broadcastPacket(new VehicleInfo(this));
+
+        this.broadcastPacket(new VehicleStarted(this, 0));
+        this.broadcastPacket(new VehicleInfo(this));
     }
 
     public void deleteMe() {
         this._engine = null;
-        if (isMoving())
-            stopMove(null);
-        oustPlayers();
-        decayMe();
+        if (this.isMoving()) {
+            this.stopMove(null);
+        }
+
+        this.oustPlayers();
+        this.decayMe();
         super.deleteMe();
     }
 
@@ -269,8 +307,10 @@ public class Boat extends Creature {
     }
 
     public void setAI(CreatureAI newAI) {
-        if (this._ai == null)
+        if (this._ai == null) {
             this._ai = newAI;
+        }
+
     }
 
     public void detachAI() {

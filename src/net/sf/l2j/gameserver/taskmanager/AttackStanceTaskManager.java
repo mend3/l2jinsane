@@ -2,6 +2,7 @@ package net.sf.l2j.gameserver.taskmanager;
 
 import net.sf.l2j.commons.pool.ThreadPool;
 import net.sf.l2j.gameserver.model.actor.Creature;
+import net.sf.l2j.gameserver.model.actor.Playable;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.Summon;
 import net.sf.l2j.gameserver.model.actor.instance.Cubic;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class AttackStanceTaskManager implements Runnable {
     private static final long ATTACK_STANCE_PERIOD = 15000L;
+    private static final AttackStanceTaskManager INSTANCE = new AttackStanceTaskManager();
 
     private final Map<Creature, Long> _creatures = new ConcurrentHashMap<>();
 
@@ -20,7 +22,7 @@ public final class AttackStanceTaskManager implements Runnable {
     }
 
     public static AttackStanceTaskManager getInstance() {
-        return SingletonHolder.INSTANCE;
+        return AttackStanceTaskManager.INSTANCE;
     }
 
     public void run() {
@@ -42,33 +44,25 @@ public final class AttackStanceTaskManager implements Runnable {
     }
 
     public void add(Creature creature) {
-        if (creature instanceof net.sf.l2j.gameserver.model.actor.Playable)
+        if (creature instanceof Playable)
             for (Cubic cubic : creature.getActingPlayer().getCubics().values()) {
                 if (cubic.getId() != 3)
                     cubic.doAction();
             }
-        this._creatures.put(creature, System.currentTimeMillis() + 15000L);
+        this._creatures.put(creature, System.currentTimeMillis() + ATTACK_STANCE_PERIOD);
     }
 
     public boolean remove(Creature creature) {
-        if (this._creatures.isEmpty())
-            return false;
-        Player player = null;
         if (creature instanceof Summon)
-            player = creature.getActingPlayer();
-        return (this._creatures.remove(player) != null);
+            creature = creature.getActingPlayer();
+
+        return _creatures.remove(creature) != null;
     }
 
     public boolean isInAttackStance(Creature creature) {
-        if (this._creatures.isEmpty())
-            return false;
-        Player player = null;
         if (creature instanceof Summon)
-            player = creature.getActingPlayer();
-        return this._creatures.containsKey(player);
-    }
+            creature = creature.getActingPlayer();
 
-    private static class SingletonHolder {
-        protected static final AttackStanceTaskManager INSTANCE = new AttackStanceTaskManager();
+        return _creatures.containsKey(creature);
     }
 }

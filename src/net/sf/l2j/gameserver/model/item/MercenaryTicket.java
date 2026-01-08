@@ -8,15 +8,10 @@ import java.util.Arrays;
 
 public final class MercenaryTicket {
     private final int _itemId;
-
     private final TicketType _type;
-
     private final boolean _isStationary;
-
     private final int _npcId;
-
     private final int _maxAmount;
-
     private final CabalType[] _ssq;
 
     public MercenaryTicket(StatSet set) {
@@ -27,8 +22,11 @@ public final class MercenaryTicket {
         this._maxAmount = set.getInteger("maxAmount");
         String[] ssq = set.getStringArray("ssq");
         this._ssq = new CabalType[ssq.length];
-        for (int i = 0; i < ssq.length; i++)
+
+        for (int i = 0; i < ssq.length; ++i) {
             this._ssq[i] = Enum.valueOf(CabalType.class, ssq[i]);
+        }
+
     }
 
     public int getItemId() {

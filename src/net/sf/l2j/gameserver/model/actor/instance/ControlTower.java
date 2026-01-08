@@ -20,7 +20,6 @@ import java.util.List;
 
 public class ControlTower extends Npc {
     private final List<L2Spawn> _guards = new ArrayList<>();
-
     private boolean _isActive = true;
 
     public ControlTower(int objectId, NpcTemplate template) {
@@ -28,51 +27,60 @@ public class ControlTower extends Npc {
     }
 
     public boolean isAttackable() {
-        return (getCastle() != null && getCastle().getSiege().isInProgress());
+        return this.getCastle() != null && this.getCastle().getSiege().isInProgress();
     }
 
     public boolean isAutoAttackable(Creature attacker) {
-        return (attacker instanceof Player && getCastle() != null && getCastle().getSiege().isInProgress() && getCastle().getSiege().checkSide(((Player) attacker).getClan(), SiegeSide.ATTACKER));
+        return attacker instanceof Player && this.getCastle() != null && this.getCastle().getSiege().isInProgress() && this.getCastle().getSiege().checkSide(((Player) attacker).getClan(), SiegeSide.ATTACKER);
     }
 
     public void onForcedAttack(Player player) {
-        onAction(player);
+        this.onAction(player);
     }
 
     public void onAction(Player player) {
         if (player.getTarget() != this) {
             player.setTarget(this);
-        } else if (isAutoAttackable(player) && Math.abs(player.getZ() - getZ()) < 100 && GeoEngine.getInstance().canSeeTarget(player, this)) {
+        } else if (this.isAutoAttackable(player) && Math.abs(player.getZ() - this.getZ()) < 100 && GeoEngine.getInstance().canSeeTarget(player, this)) {
             player.getAI().setIntention(IntentionType.ATTACK, this);
         } else {
-            if (player.isMoving() || player.isInCombat())
+            if (player.isMoving() || player.isInCombat()) {
                 player.getAI().setIntention(IntentionType.IDLE);
+            }
+
             player.sendPacket(new MoveToPawn(player, this, 150));
             player.sendPacket(ActionFailed.STATIC_PACKET);
         }
+
     }
 
     public boolean doDie(Creature killer) {
-        if (getCastle() != null) {
-            Siege siege = getCastle().getSiege();
+        if (this.getCastle() != null) {
+            Siege siege = this.getCastle().getSiege();
             if (siege.isInProgress()) {
                 this._isActive = false;
-                for (L2Spawn spawn : this._guards)
+
+                for (L2Spawn spawn : this._guards) {
                     spawn.setRespawnState(false);
+                }
+
                 this._guards.clear();
-                if (siege.getControlTowerCount() == 0)
+                if (siege.getControlTowerCount() == 0) {
                     siege.announceToPlayers(SystemMessage.getSystemMessage(SystemMessageId.TOWER_DESTROYED_NO_RESURRECTION), false);
+                }
+
                 try {
                     L2Spawn spawn = new L2Spawn(NpcData.getInstance().getTemplate(13003));
-                    spawn.setLoc(getPosition());
+                    spawn.setLoc(this.getPosition());
                     Npc tower = spawn.doSpawn(false);
-                    tower.setCastle(getCastle());
+                    tower.setCastle(this.getCastle());
                     siege.getDestroyedTowers().add(tower);
                 } catch (Exception e) {
                     LOGGER.error("Couldn't spawn the control tower.", e);
                 }
             }
         }
+
         return super.doDie(killer);
     }
 

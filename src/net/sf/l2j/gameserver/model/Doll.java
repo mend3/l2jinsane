@@ -2,9 +2,7 @@ package net.sf.l2j.gameserver.model;
 
 public class Doll {
     private final int _id;
-
     private final int _skillId;
-
     private final int _skillLvl;
 
     public Doll(int id, int skillId, int skillLvl) {

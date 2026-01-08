@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RaidBossInfoInstance extends Folk {
     private final Map<Integer, Integer> _lastPage = new ConcurrentHashMap<>();
-
     private final String[][] _messages = new String[][]{{"<font color=\"LEVEL\">%player%</font>, are you not afraid?", "Be careful <font color=\"LEVEL\">%player%</font>!"}, {"Here is the drop list of <font color=\"LEVEL\">%boss%</font>!", "Seems that <font color=\"LEVEL\">%boss%</font> has good drops."}};
 
     public RaidBossInfoInstance(int objectId, NpcTemplate template) {
@@ -25,7 +24,7 @@ public class RaidBossInfoInstance extends Folk {
     }
 
     public void showChatWindow(Player player, int val) {
-        onBypassFeedback(player, "RaidBossInfo 1");
+        this.onBypassFeedback(player, "RaidBossInfo 1");
     }
 
     public void onBypassFeedback(Player player, String command) {
@@ -34,12 +33,13 @@ public class RaidBossInfoInstance extends Folk {
         if (currentCommand.startsWith("RaidBossInfo")) {
             int pageId = Integer.parseInt(st.nextToken());
             this._lastPage.put(player.getObjectId(), pageId);
-            showRaidBossInfo(player, pageId);
+            this.showRaidBossInfo(player, pageId);
         } else if (currentCommand.startsWith("RaidBossDrop")) {
             int bossId = Integer.parseInt(st.nextToken());
             int pageId = st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 1;
-            showRaidBossDrop(player, bossId, pageId);
+            this.showRaidBossDrop(player, bossId, pageId);
         }
+
         super.onBypassFeedback(player, command);
     }
 
@@ -47,7 +47,7 @@ public class RaidBossInfoInstance extends Folk {
         List<Integer> infos = new ArrayList<>();
         infos.addAll(Config.LIST_RAID_BOSS_IDS);
         int limit = Config.RAID_BOSS_INFO_PAGE_LIMIT;
-        int max = infos.size() / limit + ((infos.size() % limit == 0) ? 0 : 1);
+        int max = infos.size() / limit + (infos.size() % limit == 0 ? 0 : 1);
         infos = infos.subList((pageId - 1) * limit, Math.min(pageId * limit, infos.size()));
         StringBuilder sb = new StringBuilder();
         sb.append("<html>");
@@ -65,32 +65,38 @@ public class RaidBossInfoInstance extends Folk {
         sb.append("</table>");
         sb.append("<br>");
         sb.append("<table width=\"256\">");
-        for (Iterator<Integer> iterator = infos.iterator(); iterator.hasNext(); ) {
-            int bossId = iterator.next();
+
+        for (int bossId : infos) {
             NpcTemplate template = NpcData.getInstance().getTemplate(bossId);
-            if (template == null)
-                continue;
-            String bossName = template.getName();
-            if (bossName.length() > 23)
-                bossName = bossName.substring(0, 23) + "...";
-            long respawnTime = RaidBossInfoManager.getInstance().getRaidBossRespawnTime(bossId);
-            if (respawnTime <= System.currentTimeMillis()) {
-                sb.append("<tr>");
-                sb.append("<td width=\"146\" align=\"left\"><a action=\"bypass -h npc_%objectId%_RaidBossDrop " + bossId + "\">" + bossName + "</a></td>");
-                sb.append("<td width=\"110\" align=\"right\"><font color=\"9CC300\">Alive</font></td>");
-                sb.append("</tr>");
-                continue;
+            if (template != null) {
+                String bossName = template.getName();
+                if (bossName.length() > 23) {
+                    bossName = bossName.substring(0, 23) + "...";
+                }
+
+                long respawnTime = RaidBossInfoManager.getInstance().getRaidBossRespawnTime(bossId);
+                if (respawnTime <= System.currentTimeMillis()) {
+                    sb.append("<tr>");
+                    sb.append("<td width=\"146\" align=\"left\"><a action=\"bypass -h npc_%objectId%_RaidBossDrop " + bossId + "\">" + bossName + "</a></td>");
+                    sb.append("<td width=\"110\" align=\"right\"><font color=\"9CC300\">Alive</font></td>");
+                    sb.append("</tr>");
+                } else {
+                    sb.append("<tr>");
+                    sb.append("<td width=\"146\" align=\"left\"><a action=\"bypass -h npc_%objectId%_RaidBossDrop " + bossId + "\">" + bossName + "</a></td>");
+                    SimpleDateFormat var10001 = new SimpleDateFormat(Config.RAID_BOSS_DATE_FORMAT);
+                    Date var10002 = new Date(respawnTime);
+                    sb.append("<td width=\"110\" align=\"right\"><font color=\"FB5858\">Dead</font> " + var10001.format(var10002) + "</td>");
+                    sb.append("</tr>");
+                }
             }
-            sb.append("<tr>");
-            sb.append("<td width=\"146\" align=\"left\"><a action=\"bypass -h npc_%objectId%_RaidBossDrop " + bossId + "\">" + bossName + "</a></td>");
-            sb.append("<td width=\"110\" align=\"right\"><font color=\"FB5858\">Dead</font> " + (new SimpleDateFormat(Config.RAID_BOSS_DATE_FORMAT)).format(new Date(respawnTime)) + "</td>");
-            sb.append("</tr>");
         }
+
         sb.append("</table>");
         sb.append("<br>");
         sb.append("<table width=\"224\" cellspacing=\"2\">");
         sb.append("<tr>");
-        for (int x = 0; x < max; x++) {
+
+        for (int x = 0; x < max; ++x) {
             int pageNr = x + 1;
             if (pageId == pageNr) {
                 sb.append("<td align=\"center\">" + pageNr + "</td>");
@@ -98,80 +104,90 @@ public class RaidBossInfoInstance extends Folk {
                 sb.append("<td align=\"center\"><a action=\"bypass -h npc_%objectId%_RaidBossInfo " + pageNr + "\">" + pageNr + "</a></td>");
             }
         }
+
         sb.append("</tr>");
         sb.append("</table>");
         sb.append("</center>");
         sb.append("</body>");
         sb.append("</html>");
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
+        NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setHtml(sb.toString());
-        html.replace("%name%", getName());
-        html.replace("%objectId%", getObjectId());
+        html.replace("%name%", this.getName());
+        html.replace("%objectId%", this.getObjectId());
         player.sendPacket(html);
     }
 
     private void showRaidBossDrop(Player player, int bossId, int pageId) {
         NpcTemplate template = NpcData.getInstance().getTemplate(bossId);
-        if (template == null)
-            return;
-        List<Integer> drops = new ArrayList<>();
-        for (DropData drop : template.getAllDropData())
-            drops.add(drop.getItemId());
-        int limit = Config.RAID_BOSS_DROP_PAGE_LIMIT;
-        int max = drops.size() / limit + ((drops.size() % limit == 0) ? 0 : 1);
-        drops = drops.subList((pageId - 1) * limit, Math.min(pageId * limit, drops.size()));
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append("<center>");
-        sb.append("<body>");
-        sb.append("<table width=\"256\">");
-        sb.append("<tr><td width=\"256\" align=\"center\">%name%</td></tr>");
-        sb.append("</table>");
-        sb.append("<table width=\"256\">");
-        sb.append("<tr><td width=\"256\" align=\"left\">" + this._messages[1][Rnd.get(this._messages.length)].replace("%boss%", template.getName()) + "</td></tr>");
-        sb.append("</table>");
-        sb.append("<br>");
-        sb.append("<table width=\"224\" bgcolor=\"000000\">");
-        sb.append("<tr><td width=\"224\" align=\"center\">Raid Boss Drops</td></tr>");
-        sb.append("</table>");
-        sb.append("<br>");
-        sb.append("<table width=\"256\">");
-        for (Iterator<Integer> iterator = drops.iterator(); iterator.hasNext(); ) {
-            int itemId = iterator.next();
-            Item currentItem = ItemTable.getInstance().getTemplate(itemId);
-            String itemName = currentItem.getName();
-            String iconItem = currentItem.getIcon();
-            if (itemName.length() > 47)
-                itemName = itemName.substring(0, 47) + "...";
-            sb.append("<tr><td><button width=32 height=32 back=\"" + iconItem + "\" fore=\"" + iconItem + "\"></td><td width=\"256\" align=\"center\">" + itemName + "</td></tr>");
-        }
-        sb.append("</table>");
-        sb.append("<br>");
-        sb.append("<table width=\"64\" cellspacing=\"2\">");
-        sb.append("<tr>");
-        for (int x = 0; x < max; x++) {
-            int pageNr = x + 1;
-            if (pageId == pageNr) {
-                sb.append("<td align=\"center\">" + pageNr + "</td>");
-            } else {
-                sb.append("<td align=\"center\"><a action=\"bypass -h npc_%objectId%_RaidBossDrop " + bossId + " " + pageNr + "\">" + pageNr + "</a></td>");
+        if (template != null) {
+            List<Integer> drops = new ArrayList<>();
+
+            for (DropData drop : template.getAllDropData()) {
+                drops.add(drop.getItemId());
             }
+
+            int limit = Config.RAID_BOSS_DROP_PAGE_LIMIT;
+            int max = drops.size() / limit + (drops.size() % limit == 0 ? 0 : 1);
+            drops = drops.subList((pageId - 1) * limit, Math.min(pageId * limit, drops.size()));
+            StringBuilder sb = new StringBuilder();
+            sb.append("<html>");
+            sb.append("<center>");
+            sb.append("<body>");
+            sb.append("<table width=\"256\">");
+            sb.append("<tr><td width=\"256\" align=\"center\">%name%</td></tr>");
+            sb.append("</table>");
+            sb.append("<table width=\"256\">");
+            sb.append("<tr><td width=\"256\" align=\"left\">" + this._messages[1][Rnd.get(this._messages.length)].replace("%boss%", template.getName()) + "</td></tr>");
+            sb.append("</table>");
+            sb.append("<br>");
+            sb.append("<table width=\"224\" bgcolor=\"000000\">");
+            sb.append("<tr><td width=\"224\" align=\"center\">Raid Boss Drops</td></tr>");
+            sb.append("</table>");
+            sb.append("<br>");
+            sb.append("<table width=\"256\">");
+
+            for (int itemId : drops) {
+                Item currentItem = ItemTable.getInstance().getTemplate(itemId);
+                String itemName = currentItem.getName();
+                String iconItem = currentItem.getIcon();
+                if (itemName.length() > 47) {
+                    itemName = itemName.substring(0, 47) + "...";
+                }
+
+                sb.append("<tr><td><button width=32 height=32 back=\"" + iconItem + "\" fore=\"" + iconItem + "\"></td><td width=\"256\" align=\"center\">" + itemName + "</td></tr>");
+            }
+
+            sb.append("</table>");
+            sb.append("<br>");
+            sb.append("<table width=\"64\" cellspacing=\"2\">");
+            sb.append("<tr>");
+
+            for (int x = 0; x < max; ++x) {
+                int pageNr = x + 1;
+                if (pageId == pageNr) {
+                    sb.append("<td align=\"center\">" + pageNr + "</td>");
+                } else {
+                    sb.append("<td align=\"center\"><a action=\"bypass -h npc_%objectId%_RaidBossDrop " + bossId + " " + pageNr + "\">" + pageNr + "</a></td>");
+                }
+            }
+
+            sb.append("</tr>");
+            sb.append("</table>");
+            sb.append("<br>");
+            sb.append("<table width=\"160\" cellspacing=\"2\">");
+            sb.append("<tr>");
+            String var10001 = String.valueOf(this._lastPage.get(player.getObjectId()));
+            sb.append("<td width=\"160\" align=\"center\"><a action=\"bypass -h npc_%objectId%_RaidBossInfo " + var10001 + "\">Return</a></td>");
+            sb.append("</tr>");
+            sb.append("</table>");
+            sb.append("</center>");
+            sb.append("</body>");
+            sb.append("</html>");
+            NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
+            html.setHtml(sb.toString());
+            html.replace("%name%", this.getName());
+            html.replace("%objectId%", this.getObjectId());
+            player.sendPacket(html);
         }
-        sb.append("</tr>");
-        sb.append("</table>");
-        sb.append("<br>");
-        sb.append("<table width=\"160\" cellspacing=\"2\">");
-        sb.append("<tr>");
-        sb.append("<td width=\"160\" align=\"center\"><a action=\"bypass -h npc_%objectId%_RaidBossInfo " + this._lastPage.get(player.getObjectId()) + "\">Return</a></td>");
-        sb.append("</tr>");
-        sb.append("</table>");
-        sb.append("</center>");
-        sb.append("</body>");
-        sb.append("</html>");
-        NpcHtmlMessage html = new NpcHtmlMessage(getObjectId());
-        html.setHtml(sb.toString());
-        html.replace("%name%", getName());
-        html.replace("%objectId%", getObjectId());
-        player.sendPacket(html);
     }
 }

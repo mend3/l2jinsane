@@ -16,17 +16,17 @@ public abstract class ZoneForm {
         ZoneManager.getInstance().addDebugItem(item);
     }
 
-    public abstract boolean isInsideZone(int paramInt1, int paramInt2, int paramInt3);
+    public abstract boolean isInsideZone(int var1, int var2, int var3);
 
-    public abstract boolean intersectsRectangle(int paramInt1, int paramInt2, int paramInt3, int paramInt4);
+    public abstract boolean intersectsRectangle(int var1, int var2, int var3, int var4);
 
-    public abstract double getDistanceToZone(int paramInt1, int paramInt2);
+    public abstract double getDistanceToZone(int var1, int var2);
 
     public abstract int getLowZ();
 
     public abstract int getHighZ();
 
-    public abstract void visualizeZone(int paramInt1, int paramInt2);
+    public abstract void visualizeZone(int var1, int var2);
 
     protected boolean lineSegmentsIntersect(int ax1, int ay1, int ax2, int ay2, int bx1, int by1, int bx2, int by2) {
         return Line2D.linesIntersect(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2);

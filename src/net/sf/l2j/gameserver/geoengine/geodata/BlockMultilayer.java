@@ -43,12 +43,12 @@ public class BlockMultilayer extends ABlock {
         _temp.clear();
     }
 
-    public static final void initialize() {
+    public static void initialize() {
         _temp = ByteBuffer.allocate(24384);
         _temp.order(ByteOrder.LITTLE_ENDIAN);
     }
 
-    public static final void release() {
+    public static void release() {
         _temp = null;
     }
 

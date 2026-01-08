@@ -106,7 +106,7 @@ public class Q230_TestOfTheSummoner extends Quest {
     private static final int UNICORN_PHANTASM = 27106;
     private static final int SILHOUETTE_TILFO = 27107;
     private static final int[][] LARA_LISTS = new int[][]{{3347, 3338, 3337}, {3348, 3339, 3340}, {3349, 3342, 3341}, {3350, 3345, 3343}, {3351, 3344, 3346}};
-    private static final Map<Integer, Q230_TestOfTheSummoner.ProgressDuelMob> _duelsInProgress = new ConcurrentHashMap();
+    private static final Map<Integer, Q230_TestOfTheSummoner.ProgressDuelMob> _duelsInProgress = new ConcurrentHashMap<>();
 
     public Q230_TestOfTheSummoner() {
         super(230, "Test of the Summoner");

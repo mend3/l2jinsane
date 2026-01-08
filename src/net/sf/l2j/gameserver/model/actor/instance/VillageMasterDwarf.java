@@ -9,9 +9,11 @@ public final class VillageMasterDwarf extends VillageMaster {
         super(objectId, template);
     }
 
-    protected boolean checkVillageMasterRace(ClassId pclass) {
-        if (pclass == null)
+    protected final boolean checkVillageMasterRace(ClassId pclass) {
+        if (pclass == null) {
             return false;
-        return (pclass.getRace() == ClassRace.DWARF);
+        } else {
+            return pclass.getRace() == ClassRace.DWARF;
+        }
     }
 }

@@ -23,7 +23,6 @@ import net.sf.l2j.gameserver.skills.l2skills.L2SkillDrain;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -48,7 +47,7 @@ public class Cubic {
     protected int _activationtime;
     protected int _activationchance;
     protected boolean _active;
-    protected List<L2Skill> _skills = new ArrayList();
+    protected List<L2Skill> _skills = new ArrayList<>();
     private Future<?> _disappearTask;
     private Future<?> _actionTask;
 
@@ -93,7 +92,7 @@ public class Cubic {
                 this._skills.add(SkillTable.getInstance().getInfo(5116, level));
         }
 
-        this._disappearTask = ThreadPool.schedule(new Cubic.Disappear(), totallifetime);
+        this._disappearTask = ThreadPool.schedule(new Disappear(), totallifetime);
     }
 
     public synchronized void doAction() {
@@ -108,10 +107,10 @@ public class Cubic {
                 case 7:
                 case 8:
                 case 9:
-                    this._actionTask = ThreadPool.scheduleAtFixedRate(new Cubic.Action(this._activationchance), 0L, this._activationtime);
+                    this._actionTask = ThreadPool.scheduleAtFixedRate(new Action(this._activationchance), 0L, this._activationtime);
                     break;
                 case 3:
-                    this._actionTask = ThreadPool.scheduleAtFixedRate(new Cubic.Heal(), 0L, this._activationtime);
+                    this._actionTask = ThreadPool.scheduleAtFixedRate(new Heal(), 0L, this._activationtime);
             }
 
         }
@@ -155,36 +154,34 @@ public class Cubic {
         this._target = null;
         WorldObject ownerTarget = this._owner.getTarget();
         if (ownerTarget != null) {
-            Player enemy;
-            Party ownerParty;
             if (this._owner.isInDuel()) {
-                enemy = DuelManager.getInstance().getDuel(this._owner.getDuelId()).getPlayerA();
+                Player PlayerA = DuelManager.getInstance().getDuel(this._owner.getDuelId()).getPlayerA();
                 Player PlayerB = DuelManager.getInstance().getDuel(this._owner.getDuelId()).getPlayerB();
                 if (DuelManager.getInstance().getDuel(this._owner.getDuelId()).isPartyDuel()) {
-                    ownerParty = enemy.getParty();
+                    Party partyA = PlayerA.getParty();
                     Party partyB = PlayerB.getParty();
                     Party partyEnemy = null;
-                    if (ownerParty != null) {
-                        if (ownerParty.containsPlayer(this._owner)) {
+                    if (partyA != null) {
+                        if (partyA.containsPlayer(this._owner)) {
                             if (partyB != null) {
                                 partyEnemy = partyB;
                             } else {
                                 this._target = PlayerB;
                             }
                         } else {
-                            partyEnemy = ownerParty;
+                            partyEnemy = partyA;
                         }
-                    } else if (enemy == this._owner) {
+                    } else if (PlayerA == this._owner) {
                         if (partyB != null) {
                             partyEnemy = partyB;
                         } else {
                             this._target = PlayerB;
                         }
                     } else {
-                        this._target = enemy;
+                        this._target = PlayerA;
                     }
 
-                    if ((this._target == enemy || this._target == PlayerB) && this._target == ownerTarget) {
+                    if ((this._target == PlayerA || this._target == PlayerB) && this._target == ownerTarget) {
                         return;
                     }
 
@@ -197,8 +194,8 @@ public class Cubic {
                     }
                 }
 
-                if (enemy != this._owner && ownerTarget == enemy) {
-                    this._target = enemy;
+                if (PlayerA != this._owner && ownerTarget == PlayerA) {
+                    this._target = PlayerA;
                 } else if (PlayerB != this._owner && ownerTarget == PlayerB) {
                     this._target = PlayerB;
                 } else {
@@ -206,8 +203,8 @@ public class Cubic {
                 }
             } else if (this._owner.isInOlympiadMode()) {
                 if (this._owner.isOlympiadStart() && ownerTarget instanceof Playable) {
-                    enemy = ownerTarget.getActingPlayer();
-                    if (enemy != null && enemy.getOlympiadGameId() == this._owner.getOlympiadGameId() && enemy.getOlympiadSide() != this._owner.getOlympiadSide()) {
+                    Player targetPlayer = ownerTarget.getActingPlayer();
+                    if (targetPlayer != null && targetPlayer.getOlympiadGameId() == this._owner.getOlympiadGameId() && targetPlayer.getOlympiadSide() != this._owner.getOlympiadSide()) {
                         this._target = (Creature) ownerTarget;
                     }
                 }
@@ -226,7 +223,7 @@ public class Cubic {
                         }
                     }
 
-                    enemy = null;
+                    Player enemy = null;
                     if (this._owner.getPvpFlag() > 0 && !this._owner.isInsideZone(ZoneId.PEACE) || this._owner.isInsideZone(ZoneId.PVP)) {
                         if (!((Creature) ownerTarget).isDead()) {
                             enemy = ownerTarget.getActingPlayer();
@@ -234,7 +231,7 @@ public class Cubic {
 
                         if (enemy != null) {
                             boolean targetIt = true;
-                            ownerParty = this._owner.getParty();
+                            Party ownerParty = this._owner.getParty();
                             if (ownerParty != null) {
                                 if (ownerParty.containsPlayer(enemy)) {
                                     targetIt = false;
@@ -271,6 +268,7 @@ public class Cubic {
 
                             if (targetIt) {
                                 this._target = enemy;
+                                return;
                             }
                         }
                     }
@@ -281,11 +279,7 @@ public class Cubic {
     }
 
     public void useCubicContinuous(Cubic activeCubic, L2Skill skill, WorldObject[] targets) {
-        WorldObject[] var4 = targets;
-        int var5 = targets.length;
-
-        for (int var6 = 0; var6 < var5; ++var6) {
-            WorldObject obj = var4[var6];
+        for (WorldObject obj : targets) {
             if (obj instanceof Creature target) {
                 if (!target.isDead()) {
                     if (skill.isOffensive()) {
@@ -299,10 +293,7 @@ public class Cubic {
                     }
 
                     if (target instanceof Player && ((Player) target).isInDuel() && skill.getSkillType() == L2SkillType.DEBUFF && activeCubic.getOwner().getDuelId() == ((Player) target).getDuelId()) {
-                        Iterator var13 = skill.getEffects(activeCubic.getOwner(), target).iterator();
-
-                        while (var13.hasNext()) {
-                            L2Effect debuff = (L2Effect) var13.next();
+                        for (L2Effect debuff : skill.getEffects(activeCubic.getOwner(), target)) {
                             if (debuff != null) {
                                 DuelManager.getInstance().onBuff((Player) target, debuff);
                             }
@@ -317,11 +308,7 @@ public class Cubic {
     }
 
     public void useCubicMdam(Cubic activeCubic, L2Skill skill, WorldObject[] targets) {
-        WorldObject[] var4 = targets;
-        int var5 = targets.length;
-
-        for (int var6 = 0; var6 < var5; ++var6) {
-            WorldObject obj = var4[var6];
+        for (WorldObject obj : targets) {
             if (obj instanceof Creature target) {
                 if (target.isAlikeDead()) {
                     if (!(target instanceof Player)) {
@@ -361,12 +348,7 @@ public class Cubic {
     }
 
     public void useCubicDisabler(L2SkillType type, Cubic activeCubic, L2Skill skill, WorldObject[] targets) {
-        WorldObject[] var5 = targets;
-        int var6 = targets.length;
-
-        label89:
-        for (int var7 = 0; var7 < var6; ++var7) {
-            WorldObject obj = var5[var7];
+        for (WorldObject obj : targets) {
             if (obj instanceof Creature target) {
                 if (!target.isDead()) {
                     byte shld = Formulas.calcShldUse(activeCubic.getOwner(), target, skill);
@@ -380,18 +362,12 @@ public class Cubic {
                             }
 
                             if (target instanceof Player && ((Player) target).isInDuel() && skill.getSkillType() == L2SkillType.DEBUFF && activeCubic.getOwner().getDuelId() == ((Player) target).getDuelId()) {
-                                Iterator var18 = skill.getEffects(activeCubic.getOwner(), target).iterator();
-
-                                while (true) {
-                                    if (!var18.hasNext()) {
-                                        continue label89;
-                                    }
-
-                                    L2Effect debuff = (L2Effect) var18.next();
+                                for (L2Effect debuff : skill.getEffects(activeCubic.getOwner(), target)) {
                                     if (debuff != null) {
                                         DuelManager.getInstance().onBuff((Player) target, debuff);
                                     }
                                 }
+                                break;
                             }
 
                             skill.getEffects(activeCubic, target, null);
@@ -403,29 +379,20 @@ public class Cubic {
                             }
 
                             int count = skill.getMaxNegatedEffects() > 0 ? 0 : -2;
-                            L2Effect[] var14 = effects;
-                            int var15 = effects.length;
-                            int var16 = 0;
 
-                            while (true) {
-                                if (var16 >= var15) {
-                                    continue label89;
-                                }
-
-                                L2Effect e = var14[var16];
+                            for (L2Effect e : effects) {
                                 if (e.getSkill().isDebuff() && count < skill.getMaxNegatedEffects() && e.getSkill().getId() != 4215 && e.getSkill().getId() != 4515 && e.getSkill().getId() != 4082) {
                                     e.exit();
                                     if (count > -1) {
                                         ++count;
                                     }
                                 }
-
-                                ++var16;
                             }
+                            break;
                         case AGGDAMAGE:
                             if (Formulas.calcCubicSkillSuccess(activeCubic, target, skill, shld, bss)) {
                                 if (target instanceof Attackable) {
-                                    target.getAI().notifyEvent(AiEventType.AGGRESSION, activeCubic.getOwner(), (int) (150.0D * skill.getPower() / (double) (target.getLevel() + 7)));
+                                    target.getAI().notifyEvent(AiEventType.AGGRESSION, activeCubic.getOwner(), (int) ((double) 150.0F * skill.getPower() / (double) (target.getLevel() + 7)));
                                 }
 
                                 skill.getEffects(activeCubic, target, null);
@@ -451,17 +418,14 @@ public class Cubic {
 
     public void cubicTargetForHeal() {
         Creature target = null;
-        double percentleft = 100.0D;
+        double percentleft = 100.0F;
         Party party = this._owner.getParty();
         if (this._owner.isInDuel() && !DuelManager.getInstance().getDuel(this._owner.getDuelId()).isPartyDuel()) {
             party = null;
         }
 
         if (party != null && !this._owner.isInOlympiadMode()) {
-            Iterator var5 = party.getMembers().iterator();
-
-            while (var5.hasNext()) {
-                Creature partyMember = (Creature) var5.next();
+            for (Creature partyMember : party.getMembers()) {
                 if (!partyMember.isDead() && this.isInCubicRange(this._owner, partyMember) && partyMember.getCurrentHp() < (double) partyMember.getMaxHp() && percentleft > partyMember.getCurrentHp() / (double) partyMember.getMaxHp()) {
                     percentleft = partyMember.getCurrentHp() / (double) partyMember.getMaxHp();
                     target = partyMember;
@@ -489,17 +453,6 @@ public class Cubic {
 
     public boolean givenByOther() {
         return this._givenByOther;
-    }
-
-    private class Disappear implements Runnable {
-        Disappear() {
-        }
-
-        public void run() {
-            Cubic.this.stopAction();
-            Cubic.this._owner.delCubic(Cubic.this._id);
-            Cubic.this._owner.broadcastUserInfo();
-        }
     }
 
     private class Action implements Runnable {
@@ -568,10 +521,8 @@ public class Cubic {
         public void run() {
             if (!Cubic.this._owner.isDead() && Cubic.this._owner.isOnline()) {
                 L2Skill skill = null;
-                Iterator var2 = Cubic.this._skills.iterator();
 
-                while (var2.hasNext()) {
-                    L2Skill sk = (L2Skill) var2.next();
+                for (L2Skill sk : Cubic.this._skills) {
                     if (sk.getId() == 4051) {
                         skill = sk;
                         break;
@@ -601,6 +552,17 @@ public class Cubic {
                 Cubic.this._owner.broadcastUserInfo();
                 Cubic.this.cancelDisappear();
             }
+        }
+    }
+
+    private class Disappear implements Runnable {
+        Disappear() {
+        }
+
+        public void run() {
+            Cubic.this.stopAction();
+            Cubic.this._owner.delCubic(Cubic.this._id);
+            Cubic.this._owner.broadcastUserInfo();
         }
     }
 }

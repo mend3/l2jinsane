@@ -5,15 +5,13 @@ import net.sf.l2j.gameserver.model.World;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.network.serverpackets.StatusUpdate;
 
-import java.util.Collection;
-
 public class StatusRealTimeTaskManager implements Runnable {
     public StatusRealTimeTaskManager() {
         ThreadPool.scheduleAtFixedRate(this, 500L, 500L);
     }
 
     public static StatusRealTimeTaskManager getInstance() {
-        return SingletonHolder._instance;
+        return StatusRealTimeTaskManager.SingletonHolder._instance;
     }
 
     private static void updateStatus(Player _target, Player player) {
@@ -27,11 +25,9 @@ public class StatusRealTimeTaskManager implements Runnable {
 
     public void run() {
         try {
-            Collection<Player> allPlayers = World.getInstance().getPlayers();
-            for (Player player : allPlayers) {
+            for (Player player : World.getInstance().getPlayers()) {
                 try {
-                    if (player != null &&
-                            player.getTarget() != null && player.getTarget() instanceof Player target) {
+                    if (player != null && player.getTarget() != null && player.getTarget() instanceof Player target) {
                         updateStatus(target, player);
                     }
                 } catch (Exception e) {
@@ -41,6 +37,7 @@ public class StatusRealTimeTaskManager implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private static final class SingletonHolder {

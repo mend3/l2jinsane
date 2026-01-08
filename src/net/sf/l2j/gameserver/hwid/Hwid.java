@@ -194,8 +194,7 @@ public class Hwid {
 
     public static void enterlog(Player player, GameClient client) {
         if (HwidConfig.ALLOW_GUARD_SYSTEM && HwidConfig.ENABLE_CONSOLE_LOG) {
-            _log.info("HWID : [" + client.getHWID() + "], character: [" + player.getName() + "] PlayerId: [" + player.getObjectId() + " ]");
-            _log.info("HWID: [" + client.getHWID() + "], character: [" + player.getName() + "]");
+            _log.info("HWID: [" + client.getHWID() + "], character: [" + player.getName() + "] PlayerId: [" + player.getObjectId() + " ]");
         }
         int boxCanUse = HwidConfig.PROTECT_WINDOWS_COUNT + 1;
         if (boxCanUse < 0 || boxCanUse == 0) {
@@ -205,13 +204,6 @@ public class Hwid {
         HWID.auditGMAction(player.getHWID(), player.getName());
         IPLog.auditGMAction(player.getName(), player.getClient().getConnection().getInetAddress().getHostAddress(), player.getHWID());
         HwidManager.getInstance().validBox(player, boxCanUse, World.getInstance().getPlayers(), Boolean.TRUE);
-    }
-
-    public static void waitSecs(int i) {
-        try {
-            Thread.sleep((i * 1000L));
-        } catch (InterruptedException interruptedException) {
-        }
     }
 
     public int getCountByHWID(String HWID) {

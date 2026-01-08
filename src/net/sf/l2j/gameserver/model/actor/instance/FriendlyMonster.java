@@ -11,7 +11,7 @@ public class FriendlyMonster extends Attackable {
     }
 
     public boolean isAutoAttackable(Creature attacker) {
-        return (attacker instanceof Player && ((Player) attacker).getKarma() > 0);
+        return attacker instanceof Player && ((Player) attacker).getKarma() > 0;
     }
 
     public boolean isAggressive() {

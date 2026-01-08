@@ -6,6 +6,8 @@ import net.sf.l2j.gameserver.data.xml.IconsTable;
 import net.sf.l2j.gameserver.enums.items.*;
 import net.sf.l2j.gameserver.model.WorldObject;
 import net.sf.l2j.gameserver.model.actor.Creature;
+import net.sf.l2j.gameserver.model.actor.Player;
+import net.sf.l2j.gameserver.model.actor.Summon;
 import net.sf.l2j.gameserver.model.holder.IntIntHolder;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.network.SystemMessageId;
@@ -21,77 +23,41 @@ import java.util.logging.Logger;
 
 public abstract class Item {
     public static final int TYPE1_WEAPON_RING_EARRING_NECKLACE = 0;
-
     public static final int TYPE1_SHIELD_ARMOR = 1;
-
     public static final int TYPE1_ITEM_QUESTITEM_ADENA = 4;
-
     public static final int TYPE2_WEAPON = 0;
-
     public static final int TYPE2_SHIELD_ARMOR = 1;
-
     public static final int TYPE2_ACCESSORY = 2;
-
     public static final int TYPE2_QUEST = 3;
-
     public static final int TYPE2_MONEY = 4;
-
     public static final int TYPE2_OTHER = 5;
-
     public static final int SLOT_NONE = 0;
-
     public static final int SLOT_UNDERWEAR = 1;
-
     public static final int SLOT_R_EAR = 2;
-
     public static final int SLOT_L_EAR = 4;
-
     public static final int SLOT_LR_EAR = 6;
-
     public static final int SLOT_NECK = 8;
-
     public static final int SLOT_R_FINGER = 16;
-
     public static final int SLOT_L_FINGER = 32;
-
     public static final int SLOT_LR_FINGER = 48;
-
     public static final int SLOT_HEAD = 64;
-
     public static final int SLOT_R_HAND = 128;
-
     public static final int SLOT_L_HAND = 256;
-
     public static final int SLOT_GLOVES = 512;
-
     public static final int SLOT_CHEST = 1024;
-
     public static final int SLOT_LEGS = 2048;
-
     public static final int SLOT_FEET = 4096;
-
     public static final int SLOT_BACK = 8192;
-
     public static final int SLOT_LR_HAND = 16384;
-
     public static final int SLOT_FULL_ARMOR = 32768;
-
     public static final int SLOT_FACE = 65536;
-
     public static final int SLOT_ALLDRESS = 131072;
-
     public static final int SLOT_HAIR = 262144;
-
     public static final int SLOT_HAIRALL = 524288;
-
     public static final int SLOT_WOLF = -100;
-
     public static final int SLOT_HATCHLING = -101;
-
     public static final int SLOT_STRIDER = -102;
-
     public static final int SLOT_BABYPET = -103;
-
     public static final int SLOT_ALLWEAPON = 16512;
     public static final Map<String, Integer> _slots = new HashMap<>();
     protected static final Logger _log = Logger.getLogger(Item.class.getName());
@@ -164,7 +130,7 @@ public abstract class Item {
         this._destroyable = set.getBool("is_destroyable", true);
         this._tradable = set.getBool("is_tradable", true);
         this._depositable = set.getBool("is_depositable", true);
-        this._heroItem = ((this._itemId >= 6611 && this._itemId <= 6621) || this._itemId == 6842);
+        this._heroItem = this._itemId >= 6611 && this._itemId <= 6621 || this._itemId == 6842;
         this._isOlyRestricted = set.getBool("is_oly_restricted", false);
         this._defaultAction = set.getEnum("default_action", ActionType.class, ActionType.none);
         String skills = set.getString("item_skill", null);
@@ -172,29 +138,32 @@ public abstract class Item {
             String[] skillsSplit = skills.split(";");
             this._skillHolder = new IntIntHolder[skillsSplit.length];
             int used = 0;
+
             for (String element : skillsSplit) {
                 try {
                     String[] skillSplit = element.split("-");
                     int id = Integer.parseInt(skillSplit[0]);
                     int level = Integer.parseInt(skillSplit[1]);
                     if (id == 0) {
-                        _log.info("Ignoring item_skill(" + element + ") for item " + this + ". Skill id is 0.");
+                        _log.info("Ignoring item_skill(" + element + ") for item " + this.toString() + ". Skill id is 0.");
                     } else if (level == 0) {
-                        _log.info("Ignoring item_skill(" + element + ") for item " + this + ". Skill level is 0.");
+                        _log.info("Ignoring item_skill(" + element + ") for item " + this.toString() + ". Skill level is 0.");
                     } else {
                         this._skillHolder[used] = new IntIntHolder(id, level);
-                        used++;
+                        ++used;
                     }
-                } catch (Exception e) {
-                    _log.warning("Failed to parse item_skill(" + element + ") for item " + this + ". The used format is wrong.");
+                } catch (Exception var12) {
+                    _log.warning("Failed to parse item_skill(" + element + ") for item " + this.toString() + ". The used format is wrong.");
                 }
             }
+
             if (used != this._skillHolder.length) {
                 IntIntHolder[] skillHolder = new IntIntHolder[used];
                 System.arraycopy(this._skillHolder, 0, skillHolder, 0, used);
                 this._skillHolder = skillHolder;
             }
         }
+
     }
 
     public static String getItemIcon(int itemId) {
@@ -204,8 +173,10 @@ public abstract class Item {
     public static String getItemNameById(int itemId) {
         Item item = ItemTable.getInstance().getTemplate(itemId);
         String itemName = "NoName";
-        if (itemId != 0)
+        if (itemId != 0) {
             itemName = item.getName();
+        }
+
         return itemName;
     }
 
@@ -234,7 +205,7 @@ public abstract class Item {
     }
 
     public final boolean isCrystallizable() {
-        return (this._crystalType != CrystalType.NONE && this._crystalCount > 0);
+        return this._crystalType != CrystalType.NONE && this._crystalCount > 0;
     }
 
     public final CrystalType getCrystalType() {
@@ -252,25 +223,27 @@ public abstract class Item {
     public final int getCrystalCount(int enchantLevel) {
         if (enchantLevel > 3) {
             switch (this._type2) {
+                case 0:
+                    return this._crystalCount + this.getCrystalType().getCrystalEnchantBonusWeapon() * (2 * enchantLevel - 3);
                 case 1:
                 case 2:
-                    return this._crystalCount + getCrystalType().getCrystalEnchantBonusArmor() * (3 * enchantLevel - 6);
-                case 0:
-                    return this._crystalCount + getCrystalType().getCrystalEnchantBonusWeapon() * (2 * enchantLevel - 3);
+                    return this._crystalCount + this.getCrystalType().getCrystalEnchantBonusArmor() * (3 * enchantLevel - 6);
+                default:
+                    return this._crystalCount;
             }
-            return this._crystalCount;
-        }
-        if (enchantLevel > 0) {
+        } else if (enchantLevel > 0) {
             switch (this._type2) {
+                case 0:
+                    return this._crystalCount + this.getCrystalType().getCrystalEnchantBonusWeapon() * enchantLevel;
                 case 1:
                 case 2:
-                    return this._crystalCount + getCrystalType().getCrystalEnchantBonusArmor() * enchantLevel;
-                case 0:
-                    return this._crystalCount + getCrystalType().getCrystalEnchantBonusWeapon() * enchantLevel;
+                    return this._crystalCount + this.getCrystalType().getCrystalEnchantBonusArmor() * enchantLevel;
+                default:
+                    return this._crystalCount;
             }
+        } else {
             return this._crystalCount;
         }
-        return this._crystalCount;
     }
 
     public final String getName() {
@@ -294,7 +267,7 @@ public abstract class Item {
     }
 
     public boolean isEquipable() {
-        return (getBodyPart() != 0 && !(getItemType() instanceof EtcItemType));
+        return this.getBodyPart() != 0 && !(this.getItemType() instanceof EtcItemType);
     }
 
     public final int getReferencePrice() {
@@ -322,32 +295,43 @@ public abstract class Item {
     }
 
     public final List<Func> getStatFuncs(ItemInstance item, Creature player) {
-        if (this._funcTemplates == null || this._funcTemplates.isEmpty())
+        if (this._funcTemplates != null && !this._funcTemplates.isEmpty()) {
+            List<Func> funcs = new ArrayList<>(this._funcTemplates.size());
+            Env env = new Env();
+            env.setCharacter(player);
+            env.setTarget(player);
+            env.setItem(item);
+
+            for (FuncTemplate t : this._funcTemplates) {
+                Func f = t.getFunc(env, item);
+                if (f != null) {
+                    funcs.add(f);
+                }
+            }
+
+            return funcs;
+        } else {
             return Collections.emptyList();
-        List<Func> funcs = new ArrayList<>(this._funcTemplates.size());
-        Env env = new Env();
-        env.setCharacter(player);
-        env.setTarget(player);
-        env.setItem(item);
-        for (FuncTemplate t : this._funcTemplates) {
-            Func f = t.getFunc(env, item);
-            if (f != null)
-                funcs.add(f);
         }
-        return funcs;
     }
 
     public void attach(FuncTemplate f) {
-        if (this._funcTemplates == null)
+        if (this._funcTemplates == null) {
             this._funcTemplates = new ArrayList<>(1);
+        }
+
         this._funcTemplates.add(f);
     }
 
     public final void attach(Condition c) {
-        if (this._preConditions == null)
+        if (this._preConditions == null) {
             this._preConditions = new ArrayList<>();
-        if (!this._preConditions.contains(c))
+        }
+
+        if (!this._preConditions.contains(c)) {
             this._preConditions.add(c);
+        }
+
     }
 
     public final IntIntHolder[] getSkills() {
@@ -355,52 +339,59 @@ public abstract class Item {
     }
 
     public boolean checkCondition(Creature activeChar, WorldObject target, boolean sendMessage) {
-        if ((isOlyRestrictedItem() || isHeroItem()) && activeChar instanceof net.sf.l2j.gameserver.model.actor.Player && activeChar.getActingPlayer().isInOlympiadMode()) {
-            if (isEquipable()) {
+        if ((this.isOlyRestrictedItem() || this.isHeroItem()) && activeChar instanceof Player && activeChar.getActingPlayer().isInOlympiadMode()) {
+            if (this.isEquipable()) {
                 activeChar.getActingPlayer().sendPacket(SystemMessageId.THIS_ITEM_CANT_BE_EQUIPPED_FOR_THE_OLYMPIAD_EVENT);
             } else {
                 activeChar.getActingPlayer().sendPacket(SystemMessageId.THIS_ITEM_IS_NOT_AVAILABLE_FOR_THE_OLYMPIAD_EVENT);
             }
+
             return false;
-        }
-        if (this._preConditions == null)
+        } else if (this._preConditions == null) {
             return true;
-        Env env = new Env();
-        env.setCharacter(activeChar);
-        if (target instanceof Creature)
-            env.setTarget((Creature) target);
-        for (Condition preCondition : this._preConditions) {
-            if (preCondition == null)
-                continue;
-            if (!preCondition.test(env)) {
-                if (activeChar instanceof net.sf.l2j.gameserver.model.actor.Summon) {
-                    activeChar.getActingPlayer().sendPacket(SystemMessageId.PET_CANNOT_USE_ITEM);
+        } else {
+            Env env = new Env();
+            env.setCharacter(activeChar);
+            if (target instanceof Creature) {
+                env.setTarget((Creature) target);
+            }
+
+            for (Condition preCondition : this._preConditions) {
+                if (preCondition != null && !preCondition.test(env)) {
+                    if (activeChar instanceof Summon) {
+                        activeChar.getActingPlayer().sendPacket(SystemMessageId.PET_CANNOT_USE_ITEM);
+                        return false;
+                    }
+
+                    if (sendMessage) {
+                        String msg = preCondition.getMessage();
+                        int msgId = preCondition.getMessageId();
+                        if (msg != null) {
+                            activeChar.sendMessage(msg);
+                        } else if (msgId != 0) {
+                            SystemMessage sm = SystemMessage.getSystemMessage(msgId);
+                            if (preCondition.isAddName()) {
+                                sm.addItemName(this._itemId);
+                            }
+
+                            activeChar.sendPacket(sm);
+                        }
+                    }
+
                     return false;
                 }
-                if (sendMessage) {
-                    String msg = preCondition.getMessage();
-                    int msgId = preCondition.getMessageId();
-                    if (msg != null) {
-                        activeChar.sendMessage(msg);
-                    } else if (msgId != 0) {
-                        SystemMessage sm = SystemMessage.getSystemMessage(msgId);
-                        if (preCondition.isAddName())
-                            sm.addItemName(this._itemId);
-                        activeChar.sendPacket(sm);
-                    }
-                }
-                return false;
             }
+
+            return true;
         }
-        return true;
     }
 
     public boolean isConditionAttached() {
-        return (this._preConditions != null && !this._preConditions.isEmpty());
+        return this._preConditions != null && !this._preConditions.isEmpty();
     }
 
     public boolean isQuestItem() {
-        return (getItemType() == EtcItemType.QUEST);
+        return this.getItemType() == EtcItemType.QUEST;
     }
 
     public final boolean isHeroItem() {
@@ -412,15 +403,15 @@ public abstract class Item {
     }
 
     public boolean isPetItem() {
-        return (getItemType() == ArmorType.PET || getItemType() == WeaponType.PET);
+        return this.getItemType() == ArmorType.PET || this.getItemType() == WeaponType.PET;
     }
 
     public boolean isPotion() {
-        return (getItemType() == EtcItemType.POTION);
+        return this.getItemType() == EtcItemType.POTION;
     }
 
     public boolean isElixir() {
-        return (getItemType() == EtcItemType.ELIXIR);
+        return this.getItemType() == EtcItemType.ELIXIR;
     }
 
     public ActionType getDefaultAction() {
@@ -428,12 +419,14 @@ public abstract class Item {
     }
 
     public String toString() {
-        return this._name + " (" + this._name + ")";
+        return this._name + " (" + this._itemId + ")";
     }
 
     public void addQuestEvent(Quest quest) {
-        if (this._questEvents.isEmpty())
+        if (this._questEvents.isEmpty()) {
             this._questEvents = new ArrayList<>(3);
+        }
+
         this._questEvents.add(quest);
     }
 

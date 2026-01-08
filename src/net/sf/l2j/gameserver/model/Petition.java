@@ -15,31 +15,25 @@ import java.util.List;
 
 public class Petition {
     private final List<CreatureSay> _messageLog = new ArrayList<>();
-
     private final int _id;
-
     private final PetitionType _type;
-
     private final Player _petitioner;
-
     private final long _submitTime = System.currentTimeMillis();
-
     private final String _content;
-
-    private PetitionState _state = PetitionState.PENDING;
-
+    private PetitionState _state;
     private Player _responder;
 
     public Petition(Player petitioner, String content, int type) {
-        type--;
+        this._state = PetitionState.PENDING;
+        --type;
         this._id = IdFactory.getInstance().getNextId();
         this._type = PetitionType.values()[type];
         this._content = content;
         this._petitioner = petitioner;
     }
 
-    public boolean addLogMessage(CreatureSay cs) {
-        return this._messageLog.add(cs);
+    public void addLogMessage(CreatureSay cs) {
+        this._messageLog.add(cs);
     }
 
     public List<CreatureSay> getLogMessages() {
@@ -47,19 +41,24 @@ public class Petition {
     }
 
     public boolean endPetitionConsultation(PetitionState endState) {
-        setState(endState);
-        if (this._responder != null && this._responder.isOnline())
+        this.setState(endState);
+        if (this._responder != null && this._responder.isOnline()) {
             if (endState == PetitionState.RESPONDER_REJECT) {
                 this._petitioner.sendMessage("Your petition was rejected. Please try again later.");
             } else {
                 this._responder.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.PETITION_ENDED_WITH_S1).addCharName(this._petitioner));
-                if (endState == PetitionState.PETITIONER_CANCEL)
-                    this._responder.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.RECENT_NO_S1_CANCELED).addNumber(getId()));
+                if (endState == PetitionState.PETITIONER_CANCEL) {
+                    this._responder.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.RECENT_NO_S1_CANCELED).addNumber(this.getId()));
+                }
             }
-        if (this._petitioner != null && this._petitioner.isOnline())
+        }
+
+        if (this._petitioner != null && this._petitioner.isOnline()) {
             this._petitioner.sendPacket(SystemMessageId.THIS_END_THE_PETITION_PLEASE_PROVIDE_FEEDBACK);
-        PetitionManager.getInstance().getCompletedPetitions().put(getId(), this);
-        return (PetitionManager.getInstance().getPendingPetitions().remove(getId()) != null);
+        }
+
+        PetitionManager.getInstance().getCompletedPetitions().put(this.getId(), this);
+        return PetitionManager.getInstance().getPendingPetitions().remove(this.getId()) != null;
     }
 
     public String getContent() {
@@ -79,9 +78,9 @@ public class Petition {
     }
 
     public void setResponder(Player respondingAdmin) {
-        if (this._responder != null)
-            return;
-        this._responder = respondingAdmin;
+        if (this._responder == null) {
+            this._responder = respondingAdmin;
+        }
     }
 
     public long getSubmitTime() {
@@ -101,16 +100,16 @@ public class Petition {
     }
 
     public void sendPetitionerPacket(L2GameServerPacket responsePacket) {
-        if (this._petitioner == null || !this._petitioner.isOnline())
-            return;
-        this._petitioner.sendPacket(responsePacket);
+        if (this._petitioner != null && this._petitioner.isOnline()) {
+            this._petitioner.sendPacket(responsePacket);
+        }
     }
 
     public void sendResponderPacket(L2GameServerPacket responsePacket) {
-        if (this._responder == null || !this._responder.isOnline()) {
-            endPetitionConsultation(PetitionState.RESPONDER_MISSING);
-            return;
+        if (this._responder != null && this._responder.isOnline()) {
+            this._responder.sendPacket(responsePacket);
+        } else {
+            this.endPetitionConsultation(PetitionState.RESPONDER_MISSING);
         }
-        this._responder.sendPacket(responsePacket);
     }
 }
