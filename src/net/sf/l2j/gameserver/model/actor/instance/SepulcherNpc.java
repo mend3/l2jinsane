@@ -199,7 +199,7 @@ public class SepulcherNpc extends Folk {
         int doorId = FourSepulchersManager.getInstance().getHallGateKeepers().get(npcId);
         Door door = DoorData.getInstance().getDoor(doorId);
         door.openMe();
-        ThreadPool.schedule(() -> door.closeMe(), 10000L);
+        ThreadPool.schedule(door::closeMe, 10000L);
         FourSepulchersManager.getInstance().spawnMysteriousBox(npcId);
         this.sayInShout("The monsters have spawned!");
     }

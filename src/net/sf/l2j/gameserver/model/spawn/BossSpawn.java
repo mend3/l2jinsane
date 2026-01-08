@@ -97,7 +97,7 @@ public class BossSpawn {
         this._currentMp = 0.0F;
         this._respawnTime = respawnTime;
         this.cancelTask();
-        this._task = ThreadPool.schedule(() -> this.onSpawn(), respawnDelay * 3600000);
+        this._task = ThreadPool.schedule(this::onSpawn, respawnDelay * 3600000);
         this.updateOnDb();
         LOGGER.info("Raid boss: {} - {} ({}h).", new Object[]{this._spawn.getNpc().getName(), (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(respawnTime), respawnDelay});
         if (Config.LIST_RAID_BOSS_IDS.contains(this._spawn.getNpc().getNpcId())) {

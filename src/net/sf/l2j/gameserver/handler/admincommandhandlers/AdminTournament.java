@@ -14,19 +14,11 @@ public class AdminTournament implements IAdminCommandHandler {
     public static boolean _arena_manual = false;
 
     private static void initEventArena() {
-        ThreadPool.schedule(new Runnable() {
-            public void run() {
-                ArenaTask.SpawnEvent();
-            }
-        }, 10L);
+        ThreadPool.schedule(ArenaTask::SpawnEvent, 10L);
     }
 
     private static void finishEventArena() {
-        ThreadPool.schedule(new Runnable() {
-            public void run() {
-                ArenaTask.finishEvent();
-            }
-        }, 10L);
+        ThreadPool.schedule(ArenaTask::finishEvent, 10L);
     }
 
     public boolean useAdminCommand(String command, Player activeChar) {

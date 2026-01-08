@@ -81,9 +81,7 @@ public class QueenAnt extends L2AttackableAIScript {
 
             ((Monster) npc).getMinionList().getSpawnedMinions().stream().filter((m) -> {
                 return m.getNpcId() == 29005 && !ZONE.isInsideZone(m);
-            }).forEach((m) -> {
-                m.teleToMaster();
-            });
+            }).forEach(Monster::teleToMaster);
         } else if (event.equalsIgnoreCase("chaos")) {
             ((Monster) npc).getMinionList().getSpawnedMinions().stream().filter((m) -> {
                 return m.getNpcId() == 29005 && m.isInCombat() && Rnd.get(100) < 66;

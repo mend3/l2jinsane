@@ -430,7 +430,7 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
             this.getActor().teleportTo(TeleportType.TOWN);
             this.getActor().doRevive();
         }, 5000L);
-        ThreadPool.schedule(() -> this.searchCityRandomLoc(), 8000L);
+        ThreadPool.schedule(this::searchCityRandomLoc, 8000L);
         ThreadPool.schedule(() -> {
             Iterator<Gatekeeper> var1 = this.getActor().getKnownTypeInRadius(Gatekeeper.class, 1000).iterator();
             if (var1.hasNext()) {

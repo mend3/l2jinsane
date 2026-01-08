@@ -49,9 +49,7 @@ public class FishingChampionshipManager {
             this._endDate = System.currentTimeMillis();
             this.finishChamp();
         } else {
-            ThreadPool.schedule(() -> {
-                this.finishChamp();
-            }, this._endDate - System.currentTimeMillis());
+            ThreadPool.schedule(this::finishChamp, this._endDate - System.currentTimeMillis());
         }
 
     }
@@ -199,9 +197,7 @@ public class FishingChampionshipManager {
         this.setEndOfChamp();
         this.shutdown();
         LOGGER.info("A new Fishing Championship event period has started.");
-        ThreadPool.schedule(() -> {
-            this.finishChamp();
-        }, this._endDate - System.currentTimeMillis());
+        ThreadPool.schedule(this::finishChamp, this._endDate - System.currentTimeMillis());
     }
 
     private void recalculateMinLength() {

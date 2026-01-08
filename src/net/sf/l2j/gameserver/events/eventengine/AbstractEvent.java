@@ -340,8 +340,8 @@ public abstract class AbstractEvent implements Runnable {
         this.state = EventState.TELEPORTING;
         announce("The event has ended. Players will be teleported back in 10 seconds.", false);
         paralizePlayers();
-        schedule(() -> restorePlayers(), 10);
-        schedule(() -> cleanUp(), 11);
+        schedule(this::restorePlayers, 10);
+        schedule(this::cleanUp, 11);
     }
 
     protected void onCheck() {
@@ -352,7 +352,7 @@ public abstract class AbstractEvent implements Runnable {
         announce("The registrations have closed. The event has started.", true);
         announce("You will be teleported in 20 seconds. Get ready!", false);
         preparePlayers();
-        schedule(() -> teleportPlayers(), 20);
+        schedule(this::teleportPlayers, 20);
     }
 
     protected void cancelEndTask() {
@@ -377,7 +377,7 @@ public abstract class AbstractEvent implements Runnable {
         paralizePlayers();
         announce("You have been teleported to the event.", false);
         announce("The event will begin in 20 seconds!", false);
-        schedule(() -> begin(), 20);
+        schedule(this::begin, 20);
     }
 
     protected void begin() {
@@ -391,7 +391,7 @@ public abstract class AbstractEvent implements Runnable {
         unparalizePlayers();
         announce("The event has begun!", false);
         if (getId() == 4) {
-            this.checkSayTask = ThreadPool.scheduleAtFixedRate(() -> onCheck(), 10000L, 30000L);
+            this.checkSayTask = ThreadPool.scheduleAtFixedRate(this::onCheck, 10000L, 30000L);
         } else {
             warnEventEnd(this.runningMinutes * 60);
             schedule(() -> warnEventEnd(this.runningMinutes * 60 / 2), this.runningMinutes * 60 / 2);
@@ -401,7 +401,7 @@ public abstract class AbstractEvent implements Runnable {
             schedule(() -> warnEventEnd(3), this.runningMinutes * 60 - 3);
             schedule(() -> warnEventEnd(2), this.runningMinutes * 60 - 2);
             schedule(() -> warnEventEnd(1), this.runningMinutes * 60 - 1);
-            this.endTask = schedule(() -> end(), this.runningMinutes * 60);
+            this.endTask = schedule(this::end, this.runningMinutes * 60);
         }
         if (this.eventRes != null)
             this.resTask = ThreadPool.scheduleAtFixedRate(this.eventRes, 8000L, 8000L);

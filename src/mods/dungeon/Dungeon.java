@@ -78,8 +78,8 @@ public class Dungeon {
                 DungeonManager.getInstance().removeDungeon(this);
             } else {
                 broadcastScreenMessage("You have completed stage " + (this.currentStage.order() - 1) + "! Next stage begins in 10 seconds.", 5);
-                ThreadPool.schedule(() -> teleToStage(), 5000L);
-                this.nextTask = ThreadPool.schedule(() -> beginStage(), 10000L);
+                ThreadPool.schedule(this::teleToStage, 5000L);
+                this.nextTask = ThreadPool.schedule(this::beginStage, 10000L);
             }
         }
     }
@@ -133,7 +133,7 @@ public class Dungeon {
         for (DungeonMob mob : this.mobs)
             deleteMob(mob);
         broadcastScreenMessage("You have failed to complete the dungeon. You will be teleported back in 5 seconds.", 5);
-        ThreadPool.schedule(() -> teleToTown(), 5000L);
+        ThreadPool.schedule(this::teleToTown, 5000L);
         InstanceManager.getInstance().deleteInstance(this.instance.getId());
         DungeonManager.getInstance().removeDungeon(this);
         if (this.nextTask != null)
@@ -159,9 +159,9 @@ public class Dungeon {
             spawnMob(mobId, this.currentStage.mobs().get(mobId));
         }
         this.stageBeginTime = System.currentTimeMillis();
-        this.timerTask = ThreadPool.scheduleAtFixedRate(() -> broadcastTimer(), 5000L, 1000L);
+        this.timerTask = ThreadPool.scheduleAtFixedRate(this::broadcastTimer, 5000L, 1000L);
         this.nextTask = null;
-        this.dungeonCancelTask = ThreadPool.schedule(() -> cancelDungeon(), (60000L * this.currentStage.minutes()));
+        this.dungeonCancelTask = ThreadPool.schedule(this::cancelDungeon, (60000L * this.currentStage.minutes()));
         broadcastScreenMessage("You have " + this.currentStage.minutes() + " minutes to finish stage " + this.currentStage.order() + "!", 5);
     }
 
@@ -191,7 +191,7 @@ public class Dungeon {
         }
         teleToStage();
         broadcastScreenMessage("Stage " + this.currentStage.order() + " begins in 10 seconds!", 5);
-        this.nextTask = ThreadPool.schedule(() -> beginStage(), 10000L);
+        this.nextTask = ThreadPool.schedule(this::beginStage, 10000L);
     }
 
     private void beginTeleport() {
@@ -200,7 +200,7 @@ public class Dungeon {
             player.broadcastPacket(new MagicSkillUse(player, 1050, 1, 10000, 10000));
             broadcastScreenMessage("You will be teleported in 10 seconds!", 3);
         }
-        this.nextTask = ThreadPool.schedule(() -> teleportPlayers(), 10000L);
+        this.nextTask = ThreadPool.schedule(this::teleportPlayers, 10000L);
     }
 
     private void getNextStage() {

@@ -292,12 +292,7 @@ public class AdminEditChar implements IAdminCommandHandler {
         }
 
         List<String> keys = new ArrayList<>(dualboxIPs.keySet());
-        Collections.sort(keys, new Comparator<String>() {
-            public int compare(String left, String right) {
-                return dualboxIPs.get(left).compareTo(dualboxIPs.get(right));
-            }
-
-        });
+        Collections.sort(keys, (left, right) -> dualboxIPs.get(left).compareTo(dualboxIPs.get(right)));
         Collections.reverse(keys);
         StringBuilder sb = new StringBuilder();
 

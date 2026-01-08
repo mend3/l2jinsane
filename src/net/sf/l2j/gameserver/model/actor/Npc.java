@@ -97,7 +97,7 @@ public class Npc extends Creature {
                 player.sendMessage("This target have not drop info.");
             } else {
                 List<DropCategory> list = new ArrayList<>();
-                npc.getDropData().forEach((c) -> list.add(c));
+                npc.getDropData().forEach(list::add);
                 Collections.reverse(list);
                 int myPage = 1;
                 int i = 0;

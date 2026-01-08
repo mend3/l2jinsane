@@ -147,9 +147,7 @@ public class LoginController {
     }
 
     private void recordFailedAttempt(InetAddress addr) {
-        int attempts = this._failedAttempts.merge(addr, 1, (k, v) -> {
-            return k + v;
-        });
+        int attempts = this._failedAttempts.merge(addr, 1, Integer::sum);
         if (attempts >= Config.LOGIN_TRY_BEFORE_BAN) {
             this.addBanForAddress(addr, Config.LOGIN_BLOCK_AFTER_BAN * 1000L);
             this._failedAttempts.remove(addr);

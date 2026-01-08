@@ -221,7 +221,7 @@ public class DungeonManager {
             e.printStackTrace();
         }
         log.info("DungeonManager: Loaded " + this.templates.size() + " dungeon templates");
-        ThreadPool.scheduleAtFixedRate(() -> updateDatabase(), 1800000L, 3600000L);
+        ThreadPool.scheduleAtFixedRate(this::updateDatabase, 1800000L, 3600000L);
     }
 
     public synchronized void removeDungeon(Dungeon dungeon) {

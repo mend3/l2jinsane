@@ -892,7 +892,7 @@ public class Clan {
     }
 
     public int getOnlineMembersCount() {
-        return (int) this._members.values().stream().filter(m -> m.isOnline()).count();
+        return (int) this._members.values().stream().filter(ClanMember::isOnline).count();
     }
 
     public void updateClanInDB() {

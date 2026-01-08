@@ -96,7 +96,7 @@ public class AutofarmPlayerRoutine {
         }
 
         if (this._task == null) {
-            this._task = ThreadPool.scheduleAtFixedRate(() -> this.executeRoutine(), 450L, 450L);
+            this._task = ThreadPool.scheduleAtFixedRate(this::executeRoutine, 450L, 450L);
             this.player.sendPacket(new ExShowScreenMessage("Auto Farming Actived...", 5000, ExShowScreenMessage.SMPOS.TOP_CENTER, false));
             this.player.sendPacket(new SystemMessage(SystemMessageId.AUTO_FARM_ACTIVATED));
         }

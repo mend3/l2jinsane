@@ -142,11 +142,9 @@ public class BossEvent {
             this.announce("Main Damage Dealer: " + this.getMainDamageDealer().getName() + ". Total Damage = " + this.getMainDamageDealer().getBossEventDamage(), false);
         }
 
-        ThreadPool.schedule(new Runnable() {
-            public void run() {
-                BossEvent.this.teleToTown();
-                BossEvent.this.eventPlayers.clear();
-            }
+        ThreadPool.schedule(() -> {
+            BossEvent.this.teleToTown();
+            BossEvent.this.eventPlayers.clear();
         }, Config.BOSS_EVENT_TIME_TO_TELEPORT_PLAYERS * 1000L);
         this.setState(BossEvent.EventState.FINISHING);
         this.startCountDown(Config.BOSS_EVENT_TIME_TO_TELEPORT_PLAYERS, true);
@@ -357,11 +355,7 @@ public class BossEvent {
                 BossEvent.this.startCountDown(Config.BOSS_EVENT_TIME_TO_TELEPORT_PLAYERS, true);
 
                 for (Player p : this.toTeleport) {
-                    ThreadPool.schedule(new Runnable() {
-                        public void run() {
-                            p.teleportTo(Teleporting.this.teleTo, 300);
-                        }
-                    }, Config.BOSS_EVENT_TIME_TO_TELEPORT_PLAYERS * 1000L);
+                    ThreadPool.schedule(() -> p.teleportTo(Teleporting.this.teleTo, 300), Config.BOSS_EVENT_TIME_TO_TELEPORT_PLAYERS * 1000L);
                 }
 
                 BossEvent.this.delay(Config.BOSS_EVENT_TIME_TO_TELEPORT_PLAYERS * 1000);
@@ -470,13 +464,11 @@ public class BossEvent {
                 BossEvent.this.announce("Your time is over " + this.spawn.getNpc().getName() + " returned to his home!", true);
                 BossEvent.this.announce("You will be teleported to town.", true);
                 BossEvent.this.despawnNpc(this.spawn);
-                ThreadPool.schedule(new Runnable() {
-                    public void run() {
-                        BossEvent.this.teleToTown();
-                        BossEvent.this.eventPlayers.clear();
-                        BossEvent.this.setState(BossEvent.EventState.INACTIVE);
-                        BossEvent.this.objectId = 0;
-                    }
+                ThreadPool.schedule(() -> {
+                    BossEvent.this.teleToTown();
+                    BossEvent.this.eventPlayers.clear();
+                    BossEvent.this.setState(EventState.INACTIVE);
+                    BossEvent.this.objectId = 0;
                 }, 10000L);
             }
 

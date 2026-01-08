@@ -101,7 +101,7 @@ public class CreatureStatus {
     public final synchronized void startHpMpRegeneration() {
         if (this._regTask == null && !this.getActiveChar().isDead()) {
             int period = Formulas.getRegeneratePeriod(this.getActiveChar());
-            this._regTask = ThreadPool.scheduleAtFixedRate(() -> this.doRegeneration(), period, period);
+            this._regTask = ThreadPool.scheduleAtFixedRate(this::doRegeneration, period, period);
         }
 
     }

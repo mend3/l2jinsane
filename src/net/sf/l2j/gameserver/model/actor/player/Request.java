@@ -67,7 +67,7 @@ public class Request {
     }
 
     private void clearRequestOnTimeout() {
-        this._requestTimer = ThreadPool.schedule(() -> clear(), 15000L);
+        this._requestTimer = ThreadPool.schedule(this::clear, 15000L);
     }
 
     public void onRequestResponse() {

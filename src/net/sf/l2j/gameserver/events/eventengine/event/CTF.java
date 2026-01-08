@@ -32,7 +32,7 @@ public class CTF extends AbstractEvent {
             CtfEventManager.getInstance().setActiveEvent(this);
             this.announce("CTF Event Start", true);
             this.openRegistrations();
-            this.schedule(() -> this.start(), Config.EVENT_REGISTRATION_TIME * 60 + 1);
+            this.schedule(this::start, Config.EVENT_REGISTRATION_TIME * 60 + 1);
         } else {
             this.abort();
         }

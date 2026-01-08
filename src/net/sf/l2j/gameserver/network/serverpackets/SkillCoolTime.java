@@ -10,7 +10,7 @@ public class SkillCoolTime extends L2GameServerPacket {
     public List<Timestamp> _reuseTimeStamps;
 
     public SkillCoolTime(Player cha) {
-        this._reuseTimeStamps = cha.getReuseTimeStamps().stream().filter(r -> r.hasNotPassed()).collect(Collectors.toList());
+        this._reuseTimeStamps = cha.getReuseTimeStamps().stream().filter(Timestamp::hasNotPassed).collect(Collectors.toList());
     }
 
     protected void writeImpl() {

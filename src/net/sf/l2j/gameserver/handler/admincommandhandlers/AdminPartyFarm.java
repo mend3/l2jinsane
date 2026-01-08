@@ -15,19 +15,11 @@ public class AdminPartyFarm implements IAdminCommandHandler {
     public static boolean _arena_manual = false;
 
     private static void initEventPartyFarm() {
-        ThreadPool.schedule(new Runnable() {
-            public void run() {
-                PartyFarm.bossSpawnMonster();
-            }
-        }, 1L);
+        ThreadPool.schedule(PartyFarm::bossSpawnMonster, 1L);
     }
 
     private static void finishEventPartyFarm() {
-        ThreadPool.schedule(new Runnable() {
-            public void run() {
-                PartyFarm.Finish_Event();
-            }
-        }, 1L);
+        ThreadPool.schedule(PartyFarm::Finish_Event, 1L);
     }
 
     public boolean useAdminCommand(String command, Player activeChar) {

@@ -694,7 +694,7 @@ public class Siege implements Siegable {
     }
 
     public int getControlTowerCount() {
-        return (int) this._controlTowers.stream().filter((lc) -> lc.isActive()).count();
+        return (int) this._controlTowers.stream().filter(ControlTower::isActive).count();
     }
 
     public List<Npc> getDestroyedTowers() {

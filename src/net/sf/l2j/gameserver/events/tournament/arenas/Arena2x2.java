@@ -569,19 +569,11 @@ public class Arena2x2 implements Runnable {
             }
 
             if (this.leader.getClassId() == ClassId.SHILLIEN_ELDER || this.leader.getClassId() == ClassId.SHILLIEN_SAINT || this.leader.getClassId() == ClassId.BISHOP || this.leader.getClassId() == ClassId.CARDINAL || this.leader.getClassId() == ClassId.ELVEN_ELDER || this.leader.getClassId() == ClassId.EVAS_SAINT) {
-                ThreadPool.schedule(new Runnable() {
-                    public void run() {
-                        Pair.this.leader.getClient().closeNow();
-                    }
-                }, 100L);
+                ThreadPool.schedule(() -> Pair.this.leader.getClient().closeNow(), 100L);
             }
 
             if (this.assist.getClassId() == ClassId.SHILLIEN_ELDER || this.assist.getClassId() == ClassId.SHILLIEN_SAINT || this.assist.getClassId() == ClassId.BISHOP || this.assist.getClassId() == ClassId.CARDINAL || this.assist.getClassId() == ClassId.ELVEN_ELDER || this.assist.getClassId() == ClassId.EVAS_SAINT) {
-                ThreadPool.schedule(new Runnable() {
-                    public void run() {
-                        Pair.this.assist.getClient().closeNow();
-                    }
-                }, 100L);
+                ThreadPool.schedule(() -> Pair.this.assist.getClient().closeNow(), 100L);
             }
 
         }

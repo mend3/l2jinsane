@@ -29,9 +29,7 @@ public class AdminZoneCreation implements IAdminCommandHandler {
     }
 
     private static int calcZ(boolean minZ) {
-        return savedLocs.stream().mapToInt((loc) -> {
-            return loc.getZ();
-        }).sum() / savedLocs.size() + (minZ ? -1000 : 1000);
+        return savedLocs.stream().mapToInt(Location::getZ).sum() / savedLocs.size() + (minZ ? -1000 : 1000);
     }
 
     private static int parseInt(String nextToken) {

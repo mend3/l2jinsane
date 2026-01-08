@@ -853,7 +853,7 @@ public class AttackableAI extends CreatureAI implements Runnable {
         Attackable actor = this.getActiveChar();
         if (actor.getHateList().size() > 1) {
             Creature mostHated = actor.getMostHated();
-            Creature victim = Rnd.get(actor.getHateList().stream().filter((v) -> this.autoAttackCondition(v)).collect(Collectors.toList()));
+            Creature victim = Rnd.get(actor.getHateList().stream().filter(this::autoAttackCondition).collect(Collectors.toList()));
             if (victim != null && mostHated != victim) {
                 actor.addDamageHate(victim, 0, actor.getHating(mostHated));
                 this.setIntention(IntentionType.ATTACK, victim);

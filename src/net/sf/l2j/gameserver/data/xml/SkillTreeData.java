@@ -8,6 +8,7 @@ import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.holder.skillnode.ClanSkillNode;
 import net.sf.l2j.gameserver.model.holder.skillnode.EnchantSkillNode;
 import net.sf.l2j.gameserver.model.holder.skillnode.FishingSkillNode;
+import net.sf.l2j.gameserver.model.holder.skillnode.SkillNode;
 import net.sf.l2j.gameserver.model.pledge.Clan;
 import org.w3c.dom.Document;
 
@@ -78,9 +79,7 @@ public class SkillTreeData implements IXmlReader {
             return s.getMinLvl() > player.getLevel() && (!s.isDwarven() || player.hasDwarvenCraft() && s.isDwarven());
         }).min((s1, s2) -> {
             return Integer.compare(s1.getMinLvl(), s2.getMinLvl());
-        }).map((s) -> {
-            return s.getMinLvl();
-        }).orElse(0);
+        }).map(SkillNode::getMinLvl).orElse(0);
     }
 
     public List<ClanSkillNode> getClanSkillsFor(Player player) {

@@ -29,7 +29,7 @@ public class DM extends AbstractEvent {
             DmEventManager.getInstance().setActiveEvent(this);
             this.announce("Death Match Event Start", true);
             this.openRegistrations();
-            this.schedule(() -> this.start(), Config.EVENT_REGISTRATION_TIME * 60 + 1);
+            this.schedule(this::start, Config.EVENT_REGISTRATION_TIME * 60 + 1);
         } else {
             this.abort();
         }

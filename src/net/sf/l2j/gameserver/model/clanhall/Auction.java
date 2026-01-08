@@ -118,7 +118,7 @@ public class Auction {
             taskDelay = this._endDate - currentTime;
         }
 
-        this._task = ThreadPool.schedule(() -> this.endAuction(), taskDelay);
+        this._task = ThreadPool.schedule(this::endAuction, taskDelay);
     }
 
     public synchronized void setBid(Player player, int bid) {

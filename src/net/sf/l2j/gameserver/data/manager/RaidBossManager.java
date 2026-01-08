@@ -175,7 +175,7 @@ public class RaidBossManager {
                 }
         } else {
             long spawnTime = respawnTime - time;
-            bs.setTask(ThreadPool.schedule(() -> bs.onSpawn(), spawnTime));
+            bs.setTask(ThreadPool.schedule(bs::onSpawn, spawnTime));
             bs.setStatus(BossStatus.DEAD);
             bs.setCurrentHp(0.0D);
             bs.setCurrentMp(0.0D);

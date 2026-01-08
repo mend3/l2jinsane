@@ -61,14 +61,12 @@ public abstract class ArenaTask {
         for (Player player : World.getInstance().getPlayers()) {
             if (player != null && player.isOnline()) {
                 if (player.isArenaProtection())
-                    ThreadPool.schedule(new Runnable() {
-                        public void run() {
-                            if (player.isOnline() && !player.isInArenaEvent() && !player.isArenaAttack()) {
-                                Arena4x4.getInstance().remove(player);
-                                Arena9x9.getInstance().remove(player);
-                                Arena2x2.getInstance().remove(player);
-                                player.setArenaProtection(false);
-                            }
+                    ThreadPool.schedule(() -> {
+                        if (player.isOnline() && !player.isInArenaEvent() && !player.isArenaAttack()) {
+                            Arena4x4.getInstance().remove(player);
+                            Arena9x9.getInstance().remove(player);
+                            Arena2x2.getInstance().remove(player);
+                            player.setArenaProtection(false);
                         }
                     }, 25000L);
                 new CreatureSay(0, 18, "", "[Tournament] Next Tournament: " + ArenaEvent.getInstance().getNextTime() + " (GMT-3).");

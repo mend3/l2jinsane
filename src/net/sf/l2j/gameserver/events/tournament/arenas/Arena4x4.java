@@ -795,44 +795,28 @@ public class Arena4x4 implements Runnable {
             if (this.leader != null && this.leader.isOnline()) {
                 this.leader.sendPacket(new ExShowScreenMessage(message, duration * 1000, SMPOS.MIDDLE_LEFT, false));
                 if ((this.leader.getClassId() == ClassId.SHILLIEN_ELDER || this.leader.getClassId() == ClassId.SHILLIEN_SAINT || this.leader.getClassId() == ClassId.BISHOP || this.leader.getClassId() == ClassId.CARDINAL || this.leader.getClassId() == ClassId.ELVEN_ELDER || this.leader.getClassId() == ClassId.EVAS_SAINT) && Config.bs_COUNT_4X4 == 0) {
-                    ThreadPool.schedule(new Runnable() {
-                        public void run() {
-                            Pair.this.leader.getClient().closeNow();
-                        }
-                    }, 100L);
+                    ThreadPool.schedule(() -> Pair.this.leader.getClient().closeNow(), 100L);
                 }
             }
 
             if (this.assist != null && this.assist.isOnline()) {
                 this.assist.sendPacket(new ExShowScreenMessage(message, duration * 1000, SMPOS.MIDDLE_LEFT, false));
                 if ((this.assist.getClassId() == ClassId.SHILLIEN_ELDER || this.assist.getClassId() == ClassId.SHILLIEN_SAINT || this.assist.getClassId() == ClassId.BISHOP || this.assist.getClassId() == ClassId.CARDINAL || this.assist.getClassId() == ClassId.ELVEN_ELDER || this.assist.getClassId() == ClassId.EVAS_SAINT) && Config.bs_COUNT_4X4 == 0) {
-                    ThreadPool.schedule(new Runnable() {
-                        public void run() {
-                            Pair.this.assist.getClient().closeNow();
-                        }
-                    }, 100L);
+                    ThreadPool.schedule(() -> Pair.this.assist.getClient().closeNow(), 100L);
                 }
             }
 
             if (this.assist2 != null && this.assist2.isOnline()) {
                 this.assist2.sendPacket(new ExShowScreenMessage(message, duration * 1000, SMPOS.MIDDLE_LEFT, false));
                 if ((this.assist2.getClassId() == ClassId.SHILLIEN_ELDER || this.assist2.getClassId() == ClassId.SHILLIEN_SAINT || this.assist2.getClassId() == ClassId.BISHOP || this.assist2.getClassId() == ClassId.CARDINAL || this.assist2.getClassId() == ClassId.ELVEN_ELDER || this.assist2.getClassId() == ClassId.EVAS_SAINT) && Config.bs_COUNT_4X4 == 0) {
-                    ThreadPool.schedule(new Runnable() {
-                        public void run() {
-                            Pair.this.assist2.getClient().closeNow();
-                        }
-                    }, 100L);
+                    ThreadPool.schedule(() -> Pair.this.assist2.getClient().closeNow(), 100L);
                 }
             }
 
             if (this.assist3 != null && this.assist3.isOnline()) {
                 this.assist3.sendPacket(new ExShowScreenMessage(message, duration * 1000, SMPOS.MIDDLE_LEFT, false));
                 if ((this.assist3.getClassId() == ClassId.SHILLIEN_ELDER || this.assist3.getClassId() == ClassId.SHILLIEN_SAINT || this.assist3.getClassId() == ClassId.BISHOP || this.assist3.getClassId() == ClassId.CARDINAL || this.assist3.getClassId() == ClassId.ELVEN_ELDER || this.assist3.getClassId() == ClassId.EVAS_SAINT) && Config.bs_COUNT_4X4 == 0) {
-                    ThreadPool.schedule(new Runnable() {
-                        public void run() {
-                            Pair.this.assist3.getClient().closeNow();
-                        }
-                    }, 100L);
+                    ThreadPool.schedule(() -> Pair.this.assist3.getClient().closeNow(), 100L);
                 }
             }
 
