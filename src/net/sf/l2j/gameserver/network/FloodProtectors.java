@@ -43,11 +43,6 @@ public final class FloodProtectors {
             this._reuseDelay = reuseDelay;
         }
 
-        // $FF: synthetic method
-        private static FloodProtectors.Action[] $values() {
-            return new FloodProtectors.Action[]{ROLL_DICE, HERO_VOICE, SUBCLASS, DROP_ITEM, SERVER_BYPASS, MULTISELL, MANUFACTURE, MANOR, SENDMAIL, CHARACTER_SELECT, GLOBAL_CHAT, TRADE_CHAT, SOCIAL};
-        }
-
         public int getReuseDelay() {
             return this._reuseDelay;
         }

@@ -6,7 +6,6 @@ import net.sf.l2j.gameserver.skills.DocumentSkill;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -42,8 +41,7 @@ public class SkillTable {
         int[] var1 = _heroSkillsId;
         int var2 = var1.length;
 
-        for (int var3 = 0; var3 < var2; ++var3) {
-            int id = var1[var3];
+        for (int id : var1) {
             if (id == skillid) {
                 return true;
             }

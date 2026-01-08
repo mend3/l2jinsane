@@ -69,7 +69,7 @@ public class L2SkillSummon extends L2Skill {
             }
         }
 
-        return super.checkCondition(activeChar, (WorldObject) null, false);
+        return super.checkCondition(activeChar, null, false);
     }
 
     public void useSkill(Creature caster, WorldObject[] targets) {
@@ -100,8 +100,8 @@ public class L2SkillSummon extends L2Skill {
                             summon.getStat().setExp(Experience.LEVEL[summon.getLevel() % Experience.LEVEL.length]);
                         }
 
-                        summon.setCurrentHp((double) summon.getMaxHp());
-                        summon.setCurrentMp((double) summon.getMaxMp());
+                        summon.setCurrentHp(summon.getMaxHp());
+                        summon.setCurrentMp(summon.getMaxMp());
                         summon.setRunning();
                         activeChar.setSummon(summon);
                         int x = activeChar.getX();
@@ -133,8 +133,7 @@ public class L2SkillSummon extends L2Skill {
                     }
                 } else {
                     for (WorldObject obj : targets) {
-                        if (obj instanceof Player) {
-                            Player player = (Player) obj;
+                        if (obj instanceof Player player) {
                             int mastery = player.getSkillLevel(143);
                             if (mastery == 0 && !player.getCubics().isEmpty()) {
                                 for (Cubic c : player.getCubics().values()) {

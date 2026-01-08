@@ -157,15 +157,15 @@ public class TradeList {
         return titem;
     }
 
-    public synchronized TradeItem removeItem(int objectId, int itemId, int count) {
+    public synchronized void removeItem(int objectId, int itemId, int count) {
         if (isLocked())
-            return null;
+            return;
         for (TradeItem titem : this._items) {
             if (titem.getObjectId() == objectId || titem.getItem().getItemId() == itemId) {
                 if (this._partner != null) {
                     TradeList partnerList = this._partner.getActiveTradeList();
                     if (partnerList == null)
-                        return null;
+                        return;
                     partnerList.invalidateConfirmation();
                 }
                 if (count != -1 && titem.getCount() > count) {
@@ -173,10 +173,9 @@ public class TradeList {
                 } else {
                     this._items.remove(titem);
                 }
-                return titem;
+                return;
             }
         }
-        return null;
     }
 
     public synchronized void updateItems() {
@@ -200,13 +199,13 @@ public class TradeList {
         this._locked = false;
     }
 
-    public boolean confirm() {
+    public void confirm() {
         if (this._confirmed)
-            return true;
+            return;
         if (this._partner != null) {
             TradeList sync1, sync2, partnerList = this._partner.getActiveTradeList();
             if (partnerList == null)
-                return false;
+                return;
             if (getOwner().getObjectId() > partnerList.getOwner().getObjectId()) {
                 sync1 = partnerList;
                 sync2 = this;
@@ -221,9 +220,9 @@ public class TradeList {
                         partnerList.lock();
                         lock();
                         if (!partnerList.validate())
-                            return false;
+                            return;
                         if (!validate())
-                            return false;
+                            return;
                         doExchange(partnerList);
                     } else {
                         this._partner.onTradeConfirm(this._owner);
@@ -233,7 +232,6 @@ public class TradeList {
         } else {
             this._confirmed = true;
         }
-        return this._confirmed;
     }
 
     public void invalidateConfirmation() {
@@ -251,14 +249,14 @@ public class TradeList {
         return true;
     }
 
-    private boolean transferItems(Player partner, InventoryUpdate ownerIU, InventoryUpdate partnerIU) {
+    private void transferItems(Player partner, InventoryUpdate ownerIU, InventoryUpdate partnerIU) {
         for (TradeItem titem : this._items) {
             ItemInstance oldItem = this._owner.getInventory().getItemByObjectId(titem.getObjectId());
             if (oldItem == null)
-                return false;
+                return;
             ItemInstance newItem = this._owner.getInventory().transferItem("Trade", titem.getObjectId(), titem.getCount(), partner.getInventory(), this._owner, this._partner);
             if (newItem == null)
-                return false;
+                return;
             if (ownerIU != null)
                 if (oldItem.getCount() > 0 && oldItem != newItem) {
                     ownerIU.addModifiedItem(oldItem);
@@ -273,7 +271,6 @@ public class TradeList {
                 }
             DollsData.getSkillDoll(partner, newItem);
         }
-        return true;
     }
 
     public int countItemsSlots(Player partner) {
@@ -553,7 +550,6 @@ public class TradeList {
                     }
                 }
             }
-            continue;
         }
         if (totalPrice > 0) {
             if (totalPrice > ownerInventory.getAdena())

@@ -20,7 +20,7 @@ public class Q033_MakeAPairOfDressShoes extends Quest {
 
     private static final int ADENA = 57;
 
-    public static int DRESS_SHOES_BOX = 7113;
+    public static final int DRESS_SHOES_BOX = 7113;
 
     public Q033_MakeAPairOfDressShoes() {
         super(33, "Make a Pair of Dress Shoes");

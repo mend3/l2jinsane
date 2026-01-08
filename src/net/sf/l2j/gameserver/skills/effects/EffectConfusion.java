@@ -8,6 +8,8 @@ import net.sf.l2j.gameserver.model.L2Effect;
 import net.sf.l2j.gameserver.model.WorldObject;
 import net.sf.l2j.gameserver.model.actor.Attackable;
 import net.sf.l2j.gameserver.model.actor.Creature;
+import net.sf.l2j.gameserver.model.actor.Playable;
+import net.sf.l2j.gameserver.model.actor.instance.Chest;
 import net.sf.l2j.gameserver.skills.Env;
 
 import java.util.ArrayList;
@@ -35,17 +37,16 @@ public class EffectConfusion extends L2Effect {
     public boolean onActionTime() {
         List<Creature> targetList = new ArrayList<>();
         for (WorldObject obj : getEffected().getKnownType(WorldObject.class)) {
-            if ((obj instanceof Attackable || obj instanceof net.sf.l2j.gameserver.model.actor.Playable) && obj != getEffected())
-                if (!(obj instanceof net.sf.l2j.gameserver.model.actor.instance.Door) && !(obj instanceof net.sf.l2j.gameserver.model.actor.instance.Chest))
-                    targetList.add((Creature) obj);
+            if ((obj instanceof Attackable || obj instanceof Playable) && obj != getEffected() && !(obj instanceof Chest))
+                targetList.add((Creature) obj);
         }
         if (targetList.isEmpty())
             return true;
-        WorldObject target = Rnd.get(targetList);
+        Creature target = Rnd.get(targetList);
         getEffected().setTarget(target);
         getEffected().getAI().setIntention(IntentionType.ATTACK, target);
         int aggro = (5 + Rnd.get(5)) * getEffector().getLevel();
-        ((Attackable) getEffected()).addDamageHate((Creature) target, 0, aggro);
+        ((Attackable) getEffected()).addDamageHate(target, 0, aggro);
         return true;
     }
 

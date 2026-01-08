@@ -9,7 +9,7 @@ public abstract class Func {
     public final int order;
     public final Object funcOwner;
     public Condition cond;
-    public Lambda _lambda;
+    public final Lambda _lambda;
 
     public Func(Stats pStat, int pOrder, Object owner, Lambda lambda) {
         this.stat = pStat;

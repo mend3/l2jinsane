@@ -13,7 +13,6 @@ import net.sf.l2j.gameserver.model.actor.*;
 import net.sf.l2j.gameserver.model.actor.instance.SiegeGuard;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.location.Location;
-import net.sf.l2j.gameserver.model.location.SpawnLocation;
 
 import java.util.Iterator;
 import java.util.List;
@@ -134,7 +133,7 @@ public class SiegeGuardAI extends AttackableAI {
                         String[] clans = actor.getTemplate().getClans();
 
                         for (Creature cha : actor.getKnownTypeInRadius(Creature.class, 1000)) {
-                            if (!cha.isAlikeDead() && GeoEngine.getInstance().canSeeTarget(actor, cha) && !(cha.getCurrentHp() / (double) cha.getMaxHp() > (double) 0.75F) && (!actor.isAttackingDisabled() && cha instanceof Player && actor.getCastle().getSiege().checkSides(((Player) cha).getClan(), new SiegeSide[]{SiegeSide.DEFENDER, SiegeSide.OWNER}) || cha instanceof Npc && ArraysUtil.contains(clans, ((Npc) cha).getTemplate().getClans()))) {
+                            if (!cha.isAlikeDead() && GeoEngine.getInstance().canSeeTarget(actor, cha) && !(cha.getCurrentHp() / (double) cha.getMaxHp() > (double) 0.75F) && (!actor.isAttackingDisabled() && cha instanceof Player && actor.getCastle().getSiege().checkSides(((Player) cha).getClan(), SiegeSide.DEFENDER, SiegeSide.OWNER) || cha instanceof Npc && ArraysUtil.contains(clans, ((Npc) cha).getTemplate().getClans()))) {
                                 for (L2Skill sk : defaultList) {
                                     if (MathUtil.checkIfInRange(sk.getCastRange(), actor, cha, true)) {
                                         this.clientStopMoving(null);

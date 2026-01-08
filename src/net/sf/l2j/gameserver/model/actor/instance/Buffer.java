@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 public class Buffer extends Npc {
-    int[] magebuffs = new int[]{1204, 1048, 1045, 1040, 1035, 1085, 1303, 1304, 1243, 1036, 1087, 1059, 1078, 1062, 1363, 273, 276, 277, 365, 264, 265, 266, 267, 268, 270, 304, 349, 364, 1393, 1392, 1352, 1353, 1354, 311, 307, 309, 306, 308, 1259, 1182, 1189, 1191, 4703, 1389, 1416, 1323};
-    int[] fighterbuffs = new int[]{1204, 1048, 1045, 1068, 1040, 1035, 1086, 1242, 1036, 1240, 1268, 1077, 1087, 1062, 1363, 271, 272, 274, 275, 277, 310, 264, 265, 266, 267, 268, 269, 270, 304, 305, 349, 364, 1393, 1392, 1352, 1353, 1354, 311, 307, 309, 306, 308, 1259, 1182, 1189, 1191, 4703, 4699, 1388, 1416, 1323};
+    final int[] magebuffs = new int[]{1204, 1048, 1045, 1040, 1035, 1085, 1303, 1304, 1243, 1036, 1087, 1059, 1078, 1062, 1363, 273, 276, 277, 365, 264, 265, 266, 267, 268, 270, 304, 349, 364, 1393, 1392, 1352, 1353, 1354, 311, 307, 309, 306, 308, 1259, 1182, 1189, 1191, 4703, 1389, 1416, 1323};
+    final int[] fighterbuffs = new int[]{1204, 1048, 1045, 1068, 1040, 1035, 1086, 1242, 1036, 1240, 1268, 1077, 1087, 1062, 1363, 271, 272, 274, 275, 277, 310, 264, 265, 266, 267, 268, 269, 270, 304, 305, 349, 364, 1393, 1392, 1352, 1353, 1354, 311, 307, 309, 306, 308, 1259, 1182, 1189, 1191, 4703, 4699, 1388, 1416, 1323};
 
     public Buffer(int objectId, NpcTemplate template) {
         super(objectId, template);
@@ -34,9 +34,9 @@ public class Buffer extends Npc {
 
             for (Map.Entry<String, ArrayList<Integer>> scheme : schemes.entrySet()) {
                 if (schemeName.equalsIgnoreCase(scheme.getKey())) {
-                    StringUtil.append(sb, new Object[]{"<tr><td width=200>", scheme.getKey(), " (<font color=\"LEVEL\">", scheme.getValue().size(), "</font> / ", player.getMaxBuffCount(), " skill(s))</td></tr>"});
+                    StringUtil.append(sb, "<tr><td width=200>", scheme.getKey(), " (<font color=\"LEVEL\">", scheme.getValue().size(), "</font> / ", player.getMaxBuffCount(), " skill(s))</td></tr>");
                 } else {
-                    StringUtil.append(sb, new Object[]{"<tr><td width=200><a action=\"bypass -h npc_%objectId%_editschemes none ", scheme.getKey(), "\">", scheme.getKey(), " (", scheme.getValue().size(), " / ", player.getMaxBuffCount(), " skill(s))</a></td></tr>"});
+                    StringUtil.append(sb, "<tr><td width=200><a action=\"bypass -h npc_%objectId%_editschemes none ", scheme.getKey(), "\">", scheme.getKey(), " (", scheme.getValue().size(), " / ", player.getMaxBuffCount(), " skill(s))</a></td></tr>");
                 }
             }
 
@@ -70,11 +70,11 @@ public class Buffer extends Npc {
                     }
 
                     if (skillId < 100) {
-                        sb.append("<td width=180><font color=\"949490\"><a action=\"bypass -h npc_%objectId%_skillselect " + groupType + " " + schemeName + " " + skillId + "\">" + SkillTable.getInstance().getInfo(skillId, 1).getName() + "</a></font></td>");
+                        sb.append("<td width=180><font color=\"949490\"><a action=\"bypass -h npc_%objectId%_skillselect ").append(groupType).append(" ").append(schemeName).append(" ").append(skillId).append("\">").append(SkillTable.getInstance().getInfo(skillId, 1).getName()).append("</a></font></td>");
                     } else if (skillId < 1000) {
-                        sb.append("<td width=180><font color=\"949490\"><a action=\"bypass -h npc_%objectId%_skillselect " + groupType + " " + schemeName + " " + skillId + "\">" + SkillTable.getInstance().getInfo(skillId, 1).getName() + "</a></font></td>");
+                        sb.append("<td width=180><font color=\"949490\"><a action=\"bypass -h npc_%objectId%_skillselect ").append(groupType).append(" ").append(schemeName).append(" ").append(skillId).append("\">").append(SkillTable.getInstance().getInfo(skillId, 1).getName()).append("</a></font></td>");
                     } else {
-                        sb.append("<td width=180><font color=\"949490\"><a action=\"bypass -h npc_%objectId%_skillselect " + groupType + " " + schemeName + " " + skillId + "\">" + SkillTable.getInstance().getInfo(skillId, 1).getName() + "</a></font></td>");
+                        sb.append("<td width=180><font color=\"949490\"><a action=\"bypass -h npc_%objectId%_skillselect ").append(groupType).append(" ").append(schemeName).append(" ").append(skillId).append("\">").append(SkillTable.getInstance().getInfo(skillId, 1).getName()).append("</a></font></td>");
                     }
 
                     ++count;
@@ -137,9 +137,9 @@ public class Buffer extends Npc {
             }
 
             if (groupType.equalsIgnoreCase(s)) {
-                StringUtil.append(sb, new Object[]{"<td width=65>", s, "</td>"});
+                StringUtil.append(sb, "<td width=65>", s, "</td>");
             } else {
-                StringUtil.append(sb, new Object[]{"<td width=65><a action=\"bypass -h npc_%objectId%_editschemes ", s, " ", schemeName, "\">", s, "</a></td>"});
+                StringUtil.append(sb, "<td width=65><a action=\"bypass -h npc_%objectId%_editschemes ", s, " ", schemeName, "\">", s, "</a></td>");
             }
 
             ++count;
@@ -474,7 +474,7 @@ public class Buffer extends Npc {
         if (schemes != null && !schemes.isEmpty()) {
             for (Map.Entry<String, ArrayList<Integer>> scheme : schemes.entrySet()) {
                 int cost = getFee(scheme.getValue());
-                StringUtil.append(sb, new Object[]{"<font color=\"LEVEL\"><a action=\"bypass -h npc_%objectId%_givebuffs ", targetType, " ", scheme.getKey(), " ", cost, "\">", scheme.getKey(), " (", scheme.getValue().size(), " skill(s))</a>", cost > 0 ? " - Adena cost: " + cost : "", "</font><br1>"});
+                StringUtil.append(sb, "<font color=\"LEVEL\"><a action=\"bypass -h npc_%objectId%_givebuffs ", targetType, " ", scheme.getKey(), " ", cost, "\">", scheme.getKey(), " (", scheme.getValue().size(), " skill(s))</a>", cost > 0 ? " - Adena cost: " + cost : "", "</font><br1>");
             }
         } else {
             sb.append("<font color=\"LEVEL\">You haven't defined any scheme, please go to 'Manage my schemes' and create at least one valid scheme.</font>");
@@ -495,7 +495,7 @@ public class Buffer extends Npc {
             sb.append("<table>");
 
             for (Map.Entry<String, ArrayList<Integer>> scheme : schemes.entrySet()) {
-                StringUtil.append(sb, new Object[]{"<tr><td width=140>", scheme.getKey(), " (", scheme.getValue().size(), " skill(s))</td><td width=60><button value=\"Clear\" action=\"bypass -h npc_%objectId%_clearscheme ", scheme.getKey(), "\" width=55 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td><td width=60><button value=\"Drop\" action=\"bypass -h npc_%objectId%_deletescheme ", scheme.getKey(), "\" width=55 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td></tr>"});
+                StringUtil.append(sb, "<tr><td width=140>", scheme.getKey(), " (", scheme.getValue().size(), " skill(s))</td><td width=60><button value=\"Clear\" action=\"bypass -h npc_%objectId%_clearscheme ", scheme.getKey(), "\" width=55 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td><td width=60><button value=\"Drop\" action=\"bypass -h npc_%objectId%_deletescheme ", scheme.getKey(), "\" width=55 height=15 back=\"sek.cbui94\" fore=\"sek.cbui92\"></td></tr>");
             }
 
             sb.append("</table>");

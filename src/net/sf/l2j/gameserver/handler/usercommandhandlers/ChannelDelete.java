@@ -8,15 +8,14 @@ import net.sf.l2j.gameserver.model.group.Party;
 public class ChannelDelete implements IUserCommandHandler {
     private static final int[] COMMAND_IDS = new int[]{93};
 
-    public boolean useUserCommand(int id, Player player) {
+    public void useUserCommand(int id, Player player) {
         Party party = player.getParty();
         if (party == null || !party.isLeader(player))
-            return false;
+            return;
         CommandChannel channel = party.getCommandChannel();
         if (channel == null || !channel.isLeader(player))
-            return false;
+            return;
         channel.disband();
-        return true;
     }
 
     public int[] getUserCommandList() {

@@ -6,8 +6,6 @@ import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 
-import java.util.Iterator;
-
 public final class RequestFriendList extends L2GameClientPacket {
     protected void readImpl() {
     }
@@ -17,8 +15,7 @@ public final class RequestFriendList extends L2GameClientPacket {
         if (activeChar == null)
             return;
         activeChar.sendPacket(SystemMessageId.FRIEND_LIST_HEADER);
-        for (Iterator<Integer> iterator = activeChar.getFriendList().iterator(); iterator.hasNext(); ) {
-            int id = iterator.next();
+        for (int id : activeChar.getFriendList()) {
             String friendName = PlayerInfoTable.getInstance().getPlayerName(id);
             if (friendName == null)
                 continue;

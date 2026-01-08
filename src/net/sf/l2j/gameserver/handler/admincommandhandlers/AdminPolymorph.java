@@ -11,10 +11,10 @@ import java.util.StringTokenizer;
 public class AdminPolymorph implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_polymorph", "admin_unpolymorph", "admin_polymorph_menu", "admin_unpolymorph_menu"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         Player player = null;
         if (activeChar.isMounted())
-            return false;
+            return;
         WorldObject target = activeChar.getTarget();
         if (target == null)
             player = activeChar;
@@ -28,7 +28,7 @@ public class AdminPolymorph implements IAdminCommandHandler {
                 int npcId = Integer.parseInt(st.nextToken());
                 if (!player.polymorph(info, npcId)) {
                     activeChar.sendPacket(SystemMessageId.APPLICANT_INFORMATION_INCORRECT);
-                    return true;
+                    return;
                 }
                 activeChar.sendMessage("You polymorphed " + player.getName() + " into a " + info + " using id: " + npcId + ".");
             } catch (Exception e) {
@@ -37,14 +37,13 @@ public class AdminPolymorph implements IAdminCommandHandler {
         } else if (command.startsWith("admin_unpolymorph")) {
             if (player.getPolyType() == PolyType.DEFAULT) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return true;
+                return;
             }
             player.unpolymorph();
             activeChar.sendMessage("You successfully unpolymorphed " + player.getName() + ".");
         }
         if (command.contains("menu"))
             AdminHelpPage.showHelpPage(activeChar, "effects_menu.htm");
-        return true;
     }
 
     public String[] getAdminCommandList() {

@@ -8,7 +8,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q611_AllianceWithVarkaSilenos extends Quest {
@@ -83,8 +82,7 @@ public class Q611_AllianceWithVarkaSilenos extends Quest {
         setItemsIds(7226, 7227, 7228);
         addStartNpc(31378);
         addTalkId(31378);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int mobs = iterator.next();
+        for (int mobs : CHANCES.keySet()) {
             addKillId(mobs);
         }
     }

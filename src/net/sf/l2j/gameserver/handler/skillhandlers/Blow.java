@@ -90,7 +90,7 @@ public class Blow implements ISkillHandler {
                                         target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.COUNTERED_S1_ATTACK).addCharName(activeChar));
                                     if (activeChar instanceof Player)
                                         activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_PERFORMING_COUNTERATTACK).addCharName(target));
-                                    double vegdamage = (700 * target.getPAtk(activeChar) / activeChar.getPDef(target));
+                                    double vegdamage = ((double) (700 * target.getPAtk(activeChar)) / activeChar.getPDef(target));
                                     activeChar.reduceCurrentHp(vegdamage, target, skill);
                                 }
                                 Formulas.calcCastBreak(target, damage);

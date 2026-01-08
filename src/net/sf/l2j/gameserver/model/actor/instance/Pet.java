@@ -79,7 +79,7 @@ public class Pet extends Summon {
         try {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("SELECT item_obj_id, name, level, curHp, curMp, exp, sp, fed FROM pets WHERE item_obj_id=?");
+                    PreparedStatement ps = con.prepareStatement("SELECT item_obj_id, name, level, curHp, curMp, exp, sp, fed FROM pets WHERE item_obj_id=?")
             ) {
                 ps.setInt(1, control.getObjectId());
 
@@ -110,7 +110,7 @@ public class Pet extends Summon {
 
             return pet;
         } catch (Exception e) {
-            LOGGER.error("Couldn't restore pet data for {}.", e, new Object[]{owner.getName()});
+            LOGGER.error("Couldn't restore pet data for {}.", e, owner.getName());
             return null;
         }
     }
@@ -211,9 +211,8 @@ public class Pet extends Summon {
     public void doPickupItem(WorldObject object) {
         if (!this.isDead()) {
             this.getAI().setIntention(IntentionType.IDLE);
-            if (object instanceof ItemInstance) {
+            if (object instanceof ItemInstance target) {
                 this.broadcastPacket(new StopMove(this.getObjectId(), this.getX(), this.getY(), this.getZ(), this.getHeading()));
-                ItemInstance target = (ItemInstance) object;
                 if (CursedWeaponManager.getInstance().isCursed(target.getItemId())) {
                     this.getOwner().sendPacket(SystemMessage.getSystemMessage(SystemMessageId.FAILED_TO_PICKUP_S1).addItemName(target.getItemId()));
                 } else if (target.getItem().getItemType() != EtcItemType.ARROW && target.getItem().getItemType() != EtcItemType.SHOT) {
@@ -371,7 +370,7 @@ public class Pet extends Summon {
         if (this._controlItemId != 0) {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("INSERT INTO pets (name,level,curHp,curMp,exp,sp,fed,item_obj_id) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE name=VALUES(name),level=VALUES(level),curHp=VALUES(curHp),curMp=VALUES(curMp),exp=VALUES(exp),sp=VALUES(sp),fed=VALUES(fed)");
+                    PreparedStatement ps = con.prepareStatement("INSERT INTO pets (name,level,curHp,curMp,exp,sp,fed,item_obj_id) VALUES (?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE name=VALUES(name),level=VALUES(level),curHp=VALUES(curHp),curMp=VALUES(curMp),exp=VALUES(exp),sp=VALUES(sp),fed=VALUES(fed)")
             ) {
                 ps.setString(1, this.getName());
                 ps.setInt(2, this.getStat().getLevel());
@@ -383,7 +382,7 @@ public class Pet extends Summon {
                 ps.setInt(8, this._controlItemId);
                 ps.executeUpdate();
             } catch (Exception e) {
-                LOGGER.error("Couldn't store pet data for {}.", e, new Object[]{this.getObjectId()});
+                LOGGER.error("Couldn't store pet data for {}.", e, this.getObjectId());
             }
 
             ItemInstance itemInst = this.getControlItem();
@@ -477,15 +476,13 @@ public class Pet extends Summon {
         this._curFed = Math.min(num, this.getPetData().getMaxMeal());
     }
 
-    public ItemInstance transferItem(String process, int objectId, int count, Inventory target, Player actor, WorldObject reference) {
+    public void transferItem(String process, int objectId, int count, Inventory target, Player actor, WorldObject reference) {
         ItemInstance oldItem = this.checkItemManipulation(objectId, count);
         if (oldItem == null) {
-            return null;
         } else {
             boolean wasWorn = oldItem.isPetItem() && oldItem.isEquipped();
             ItemInstance newItem = this.getInventory().transferItem(process, objectId, count, target, actor, reference);
             if (newItem == null) {
-                return null;
             } else {
                 PetInventoryUpdate petIU = new PetInventoryUpdate();
                 if (oldItem.getCount() > 0 && oldItem != newItem) {
@@ -510,7 +507,6 @@ public class Pet extends Summon {
                     this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.PET_TOOK_OFF_S1).addItemName(newItem));
                 }
 
-                return newItem;
             }
         }
     }
@@ -519,7 +515,7 @@ public class Pet extends Summon {
         ItemInstance item = this.getInventory().getItemByObjectId(objectId);
         if (item == null) {
             return null;
-        } else if (count >= 1 && (count <= 1 || item.isStackable())) {
+        } else if (count >= 1 && (count == 1 || item.isStackable())) {
             return count > item.getCount() ? null : item;
         } else {
             return null;
@@ -532,12 +528,12 @@ public class Pet extends Summon {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM pets WHERE item_obj_id=?");
+                PreparedStatement ps = con.prepareStatement("DELETE FROM pets WHERE item_obj_id=?")
         ) {
             ps.setInt(1, this._controlItemId);
             ps.executeUpdate();
         } catch (Exception e) {
-            LOGGER.error("Couldn't delete pet data for {}.", e, new Object[]{this.getObjectId()});
+            LOGGER.error("Couldn't delete pet data for {}.", e, this.getObjectId());
         }
 
     }

@@ -41,20 +41,6 @@ public class AcquireSkillInfo extends L2GameServerPacket {
         }
     }
 
-    private static class Req {
-        public int itemId;
-
-        public int count;
-
-        public int type;
-
-        public int unk;
-
-        public Req(int pType, int pItemId, int pCount, int pUnk) {
-            this.itemId = pItemId;
-            this.type = pType;
-            this.count = pCount;
-            this.unk = pUnk;
-        }
+    private record Req(int type, int itemId, int count, int unk) {
     }
 }

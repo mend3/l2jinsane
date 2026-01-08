@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q100_SagaOfTheMaestro extends SagasSuperClass {
     public Q100_SagaOfTheMaestro() {
         super(100, "Saga of the Maestro");

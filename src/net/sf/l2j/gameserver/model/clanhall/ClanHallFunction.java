@@ -76,7 +76,7 @@ public class ClanHallFunction {
     public void dbSave() {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("REPLACE INTO clanhall_functions (hall_id, type, lvl, lease, rate, endTime) VALUES (?,?,?,?,?,?)");
+                PreparedStatement ps = con.prepareStatement("REPLACE INTO clanhall_functions (hall_id, type, lvl, lease, rate, endTime) VALUES (?,?,?,?,?,?)")
         ) {
             ps.setInt(1, this._ch.getId());
             ps.setInt(2, this.getType());
@@ -97,7 +97,7 @@ public class ClanHallFunction {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM clanhall_functions WHERE hall_id=? AND type=?");
+                PreparedStatement ps = con.prepareStatement("DELETE FROM clanhall_functions WHERE hall_id=? AND type=?")
         ) {
             ps.setInt(1, this._ch.getId());
             ps.setInt(2, this.getType());

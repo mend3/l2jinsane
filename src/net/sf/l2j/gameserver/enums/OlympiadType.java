@@ -11,11 +11,6 @@ public enum OlympiadType {
         this._name = name;
     }
 
-    // $FF: synthetic method
-    private static OlympiadType[] $values() {
-        return new OlympiadType[]{CLASSED, NON_CLASSED};
-    }
-
     public final String toString() {
         return this._name;
     }

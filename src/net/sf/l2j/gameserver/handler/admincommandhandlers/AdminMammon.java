@@ -10,18 +10,18 @@ import net.sf.l2j.gameserver.model.spawn.AutoSpawn;
 public class AdminMammon implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_mammon_find", "admin_mammon_respawn"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_mammon_find")) {
             int teleportIndex = -1;
             try {
                 teleportIndex = Integer.parseInt(command.substring(18));
             } catch (Exception NumberFormatException) {
                 activeChar.sendMessage("Usage: //mammon_find [teleportIndex] (1 / 2)");
-                return false;
+                return;
             }
             if (!SevenSignsManager.getInstance().isSealValidationPeriod()) {
                 activeChar.sendMessage("The competition period is currently in effect.");
-                return true;
+                return;
             }
             if (teleportIndex == 1) {
                 AutoSpawn blackSpawnInst = AutoSpawnTable.getInstance().getAutoSpawnInstance(31126, false);
@@ -53,7 +53,7 @@ public class AdminMammon implements IAdminCommandHandler {
         } else if (command.startsWith("admin_mammon_respawn")) {
             if (!SevenSignsManager.getInstance().isSealValidationPeriod()) {
                 activeChar.sendMessage("The competition period is currently in effect.");
-                return true;
+                return;
             }
             AutoSpawn merchSpawnInst = AutoSpawnTable.getInstance().getAutoSpawnInstance(31113, false);
             if (merchSpawnInst != null) {
@@ -70,7 +70,6 @@ public class AdminMammon implements IAdminCommandHandler {
                 activeChar.sendMessage("Blacksmith of Mammon isn't registered.");
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

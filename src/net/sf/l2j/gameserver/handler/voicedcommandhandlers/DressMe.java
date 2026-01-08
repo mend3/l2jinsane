@@ -13,7 +13,7 @@ import java.util.Date;
 
 public class DressMe implements IVoicedCommandHandler, ICustomByPassHandler {
     private static final String[] _voicedCommands;
-    static SimpleDateFormat sdf;
+    static final SimpleDateFormat sdf;
 
     static {
         _voicedCommands = new String[]{Config.DRESS_ME_COMMAND};
@@ -29,12 +29,11 @@ public class DressMe implements IVoicedCommandHandler, ICustomByPassHandler {
         player.sendPacket(htm);
     }
 
-    public boolean useVoicedCommand(String command, Player activeChar, String target) {
+    public void useVoicedCommand(String command, Player activeChar, String target) {
         if (command.startsWith(Config.DRESS_ME_COMMAND)) {
             showHtm(activeChar);
         }
 
-        return true;
     }
 
     public String[] getVoicedCommandList() {
@@ -58,10 +57,5 @@ public class DressMe implements IVoicedCommandHandler, ICustomByPassHandler {
 
     private enum CommandEnum {
         dressme_back;
-
-        // $FF: synthetic method
-        private static DressMe.CommandEnum[] $values() {
-            return new DressMe.CommandEnum[]{dressme_back};
-        }
     }
 }

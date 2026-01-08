@@ -301,7 +301,7 @@ public class FourSepulchersManager {
 
                                 try {
                                     ps2.clearParameters();
-                                    ArrayList spawns = new ArrayList();
+                                    ArrayList<L2Spawn> spawns = new ArrayList<>();
 
                                     while (rs2.next()) {
                                         NpcTemplate template = NpcData.getInstance().getTemplate(rs2.getInt("npc_templateid"));
@@ -548,10 +548,8 @@ public class FourSepulchersManager {
                                 this.showHtmlFile(player, npcId + "-OK.htm", npc, null);
                                 Location loc = this._startHallSpawns.get(npcId);
 
-                                for (Object o : (List) party.getMembers().stream().filter((m) -> {
-                                    return !m.isDead() && MathUtil.checkIfInRange(700, player, m, true);
-                                }).collect(Collectors.toList())) {
-                                    member = (Player) o;
+                                for (Player o : party.getMembers().stream().filter((m) -> !m.isDead() && MathUtil.checkIfInRange(700, player, m, true)).toList()) {
+                                    member = o;
                                     ZoneManager.getInstance().getZone(loc.getX(), loc.getY(), loc.getZ(), BossZone.class).allowPlayerEntry(member, 30);
                                     member.teleportTo(loc, 80);
                                     member.destroyItemByItemId("Quest", 7075, 1, member, true);
@@ -915,12 +913,8 @@ public class FourSepulchersManager {
             }
         }
 
-        this._hallInUse.replaceAll((npcId, used) -> {
-            return false;
-        });
-        this._archonSpawned.replaceAll((npcId, spawned) -> {
-            return false;
-        });
+        this._hallInUse.replaceAll((npcId, used) -> false);
+        this._archonSpawned.replaceAll((npcId, spawned) -> false);
     }
 
     protected void managersShout(int currentMinute) {
@@ -939,15 +933,10 @@ public class FourSepulchersManager {
 
     }
 
-    private enum State {
+    public enum State {
         ENTRY,
         ATTACK,
         END;
-
-        // $FF: synthetic method
-        private static FourSepulchersManager.State[] $values() {
-            return new FourSepulchersManager.State[]{ENTRY, ATTACK, END};
-        }
     }
 
     private static class SingletonHolder {

@@ -1,4 +1,4 @@
-package net.sf.l2j.gameserver.communitybbs.Manager;
+package net.sf.l2j.gameserver.communitybbs.manager;
 
 import net.sf.l2j.commons.lang.StringUtil;
 import net.sf.l2j.commons.pool.ConnectionPool;
@@ -150,15 +150,12 @@ public class RankingBBSManager extends BaseBBSManager {
     }
 
     protected String getColor(int index) {
-        switch (index) {
-            case 1:
-                return "<font color=FFFF00>";
-            case 2:
-                return "<font color=FFA500>";
-            case 3:
-                return "<font color=E9967A>";
-        }
-        return "";
+        return switch (index) {
+            case 1 -> "<font color=FFFF00>";
+            case 2 -> "<font color=FFA500>";
+            case 3 -> "<font color=E9967A>";
+            default -> "";
+        };
     }
 
     protected String getFolder() {

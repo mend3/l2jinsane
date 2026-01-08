@@ -118,13 +118,10 @@ public abstract class AbstractRefinePacket extends L2GameClientPacket {
                 case INVENTORY:
                 case PAPERDOLL:
                     if (item.getItem() instanceof Weapon) {
-                        switch (((Weapon) item.getItem()).getItemType()) {
-                            case NONE:
-                            case FISHINGROD:
-                                return false;
-                            default:
-                                return true;
-                        }
+                        return switch (((Weapon) item.getItem()).getItemType()) {
+                            case NONE, FISHINGROD -> false;
+                            default -> true;
+                        };
                     }
 
                     return false;
@@ -161,16 +158,11 @@ public abstract class AbstractRefinePacket extends L2GameClientPacket {
     }
 
     protected static int getGemStoneId(CrystalType itemGrade) {
-        switch (itemGrade) {
-            case C:
-            case B:
-                return 2130;
-            case A:
-            case S:
-                return 2131;
-            default:
-                return 0;
-        }
+        return switch (itemGrade) {
+            case C, B -> 2130;
+            case A, S -> 2131;
+            default -> 0;
+        };
     }
 
     protected static int getGemStoneCount(CrystalType itemGrade) {
@@ -203,15 +195,15 @@ public abstract class AbstractRefinePacket extends L2GameClientPacket {
             this._level = level;
         }
 
-        public final int getLevel() {
+        public int getLevel() {
             return this._level;
         }
 
-        public final int getGrade() {
+        public int getGrade() {
             return this._grade;
         }
 
-        public final int getPlayerLevel() {
+        public int getPlayerLevel() {
             return LEVELS[this._level];
         }
     }

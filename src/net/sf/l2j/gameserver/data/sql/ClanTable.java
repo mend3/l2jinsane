@@ -48,58 +48,51 @@ public class ClanTable {
     }
 
     public void load() {
-        Connection con = null;
-        try {
-            con = ConnectionPool.getConnection();
-
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM clan_data");
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                int clanId = rs.getInt("clan_id");
-                Clan clan = new Clan(clanId, rs.getInt("leader_id"));
-                this._clans.put(clanId, clan);
-                clan.setName(rs.getString("clan_name"));
-                clan.setLevel(rs.getInt("clan_level"));
-                clan.setCastle(rs.getInt("hasCastle"));
-                clan.setAllyId(rs.getInt("ally_id"));
-                clan.setAllyName(rs.getString("ally_name"));
-                long allyExpireTime = rs.getLong("ally_penalty_expiry_time");
-                if (allyExpireTime > System.currentTimeMillis()) {
-                    clan.setAllyPenaltyExpiryTime(allyExpireTime, rs.getInt("ally_penalty_type"));
-                }
-
-                long charExpireTime = rs.getLong("char_penalty_expiry_time");
-                if (charExpireTime + (long) Config.ALT_CLAN_JOIN_DAYS * 86400000L > System.currentTimeMillis()) {
-                    clan.setCharPenaltyExpiryTime(charExpireTime);
-                }
-
-                clan.setDissolvingExpiryTime(rs.getLong("dissolving_expiry_time"));
-                clan.setCrestId(rs.getInt("crest_id"));
-                clan.setCrestLargeId(rs.getInt("crest_large_id"));
-                clan.setAllyCrestId(rs.getInt("ally_crest_id"));
-                clan.addReputationScore(rs.getInt("reputation_score"));
-                clan.setAuctionBiddedAt(rs.getInt("auction_bid_at"));
-                clan.setNewLeaderId(rs.getInt("new_leader_id"), false);
-                if (clan.getDissolvingExpiryTime() != 0L) {
-                    this.scheduleRemoveClan(clan);
-                }
-
-                clan.setNoticeEnabled(rs.getBoolean("enabled"));
-                clan.setNotice(rs.getString("notice"));
-                clan.setIntroduction(rs.getString("introduction"), false);
-            }
-        } catch (Exception var16) {
-            LOGGER.error("Couldn't restore clans.", var16);
-        } finally {
+        try (Connection con = ConnectionPool.getConnection()) {
             try {
 
-                if (con != null) {
-                    con.close();
+                PreparedStatement ps = con.prepareStatement("SELECT * FROM clan_data");
+
+                ResultSet rs = ps.executeQuery();
+
+                while (rs.next()) {
+                    int clanId = rs.getInt("clan_id");
+                    Clan clan = new Clan(clanId, rs.getInt("leader_id"));
+                    this._clans.put(clanId, clan);
+                    clan.setName(rs.getString("clan_name"));
+                    clan.setLevel(rs.getInt("clan_level"));
+                    clan.setCastle(rs.getInt("hasCastle"));
+                    clan.setAllyId(rs.getInt("ally_id"));
+                    clan.setAllyName(rs.getString("ally_name"));
+                    long allyExpireTime = rs.getLong("ally_penalty_expiry_time");
+                    if (allyExpireTime > System.currentTimeMillis()) {
+                        clan.setAllyPenaltyExpiryTime(allyExpireTime, rs.getInt("ally_penalty_type"));
+                    }
+
+                    long charExpireTime = rs.getLong("char_penalty_expiry_time");
+                    if (charExpireTime + (long) Config.ALT_CLAN_JOIN_DAYS * 86400000L > System.currentTimeMillis()) {
+                        clan.setCharPenaltyExpiryTime(charExpireTime);
+                    }
+
+                    clan.setDissolvingExpiryTime(rs.getLong("dissolving_expiry_time"));
+                    clan.setCrestId(rs.getInt("crest_id"));
+                    clan.setCrestLargeId(rs.getInt("crest_large_id"));
+                    clan.setAllyCrestId(rs.getInt("ally_crest_id"));
+                    clan.addReputationScore(rs.getInt("reputation_score"));
+                    clan.setAuctionBiddedAt(rs.getInt("auction_bid_at"));
+                    clan.setNewLeaderId(rs.getInt("new_leader_id"), false);
+                    if (clan.getDissolvingExpiryTime() != 0L) {
+                        this.scheduleRemoveClan(clan);
+                    }
+
+                    clan.setNoticeEnabled(rs.getBoolean("enabled"));
+                    clan.setNotice(rs.getString("notice"));
+                    clan.setIntroduction(rs.getString("introduction"), false);
                 }
-            } catch (Exception ignored) {
+            } catch (Exception var16) {
+                LOGGER.error("Couldn't restore clans.", var16);
             }
+        } catch (Exception ignored) {
         }
 
         LOGGER.info("Loaded {} clans.", this._clans.size());
@@ -117,9 +110,7 @@ public class ClanTable {
     }
 
     public Clan getClanByName(String clanName) {
-        return this._clans.values().stream().filter((c) -> {
-            return c.getName().equalsIgnoreCase(clanName);
-        }).findAny().orElse(null);
+        return this._clans.values().stream().filter((c) -> c.getName().equalsIgnoreCase(clanName)).findAny().orElse(null);
     }
 
     public Clan createClan(Player player, String clanName) {
@@ -169,9 +160,7 @@ public class ClanTable {
 
             while (var2.hasNext()) {
                 Castle castle = (Castle) var2.next();
-                castle.getSiege().getRegisteredClans().keySet().removeIf((c) -> {
-                    return c.getClanId() == clan.getClanId();
-                });
+                castle.getSiege().getRegisteredClans().keySet().removeIf((c) -> c.getClanId() == clan.getClanId());
             }
 
             var2 = clan.getAttackerList().iterator();
@@ -655,9 +644,7 @@ public class ClanTable {
     }
 
     public List<Clan> getClanAllies(int allianceId) {
-        return allianceId == 0 ? Collections.emptyList() : this._clans.values().stream().filter((c) -> {
-            return c.getAllyId() == allianceId;
-        }).collect(Collectors.toList());
+        return allianceId == 0 ? Collections.emptyList() : this._clans.values().stream().filter((c) -> c.getAllyId() == allianceId).collect(Collectors.toList());
     }
 
     public void refreshClansLadder(boolean cleanupRank) {

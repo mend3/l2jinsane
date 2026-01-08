@@ -387,9 +387,7 @@ public class DerbyTrackManager {
 
     protected void clearBets() {
 
-        for (int key : this._betsPerLane.keySet()) {
-            this._betsPerLane.put(key, 0L);
-        }
+        this._betsPerLane.replaceAll((k, v) -> 0L);
 
         try {
             Connection con = ConnectionPool.getConnection();
@@ -469,11 +467,6 @@ public class DerbyTrackManager {
         WAITING,
         STARTING_RACE,
         RACE_END;
-
-        // $FF: synthetic method
-        private static DerbyTrackManager.RaceState[] $values() {
-            return new DerbyTrackManager.RaceState[]{ACCEPTING_BETS, WAITING, STARTING_RACE, RACE_END};
-        }
     }
 
     private static class SingletonHolder {

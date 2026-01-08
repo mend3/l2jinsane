@@ -1,4 +1,4 @@
-package net.sf.l2j.gameserver.communitybbs.Manager;
+package net.sf.l2j.gameserver.communitybbs.manager;
 
 import net.sf.l2j.commons.lang.StringUtil;
 import net.sf.l2j.gameserver.data.cache.HtmCache;

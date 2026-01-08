@@ -8,7 +8,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q663_SeductiveWhispers extends Quest {
@@ -83,8 +82,7 @@ public class Q663_SeductiveWhispers extends Quest {
         setItemsIds(8766);
         addStartNpc(30846);
         addTalkId(30846);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : CHANCES.keySet()) {
             addKillId(npcId);
         }
     }

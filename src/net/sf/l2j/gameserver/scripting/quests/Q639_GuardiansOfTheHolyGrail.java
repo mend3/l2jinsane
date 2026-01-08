@@ -7,7 +7,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q639_GuardiansOfTheHolyGrail extends Quest {
@@ -46,8 +45,7 @@ public class Q639_GuardiansOfTheHolyGrail extends Quest {
         setItemsIds(8069, 8070, 8071);
         addStartNpc(31350);
         addTalkId(31350, 32008, 32028);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int id = iterator.next();
+        for (int id : CHANCES.keySet()) {
             addKillId(id);
         }
     }

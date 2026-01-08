@@ -52,19 +52,19 @@ public class Html {
     }
 
     public static String formatAdena(int amount) {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         int rem = amount % 1000;
-        s = Integer.toString(rem);
+        s = new StringBuilder(Integer.toString(rem));
         amount = (amount - rem) / 1000;
         while (amount > 0) {
             if (rem < 99)
-                s = "0" + s;
+                s.insert(0, "0");
             if (rem < 9)
-                s = "0" + s;
+                s.insert(0, "0");
             rem = amount % 1000;
-            s = rem + "," + rem;
+            s = new StringBuilder(rem + "," + rem);
             amount = (amount - rem) / 1000;
         }
-        return s;
+        return s.toString();
     }
 }

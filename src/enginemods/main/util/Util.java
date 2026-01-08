@@ -9,7 +9,7 @@ public class Util {
     public static final String SEPARATOR = "-----------------------------------------------------------";
 
     public static <A> boolean areObjectType(Class<A> type, WorldObject... objects) {
-        if (objects == null || objects.length <= 0)
+        if (objects == null || objects.length == 0)
             return false;
         for (WorldObject o : objects) {
             if (!type.isAssignableFrom(o.getClass()))

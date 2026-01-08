@@ -16,11 +16,6 @@ public enum StoreType {
         this._id = id;
     }
 
-    // $FF: synthetic method
-    private static StoreType[] $values() {
-        return new StoreType[]{NONE, SELL, SELL_MANAGE, BUY, BUY_MANAGE, MANUFACTURE, PACKAGE_SELL};
-    }
-
     public int getId() {
         return this._id;
     }

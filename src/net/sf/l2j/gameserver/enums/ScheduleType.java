@@ -16,11 +16,6 @@ public enum ScheduleType {
         this._period = period;
     }
 
-    // $FF: synthetic method
-    private static ScheduleType[] $values() {
-        return new ScheduleType[]{HOURLY, DAILY, WEEKLY, MONTHLY_DAY, MONTHLY_WEEK, YEARLY_DAY, YEARLY_WEEK};
-    }
-
     public final int getPeriod() {
         return this._period;
     }

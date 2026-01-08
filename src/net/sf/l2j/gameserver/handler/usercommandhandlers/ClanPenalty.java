@@ -15,7 +15,7 @@ public class ClanPenalty implements IUserCommandHandler {
 
     private static final int[] COMMAND_IDS = new int[]{100};
 
-    public boolean useUserCommand(int id, Player activeChar) {
+    public void useUserCommand(int id, Player activeChar) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         StringBuilder sb = new StringBuilder();
         long currentTime = System.currentTimeMillis();
@@ -53,9 +53,8 @@ public class ClanPenalty implements IUserCommandHandler {
         }
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setFile("data/html/clan_penalty.htm");
-        html.replace("%content%", (sb.length() == 0) ? "<tr><td width=170>No penalty is imposed.</td><td width=100 align=center></td></tr>" : sb.toString());
+        html.replace("%content%", (sb.isEmpty()) ? "<tr><td width=170>No penalty is imposed.</td><td width=100 align=center></td></tr>" : sb.toString());
         activeChar.sendPacket(html);
-        return true;
     }
 
     public int[] getUserCommandList() {

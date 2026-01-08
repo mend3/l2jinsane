@@ -9,7 +9,6 @@ import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q419_GetAPet extends Quest {
@@ -69,8 +68,7 @@ public class Q419_GetAPet extends Quest {
                 3427);
         addStartNpc(30731);
         addTalkId(30731, 30256, 30091, 30072);
-        for (Iterator<Integer> iterator = DROPLIST.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : DROPLIST.keySet()) {
             addKillId(npcId);
         }
     }

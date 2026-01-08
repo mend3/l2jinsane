@@ -24,17 +24,6 @@ public class AbnormalStatusUpdate extends L2GameServerPacket {
         }
     }
 
-    private static class Effect {
-        protected int _skillId;
-
-        protected int _level;
-
-        protected int _duration;
-
-        public Effect(int pSkillId, int pLevel, int pDuration) {
-            this._skillId = pSkillId;
-            this._level = pLevel;
-            this._duration = pDuration;
-        }
+    private record Effect(int _skillId, int _level, int _duration) {
     }
 }

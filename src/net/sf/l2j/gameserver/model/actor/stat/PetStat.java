@@ -16,7 +16,7 @@ public class PetStat extends SummonStat {
     }
 
     public boolean addExp(int value) {
-        if (!super.addExp((long) value)) {
+        if (!super.addExp(value)) {
             return false;
         } else {
             this.getActiveChar().updateAndBroadcastStatus(1);
@@ -69,11 +69,11 @@ public class PetStat extends SummonStat {
     }
 
     public int getMaxHp() {
-        return (int) this.calcStat(Stats.MAX_HP, this.getActiveChar().getPetData().getMaxHp(), (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.MAX_HP, this.getActiveChar().getPetData().getMaxHp(), null, null);
     }
 
     public int getMaxMp() {
-        return (int) this.calcStat(Stats.MAX_MP, this.getActiveChar().getPetData().getMaxMp(), (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.MAX_MP, this.getActiveChar().getPetData().getMaxMp(), null, null);
     }
 
     public int getMAtk(Creature target, L2Skill skill) {
@@ -86,12 +86,12 @@ public class PetStat extends SummonStat {
     }
 
     public int getMAtkSpd() {
-        double base = (double) 333.0F;
+        double base = 333.0F;
         if (this.getActiveChar().checkHungryState()) {
-            base /= (double) 2.0F;
+            base /= 2.0F;
         }
 
-        return (int) this.calcStat(Stats.MAGIC_ATTACK_SPEED, base, (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.MAGIC_ATTACK_SPEED, base, null, null);
     }
 
     public int getMDef(Creature target, L2Skill skill) {
@@ -99,19 +99,19 @@ public class PetStat extends SummonStat {
     }
 
     public int getPAtk(Creature target) {
-        return (int) this.calcStat(Stats.POWER_ATTACK, this.getActiveChar().getPetData().getPAtk(), target, (L2Skill) null);
+        return (int) this.calcStat(Stats.POWER_ATTACK, this.getActiveChar().getPetData().getPAtk(), target, null);
     }
 
     public int getPAtkSpd() {
-        double base = (double) this.getActiveChar().getTemplate().getBasePAtkSpd();
+        double base = this.getActiveChar().getTemplate().getBasePAtkSpd();
         if (this.getActiveChar().checkHungryState()) {
-            base /= (double) 2.0F;
+            base /= 2.0F;
         }
 
-        return (int) this.calcStat(Stats.POWER_ATTACK_SPEED, base, (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.POWER_ATTACK_SPEED, base, null, null);
     }
 
     public int getPDef(Creature target) {
-        return (int) this.calcStat(Stats.POWER_DEFENCE, this.getActiveChar().getPetData().getPDef(), target, (L2Skill) null);
+        return (int) this.calcStat(Stats.POWER_DEFENCE, this.getActiveChar().getPetData().getPDef(), target, null);
     }
 }

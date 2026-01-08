@@ -29,7 +29,7 @@ public class AdminSkill implements IAdminCommandHandler {
     private static void adminTestSkill(Player activeChar, int id) {
         Creature player = null;
         WorldObject target = activeChar.getTarget();
-        if (target == null || !(target instanceof Creature)) {
+        if (!(target instanceof Creature)) {
             Player player1 = activeChar;
         } else {
             player = (Creature) target;
@@ -223,7 +223,7 @@ public class AdminSkill implements IAdminCommandHandler {
         showMainPage(activeChar);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_show_skills")) {
             showMainPage(activeChar);
         } else if (command.startsWith("admin_remove_skills")) {
@@ -287,7 +287,6 @@ public class AdminSkill implements IAdminCommandHandler {
                 activeChar.sendMessage("Used to test skills' visual effect, format : //st <ID>");
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

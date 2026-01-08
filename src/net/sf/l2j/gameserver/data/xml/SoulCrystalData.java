@@ -29,18 +29,14 @@ public class SoulCrystalData implements IXmlReader {
 
     public void parseDocument(Document doc, Path path) {
         this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "crystals", (crystalsNode) -> {
-                this.forEach(crystalsNode, "crystal", (crystalNode) -> {
-                    StatSet set = this.parseAttributes(crystalNode);
-                    this._soulCrystals.put(set.getInteger("initial"), new SoulCrystal(set));
-                });
-            });
-            this.forEach(listNode, "npcs", (npcsNode) -> {
-                this.forEach(npcsNode, "npc", (npcNode) -> {
-                    StatSet set = this.parseAttributes(npcNode);
-                    this._levelingInfos.put(set.getInteger("id"), new LevelingInfo(set));
-                });
-            });
+            this.forEach(listNode, "crystals", (crystalsNode) -> this.forEach(crystalsNode, "crystal", (crystalNode) -> {
+                StatSet set = this.parseAttributes(crystalNode);
+                this._soulCrystals.put(set.getInteger("initial"), new SoulCrystal(set));
+            }));
+            this.forEach(listNode, "npcs", (npcsNode) -> this.forEach(npcsNode, "npc", (npcNode) -> {
+                StatSet set = this.parseAttributes(npcNode);
+                this._levelingInfos.put(set.getInteger("id"), new LevelingInfo(set));
+            }));
         });
     }
 

@@ -12,9 +12,9 @@ import java.util.StringTokenizer;
 public class AdminLevel implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_addlevel", "admin_setlevel"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (activeChar == null)
-            return false;
+            return;
         WorldObject targetChar = activeChar.getTarget();
         StringTokenizer st = new StringTokenizer(command, " ");
         String actualCommand = st.nextToken();
@@ -27,13 +27,12 @@ public class AdminLevel implements IAdminCommandHandler {
                     ((Playable) targetChar).getStat().addLevel(Byte.parseByte(val));
             } catch (NumberFormatException e) {
                 activeChar.sendMessage("Wrong number format.");
-                return false;
             }
         } else if (actualCommand.equalsIgnoreCase("admin_setlevel")) {
             try {
-                if (targetChar == null || !(targetChar instanceof Player targetPlayer)) {
+                if (!(targetChar instanceof Player targetPlayer)) {
                     activeChar.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-                    return false;
+                    return;
                 }
                 byte lvl = Byte.parseByte(val);
                 if (lvl >= 1 && lvl <= 81) {
@@ -46,14 +45,11 @@ public class AdminLevel implements IAdminCommandHandler {
                     }
                 } else {
                     activeChar.sendMessage("You must specify level between 1 and 81.");
-                    return false;
                 }
             } catch (NumberFormatException e) {
                 activeChar.sendMessage("You must specify level between 1 and 81.");
-                return false;
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

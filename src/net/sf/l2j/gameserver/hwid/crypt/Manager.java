@@ -5,7 +5,6 @@ import net.sf.l2j.gameserver.hwid.HwidConfig;
 import net.sf.l2j.gameserver.hwid.hwidmanager.HwidPlayer;
 import net.sf.l2j.gameserver.network.GameClient;
 
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Logger;
@@ -57,9 +56,9 @@ public final class Manager {
 
     public static class InfoSet {
         public String _playerName = "";
-        public long _lastGGSendTime;
-        public long _lastGGRecvTime;
-        public int _attempts;
+        public final long _lastGGSendTime;
+        public final long _lastGGRecvTime;
+        public final int _attempts;
         public String _HWID = "";
 
         public InfoSet(final Manager param1, String name, String HWID) {

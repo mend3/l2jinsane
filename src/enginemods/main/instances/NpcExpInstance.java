@@ -31,8 +31,8 @@ public class NpcExpInstance {
     private static int[] calculateExpAndSp(Attackable npc, int diff, int damage, long totalDamage) {
         if (diff < -5)
             diff = -5;
-        double xp = (long) npc.getExpReward() * damage / totalDamage;
-        double sp = (long) npc.getSpReward() * damage / totalDamage;
+        double xp = (double) ((long) npc.getExpReward() * damage) / totalDamage;
+        double sp = (double) ((long) npc.getSpReward() * damage) / totalDamage;
         L2Skill hpSkill = npc.getSkill(4408);
         if (hpSkill != null) {
             xp *= hpSkill.getPower();
@@ -54,8 +54,7 @@ public class NpcExpInstance {
     }
 
     public void increaseRate(ExpSpType type, double bonus) {
-        double oldValue = this._expSettings.get(type);
-        this._expSettings.put(type, oldValue + bonus - 1.0D);
+        this._expSettings.compute(type, (k, oldValue) -> oldValue + bonus - 1.0D);
     }
 
     public boolean hasSettings() {
@@ -85,11 +84,7 @@ public class NpcExpInstance {
             if (!MathUtil.checkIfInRange(Config.PARTY_RANGE, npc, attacker, true))
                 continue;
             totalDamage += damage;
-            RewardInfo reward = rewards.get(attacker);
-            if (reward == null) {
-                reward = new RewardInfo(attacker);
-                rewards.put(attacker, reward);
-            }
+            RewardInfo reward = rewards.computeIfAbsent(attacker, k -> new RewardInfo(attacker));
             reward.addDamage(damage);
             if (reward.getDamage() > maxDamage) {
                 maxDealer = attacker;

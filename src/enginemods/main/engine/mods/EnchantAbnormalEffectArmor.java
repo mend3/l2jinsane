@@ -17,8 +17,7 @@ public class EnchantAbnormalEffectArmor extends AbstractMods {
         this.registerMod(ConfigData.ENABLE_EnchantAbnormalEffectArmor);
     }
 
-    public static EnchantAbnormalEffectArmor getInstance() {
-        return EnchantAbnormalEffectArmor.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {

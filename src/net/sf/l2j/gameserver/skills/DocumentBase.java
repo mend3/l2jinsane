@@ -25,16 +25,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 abstract class DocumentBase {
-    static Logger _log = Logger.getLogger(DocumentBase.class.getName());
+    static final Logger _log = Logger.getLogger(DocumentBase.class.getName());
     private final File _file;
     protected Map<String, String[]> _tables;
 
     DocumentBase(File pFile) {
         this._file = pFile;
-        this._tables = new HashMap();
+        this._tables = new HashMap<>();
     }
 
-    public Document parse() {
+    public void parse() {
         Document doc = null;
 
         try {
@@ -44,10 +44,9 @@ abstract class DocumentBase {
             doc = factory.newDocumentBuilder().parse(this._file);
             this.parseDocument(doc);
         } catch (Exception e) {
-            _log.log(Level.SEVERE, "Error loading file " + String.valueOf(this._file), e);
+            _log.log(Level.SEVERE, "Error loading file " + this._file, e);
         }
 
-        return doc;
     }
 
     protected abstract void parseDocument(Document var1);
@@ -59,7 +58,7 @@ abstract class DocumentBase {
     protected abstract String getTableValue(String var1, int var2);
 
     protected void resetTable() {
-        this._tables = new HashMap();
+        this._tables = new HashMap<>();
     }
 
     protected void setTable(String name, String[] table) {
@@ -212,7 +211,7 @@ abstract class DocumentBase {
             }
         }
 
-        boolean isChanceSkillTrigger = name == EffectChanceSkillTrigger.class.getName();
+        boolean isChanceSkillTrigger = name.equals(EffectChanceSkillTrigger.class.getName());
         int trigId = 0;
         if (attrs.getNamedItem("triggeredId") != null) {
             trigId = Integer.parseInt(this.getValue(attrs.getNamedItem("triggeredId").getNodeValue(), template));
@@ -292,7 +291,7 @@ abstract class DocumentBase {
         }
 
         if (cond.conditions == null || cond.conditions.length == 0) {
-            _log.severe("Empty <and> condition in " + String.valueOf(this._file));
+            _log.severe("Empty <and> condition in " + this._file);
         }
 
         return cond;
@@ -308,7 +307,7 @@ abstract class DocumentBase {
         }
 
         if (cond.conditions == null || cond.conditions.length == 0) {
-            _log.severe("Empty <or> condition in " + String.valueOf(this._file));
+            _log.severe("Empty <or> condition in " + this._file);
         }
 
         return cond;
@@ -321,7 +320,7 @@ abstract class DocumentBase {
             }
         }
 
-        _log.severe("Empty <not> condition in " + String.valueOf(this._file));
+        _log.severe("Empty <not> condition in " + this._file);
         return null;
     }
 
@@ -340,31 +339,31 @@ abstract class DocumentBase {
                 int lvl = Integer.decode(this.getValue(a.getNodeValue(), template));
                 cond = this.joinAnd(cond, new ConditionPlayerLevel(lvl));
             } else if ("resting".equalsIgnoreCase(a.getNodeName())) {
-                boolean val = Boolean.valueOf(a.getNodeValue());
+                boolean val = Boolean.parseBoolean(a.getNodeValue());
                 cond = this.joinAnd(cond, new ConditionPlayerState(PlayerState.RESTING, val));
             } else if ("riding".equalsIgnoreCase(a.getNodeName())) {
-                boolean val = Boolean.valueOf(a.getNodeValue());
+                boolean val = Boolean.parseBoolean(a.getNodeValue());
                 cond = this.joinAnd(cond, new ConditionPlayerState(PlayerState.RIDING, val));
             } else if ("flying".equalsIgnoreCase(a.getNodeName())) {
-                boolean val = Boolean.valueOf(a.getNodeValue());
+                boolean val = Boolean.parseBoolean(a.getNodeValue());
                 cond = this.joinAnd(cond, new ConditionPlayerState(PlayerState.FLYING, val));
             } else if ("moving".equalsIgnoreCase(a.getNodeName())) {
-                boolean val = Boolean.valueOf(a.getNodeValue());
+                boolean val = Boolean.parseBoolean(a.getNodeValue());
                 cond = this.joinAnd(cond, new ConditionPlayerState(PlayerState.MOVING, val));
             } else if ("running".equalsIgnoreCase(a.getNodeName())) {
-                boolean val = Boolean.valueOf(a.getNodeValue());
+                boolean val = Boolean.parseBoolean(a.getNodeValue());
                 cond = this.joinAnd(cond, new ConditionPlayerState(PlayerState.RUNNING, val));
             } else if ("behind".equalsIgnoreCase(a.getNodeName())) {
-                boolean val = Boolean.valueOf(a.getNodeValue());
+                boolean val = Boolean.parseBoolean(a.getNodeValue());
                 cond = this.joinAnd(cond, new ConditionPlayerState(PlayerState.BEHIND, val));
             } else if ("front".equalsIgnoreCase(a.getNodeName())) {
-                boolean val = Boolean.valueOf(a.getNodeValue());
+                boolean val = Boolean.parseBoolean(a.getNodeValue());
                 cond = this.joinAnd(cond, new ConditionPlayerState(PlayerState.FRONT, val));
             } else if ("olympiad".equalsIgnoreCase(a.getNodeName())) {
-                boolean val = Boolean.valueOf(a.getNodeValue());
+                boolean val = Boolean.parseBoolean(a.getNodeValue());
                 cond = this.joinAnd(cond, new ConditionPlayerState(PlayerState.OLYMPIAD, val));
             } else if ("ishero".equalsIgnoreCase(a.getNodeName())) {
-                boolean val = Boolean.valueOf(a.getNodeValue());
+                boolean val = Boolean.parseBoolean(a.getNodeValue());
                 cond = this.joinAnd(cond, new ConditionPlayerIsHero(val));
             } else if ("hp".equalsIgnoreCase(a.getNodeName())) {
                 int hp = Integer.decode(this.getValue(a.getNodeValue(), null));
@@ -430,7 +429,7 @@ abstract class DocumentBase {
                 }
             } else {
                 StringTokenizer st = new StringTokenizer(a.getNodeValue(), ",");
-                ArrayList<Integer> array = new ArrayList(st.countTokens());
+                ArrayList<Integer> array = new ArrayList<>(st.countTokens());
 
                 while (st.hasMoreTokens()) {
                     String item = st.nextToken().trim();
@@ -453,7 +452,7 @@ abstract class DocumentBase {
         }
 
         if (cond == null) {
-            _log.severe("Unrecognized <player> condition in " + String.valueOf(this._file));
+            _log.severe("Unrecognized <player> condition in " + this._file);
         }
 
         return cond;
@@ -474,7 +473,7 @@ abstract class DocumentBase {
                 int skill_id = Integer.decode(this.getValue(a.getNodeValue(), template));
                 cond = this.joinAnd(cond, new ConditionTargetActiveSkillId(skill_id));
             } else if ("race_id".equalsIgnoreCase(a.getNodeName())) {
-                List<Integer> array = new ArrayList();
+                List<Integer> array = new ArrayList<>();
                 StringTokenizer st = new StringTokenizer(a.getNodeValue(), ",");
 
                 while (st.hasMoreTokens()) {
@@ -485,7 +484,7 @@ abstract class DocumentBase {
                 cond = this.joinAnd(cond, new ConditionTargetRaceId(array));
             } else if ("npcId".equalsIgnoreCase(a.getNodeName())) {
                 StringTokenizer st = new StringTokenizer(a.getNodeValue(), ",");
-                ArrayList<Integer> array = new ArrayList(st.countTokens());
+                ArrayList<Integer> array = new ArrayList<>(st.countTokens());
 
                 while (st.hasMoreTokens()) {
                     String item = st.nextToken().trim();
@@ -497,7 +496,7 @@ abstract class DocumentBase {
         }
 
         if (cond == null) {
-            _log.severe("Unrecognized <target> condition in " + String.valueOf(this._file));
+            _log.severe("Unrecognized <target> condition in " + this._file);
         }
 
         return cond;
@@ -547,7 +546,7 @@ abstract class DocumentBase {
         }
 
         if (cond == null) {
-            _log.severe("Unrecognized <using> condition in " + String.valueOf(this._file));
+            _log.severe("Unrecognized <using> condition in " + this._file);
         }
 
         return cond;
@@ -560,13 +559,13 @@ abstract class DocumentBase {
         for (int i = 0; i < attrs.getLength(); ++i) {
             Node a = attrs.item(i);
             if ("night".equalsIgnoreCase(a.getNodeName())) {
-                boolean val = Boolean.valueOf(a.getNodeValue());
+                boolean val = Boolean.parseBoolean(a.getNodeValue());
                 cond = this.joinAnd(cond, new ConditionGameTime(val));
             }
         }
 
         if (cond == null) {
-            _log.severe("Unrecognized <game> condition in " + String.valueOf(this._file));
+            _log.severe("Unrecognized <game> condition in " + this._file);
         }
 
         return cond;
@@ -579,20 +578,20 @@ abstract class DocumentBase {
             throw new IllegalArgumentException("Table name must start with #");
         } else {
             StringTokenizer data = new StringTokenizer(n.getFirstChild().getNodeValue());
-            List<String> array = new ArrayList(data.countTokens());
+            List<String> array = new ArrayList<>(data.countTokens());
 
             while (data.hasMoreTokens()) {
                 array.add(data.nextToken());
             }
 
-            this.setTable(name, array.toArray(new String[array.size()]));
+            this.setTable(name, array.toArray(new String[0]));
         }
     }
 
     protected void parseBeanSet(Node n, StatSet set, Integer level) {
         String name = n.getAttributes().getNamedItem("name").getNodeValue().trim();
         String value = n.getAttributes().getNamedItem("val").getNodeValue().trim();
-        char ch = value.length() == 0 ? 32 : value.charAt(0);
+        char ch = value.isEmpty() ? 32 : value.charAt(0);
         if (ch != '#' && ch != '-' && !Character.isDigit(ch)) {
             set.set(name, value);
         } else {

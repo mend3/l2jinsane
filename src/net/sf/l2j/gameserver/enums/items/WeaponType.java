@@ -24,11 +24,6 @@ public enum WeaponType implements ItemType {
         this._range = range;
     }
 
-    // $FF: synthetic method
-    private static WeaponType[] $values() {
-        return new WeaponType[]{NONE, SWORD, BLUNT, DAGGER, BOW, POLE, ETC, FIST, DUAL, DUALFIST, BIGSWORD, FISHINGROD, BIGBLUNT, PET};
-    }
-
     public int mask() {
         return this._mask;
     }

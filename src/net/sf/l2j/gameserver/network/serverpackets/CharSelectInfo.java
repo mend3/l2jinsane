@@ -175,7 +175,7 @@ public class CharSelectInfo extends L2GameServerPacket {
                             }
                         throw throwable;
                     }
-                    CharSelectSlot[] arrayOfCharSelectSlot = list.toArray(new CharSelectSlot[list.size()]);
+                    CharSelectSlot[] arrayOfCharSelectSlot = list.toArray(new CharSelectSlot[0]);
                     if (ps != null)
                         ps.close();
                     if (con != null)

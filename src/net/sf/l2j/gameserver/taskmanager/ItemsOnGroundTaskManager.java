@@ -32,7 +32,7 @@ public final class ItemsOnGroundTaskManager implements Runnable {
                 Connection con = ConnectionPool.getConnection();
                 PreparedStatement st = con.prepareStatement("SELECT object_id,item_id,count,enchant_level,x,y,z,time FROM items_on_ground");
                 PreparedStatement st2 = con.prepareStatement("DELETE FROM items_on_ground");
-                ResultSet rs = st.executeQuery();
+                ResultSet rs = st.executeQuery()
         ) {
             long time = System.currentTimeMillis();
 
@@ -64,7 +64,7 @@ public final class ItemsOnGroundTaskManager implements Runnable {
             LOGGER.error("Error while loading items on ground data.", e);
         }
 
-        LOGGER.info("Restored {} items on ground.", new Object[]{this._items.size()});
+        LOGGER.info("Restored {} items on ground.", this._items.size());
     }
 
     public static ItemsOnGroundTaskManager getInstance() {
@@ -123,7 +123,7 @@ public final class ItemsOnGroundTaskManager implements Runnable {
         } else {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement st = con.prepareStatement("INSERT INTO items_on_ground(object_id,item_id,count,enchant_level,x,y,z,time) VALUES(?,?,?,?,?,?,?,?)");
+                    PreparedStatement st = con.prepareStatement("INSERT INTO items_on_ground(object_id,item_id,count,enchant_level,x,y,z,time) VALUES(?,?,?,?,?,?,?,?)")
             ) {
                 long time = System.currentTimeMillis();
 
@@ -148,7 +148,7 @@ public final class ItemsOnGroundTaskManager implements Runnable {
                 LOGGER.error("Couldn't save items on ground.", e);
             }
 
-            LOGGER.info("Saved {} items on ground.", new Object[]{this._items.size()});
+            LOGGER.info("Saved {} items on ground.", this._items.size());
         }
     }
 

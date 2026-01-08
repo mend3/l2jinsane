@@ -19,7 +19,7 @@ public class L2SkillChargeDmg extends L2Skill {
 
     public void useSkill(Creature caster, WorldObject[] targets) {
         if (!caster.isAlikeDead()) {
-            double modifier = (double) 0.0F;
+            double modifier = 0.0F;
             if (caster instanceof Player) {
                 modifier = 0.7 + 0.3 * (double) (((Player) caster).getCharges() + this.getNumCharges());
             }
@@ -27,17 +27,16 @@ public class L2SkillChargeDmg extends L2Skill {
             boolean ss = caster.isChargedShot(ShotType.SOULSHOT);
 
             for (WorldObject obj : targets) {
-                if (obj instanceof Creature) {
-                    Creature target = (Creature) obj;
+                if (obj instanceof Creature target) {
                     if (!target.isAlikeDead()) {
                         boolean skillIsEvaded = Formulas.calcPhysicalSkillEvasion(target, this);
                         if (skillIsEvaded) {
                             if (caster instanceof Player) {
-                                ((Player) caster).sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_DODGES_ATTACK).addCharName(target));
+                                caster.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_DODGES_ATTACK).addCharName(target));
                             }
 
                             if (target instanceof Player) {
-                                ((Player) target).sendPacket(SystemMessage.getSystemMessage(SystemMessageId.AVOIDED_S1_ATTACK).addCharName(caster));
+                                target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.AVOIDED_S1_ATTACK).addCharName(caster));
                             }
                         } else {
                             byte shld = Formulas.calcShldUse(caster, target, this);
@@ -48,7 +47,7 @@ public class L2SkillChargeDmg extends L2Skill {
 
                             double damage = Formulas.calcPhysDam(caster, target, this, shld, false, ss);
                             if (crit) {
-                                damage *= (double) 2.0F;
+                                damage *= 2.0F;
                             }
 
                             if (damage > (double) 0.0F) {

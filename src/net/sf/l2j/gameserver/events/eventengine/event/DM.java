@@ -62,7 +62,7 @@ public class DM extends AbstractEvent {
         super.increaseScore(player, count);
 
         for (int itemId : Config.DM_ON_KILL_REWARDS.keySet()) {
-            player.addItem("Event reward.", itemId, (Integer) Config.DM_ON_KILL_REWARDS.get(itemId), null, true);
+            player.addItem("Event reward.", itemId, Config.DM_ON_KILL_REWARDS.get(itemId), null, true);
         }
 
         int var10001 = this.getScore(player);

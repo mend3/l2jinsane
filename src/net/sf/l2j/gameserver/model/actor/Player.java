@@ -15,8 +15,8 @@ import net.sf.l2j.commons.pool.ConnectionPool;
 import net.sf.l2j.commons.pool.ThreadPool;
 import net.sf.l2j.commons.random.Rnd;
 import net.sf.l2j.gameserver.LoginServerThread;
-import net.sf.l2j.gameserver.communitybbs.BB.Forum;
-import net.sf.l2j.gameserver.communitybbs.Manager.ForumsBBSManager;
+import net.sf.l2j.gameserver.communitybbs.bb.Forum;
+import net.sf.l2j.gameserver.communitybbs.manager.ForumsBBSManager;
 import net.sf.l2j.gameserver.data.AgathionData;
 import net.sf.l2j.gameserver.data.ItemTable;
 import net.sf.l2j.gameserver.data.SkillTable;
@@ -211,9 +211,9 @@ public final class Player extends Playable {
     public int mysticMuse_cont;
     public int stormScreamer_cont;
     public int titan_cont;
-    public int grandKhauatari_cont;
+    public final int grandKhauatari_cont;
     public int dominator_cont;
-    public int doomcryer_cont;
+    public final int doomcryer_cont;
     int buff;
     private int _baseClass;
     private int _activeClass;
@@ -473,7 +473,7 @@ public final class Player extends Playable {
         player.setBaseClass(player.getClassId());
 
         try {
-            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO characters (account_name,obj_Id,char_name,level,maxHp,curHp,maxCp,curCp,maxMp,curMp,face,hairStyle,hairColor,sex,exp,sp,karma,pvpkills,pkkills,clanid,race,classid,deletetime,cancraft,title,accesslevel,online,isin7sdungeon,clan_privs,wantspeace,base_class,nobless,power_grade) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");) {
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO characters (account_name,obj_Id,char_name,level,maxHp,curHp,maxCp,curCp,maxMp,curMp,face,hairStyle,hairColor,sex,exp,sp,karma,pvpkills,pkkills,clanid,race,classid,deletetime,cancraft,title,accesslevel,online,isin7sdungeon,clan_privs,wantspeace,base_class,nobless,power_grade) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")) {
                 ps.setString(1, accountName);
                 ps.setInt(2, player.getObjectId());
                 ps.setString(3, player.getName());
@@ -520,7 +520,7 @@ public final class Player extends Playable {
     public static Player restore(int objectId) {
         Player player = null;
 
-        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE obj_id=?");) {
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM characters WHERE obj_id=?")) {
             ps.setInt(1, objectId);
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -664,7 +664,7 @@ public final class Player extends Playable {
 
     private static boolean restoreSubClassData(Player player) {
         try {
-            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT class_id,exp,sp,level,class_index FROM character_subclasses WHERE char_obj_id=? ORDER BY class_index ASC");) {
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT class_id,exp,sp,level,class_index FROM character_subclasses WHERE char_obj_id=? ORDER BY class_index ASC")) {
                 ps.setInt(1, player.getObjectId());
 
                 try (ResultSet rs = ps.executeQuery()) {
@@ -777,7 +777,7 @@ public final class Player extends Playable {
         this.setStat(new PlayerStat(this));
     }
 
-    public final PlayerStat getStat() {
+    public PlayerStat getStat() {
         return (PlayerStat) super.getStat();
     }
 
@@ -785,19 +785,19 @@ public final class Player extends Playable {
         this.setStatus(new PlayerStatus(this));
     }
 
-    public final PlayerStatus getStatus() {
+    public PlayerStatus getStatus() {
         return (PlayerStatus) super.getStatus();
     }
 
-    public final Appearance getAppearance() {
+    public Appearance getAppearance() {
         return this._appearance;
     }
 
-    public final PlayerTemplate getBaseTemplate() {
+    public PlayerTemplate getBaseTemplate() {
         return PlayerClassData.getInstance().getTemplate(this._baseClass);
     }
 
-    public final PlayerTemplate getTemplate() {
+    public PlayerTemplate getTemplate() {
         return (PlayerTemplate) super.getTemplate();
     }
 
@@ -820,7 +820,7 @@ public final class Player extends Playable {
         }
     }
 
-    public final int getLevel() {
+    public int getLevel() {
         return this.getStat().getLevel();
     }
 
@@ -863,9 +863,7 @@ public final class Player extends Playable {
     public void unregisterRecipeList(int recipeId) {
         if (this._dwarvenRecipeBook.containsKey(recipeId)) {
             this._dwarvenRecipeBook.remove(recipeId);
-        } else if (this._commonRecipeBook.containsKey(recipeId)) {
-            this._commonRecipeBook.remove(recipeId);
-        }
+        } else this._commonRecipeBook.remove(recipeId);
 
         this.getShortcutList().deleteShortcuts(recipeId, ShortcutType.RECIPE);
     }
@@ -917,8 +915,7 @@ public final class Player extends Playable {
             QuestState qs = this.getQuestState(questName);
             if (qs != null) {
                 WorldObject object = World.getInstance().getObject(this.getLastQuestNpcObject());
-                if (object instanceof Npc && this.isInsideRadius(object, 150, false, false)) {
-                    Npc npc = (Npc) object;
+                if (object instanceof Npc npc && this.isInsideRadius(object, 150, false, false)) {
                     List<Quest> scripts = npc.getTemplate().getEventQuests(ScriptEventType.ON_TALK);
                     if (scripts != null) {
                         for (Quest script : scripts) {
@@ -949,7 +946,7 @@ public final class Player extends Playable {
         }
     }
 
-    public final List<QuestState> getNotifyQuestOfDeath() {
+    public List<QuestState> getNotifyQuestOfDeath() {
         return this._notifyQuestOfDeathList;
     }
 
@@ -1980,14 +1977,13 @@ public final class Player extends Playable {
         }
     }
 
-    public boolean dropItem(String process, ItemInstance item, WorldObject reference, boolean sendMessage) {
+    public void dropItem(String process, ItemInstance item, WorldObject reference, boolean sendMessage) {
         item = this._inventory.dropItem(process, item, this, reference);
         if (item == null) {
             if (sendMessage) {
                 this.sendPacket(SystemMessageId.NOT_ENOUGH_ITEMS);
             }
 
-            return false;
         } else {
             item.dropMe(this, this.getX() + Rnd.get(-25, 25), this.getY() + Rnd.get(-25, 25), this.getZ() + 20);
             InventoryUpdate playerIU = new InventoryUpdate();
@@ -2000,7 +1996,6 @@ public final class Player extends Playable {
                 this.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_DROPPED_S1).addItemName(item));
             }
 
-            return true;
         }
     }
 
@@ -2041,7 +2036,7 @@ public final class Player extends Playable {
         } else {
             ItemInstance item = this.getInventory().getItemByObjectId(objectId);
             if (item != null && item.getOwnerId() == this.getObjectId()) {
-                if (count >= 1 && (count <= 1 || item.isStackable())) {
+                if (count >= 1 && (count == 1 || item.isStackable())) {
                     if (count > item.getCount()) {
                         return null;
                     } else if ((this._summon == null || this._summon.getControlItemId() != objectId) && this._mountObjectId != objectId) {
@@ -2068,7 +2063,7 @@ public final class Player extends Playable {
                 this._protectTask = ThreadPool.schedule(() -> {
                     this.setSpawnProtection(false);
                     this.sendMessage("The spawn protection has ended.");
-                }, Config.PLAYER_SPAWN_PROTECTION * 1000);
+                }, Config.PLAYER_SPAWN_PROTECTION * 1000L);
             }
         } else {
             this._protectTask.cancel(true);
@@ -2083,7 +2078,7 @@ public final class Player extends Playable {
     }
 
     public void setRecentFakeDeath() {
-        this._recentFakeDeathEndTime = System.currentTimeMillis() + (long) (Config.PLAYER_FAKEDEATH_UP_PROTECTION * 1000);
+        this._recentFakeDeathEndTime = System.currentTimeMillis() + (Config.PLAYER_FAKEDEATH_UP_PROTECTION * 1000L);
     }
 
     public void clearRecentFakeDeath() {
@@ -2094,15 +2089,15 @@ public final class Player extends Playable {
         return this._recentFakeDeathEndTime > System.currentTimeMillis();
     }
 
-    public final boolean isFakeDeath() {
+    public boolean isFakeDeath() {
         return this._isFakeDeath;
     }
 
-    public final void setIsFakeDeath(boolean value) {
+    public void setIsFakeDeath(boolean value) {
         this._isFakeDeath = value;
     }
 
-    public final boolean isAlikeDead() {
+    public boolean isAlikeDead() {
         return super.isAlikeDead() ? true : this.isFakeDeath();
     }
 
@@ -2341,7 +2336,7 @@ public final class Player extends Playable {
         super.broadcastPacketInRadius(packet, radius);
     }
 
-    public final void mikadoPlayerUpdate() {
+    public void mikadoPlayerUpdate() {
         this.updateAbnormalEffect();
         this.sendPacket(new ItemList(this, false));
         this.sendPacket(new InventoryUpdate());
@@ -2353,7 +2348,7 @@ public final class Player extends Playable {
         this.broadcastUserInfo();
     }
 
-    public final void broadcastUserInfo() {
+    public void broadcastUserInfo() {
         this.sendPacket(new UserInfo(this));
         if (this.getPolyType() == PolyType.NPC) {
             this.broadcastPacket(new AbstractNpcInfo.PcMorphInfo(this, this.getPolyTemplate()), false);
@@ -2363,7 +2358,7 @@ public final class Player extends Playable {
 
     }
 
-    public final void broadcastCharInfo() {
+    public void broadcastCharInfo() {
         for (Player player : this.getKnownType(Player.class)) {
             player.sendPacket(new CharInfo(this));
             int relation = this.getRelation(player);
@@ -2376,7 +2371,7 @@ public final class Player extends Playable {
 
     }
 
-    public final void broadcastTitleInfo() {
+    public void broadcastTitleInfo() {
         this.sendPacket(new UserInfo(this));
         this.broadcastPacket(new TitleUpdate(this));
     }
@@ -2405,8 +2400,7 @@ public final class Player extends Playable {
     }
 
     public void doInteract(Creature target) {
-        if (target instanceof Player) {
-            Player temp = (Player) target;
+        if (target instanceof Player temp) {
             this.sendPacket(new MoveToPawn(this, temp, 150));
             switch (temp.getStoreType()) {
                 case SELL:
@@ -2439,8 +2433,7 @@ public final class Player extends Playable {
     public void doPickupItem(WorldObject object) {
         if (!this.isAlikeDead() && !this.isFakeDeath()) {
             this.getAI().setIntention(IntentionType.IDLE);
-            if (object instanceof ItemInstance) {
-                ItemInstance item = (ItemInstance) object;
+            if (object instanceof ItemInstance item) {
                 this.sendPacket(ActionFailed.STATIC_PACKET);
                 this.sendPacket(new StopMove(this));
                 synchronized (item) {
@@ -2608,11 +2601,11 @@ public final class Player extends Playable {
 
     }
 
-    public final PreparedListContainer getMultiSell() {
+    public PreparedListContainer getMultiSell() {
         return this._currentMultiSell;
     }
 
-    public final void setMultiSell(PreparedListContainer list) {
+    public void setMultiSell(PreparedListContainer list) {
         this._currentMultiSell = list;
     }
 
@@ -2641,8 +2634,7 @@ public final class Player extends Playable {
         if (newTarget instanceof StaticObject) {
             this.sendPacket(new MyTargetSelected(newTarget.getObjectId(), 0));
             this.sendPacket(new StaticObjectInfo((StaticObject) newTarget));
-        } else if (newTarget instanceof Creature) {
-            Creature target = (Creature) newTarget;
+        } else if (newTarget instanceof Creature target) {
             if (newTarget.getObjectId() != this.getObjectId()) {
                 this.sendPacket(new ValidateLocation(target));
             }
@@ -3259,9 +3251,9 @@ public final class Player extends Playable {
             Map<Integer, Optional<GeneralSkillNode>> availableSkills = this.getTemplate().getSkills().stream().filter((s) -> s.getMinLvl() <= this.getLevel() + (s.getId() == 239 ? 0 : 9)).collect(Collectors.groupingBy(IntIntHolder::getId, Collectors.maxBy(COMPARE_SKILLS_BY_LVL)));
 
             for (L2Skill skill : this.getSkills().values()) {
-                if (this.getTemplate().getSkills().stream().filter((s) -> s.getId() == skill.getId()).count() != 0L) {
+                if (this.getTemplate().getSkills().stream().anyMatch((s) -> s.getId() == skill.getId())) {
                     Optional<GeneralSkillNode> tempSkill = availableSkills.get(skill.getId());
-                    if (tempSkill == null) {
+                    if (tempSkill == null || tempSkill.isEmpty()) {
                         this.removeSkill(skill.getId(), true);
                     } else {
                         GeneralSkillNode availableSkill = tempSkill.get();
@@ -3470,9 +3462,8 @@ public final class Player extends Playable {
         }
     }
 
-    public boolean mount(Summon pet) {
+    public void mount(Summon pet) {
         if (!this.disarmWeapons()) {
-            return false;
         } else {
             this.setRunning();
             this.stopAllToggles();
@@ -3485,7 +3476,6 @@ public final class Player extends Playable {
             this.broadcastPacket(mount);
             this.broadcastUserInfo();
             pet.unSummon(this);
-            return true;
         }
     }
 
@@ -3510,51 +3500,51 @@ public final class Player extends Playable {
         }
     }
 
-    public boolean mountPlayer(Summon summon) {
+    public void mountPlayer(Summon summon) {
         if (summon instanceof Pet && summon.isMountable() && !this.isMounted() && !this.isBetrayed()) {
             if (this.isDead()) {
                 this.sendPacket(SystemMessageId.STRIDER_CANT_BE_RIDDEN_WHILE_DEAD);
-                return false;
+                return;
             }
 
             if (summon.isDead()) {
                 this.sendPacket(SystemMessageId.DEAD_STRIDER_CANT_BE_RIDDEN);
-                return false;
+                return;
             }
 
             if (summon.isInCombat() || summon.isRooted()) {
                 this.sendPacket(SystemMessageId.STRIDER_IN_BATLLE_CANT_BE_RIDDEN);
-                return false;
+                return;
             }
 
             if (this.isInCombat()) {
                 this.sendPacket(SystemMessageId.STRIDER_CANT_BE_RIDDEN_WHILE_IN_BATTLE);
-                return false;
+                return;
             }
 
             if (this.isSitting()) {
                 this.sendPacket(SystemMessageId.STRIDER_CAN_BE_RIDDEN_ONLY_WHILE_STANDING);
-                return false;
+                return;
             }
 
             if (this.isFishing()) {
                 this.sendPacket(SystemMessageId.CANNOT_DO_WHILE_FISHING_2);
-                return false;
+                return;
             }
 
             if (this.isCursedWeaponEquipped()) {
                 this.sendPacket(SystemMessageId.STRIDER_CANT_BE_RIDDEN_WHILE_IN_BATTLE);
-                return false;
+                return;
             }
 
             if (!MathUtil.checkIfInRange(200, this, summon, true)) {
                 this.sendPacket(SystemMessageId.TOO_FAR_AWAY_FROM_STRIDER_TO_MOUNT);
-                return false;
+                return;
             }
 
             if (((Pet) summon).checkHungryState()) {
                 this.sendPacket(SystemMessageId.HUNGRY_STRIDER_NOT_MOUNT);
-                return false;
+                return;
             }
 
             if (!summon.isDead() && !this.isMounted()) {
@@ -3563,18 +3553,17 @@ public final class Player extends Playable {
         } else if (this.isMounted()) {
             if (this.getMountType() == 2 && this.isInsideZone(ZoneId.NO_LANDING)) {
                 this.sendPacket(SystemMessageId.NO_DISMOUNT_HERE);
-                return false;
+                return;
             }
 
             if (this.checkFoodState(this._petTemplate.getHungryLimit())) {
                 this.sendPacket(SystemMessageId.HUNGRY_STRIDER_NOT_MOUNT);
-                return false;
+                return;
             }
 
             this.dismount();
         }
 
-        return true;
     }
 
     public boolean dismount() {
@@ -3596,7 +3585,7 @@ public final class Player extends Playable {
 
     public void storePetFood(int petId) {
         if (this._controlItemId != 0 && petId != 0) {
-            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE pets SET fed=? WHERE item_obj_id = ?");) {
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE pets SET fed=? WHERE item_obj_id = ?")) {
                 ps.setInt(1, this.getCurrentFeed());
                 ps.setInt(2, this._controlItemId);
                 ps.executeUpdate();
@@ -3773,7 +3762,7 @@ public final class Player extends Playable {
     }
 
     public void updateOnlineStatus() {
-        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET online=?, lastAccess=? WHERE obj_id=?");) {
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET online=?, lastAccess=? WHERE obj_id=?")) {
             ps.setInt(1, this.isOnlineInt());
             ps.setLong(2, System.currentTimeMillis());
             ps.setInt(3, this.getObjectId());
@@ -3841,7 +3830,7 @@ public final class Player extends Playable {
     }
 
     private void restoreRecipeBook() {
-        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT recipeId FROM character_recipebook WHERE charId=?");) {
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT recipeId FROM character_recipebook WHERE charId=?")) {
             ps.setInt(1, this.getObjectId());
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -3884,7 +3873,7 @@ public final class Player extends Playable {
         int sp = this.getStat().getSp();
         this._classIndex = currentClassIndex;
 
-        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,punish_level=?,punish_timer=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,varka_ketra_ally=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,pc_point=?,newbie_armor=? WHERE obj_id=?");) {
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET level=?,maxHp=?,curHp=?,maxCp=?,curCp=?,maxMp=?,curMp=?,face=?,hairStyle=?,hairColor=?,sex=?,heading=?,x=?,y=?,z=?,exp=?,expBeforeDeath=?,sp=?,karma=?,pvpkills=?,pkkills=?,clanid=?,race=?,classid=?,deletetime=?,title=?,accesslevel=?,online=?,isin7sdungeon=?,clan_privs=?,wantspeace=?,base_class=?,onlinetime=?,punish_level=?,punish_timer=?,nobless=?,power_grade=?,subpledge=?,lvl_joined_academy=?,apprentice=?,sponsor=?,varka_ketra_ally=?,clan_join_expiry_time=?,clan_create_expiry_time=?,char_name=?,death_penalty_level=?,pc_point=?,newbie_armor=? WHERE obj_id=?")) {
             ps.setInt(1, level);
             ps.setInt(2, this.getMaxHp());
             ps.setDouble(3, this.getCurrentHp());
@@ -3964,7 +3953,7 @@ public final class Player extends Playable {
 
     private void storeCharSub() {
         if (!this._subClasses.isEmpty()) {
-            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE character_subclasses SET exp=?,sp=?,level=?,class_id=? WHERE char_obj_id=? AND class_index =?");) {
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE character_subclasses SET exp=?,sp=?,level=?,class_id=? WHERE char_obj_id=? AND class_index =?")) {
                 for (SubClass subClass : this._subClasses.values()) {
                     ps.setLong(1, subClass.getExp());
                     ps.setInt(2, subClass.getSp());
@@ -4081,17 +4070,15 @@ public final class Player extends Playable {
         return this._isIn7sDungeon;
     }
 
-    public boolean addSkill(L2Skill newSkill, boolean store) {
-        return this.addSkill(newSkill, store, false);
+    public void addSkill(L2Skill newSkill, boolean store) {
+        this.addSkill(newSkill, store, false);
     }
 
-    public boolean addSkill(L2Skill newSkill, boolean store, boolean updateShortcuts) {
+    public void addSkill(L2Skill newSkill, boolean store, boolean updateShortcuts) {
         if (newSkill == null) {
-            return false;
         } else {
             L2Skill oldSkill = this.getSkills().get(newSkill.getId());
             if (oldSkill != null && oldSkill.equals(newSkill)) {
-                return false;
             } else {
                 this.getSkills().put(newSkill.getId(), newSkill);
                 if (oldSkill != null) {
@@ -4119,7 +4106,6 @@ public final class Player extends Playable {
                     this.getShortcutList().refreshShortcuts(newSkill.getId(), newSkill.getLevel(), ShortcutType.SKILL);
                 }
 
-                return true;
             }
         }
     }
@@ -4155,7 +4141,7 @@ public final class Player extends Playable {
             }
 
             if (store) {
-                try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("DELETE FROM character_skills WHERE skill_id=? AND char_obj_id=? AND class_index=?");) {
+                try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("DELETE FROM character_skills WHERE skill_id=? AND char_obj_id=? AND class_index=?")) {
                     ps.setInt(1, skillId);
                     ps.setInt(2, this.getObjectId());
                     ps.setInt(3, this.getClassIndex());
@@ -4174,7 +4160,7 @@ public final class Player extends Playable {
     }
 
     private void storeSkill(L2Skill skill, int classIndex) {
-        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO character_skills (char_obj_id,skill_id,skill_level,class_index) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE skill_level=VALUES(skill_level)");) {
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("INSERT INTO character_skills (char_obj_id,skill_id,skill_level,class_index) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE skill_level=VALUES(skill_level)")) {
             ps.setInt(1, this.getObjectId());
             ps.setInt(2, skill.getId());
             ps.setInt(3, skill.getLevel());
@@ -4188,7 +4174,7 @@ public final class Player extends Playable {
 
     private void restoreSkills() {
         EngineModsManager.onRestoreSkills(this);
-        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT skill_id,skill_level FROM character_skills WHERE char_obj_id=? AND class_index=?");) {
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT skill_id,skill_level FROM character_skills WHERE char_obj_id=? AND class_index=?")) {
             ps.setInt(1, this.getObjectId());
             ps.setInt(2, this.getClassIndex());
 
@@ -4256,7 +4242,7 @@ public final class Player extends Playable {
     }
 
     private void restoreRecom() {
-        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT char_id,target_id FROM character_recommends WHERE char_id=?");) {
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT char_id,target_id FROM character_recommends WHERE char_id=?")) {
             ps.setInt(1, this.getObjectId());
 
             try (ResultSet rset = ps.executeQuery()) {
@@ -4371,20 +4357,11 @@ public final class Player extends Playable {
                 return false;
             } else {
                 WorldObject target = null;
-                Object var5;
-                switch (skill.getTargetType()) {
-                    case TARGET_AURA:
-                    case TARGET_FRONT_AURA:
-                    case TARGET_BEHIND_AURA:
-                    case TARGET_GROUND:
-                    case TARGET_SELF:
-                    case TARGET_CORPSE_ALLY:
-                    case TARGET_AURA_UNDEAD:
-                        var5 = this;
-                        break;
-                    default:
-                        var5 = skill.getFirstOfTargetList(this);
-                }
+                Object var5 = switch (skill.getTargetType()) {
+                    case TARGET_AURA, TARGET_FRONT_AURA, TARGET_BEHIND_AURA, TARGET_GROUND, TARGET_SELF,
+                         TARGET_CORPSE_ALLY, TARGET_AURA_UNDEAD -> this;
+                    default -> skill.getFirstOfTargetList(this);
+                };
 
                 this.getAI().setIntention(IntentionType.CAST, skill, var5);
                 return true;
@@ -4431,27 +4408,13 @@ public final class Player extends Playable {
                         this.sendPacket(ActionFailed.STATIC_PACKET);
                         return false;
                     } else {
-                        switch (sklTargetType) {
-                            case TARGET_AURA:
-                            case TARGET_FRONT_AURA:
-                            case TARGET_BEHIND_AURA:
-                            case TARGET_GROUND:
-                            case TARGET_SELF:
-                            case TARGET_CORPSE_ALLY:
-                            case TARGET_AURA_UNDEAD:
-                            case TARGET_PARTY:
-                            case TARGET_ALLY:
-                            case TARGET_CLAN:
-                            case TARGET_AREA_SUMMON:
-                                target = this;
-                                break;
-                            case TARGET_PET:
-                            case TARGET_SUMMON:
-                                target = this._summon;
-                                break;
-                            default:
-                                target = this.getTarget();
-                        }
+                        target = switch (sklTargetType) {
+                            case TARGET_AURA, TARGET_FRONT_AURA, TARGET_BEHIND_AURA, TARGET_GROUND, TARGET_SELF,
+                                 TARGET_CORPSE_ALLY, TARGET_AURA_UNDEAD, TARGET_PARTY, TARGET_ALLY, TARGET_CLAN,
+                                 TARGET_AREA_SUMMON -> this;
+                            case TARGET_PET, TARGET_SUMMON -> this._summon;
+                            default -> this.getTarget();
+                        };
 
                         if (target == null) {
                             this.sendPacket(ActionFailed.STATIC_PACKET);
@@ -4838,21 +4801,21 @@ public final class Player extends Playable {
         return this._mountType;
     }
 
-    public final void stopAllEffects() {
+    public void stopAllEffects() {
         super.stopAllEffects();
         this.updateAndBroadcastStatus(2);
     }
 
-    public final void stopAllEffectsExceptThoseThatLastThroughDeath() {
+    public void stopAllEffectsExceptThoseThatLastThroughDeath() {
         super.stopAllEffectsExceptThoseThatLastThroughDeath();
         this.updateAndBroadcastStatus(2);
     }
 
-    public final void stopAllToggles() {
+    public void stopAllToggles() {
         this._effects.stopAllToggles();
     }
 
-    public final void stopCubics() {
+    public void stopCubics() {
         if (this.getCubics() != null) {
             boolean removed = false;
 
@@ -4869,7 +4832,7 @@ public final class Player extends Playable {
 
     }
 
-    public final void stopCubicsByOthers() {
+    public void stopCubicsByOthers() {
         if (this.getCubics() != null) {
             boolean removed = false;
 
@@ -5348,7 +5311,7 @@ public final class Player extends Playable {
         this._isNoble = val;
         this.sendSkillList();
         if (store) {
-            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET nobless=? WHERE obj_Id=?");) {
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("UPDATE characters SET nobless=? WHERE obj_Id=?")) {
                 ps.setBoolean(1, val);
                 ps.setInt(2, this.getObjectId());
                 ps.executeUpdate();
@@ -5662,9 +5625,8 @@ public final class Player extends Playable {
         this.setTemplate(PlayerClassData.getInstance().getTemplate(classId));
     }
 
-    public boolean setActiveClass(int classIndex) {
+    public void setActiveClass(int classIndex) {
         if (!this._subclassLock.tryLock()) {
-            return false;
         } else {
             try {
                 for (ItemInstance item : this.getInventory().getAugmentedItems()) {
@@ -5693,7 +5655,7 @@ public final class Player extends Playable {
                     } catch (Exception e) {
                         LOGGER.error("Could not switch {}'s subclass to class index {}.", e, this.getName(), classIndex);
                         boolean item = false;
-                        return item;
+                        return;
                     }
                 }
 
@@ -5760,7 +5722,6 @@ public final class Player extends Playable {
                 this.broadcastPacket(new SocialAction(this, 15));
                 this.sendPacket(new SkillCoolTime(this));
                 boolean var18 = true;
-                return var18;
             } finally {
                 this._subclassLock.unlock();
             }
@@ -5918,7 +5879,7 @@ public final class Player extends Playable {
 
     }
 
-    public final void onTeleported() {
+    public void onTeleported() {
         super.onTeleported();
         if (Config.PLAYER_SPAWN_PROTECTION > 0) {
             this.setSpawnProtection(true);
@@ -6287,7 +6248,7 @@ public final class Player extends Playable {
         this._shortBuffTask = ThreadPool.schedule(() -> {
             this.sendPacket(new ShortBuffStatusUpdate(0, 0, 0));
             this.setShortBuffTaskSkillId(0);
-        }, time * 1000);
+        }, time * 1000L);
         this.setShortBuffTaskSkillId(magicId);
         this.sendPacket(new ShortBuffStatusUpdate(magicId, level, time));
     }
@@ -6366,7 +6327,7 @@ public final class Player extends Playable {
         return this;
     }
 
-    public final void sendDamageMessage(Creature target, int damage, boolean mcrit, boolean pcrit, boolean miss) {
+    public void sendDamageMessage(Creature target, int damage, boolean mcrit, boolean pcrit, boolean miss) {
         if (miss) {
             this.sendPacket(SystemMessageId.MISSED_TARGET);
         } else {
@@ -6421,7 +6382,7 @@ public final class Player extends Playable {
 
     public void enteredNoLanding(int delay) {
         if (this._dismountTask == null) {
-            this._dismountTask = ThreadPool.schedule(this::dismount, delay * 1000);
+            this._dismountTask = ThreadPool.schedule(this::dismount, delay * 1000L);
         }
 
     }
@@ -6469,9 +6430,8 @@ public final class Player extends Playable {
         }
     }
 
-    public boolean decreaseCharges(int count) {
+    public void decreaseCharges(int count) {
         if (this._charges.get() < count) {
-            return false;
         } else {
             if (this._charges.addAndGet(-count) == 0) {
                 this.stopChargeTask();
@@ -6480,7 +6440,6 @@ public final class Player extends Playable {
             }
 
             this.sendPacket(new EtcStatusUpdate(this));
-            return true;
         }
     }
 
@@ -6611,27 +6570,27 @@ public final class Player extends Playable {
         }
     }
 
-    public final int getClientX() {
+    public int getClientX() {
         return this._clientX;
     }
 
-    public final void setClientX(int val) {
+    public void setClientX(int val) {
         this._clientX = val;
     }
 
-    public final int getClientY() {
+    public int getClientY() {
         return this._clientY;
     }
 
-    public final void setClientY(int val) {
+    public void setClientY(int val) {
         this._clientY = val;
     }
 
-    public final int getClientZ() {
+    public int getClientZ() {
         return this._clientZ;
     }
 
-    public final void setClientZ(int val) {
+    public void setClientZ(int val) {
         this._clientZ = val;
     }
 
@@ -6643,7 +6602,7 @@ public final class Player extends Playable {
         this._mailPosition = mailPosition;
     }
 
-    public final boolean isFalling(int z) {
+    public boolean isFalling(int z) {
         if (!this.isDead() && !this.isFlying() && !this.isInsideZone(ZoneId.WATER)) {
             if (System.currentTimeMillis() < this._fallingTimestamp) {
                 return true;
@@ -6667,7 +6626,7 @@ public final class Player extends Playable {
         }
     }
 
-    public final void setFalling() {
+    public void setFalling() {
         this._fallingTimestamp = System.currentTimeMillis() + 10000L;
     }
 
@@ -6695,9 +6654,7 @@ public final class Player extends Playable {
     }
 
     public void deselectFriend(Integer friendId) {
-        if (this._selectedFriendList.contains(friendId)) {
-            this._selectedFriendList.remove(friendId);
-        }
+        this._selectedFriendList.remove(friendId);
 
     }
 
@@ -6708,7 +6665,7 @@ public final class Player extends Playable {
     private void restoreFriendList() {
         this._friendList.clear();
 
-        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT friend_id FROM character_friends WHERE char_id = ? AND relation = 0");) {
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT friend_id FROM character_friends WHERE char_id = ? AND relation = 0")) {
             ps.setInt(1, this.getObjectId());
 
             try (ResultSet rset = ps.executeQuery()) {
@@ -6746,9 +6703,7 @@ public final class Player extends Playable {
     }
 
     public void deselectBlock(Integer friendId) {
-        if (this._selectedBlocksList.contains(friendId)) {
-            this._selectedBlocksList.remove(friendId);
-        }
+        this._selectedBlocksList.remove(friendId);
 
     }
 
@@ -6900,7 +6855,7 @@ public final class Player extends Playable {
         this.sendPacket(new DeleteObject(object, object instanceof Player && ((Player) object).isSeated()));
     }
 
-    public final void refreshInfos() {
+    public void refreshInfos() {
         for (WorldObject object : this.getKnownType(WorldObject.class)) {
             if (!(object instanceof Player) || !((Player) object).isInObserverMode()) {
                 this.sendInfoFrom(object);
@@ -6909,12 +6864,12 @@ public final class Player extends Playable {
 
     }
 
-    public final void teleToLocation(Location loc) {
+    public void teleToLocation(Location loc) {
         super.teleportTo(loc, 0);
         this.respawnAgathion();
     }
 
-    public final void teleportTo(Location loc, int randomOffset) {
+    public void teleportTo(Location loc, int randomOffset) {
         if (DimensionalRiftManager.getInstance().checkIfInRiftZone(this.getX(), this.getY(), this.getZ(), true)) {
             this.sendMessage("You have been sent to the waiting room.");
             if (this.isInParty() && this.getParty().isInDimensionalRift()) {
@@ -6928,13 +6883,12 @@ public final class Player extends Playable {
         this.respawnAgathion();
     }
 
-    private final void sendInfoFrom(WorldObject object) {
+    private void sendInfoFrom(WorldObject object) {
         if (object.getPolyType() == PolyType.ITEM) {
             this.sendPacket(new SpawnItem(object));
         } else {
             object.sendInfo(this);
-            if (object instanceof Creature) {
-                Creature obj = (Creature) object;
+            if (object instanceof Creature obj) {
                 if (obj.hasAI()) {
                     obj.getAI().describeStateToPlayer(this);
                 }
@@ -7078,9 +7032,7 @@ public final class Player extends Playable {
     }
 
     public void activeMonster(Integer npcId) {
-        if (this._ignoredMonster.contains(npcId)) {
-            this._ignoredMonster.remove(npcId);
-        }
+        this._ignoredMonster.remove(npcId);
 
     }
 
@@ -7334,7 +7286,7 @@ public final class Player extends Playable {
     }
 
     private synchronized void storeDressMeData() {
-        try (Connection con = ConnectionPool.getConnection(); PreparedStatement statement = con.prepareStatement("INSERT INTO characters_dressme_data (obj_Id, armor_skins, armor_skin_option, weapon_skins, weapon_skin_option, hair_skins, hair_skin_option, face_skins, face_skin_option) VALUES (?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE obj_Id=?, armor_skins=?, armor_skin_option=?, weapon_skins=?, weapon_skin_option=?, hair_skins=?, hair_skin_option=?, face_skins=?, face_skin_option=?, shield_skins=?, shield_skin_option=?");) {
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement statement = con.prepareStatement("INSERT INTO characters_dressme_data (obj_Id, armor_skins, armor_skin_option, weapon_skins, weapon_skin_option, hair_skins, hair_skin_option, face_skins, face_skin_option) VALUES (?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE obj_Id=?, armor_skins=?, armor_skin_option=?, weapon_skins=?, weapon_skin_option=?, hair_skins=?, hair_skin_option=?, face_skins=?, face_skin_option=?, shield_skins=?, shield_skin_option=?")) {
             statement.setInt(1, this.getObjectId());
             if (this._armorSkins.isEmpty()) {
                 statement.setString(2, "");
@@ -7476,7 +7428,7 @@ public final class Player extends Playable {
     }
 
     private void restoreDressMeData() {
-        try (Connection con = ConnectionPool.getConnection(); PreparedStatement statement = con.prepareStatement("SELECT obj_Id, armor_skins, armor_skin_option, weapon_skins, weapon_skin_option, hair_skins, hair_skin_option, face_skins, face_skin_option, shield_skins, shield_skin_option FROM characters_dressme_data WHERE obj_id=?");) {
+        try (Connection con = ConnectionPool.getConnection(); PreparedStatement statement = con.prepareStatement("SELECT obj_Id, armor_skins, armor_skin_option, weapon_skins, weapon_skin_option, hair_skins, hair_skin_option, face_skins, face_skin_option, shield_skins, shield_skin_option FROM characters_dressme_data WHERE obj_id=?")) {
             statement.setInt(1, this.getObjectId());
 
             try (ResultSet rset = statement.executeQuery()) {
@@ -7804,7 +7756,7 @@ public final class Player extends Playable {
         }
 
         if (!destroyed) {
-            try (Connection con = ConnectionPool.getConnection(); PreparedStatement statement = con.prepareStatement("DELETE FROM items WHERE object_id=?");) {
+            try (Connection con = ConnectionPool.getConnection(); PreparedStatement statement = con.prepareStatement("DELETE FROM items WHERE object_id=?")) {
                 statement.setInt(1, itemObjectID);
                 statement.execute();
             } catch (Exception e) {

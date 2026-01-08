@@ -55,7 +55,7 @@ public class AdminCreateItem implements IAdminCommandHandler {
         return 0;
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         StringTokenizer st = new StringTokenizer(command);
         command = st.nextToken();
         if (command.equals("admin_itemcreate")) {
@@ -76,70 +76,73 @@ public class AdminCreateItem implements IAdminCommandHandler {
             Player target = activeChar;
             if (activeChar.getTarget() != null && activeChar.getTarget() instanceof Player)
                 target = (Player) activeChar.getTarget();
-            if (command.equals("admin_create_item")) {
-                try {
-                    int id = Integer.parseInt(st.nextToken());
-                    int count = 1;
-                    int radius = 0;
-                    if (st.hasMoreTokens()) {
-                        count = Integer.parseInt(st.nextToken());
-                        if (st.hasMoreTokens())
-                            radius = Integer.parseInt(st.nextToken());
-                    }
-                    createItem(activeChar, target, id, count, radius, true);
-                } catch (Exception e) {
-                    activeChar.sendMessage("Usage: //create_item <itemId> [amount] [radius]");
-                }
-                AdminHelpPage.showHelpPage(activeChar, "itemcreation.htm");
-            } else if (command.equals("admin_create_coin")) {
-                try {
-                    int id = getCoinId(st.nextToken());
-                    if (id <= 0) {
-                        activeChar.sendMessage("Usage: //create_coin <name> [amount]");
-                        return false;
-                    }
-                    createItem(activeChar, target, id, st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 1, 0, true);
-                } catch (Exception e) {
-                    activeChar.sendMessage("Usage: //create_coin <name> [amount]");
-                }
-                AdminHelpPage.showHelpPage(activeChar, "itemcreation.htm");
-            } else if (command.equals("admin_create_set")) {
-                if (st.hasMoreTokens())
+            switch (command) {
+                case "admin_create_item" -> {
                     try {
-                        ArmorSet set = ArmorSetData.getInstance().getSet(Integer.parseInt(st.nextToken()));
-                        if (set == null) {
-                            activeChar.sendMessage("This chest has no set.");
-                            return false;
+                        int id = Integer.parseInt(st.nextToken());
+                        int count = 1;
+                        int radius = 0;
+                        if (st.hasMoreTokens()) {
+                            count = Integer.parseInt(st.nextToken());
+                            if (st.hasMoreTokens())
+                                radius = Integer.parseInt(st.nextToken());
                         }
-                        for (int itemId : set.getSetItemsId()) {
-                            if (itemId > 0)
-                                target.getInventory().addItem("Admin", itemId, 1, target, activeChar);
-                        }
-                        if (set.getShield() > 0)
-                            target.getInventory().addItem("Admin", set.getShield(), 1, target, activeChar);
-                        activeChar.sendMessage("You have spawned " + set + " in " + target.getName() + "'s inventory.");
-                        target.sendPacket(new ItemList(target, true));
+                        createItem(activeChar, target, id, count, radius, true);
                     } catch (Exception e) {
-                        activeChar.sendMessage("Usage: //create_set <chestId>");
+                        activeChar.sendMessage("Usage: //create_item <itemId> [amount] [radius]");
                     }
-                int i = 0;
-                StringBuilder sb = new StringBuilder();
-                for (ArmorSet set : ArmorSetData.getInstance().getSets()) {
-                    boolean isNextLine = (i % 2 == 0);
-                    if (isNextLine)
-                        sb.append("<tr>");
-                    sb.append("<td><a action=\"bypass -h admin_create_set " + set.getSetItemsId()[0] + "\">" + set + "</a></td>");
-                    if (isNextLine)
-                        sb.append("</tr>");
-                    i++;
+                    AdminHelpPage.showHelpPage(activeChar, "itemcreation.htm");
                 }
-                NpcHtmlMessage html = new NpcHtmlMessage(0);
-                html.setFile("data/html/admin/itemsets.htm");
-                html.replace("%sets%", sb.toString());
-                activeChar.sendPacket(html);
+                case "admin_create_coin" -> {
+                    try {
+                        int id = getCoinId(st.nextToken());
+                        if (id <= 0) {
+                            activeChar.sendMessage("Usage: //create_coin <name> [amount]");
+                            return;
+                        }
+                        createItem(activeChar, target, id, st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 1, 0, true);
+                    } catch (Exception e) {
+                        activeChar.sendMessage("Usage: //create_coin <name> [amount]");
+                    }
+                    AdminHelpPage.showHelpPage(activeChar, "itemcreation.htm");
+                }
+                case "admin_create_set" -> {
+                    if (st.hasMoreTokens())
+                        try {
+                            ArmorSet set = ArmorSetData.getInstance().getSet(Integer.parseInt(st.nextToken()));
+                            if (set == null) {
+                                activeChar.sendMessage("This chest has no set.");
+                                return;
+                            }
+                            for (int itemId : set.getSetItemsId()) {
+                                if (itemId > 0)
+                                    target.getInventory().addItem("Admin", itemId, 1, target, activeChar);
+                            }
+                            if (set.getShield() > 0)
+                                target.getInventory().addItem("Admin", set.getShield(), 1, target, activeChar);
+                            activeChar.sendMessage("You have spawned " + set + " in " + target.getName() + "'s inventory.");
+                            target.sendPacket(new ItemList(target, true));
+                        } catch (Exception e) {
+                            activeChar.sendMessage("Usage: //create_set <chestId>");
+                        }
+                    int i = 0;
+                    StringBuilder sb = new StringBuilder();
+                    for (ArmorSet set : ArmorSetData.getInstance().getSets()) {
+                        boolean isNextLine = (i % 2 == 0);
+                        if (isNextLine)
+                            sb.append("<tr>");
+                        sb.append("<td><a action=\"bypass -h admin_create_set ").append(set.getSetItemsId()[0]).append("\">").append(set).append("</a></td>");
+                        if (isNextLine)
+                            sb.append("</tr>");
+                        i++;
+                    }
+                    NpcHtmlMessage html = new NpcHtmlMessage(0);
+                    html.setFile("data/html/admin/itemsets.htm");
+                    html.replace("%sets%", sb.toString());
+                    activeChar.sendPacket(html);
+                }
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

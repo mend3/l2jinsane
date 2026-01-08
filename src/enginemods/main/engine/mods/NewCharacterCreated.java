@@ -11,14 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NewCharacterCreated extends AbstractMods {
-    private static List<Integer> _players = new ArrayList<>();
+    private static final List<Integer> _players = new ArrayList<>();
 
     public NewCharacterCreated() {
         this.registerMod(true);
     }
 
-    public static NewCharacterCreated getInstance() {
-        return NewCharacterCreated.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
@@ -40,7 +39,7 @@ public class NewCharacterCreated extends AbstractMods {
                 }
             }
 
-            if (!ConfigData.NEW_CHARACTER_CREATED_SEND_SCREEN_MSG.equals("")) {
+            if (!ConfigData.NEW_CHARACTER_CREATED_SEND_SCREEN_MSG.isEmpty()) {
                 player.sendPacket(new ExShowScreenMessage(ConfigData.NEW_CHARACTER_CREATED_SEND_SCREEN_MSG, 10000, ExShowScreenMessage.SMPOS.TOP_CENTER, false));
             }
 

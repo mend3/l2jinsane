@@ -343,23 +343,12 @@ public abstract class Summon extends Playable {
             } else {
                 this.getOwner().setCurrentPetSkill(skill, forceUse, dontMove);
                 WorldObject target = null;
-                WorldObject var5;
-                switch (skill.getTargetType()) {
-                    case TARGET_OWNER_PET:
-                        var5 = this.getOwner();
-                        break;
-                    case TARGET_PARTY:
-                    case TARGET_AURA:
-                    case TARGET_FRONT_AURA:
-                    case TARGET_BEHIND_AURA:
-                    case TARGET_AURA_UNDEAD:
-                    case TARGET_SELF:
-                    case TARGET_CORPSE_ALLY:
-                        var5 = this;
-                        break;
-                    default:
-                        var5 = skill.getFirstOfTargetList(this);
-                }
+                WorldObject var5 = switch (skill.getTargetType()) {
+                    case TARGET_OWNER_PET -> this.getOwner();
+                    case TARGET_PARTY, TARGET_AURA, TARGET_FRONT_AURA, TARGET_BEHIND_AURA, TARGET_AURA_UNDEAD,
+                         TARGET_SELF, TARGET_CORPSE_ALLY -> this;
+                    default -> skill.getFirstOfTargetList(this);
+                };
 
                 if (var5 == null) {
                     this.sendPacket(SystemMessageId.TARGET_CANT_FOUND);
@@ -485,7 +474,7 @@ public abstract class Summon extends Playable {
 
     public String toString() {
         String var10000 = super.toString();
-        return var10000 + "(" + this.getNpcId() + ") Owner: " + String.valueOf(this.getOwner());
+        return var10000 + "(" + this.getNpcId() + ") Owner: " + this.getOwner();
     }
 
     public void sendPacket(L2GameServerPacket mov) {

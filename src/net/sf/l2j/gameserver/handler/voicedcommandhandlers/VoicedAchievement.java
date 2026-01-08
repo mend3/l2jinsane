@@ -17,10 +17,10 @@ public class VoicedAchievement implements IVoicedCommandHandler {
         StringBuilder tb = new StringBuilder();
         tb.append("<html><title>Achievements Manager</title><body><br><center>");
         tb.append("<center><table width=270 border=0>");
-        tb.append("<tr><td width=270 align=\"center\">" + a.getName() + "</td></tr></table><br>");
-        tb.append("<center>Status: " + Achievements.getStatusString(achievementID, player));
+        tb.append("<tr><td width=270 align=\"center\">").append(a.getName()).append("</td></tr></table><br>");
+        tb.append("<center>Status: ").append(Achievements.getStatusString(achievementID, player));
         if (a.meetAchievementRequirements(player) && !player.getCompletedAchievements().contains(achievementID))
-            tb.append("<button value=\"Get Reward\" action=\"bypass -h voiced_getReward " + a.getID() + "\" width=93 height=18 back=\"BotoesNpc.botaomensagem_over\" fore=\"BotoesNpc.botaomensagem\">");
+            tb.append("<button value=\"Get Reward\" action=\"bypass -h voiced_getReward ").append(a.getID()).append("\" width=93 height=18 back=\"BotoesNpc.botaomensagem_over\" fore=\"BotoesNpc.botaomensagem\">");
         tb.append("<br><img src=\"l2ui.squaregray\" width=\"270\" height=\"1s\"><br>");
         tb.append("<table width=270 border=0 >");
         tb.append("<tr><td width=270 align=\"center\"><font color=\"FF6600\">Description</font></td></tr></table><br>");
@@ -56,7 +56,7 @@ public class VoicedAchievement implements IVoicedCommandHandler {
         return "<center><table width=270 border=0>";
     }
 
-    public boolean useVoicedCommand(String command, Player player, String target) {
+    public void useVoicedCommand(String command, Player player, String target) {
         StringTokenizer st = new StringTokenizer(command, " ");
         String actualCommand = st.nextToken();
         player.refreshCompletedAchievements();
@@ -69,7 +69,7 @@ public class VoicedAchievement implements IVoicedCommandHandler {
             int id = Integer.parseInt(st.nextToken());
             if (!AchievementsManager.getInstance().getAchievementList().get(id).meetAchievementRequirements(player)) {
                 player.sendMessage("Seems you don't meet the achievements requirements now.");
-                return false;
+                return;
             }
             player.saveAchievementData(id);
             AchievementsManager.getInstance().rewardForAchievement(id, player);
@@ -77,7 +77,6 @@ public class VoicedAchievement implements IVoicedCommandHandler {
         } else {
             showMyAchievements(player);
         }
-        return true;
     }
 
     private void showMyAchievements(Player player) {

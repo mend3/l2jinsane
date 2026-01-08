@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q079_SagaOfTheAdventurer extends SagasSuperClass {
     public Q079_SagaOfTheAdventurer() {
         super(79, "Saga of the Adventurer");

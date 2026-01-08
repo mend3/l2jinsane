@@ -2,7 +2,7 @@ package net.sf.l2j.gameserver.data.manager;
 
 import net.sf.l2j.commons.logging.CLogger;
 import net.sf.l2j.commons.pool.ConnectionPool;
-import net.sf.l2j.gameserver.communitybbs.Manager.BaseBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.BaseBBSManager;
 import net.sf.l2j.gameserver.data.DailyRewardData;
 import net.sf.l2j.gameserver.data.cache.HtmCache;
 import net.sf.l2j.gameserver.idfactory.IdFactory;
@@ -68,7 +68,8 @@ public class DailyRewardManager {
                 PreparedStatement pstmt = conn.prepareStatement(insertSQL);
 
                 try {
-                    (testmap.entrySet().parallelStream().flatMap((entry) -> (entry.getValue()).stream().map((fecha) -> new AbstractMap.SimpleEntry(entry.getKey(), fecha))).sequential()).forEach((pair) -> {
+                    (testmap.entrySet().parallelStream().flatMap((entry) -> (entry.getValue()).stream()
+                            .map((fecha) -> new AbstractMap.SimpleEntry<>(entry.getKey(), fecha))).sequential()).forEach((pair) -> {
                         try {
                             pstmt.setString(1, (String) pair.getKey());
                             pstmt.setDate(2, Date.valueOf((LocalDate) pair.getValue()));
@@ -111,11 +112,11 @@ public class DailyRewardManager {
         String selectSQL = "SELECT hwid, fecha FROM daily_rewarded_players_hwid ORDER BY hwid, fecha";
 
         try {
-            Map var4;
+            Map<String, List<LocalDate>> var4;
             try (
                     Connection conn = ConnectionPool.getConnection();
                     PreparedStatement pstmt = conn.prepareStatement(selectSQL);
-                    ResultSet rs = pstmt.executeQuery();
+                    ResultSet rs = pstmt.executeQuery()
             ) {
                 var4 = resultSetToStreamHWID(rs).collect(Collectors.groupingBy(TestMapRowHWID::hwid, Collectors.mapping(TestMapRowHWID::fecha, Collectors.toList())));
             }
@@ -176,7 +177,7 @@ public class DailyRewardManager {
 
                 try {
                     testmap.entrySet().stream()
-                            .flatMap((entry) -> (entry.getValue()).stream().map((fecha) -> new AbstractMap.SimpleEntry(entry.getKey(), fecha)))
+                            .flatMap((entry) -> (entry.getValue()).stream().map((fecha) -> new AbstractMap.SimpleEntry<>(entry.getKey(), fecha)))
                             .forEach((pair) -> {
                                 try {
                                     pstmt.setInt(1, (Integer) pair.getKey());
@@ -220,11 +221,11 @@ public class DailyRewardManager {
         String selectSQL = "SELECT obj_Id, fecha FROM daily_rewarded_players ORDER BY obj_Id, fecha";
 
         try {
-            Map var4;
+            Map<Integer, List<LocalDate>> var4;
             try (
                     Connection conn = ConnectionPool.getConnection();
                     PreparedStatement pstmt = conn.prepareStatement(selectSQL);
-                    ResultSet rs = pstmt.executeQuery();
+                    ResultSet rs = pstmt.executeQuery()
             ) {
                 var4 = resultSetToStream(rs).collect(Collectors.groupingBy(TestMapRow::obj_Id, Collectors.mapping(TestMapRow::fecha, Collectors.toList())));
             }
@@ -258,7 +259,7 @@ public class DailyRewardManager {
 
         try (
                 Connection connection = ConnectionPool.getConnection();
-                PreparedStatement stmt = connection.prepareStatement(sql);
+                PreparedStatement stmt = connection.prepareStatement(sql)
         ) {
             int filasEliminadas = stmt.executeUpdate();
             LOGGER.info("Registros con HWID de meses anteriores eliminados: " + filasEliminadas);
@@ -273,7 +274,7 @@ public class DailyRewardManager {
 
         try (
                 Connection connection = ConnectionPool.getConnection();
-                PreparedStatement stmt = connection.prepareStatement(sql);
+                PreparedStatement stmt = connection.prepareStatement(sql)
         ) {
             int filasEliminadas = stmt.executeUpdate();
             LOGGER.info("Registros con Obj_ID de meses anteriores eliminados: " + filasEliminadas);
@@ -333,7 +334,7 @@ public class DailyRewardManager {
                     sb.append("<tr>");
                     sb.append("<td align=center width=72>");
                     int var10001 = dr.getDay();
-                    sb.append("Day " + var10001 + " - <font color=LEVEL>(" + dr.getAmountTxt() + ")</font>");
+                    sb.append("Day ").append(var10001).append(" - <font color=LEVEL>(").append(dr.getAmountTxt()).append(")</font>");
                     sb.append(this.getReceivedStatus(player, dr));
                     sb.append("</td>");
                     sb.append("</tr>");
@@ -438,10 +439,10 @@ public class DailyRewardManager {
         limpiarRegistrosAnteriores();
     }
 
-    private static record TestMapRowHWID(String hwid, LocalDate fecha) {
+    private record TestMapRowHWID(String hwid, LocalDate fecha) {
     }
 
-    private static record TestMapRow(Integer obj_Id, LocalDate fecha) {
+    private record TestMapRow(Integer obj_Id, LocalDate fecha) {
     }
 
     private static class SingleTonHolder {

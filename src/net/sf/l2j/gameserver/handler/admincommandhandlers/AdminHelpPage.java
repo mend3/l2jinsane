@@ -13,14 +13,13 @@ public class AdminHelpPage implements IAdminCommandHandler {
         targetChar.sendPacket(html);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_help"))
             try {
                 String val = command.substring(11);
                 showHelpPage(activeChar, val);
             } catch (StringIndexOutOfBoundsException ignored) {
             }
-        return true;
     }
 
     public String[] getAdminCommandList() {

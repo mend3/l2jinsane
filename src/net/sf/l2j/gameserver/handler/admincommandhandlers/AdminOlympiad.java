@@ -7,7 +7,7 @@ import net.sf.l2j.gameserver.model.olympiad.Olympiad;
 public class AdminOlympiad implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_endoly", "admin_sethero", "admin_setnoble"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_endoly")) {
             Olympiad.getInstance().manualSelectHeroes();
             activeChar.sendMessage("Heroes have been formed.");
@@ -31,7 +31,6 @@ public class AdminOlympiad implements IAdminCommandHandler {
             target.setNoble(!target.isNoble(), true);
             activeChar.sendMessage("You have modified " + target.getName() + "'s noble status.");
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

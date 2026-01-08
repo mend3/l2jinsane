@@ -23,8 +23,8 @@ public class CTF extends AbstractEvent {
         this.addTeam(Config.CTF_TEAM_2_NAME, Config.CTF_TEAM_2_COLOR, Config.CTF_TEAM_2_LOCATION);
         this.eventRes = new EventResTask(this);
         this.eventInfo = new EventInformation(this, Config.CTF_TEAM_1_NAME + ": %team1Score% | " + Config.CTF_TEAM_2_NAME + ": %team2Score%");
-        this.eventInfo.addReplacement("%team1Score%", ((EventTeam) this.teams.get(0)).getName().equals(Config.CTF_TEAM_1_NAME) ? ((EventTeam) this.teams.get(0)).getScore() : ((EventTeam) this.teams.get(1)).getScore());
-        this.eventInfo.addReplacement("%team2Score%", ((EventTeam) this.teams.get(0)).getName().equals(Config.CTF_TEAM_2_NAME) ? ((EventTeam) this.teams.get(0)).getScore() : ((EventTeam) this.teams.get(1)).getScore());
+        this.eventInfo.addReplacement("%team1Score%", this.teams.get(0).getName().equals(Config.CTF_TEAM_1_NAME) ? this.teams.get(0).getScore() : this.teams.get(1).getScore());
+        this.eventInfo.addReplacement("%team2Score%", this.teams.get(0).getName().equals(Config.CTF_TEAM_2_NAME) ? this.teams.get(0).getScore() : this.teams.get(1).getScore());
     }
 
     public void run() {
@@ -52,8 +52,8 @@ public class CTF extends AbstractEvent {
         if (!this.enoughRegistered(Config.CTF_MIN_PLAYERS)) {
             this.abort();
         } else {
-            this.flags.put(this.spawnNpc(65534, Config.CTF_TEAM_1_FLAG_LOCATION, ((EventTeam) this.teams.get(0)).getName()), (EventTeam) this.teams.get(0));
-            this.flags.put(this.spawnNpc(65534, Config.CTF_TEAM_2_FLAG_LOCATION, ((EventTeam) this.teams.get(1)).getName()), (EventTeam) this.teams.get(1));
+            this.flags.put(this.spawnNpc(65534, Config.CTF_TEAM_1_FLAG_LOCATION, this.teams.get(0).getName()), this.teams.get(0));
+            this.flags.put(this.spawnNpc(65534, Config.CTF_TEAM_2_FLAG_LOCATION, this.teams.get(1).getName()), this.teams.get(1));
             super.start();
         }
     }
@@ -74,11 +74,11 @@ public class CTF extends AbstractEvent {
         super.increaseScore(player, count);
 
         for (int itemId : Config.CTF_ON_SCORE_REWARDS.keySet()) {
-            player.addItem("Event reward.", itemId, (Integer) Config.CTF_ON_SCORE_REWARDS.get(itemId), null, true);
+            player.addItem("Event reward.", itemId, Config.CTF_ON_SCORE_REWARDS.get(itemId), null, true);
         }
 
-        this.eventInfo.addReplacement("%team1Score%", ((EventTeam) this.teams.get(0)).getName().equals(Config.TVT_TEAM_1_NAME) ? ((EventTeam) this.teams.get(0)).getScore() : ((EventTeam) this.teams.get(1)).getScore());
-        this.eventInfo.addReplacement("%team2Score%", ((EventTeam) this.teams.get(0)).getName().equals(Config.TVT_TEAM_2_NAME) ? ((EventTeam) this.teams.get(0)).getScore() : ((EventTeam) this.teams.get(1)).getScore());
+        this.eventInfo.addReplacement("%team1Score%", this.teams.get(0).getName().equals(Config.TVT_TEAM_1_NAME) ? this.teams.get(0).getScore() : this.teams.get(1).getScore());
+        this.eventInfo.addReplacement("%team2Score%", this.teams.get(0).getName().equals(Config.TVT_TEAM_2_NAME) ? this.teams.get(0).getScore() : this.teams.get(1).getScore());
     }
 
     public boolean isAutoAttackable(Player attacker, Player target) {
@@ -86,7 +86,7 @@ public class CTF extends AbstractEvent {
     }
 
     public void onKill(Player killer, Player victim) {
-        if (this.flagWielders.values().contains(victim)) {
+        if (this.flagWielders.containsValue(victim)) {
             victim.destroyItemByItemId("Event flag.", 6718, 1, null, false);
             victim.broadcastUserInfo();
             this.announce("The " + this.getTeam(killer).getName() + " flag has been returned!", false);
@@ -107,16 +107,16 @@ public class CTF extends AbstractEvent {
         this.eventRes.addPlayer(victim);
     }
 
-    public boolean onInterract(Player player, Npc npc) {
-        if (this.flags.keySet().contains(npc)) {
+    public void onInterract(Player player, Npc npc) {
+        if (this.flags.containsKey(npc)) {
             if (this.getState() != EventState.RUNNING) {
-                return true;
+                return;
             }
 
-            if (this.flags.get(npc) == this.getTeam(player) && this.flagWielders.values().contains(player)) {
+            if (this.flags.get(npc) == this.getTeam(player) && this.flagWielders.containsValue(player)) {
                 player.destroyItemByItemId("Event flag.", 6718, 1, null, false);
                 player.broadcastUserInfo();
-                this.announce(player.getName() + " has scored for " + ((EventTeam) this.flags.get(npc)).getName() + "!", false);
+                this.announce(player.getName() + " has scored for " + this.flags.get(npc).getName() + "!", false);
                 this.increaseScore(player, 1);
                 Npc remove = null;
 
@@ -128,22 +128,20 @@ public class CTF extends AbstractEvent {
                 }
 
                 this.flagWielders.remove(remove);
-                return true;
+                return;
             }
 
-            if (this.flags.get(npc) != this.getTeam(player) && !this.flagWielders.keySet().contains(npc)) {
+            if (this.flags.get(npc) != this.getTeam(player) && !this.flagWielders.containsKey(npc)) {
                 player.setWeaponSkinOption(0);
                 ItemInstance flag = player.addItem("Event flag.", 6718, 1, null, false);
                 player.useEquippableItem(flag, true);
                 player.broadcastUserInfo();
-                this.announce(player.getName() + " has got the " + ((EventTeam) this.flags.get(npc)).getName() + " flag!", false);
+                this.announce(player.getName() + " has got the " + this.flags.get(npc).getName() + " flag!", false);
                 player.broadcastPacket(new SocialAction(player, 16));
                 this.flagWielders.put(npc, player);
-                return true;
             }
         }
 
-        return true;
     }
 
     public boolean canHeal(Player healer, Player target) {
@@ -155,7 +153,7 @@ public class CTF extends AbstractEvent {
     }
 
     public boolean canUseItem(Player player, int itemId) {
-        return !this.flagWielders.values().contains(player);
+        return !this.flagWielders.containsValue(player);
     }
 
     public boolean allowDiePacket(Player player) {

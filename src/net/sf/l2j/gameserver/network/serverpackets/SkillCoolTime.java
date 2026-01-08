@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SkillCoolTime extends L2GameServerPacket {
-    public List<Timestamp> _reuseTimeStamps;
+    public final List<Timestamp> _reuseTimeStamps;
 
     public SkillCoolTime(Player cha) {
         this._reuseTimeStamps = cha.getReuseTimeStamps().stream().filter(Timestamp::hasNotPassed).collect(Collectors.toList());

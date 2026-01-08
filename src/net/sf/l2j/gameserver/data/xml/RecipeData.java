@@ -26,12 +26,10 @@ public class RecipeData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "recipe", (recipeNode) -> {
-                StatSet set = this.parseAttributes(recipeNode);
-                this._recipes.put(set.getInteger("id"), new Recipe(set));
-            });
-        });
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "recipe", (recipeNode) -> {
+            StatSet set = this.parseAttributes(recipeNode);
+            this._recipes.put(set.getInteger("id"), new Recipe(set));
+        }));
     }
 
     public Recipe getRecipeList(int listId) {
@@ -39,9 +37,7 @@ public class RecipeData implements IXmlReader {
     }
 
     public Recipe getRecipeByItemId(int itemId) {
-        return this._recipes.values().stream().filter((r) -> {
-            return r.getRecipeId() == itemId;
-        }).findFirst().orElse(null);
+        return this._recipes.values().stream().filter((r) -> r.getRecipeId() == itemId).findFirst().orElse(null);
     }
 
     private static class SingletonHolder {

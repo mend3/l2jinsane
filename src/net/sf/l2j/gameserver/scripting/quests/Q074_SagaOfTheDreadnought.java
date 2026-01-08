@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q074_SagaOfTheDreadnought extends SagasSuperClass {
     public Q074_SagaOfTheDreadnought() {
         super(74, "Saga of the Dreadnought");

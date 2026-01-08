@@ -1,4 +1,4 @@
-package net.sf.l2j.gameserver.communitybbs.Manager;
+package net.sf.l2j.gameserver.communitybbs.manager;
 
 import net.sf.l2j.commons.lang.StringUtil;
 import net.sf.l2j.commons.pool.ConnectionPool;
@@ -14,7 +14,6 @@ import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -96,7 +95,7 @@ public class FriendsBBSManager extends BaseBBSManager {
             String friendName = PlayerInfoTable.getInstance().getPlayerName(id);
             if (friendName == null)
                 continue;
-            if (sb.length() > 0)
+            if (!sb.isEmpty())
                 sb.append(";");
             sb.append(friendName);
         }
@@ -117,114 +116,118 @@ public class FriendsBBSManager extends BaseBBSManager {
             StringTokenizer st = new StringTokenizer(command, ";");
             st.nextToken();
             String action = st.nextToken();
-            if (action.equals("select")) {
-                player.selectFriend(st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 0);
-                showFriendsList(player, false);
-            } else if (action.equals("deselect")) {
-                player.deselectFriend(st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 0);
-                showFriendsList(player, false);
-            } else if (action.equals("delall")) {
-                try {
-                    Connection con = ConnectionPool.getConnection();
+            switch (action) {
+                case "select" -> {
+                    player.selectFriend(st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 0);
+                    showFriendsList(player, false);
+                }
+                case "deselect" -> {
+                    player.deselectFriend(st.hasMoreTokens() ? Integer.parseInt(st.nextToken()) : 0);
+                    showFriendsList(player, false);
+                }
+                case "delall" -> {
                     try {
-                        PreparedStatement ps = con.prepareStatement("DELETE FROM character_friends WHERE char_id = ? OR friend_id = ?");
+                        Connection con = ConnectionPool.getConnection();
                         try {
-                            ps.setInt(1, player.getObjectId());
-                            ps.setInt(2, player.getObjectId());
-                            ps.execute();
-                            if (ps != null)
-                                ps.close();
-                        } catch (Throwable throwable) {
-                            if (ps != null)
-                                try {
+                            PreparedStatement ps = con.prepareStatement("DELETE FROM character_friends WHERE char_id = ? OR friend_id = ?");
+                            try {
+                                ps.setInt(1, player.getObjectId());
+                                ps.setInt(2, player.getObjectId());
+                                ps.execute();
+                                if (ps != null)
                                     ps.close();
+                            } catch (Throwable throwable) {
+                                if (ps != null)
+                                    try {
+                                        ps.close();
+                                    } catch (Throwable throwable1) {
+                                        throwable.addSuppressed(throwable1);
+                                    }
+                                throw throwable;
+                            }
+                            if (con != null)
+                                con.close();
+                        } catch (Throwable throwable) {
+                            if (con != null)
+                                try {
+                                    con.close();
                                 } catch (Throwable throwable1) {
                                     throwable.addSuppressed(throwable1);
                                 }
                             throw throwable;
                         }
-                        if (con != null)
-                            con.close();
-                    } catch (Throwable throwable) {
-                        if (con != null)
-                            try {
-                                con.close();
-                            } catch (Throwable throwable1) {
-                                throwable.addSuppressed(throwable1);
-                            }
-                        throw throwable;
+                    } catch (Exception e) {
+                        LOGGER.error("Couldn't delete friends.", e);
                     }
-                } catch (Exception e) {
-                    LOGGER.error("Couldn't delete friends.", e);
-                }
-                for (Iterator<Integer> iterator = player.getFriendList().iterator(); iterator.hasNext(); ) {
-                    int friendId = iterator.next();
-                    Player friend = World.getInstance().getPlayer(friendId);
-                    if (friend != null) {
-                        friend.getFriendList().remove(Integer.valueOf(player.getObjectId()));
-                        friend.getSelectedFriendList().remove(Integer.valueOf(player.getObjectId()));
-                        friend.sendPacket(new FriendList(friend));
+                    for (int friendId : player.getFriendList()) {
+                        Player friend = World.getInstance().getPlayer(friendId);
+                        if (friend != null) {
+                            friend.getFriendList().remove(Integer.valueOf(player.getObjectId()));
+                            friend.getSelectedFriendList().remove(Integer.valueOf(player.getObjectId()));
+                            friend.sendPacket(new FriendList(friend));
+                        }
                     }
+                    player.getFriendList().clear();
+                    player.getSelectedFriendList().clear();
+                    showFriendsList(player, false);
+                    player.sendMessage("You have cleared your friends list.");
+                    player.sendPacket(new FriendList(player));
                 }
-                player.getFriendList().clear();
-                player.getSelectedFriendList().clear();
-                showFriendsList(player, false);
-                player.sendMessage("You have cleared your friends list.");
-                player.sendPacket(new FriendList(player));
-            } else if (action.equals("delconfirm")) {
-                showFriendsList(player, true);
-            } else if (action.equals("del")) {
-                try {
-                    Connection con = ConnectionPool.getConnection();
+                case "delconfirm" -> showFriendsList(player, true);
+                case "del" -> {
                     try {
-                        PreparedStatement ps = con.prepareStatement("DELETE FROM character_friends WHERE (char_id = ? AND friend_id = ?) OR (char_id = ? AND friend_id = ?)");
+                        Connection con = ConnectionPool.getConnection();
                         try {
-                            ps.setInt(1, player.getObjectId());
-                            ps.setInt(4, player.getObjectId());
-                            for (int friendId : player.getSelectedFriendList()) {
-                                ps.setInt(2, friendId);
-                                ps.setInt(3, friendId);
-                                ps.addBatch();
-                                Player friend = World.getInstance().getPlayer(friendId);
-                                if (friend != null) {
-                                    friend.getFriendList().remove(Integer.valueOf(player.getObjectId()));
-                                    friend.sendPacket(new FriendList(friend));
+                            PreparedStatement ps = con.prepareStatement("DELETE FROM character_friends WHERE (char_id = ? AND friend_id = ?) OR (char_id = ? AND friend_id = ?)");
+                            try {
+                                ps.setInt(1, player.getObjectId());
+                                ps.setInt(4, player.getObjectId());
+                                for (int friendId : player.getSelectedFriendList()) {
+                                    ps.setInt(2, friendId);
+                                    ps.setInt(3, friendId);
+                                    ps.addBatch();
+                                    Player friend = World.getInstance().getPlayer(friendId);
+                                    if (friend != null) {
+                                        friend.getFriendList().remove(Integer.valueOf(player.getObjectId()));
+                                        friend.sendPacket(new FriendList(friend));
+                                    }
+                                    player.getFriendList().remove(Integer.valueOf(friendId));
+                                    player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_DELETED_FROM_YOUR_FRIENDS_LIST).addString(PlayerInfoTable.getInstance().getPlayerName(friendId)));
                                 }
-                                player.getFriendList().remove(Integer.valueOf(friendId));
-                                player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_DELETED_FROM_YOUR_FRIENDS_LIST).addString(PlayerInfoTable.getInstance().getPlayerName(friendId)));
-                            }
-                            ps.executeBatch();
-                            if (ps != null)
-                                ps.close();
-                        } catch (Throwable throwable) {
-                            if (ps != null)
-                                try {
+                                ps.executeBatch();
+                                if (ps != null)
                                     ps.close();
+                            } catch (Throwable throwable) {
+                                if (ps != null)
+                                    try {
+                                        ps.close();
+                                    } catch (Throwable throwable1) {
+                                        throwable.addSuppressed(throwable1);
+                                    }
+                                throw throwable;
+                            }
+                            if (con != null)
+                                con.close();
+                        } catch (Throwable throwable) {
+                            if (con != null)
+                                try {
+                                    con.close();
                                 } catch (Throwable throwable1) {
                                     throwable.addSuppressed(throwable1);
                                 }
                             throw throwable;
                         }
-                        if (con != null)
-                            con.close();
-                    } catch (Throwable throwable) {
-                        if (con != null)
-                            try {
-                                con.close();
-                            } catch (Throwable throwable1) {
-                                throwable.addSuppressed(throwable1);
-                            }
-                        throw throwable;
+                    } catch (Exception e) {
+                        LOGGER.error("Couldn't delete friend.", e);
                     }
-                } catch (Exception e) {
-                    LOGGER.error("Couldn't delete friend.", e);
+                    player.getSelectedFriendList().clear();
+                    showFriendsList(player, false);
+                    player.sendPacket(new FriendList(player));
                 }
-                player.getSelectedFriendList().clear();
-                showFriendsList(player, false);
-                player.sendPacket(new FriendList(player));
-            } else if (action.equals("mail")) {
-                if (!player.getSelectedFriendList().isEmpty())
-                    showMailWrite(player);
+                case "mail" -> {
+                    if (!player.getSelectedFriendList().isEmpty())
+                        showMailWrite(player);
+                }
             }
         } else if (command.startsWith("_block")) {
             StringTokenizer st = new StringTokenizer(command, ";");

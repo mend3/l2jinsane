@@ -6,10 +6,9 @@ import net.sf.l2j.gameserver.model.actor.Player;
 public class DisMount implements IUserCommandHandler {
     private static final int[] COMMAND_IDS = new int[]{62};
 
-    public boolean useUserCommand(int id, Player activeChar) {
+    public void useUserCommand(int id, Player activeChar) {
         if (activeChar.isMounted())
             activeChar.dismount();
-        return true;
     }
 
     public int[] getUserCommandList() {

@@ -169,7 +169,7 @@ public abstract class ZoneType {
     }
 
     public void setParameter(String name, String value) {
-        LOGGER.warn("Unknown name/values couple {}, {} for {}.", new Object[]{name, value, this.toString()});
+        LOGGER.warn("Unknown name/values couple {}, {} for {}.", name, value, this.toString());
     }
 
     protected boolean isAffected(Creature character) {

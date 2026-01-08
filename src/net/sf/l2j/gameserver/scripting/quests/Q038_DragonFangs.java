@@ -8,7 +8,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q038_DragonFangs extends Quest {
@@ -43,8 +42,7 @@ public class Q038_DragonFangs extends Quest {
         setItemsIds(7173, 7174, 7175, 7176, 7177);
         addStartNpc(30386);
         addTalkId(30386, 30034, 30344);
-        for (Iterator<Integer> iterator = DROPLIST.keySet().iterator(); iterator.hasNext(); ) {
-            int mob = iterator.next();
+        for (int mob : DROPLIST.keySet()) {
             addKillId(mob);
         }
     }

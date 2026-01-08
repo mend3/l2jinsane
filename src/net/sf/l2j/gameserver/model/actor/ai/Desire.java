@@ -13,7 +13,7 @@ public class Desire {
 
     public String toString() {
         String var10000 = this._intention.toString();
-        return "Desire " + var10000 + ", with following parameters: " + String.valueOf(this._firstParameter) + " and " + String.valueOf(this._secondParameter);
+        return "Desire " + var10000 + ", with following parameters: " + this._firstParameter + " and " + this._secondParameter;
     }
 
     public IntentionType getIntention() {

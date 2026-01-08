@@ -331,22 +331,14 @@ public class FishingChampionshipManager {
 
             for (int x = 0; x < this._winPlayersName.size(); ++x) {
                 if (this._winPlayersName.get(x).equalsIgnoreCase(player.getName())) {
-                    switch (x) {
-                        case 0:
-                            rewardCnt = Config.ALT_FISH_CHAMPIONSHIP_REWARD_1;
-                            break;
-                        case 1:
-                            rewardCnt = Config.ALT_FISH_CHAMPIONSHIP_REWARD_2;
-                            break;
-                        case 2:
-                            rewardCnt = Config.ALT_FISH_CHAMPIONSHIP_REWARD_3;
-                            break;
-                        case 3:
-                            rewardCnt = Config.ALT_FISH_CHAMPIONSHIP_REWARD_4;
-                            break;
-                        case 4:
-                            rewardCnt = Config.ALT_FISH_CHAMPIONSHIP_REWARD_5;
-                    }
+                    rewardCnt = switch (x) {
+                        case 0 -> Config.ALT_FISH_CHAMPIONSHIP_REWARD_1;
+                        case 1 -> Config.ALT_FISH_CHAMPIONSHIP_REWARD_2;
+                        case 2 -> Config.ALT_FISH_CHAMPIONSHIP_REWARD_3;
+                        case 3 -> Config.ALT_FISH_CHAMPIONSHIP_REWARD_4;
+                        case 4 -> Config.ALT_FISH_CHAMPIONSHIP_REWARD_5;
+                        default -> rewardCnt;
+                    };
                 }
             }
 
@@ -366,9 +358,7 @@ public class FishingChampionshipManager {
             html.setFile("data/html/fisherman/championship/fish_event003.htm");
             player.sendPacket(html);
             this.refreshResult();
-            ThreadPool.schedule(() -> {
-                this._needRefresh = true;
-            }, 60000L);
+            ThreadPool.schedule(() -> this._needRefresh = true, 60000L);
         } else {
             html.setFile("data/html/fisherman/championship/fish_event002.htm");
             StringBuilder sb = new StringBuilder(100);

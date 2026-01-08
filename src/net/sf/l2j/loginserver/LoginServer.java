@@ -27,7 +27,7 @@ public class LoginServer {
         (new File("./log")).mkdir();
         (new File("./log/console")).mkdir();
         (new File("./log/error")).mkdir();
-        InputStream is = new FileInputStream(new File("config/logging.properties"));
+        InputStream is = new FileInputStream("config/logging.properties");
         try {
             LogManager.getLogManager().readConfiguration(is);
             is.close();
@@ -106,7 +106,7 @@ public class LoginServer {
                     String line;
                     while ((line = reader.readLine()) != null) {
                         line = line.trim();
-                        if (line.length() > 0 && line.charAt(0) != '#') {
+                        if (!line.isEmpty() && line.charAt(0) != '#') {
                             String[] parts = line.split("#");
                             line = parts[0];
                             parts = line.split(" ");

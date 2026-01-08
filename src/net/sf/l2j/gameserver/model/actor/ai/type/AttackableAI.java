@@ -19,7 +19,6 @@ import net.sf.l2j.gameserver.model.actor.instance.*;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate.AIType;
 import net.sf.l2j.gameserver.model.actor.template.NpcTemplate.SkillType;
 import net.sf.l2j.gameserver.model.location.Location;
-import net.sf.l2j.gameserver.model.location.SpawnLocation;
 import net.sf.l2j.gameserver.scripting.Quest;
 
 import java.util.List;
@@ -242,7 +241,6 @@ public class AttackableAI extends CreatureAI implements Runnable {
                             }
 
                             this.moveTo(x1, y1, master.getZ());
-                            return;
                         }
                     }
                 } else {
@@ -481,6 +479,8 @@ public class AttackableAI extends CreatureAI implements Runnable {
                 if (attackTarget == null) {
                     return false;
                 } else {
+                    boolean canAoe = sk.getTargetType() == SkillTargetType.TARGET_AURA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AURA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AURA;
+                    boolean canArea = sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA;
                     switch (sk.getSkillType()) {
                         case BUFF:
                             if (caster.getFirstEffect(sk) == null) {
@@ -580,13 +580,13 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                     return true;
                                 }
                             } else if (this.canAOE(sk)) {
-                                if (sk.getTargetType() == SkillTargetType.TARGET_AURA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AURA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AURA) {
+                                if (canAoe) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
                                     return true;
                                 }
 
-                                if ((sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
+                                if (canArea && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
                                     return true;
@@ -615,13 +615,13 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                     return true;
                                 }
                             } else if (this.canAOE(sk)) {
-                                if (sk.getTargetType() == SkillTargetType.TARGET_AURA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AURA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AURA) {
+                                if (canAoe) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
                                     return true;
                                 }
 
-                                if ((sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
+                                if (canArea && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
                                     return true;
@@ -638,13 +638,13 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                     return true;
                                 }
                             } else if (this.canAOE(sk)) {
-                                if (sk.getTargetType() == SkillTargetType.TARGET_AURA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AURA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AURA) {
+                                if (canAoe) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
                                     return true;
                                 }
 
-                                if ((sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
+                                if (canArea && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
                                     return true;
@@ -667,13 +667,13 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                     return true;
                                 }
                             } else if (this.canAOE(sk)) {
-                                if (sk.getTargetType() == SkillTargetType.TARGET_AURA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AURA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AURA) {
+                                if (canAoe) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
                                     return true;
                                 }
 
-                                if ((sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
+                                if (canArea && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
                                     return true;
@@ -709,13 +709,13 @@ public class AttackableAI extends CreatureAI implements Runnable {
                                     return true;
                                 }
                             } else if (this.canAOE(sk)) {
-                                if ((sk.getTargetType() == SkillTargetType.TARGET_AURA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AURA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AURA) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget)) {
+                                if ((canAoe) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget)) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
                                     return true;
                                 }
 
-                                if ((sk.getTargetType() == SkillTargetType.TARGET_AREA || sk.getTargetType() == SkillTargetType.TARGET_BEHIND_AREA || sk.getTargetType() == SkillTargetType.TARGET_FRONT_AREA) && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
+                                if (canArea && GeoEngine.getInstance().canSeeTarget(caster, attackTarget) && !attackTarget.isDead() && distance <= (double) range) {
                                     this.clientStopMoving(null);
                                     caster.doCast(sk);
                                     return true;

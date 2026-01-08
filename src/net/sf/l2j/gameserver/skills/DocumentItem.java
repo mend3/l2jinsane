@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 public final class DocumentItem extends DocumentBase {
-    private final List<Item> _itemsInFile = new ArrayList();
+    private final List<Item> _itemsInFile = new ArrayList<>();
     private NewItem _currentItem;
 
     public DocumentItem(File file) {
@@ -54,7 +54,7 @@ public final class DocumentItem extends DocumentBase {
 
     }
 
-    protected void parseItem(Node n) throws InvocationTargetException {
+    private void parseItem(Node n) throws InvocationTargetException {
         int itemId = Integer.parseInt(n.getAttributes().getNamedItem("id").getNodeValue());
         String className = n.getAttributes().getNamedItem("type").getNodeValue();
         String itemName = n.getAttributes().getNamedItem("name").getNodeValue();
@@ -119,7 +119,7 @@ public final class DocumentItem extends DocumentBase {
         return this._itemsInFile;
     }
 
-    public class NewItem {
+    public static class NewItem {
         public int id;
         public String type;
         public String name;

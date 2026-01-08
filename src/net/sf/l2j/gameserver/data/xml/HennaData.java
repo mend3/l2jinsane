@@ -30,12 +30,10 @@ public class HennaData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "henna", (hennaNode) -> {
-                StatSet set = this.parseAttributes(hennaNode);
-                this._hennas.put(set.getInteger("symbolId"), new Henna(set));
-            });
-        });
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "henna", (hennaNode) -> {
+            StatSet set = this.parseAttributes(hennaNode);
+            this._hennas.put(set.getInteger("symbolId"), new Henna(set));
+        }));
     }
 
     public Collection<Henna> getHennas() {
@@ -47,9 +45,7 @@ public class HennaData implements IXmlReader {
     }
 
     public List<Henna> getAvailableHennasFor(Player player) {
-        return this._hennas.values().stream().filter((h) -> {
-            return h.canBeUsedBy(player);
-        }).collect(Collectors.toList());
+        return this._hennas.values().stream().filter((h) -> h.canBeUsedBy(player)).collect(Collectors.toList());
     }
 
     private static class SingletonHolder {

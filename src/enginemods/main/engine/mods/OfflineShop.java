@@ -32,8 +32,7 @@ public class OfflineShop extends AbstractMods {
 
     }
 
-    public static OfflineShop getInstance() {
-        return OfflineShop.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
@@ -51,7 +50,7 @@ public class OfflineShop extends AbstractMods {
             try {
                 boolean saveValue = false;
                 String title = "";
-                String storeItems = "";
+                StringBuilder storeItems = new StringBuilder();
                 String storeType = "";
                 if (player.isInStoreMode() && ConfigData.OFFLINE_TRADE_ENABLE) {
                     storeType = player.getStoreType().name();
@@ -60,14 +59,14 @@ public class OfflineShop extends AbstractMods {
                             title = player.getBuyList().getTitle();
 
                             for (TradeItem item : player.getBuyList().getItems()) {
-                                storeItems = storeItems + item.getItem().getItemId() + "," + item.getCount() + "," + item.getPrice() + ";";
+                                storeItems.append(item.getItem().getItemId()).append(",").append(item.getCount()).append(",").append(item.getPrice()).append(";");
                             }
                             break;
                         case MANUFACTURE:
                             title = player.getCreateList().getStoreName();
 
                             for (ManufactureItem item : player.getCreateList().getList()) {
-                                storeItems = storeItems + item.getId() + "," + item.getValue() + ";";
+                                storeItems.append(item.getId()).append(",").append(item.getValue()).append(";");
                             }
                             break;
                         case PACKAGE_SELL:
@@ -75,7 +74,7 @@ public class OfflineShop extends AbstractMods {
                             title = player.getSellList().getTitle();
 
                             for (TradeItem item : player.getSellList().getItems()) {
-                                storeItems = storeItems + item.getObjectId() + "," + item.getCount() + "," + item.getPrice() + ";";
+                                storeItems.append(item.getObjectId()).append(",").append(item.getCount()).append(",").append(item.getPrice()).append(";");
                             }
                             break;
                         default:
@@ -86,13 +85,13 @@ public class OfflineShop extends AbstractMods {
                     saveValue = true;
                 } else if (PlayerData.get(player).isSellBuff() && ConfigData.OFFLINE_SELLBUFF_ENABLE) {
                     title = "SellBuff";
-                    storeItems = storeItems + PlayerData.get(player).getSellBuffPrice();
+                    storeItems.append(PlayerData.get(player).getSellBuffPrice());
                     storeType = "SELL_BUFF";
                     saveValue = false;
                 }
 
                 if (saveValue) {
-                    this.setValueDB(player.getObjectId(), "offlineShop", storeType + "#" + (title != null && title.length() != 0 ? title.replaceAll("#", " ") : "null") + "#" + storeItems);
+                    this.setValueDB(player.getObjectId(), "offlineShop", storeType + "#" + (title != null && !title.isEmpty() ? title.replaceAll("#", " ") : "null") + "#" + storeItems);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -206,7 +205,7 @@ public class OfflineShop extends AbstractMods {
                                 player.getSellList().setPackaged(store == StoreType.PACKAGE_SELL);
                                 break;
                             default:
-                                System.out.println("Wrong store type " + String.valueOf(store));
+                                System.out.println("Wrong store type " + store);
                                 player.deleteMe();
                         }
 
@@ -219,7 +218,7 @@ public class OfflineShop extends AbstractMods {
 
                     player.broadcastUserInfo();
                 } catch (Exception e) {
-                    LOG.log(Level.WARNING, this.getClass().getSimpleName() + ": Error loading trader: " + String.valueOf(player), e);
+                    LOG.log(Level.WARNING, this.getClass().getSimpleName() + ": Error loading trader: " + player, e);
                     e.printStackTrace();
                     if (player != null) {
                         player.deleteMe();

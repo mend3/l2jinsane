@@ -34,32 +34,28 @@ public class EffectZone extends ZoneType {
     }
 
     public void setParameter(String name, String value) {
-        if (name.equals("chance")) {
-            this._chance = Integer.parseInt(value);
-        } else if (name.equals("initialDelay")) {
-            this._initialDelay = Integer.parseInt(value);
-        } else if (name.equals("reuseDelay")) {
-            this._reuseDelay = Integer.parseInt(value);
-        } else if (name.equals("defaultStatus")) {
-            this._isEnabled = Boolean.parseBoolean(value);
-        } else if (name.equals("skill")) {
-            String[] skills = value.split(";");
-            for (String skill : skills) {
-                String[] skillSplit = skill.split("-");
-                if (skillSplit.length != 2) {
-                    LOGGER.warn("Invalid skill format {} for {}.", skill, toString());
-                } else {
-                    try {
-                        this._skills.add(new IntIntHolder(Integer.parseInt(skillSplit[0]), Integer.parseInt(skillSplit[1])));
-                    } catch (NumberFormatException nfe) {
+        switch (name) {
+            case "chance" -> this._chance = Integer.parseInt(value);
+            case "initialDelay" -> this._initialDelay = Integer.parseInt(value);
+            case "reuseDelay" -> this._reuseDelay = Integer.parseInt(value);
+            case "defaultStatus" -> this._isEnabled = Boolean.parseBoolean(value);
+            case "skill" -> {
+                String[] skills = value.split(";");
+                for (String skill : skills) {
+                    String[] skillSplit = skill.split("-");
+                    if (skillSplit.length != 2) {
                         LOGGER.warn("Invalid skill format {} for {}.", skill, toString());
+                    } else {
+                        try {
+                            this._skills.add(new IntIntHolder(Integer.parseInt(skillSplit[0]), Integer.parseInt(skillSplit[1])));
+                        } catch (NumberFormatException nfe) {
+                            LOGGER.warn("Invalid skill format {} for {}.", skill, toString());
+                        }
                     }
                 }
             }
-        } else if (name.equals("targetType")) {
-            this._target = value;
-        } else {
-            super.setParameter(name, value);
+            case "targetType" -> this._target = value;
+            default -> super.setParameter(name, value);
         }
     }
 

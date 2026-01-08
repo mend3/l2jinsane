@@ -100,7 +100,7 @@ public abstract class L2Effect {
 
     public void setFirstTime(int newFirstTime) {
         this._periodFirstTime = Math.min(newFirstTime, this._period);
-        this._periodStartTime = System.currentTimeMillis() - (long) (this._periodFirstTime * 1000);
+        this._periodStartTime = System.currentTimeMillis() - (this._periodFirstTime * 1000L);
     }
 
     public boolean getShowIcon() {
@@ -174,12 +174,12 @@ public abstract class L2Effect {
         return this._lambda.calc(env);
     }
 
-    private final synchronized void startEffectTask() {
+    private synchronized void startEffectTask() {
         if (this._period > 0) {
             this.stopEffectTask();
             int initialDelay = Math.max((this._period - this._periodFirstTime) * 1000, 5);
             if (this._count > 1) {
-                this._currentFuture = ThreadPool.scheduleAtFixedRate(new EffectTask(), initialDelay, this._period * 1000);
+                this._currentFuture = ThreadPool.scheduleAtFixedRate(new EffectTask(), initialDelay, this._period * 1000L);
             } else {
                 this._currentFuture = ThreadPool.schedule(new EffectTask(), initialDelay);
             }
@@ -242,7 +242,6 @@ public abstract class L2Effect {
             this.scheduleEffect();
         } else if (this._period != 0) {
             this.startEffectTask();
-            return;
         }
 
     }
@@ -381,7 +380,7 @@ public abstract class L2Effect {
 
     public String toString() {
         String var10000 = String.valueOf(this._skill);
-        return "L2Effect [_skill=" + var10000 + ", _state=" + String.valueOf(this._state) + ", _period=" + this._period + "]";
+        return "L2Effect [_skill=" + var10000 + ", _state=" + this._state + ", _period=" + this._period + "]";
     }
 
     public boolean isSelfEffectType() {
@@ -392,10 +391,10 @@ public abstract class L2Effect {
         return true;
     }
 
-    public static enum EffectState {
+    public enum EffectState {
         CREATED,
         ACTING,
-        FINISHING;
+        FINISHING
     }
 
     protected final class EffectTask implements Runnable {

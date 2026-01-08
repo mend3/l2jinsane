@@ -97,14 +97,11 @@ public class KetraOrcSupport extends Quest {
                 player.sendPacket(new WarehouseWithdrawList(player, 1));
             }
         } else if (event.equals("Teleport")) {
-            switch (player.getAllianceWithVarkaKetra()) {
-                case 4:
-                    htmltext = "31376-4.htm";
-                    break;
-                case 5:
-                    htmltext = "31376-5.htm";
-                    break;
-            }
+            htmltext = switch (player.getAllianceWithVarkaKetra()) {
+                case 4 -> "31376-4.htm";
+                case 5 -> "31376-5.htm";
+                default -> htmltext;
+            };
         }
         return htmltext;
     }
@@ -164,15 +161,11 @@ public class KetraOrcSupport extends Quest {
                 htmltext = "31373-2.htm";
                 break;
             case 31374:
-                switch (allianceLevel) {
-                    case 1:
-                        htmltext = "31374-1.htm";
-                        break;
-                    case 2:
-                    case 3:
-                        htmltext = "31374-2.htm";
-                        break;
-                }
+                htmltext = switch (allianceLevel) {
+                    case 1 -> "31374-1.htm";
+                    case 2, 3 -> "31374-2.htm";
+                    default -> htmltext;
+                };
                 if (allianceLevel <= 0) {
                     htmltext = "31374-no.htm";
                     break;
@@ -184,18 +177,12 @@ public class KetraOrcSupport extends Quest {
                 htmltext = "31374-4.htm";
                 break;
             case 31375:
-                switch (allianceLevel) {
-                    case 2:
-                        htmltext = "31375-1.htm";
-                        break;
-                    case 3:
-                    case 4:
-                        htmltext = "31375-2.htm";
-                        break;
-                    case 5:
-                        htmltext = "31375-3.htm";
-                        break;
-                }
+                htmltext = switch (allianceLevel) {
+                    case 2 -> "31375-1.htm";
+                    case 3, 4 -> "31375-2.htm";
+                    case 5 -> "31375-3.htm";
+                    default -> htmltext;
+                };
                 htmltext = "31375-no.htm";
                 break;
             case 31376:

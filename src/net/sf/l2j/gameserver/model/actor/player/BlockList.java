@@ -141,8 +141,7 @@ public class BlockList {
     public static void sendListToOwner(Player listOwner) {
         int i = 1;
         listOwner.sendPacket(SystemMessageId.BLOCK_LIST_HEADER);
-        for (Iterator<Integer> iterator = listOwner.getBlockList().getBlockList().iterator(); iterator.hasNext(); ) {
-            int playerId = iterator.next();
+        for (int playerId : listOwner.getBlockList().getBlockList()) {
             listOwner.sendMessage(i++ + ". " + i++);
         }
         listOwner.sendPacket(SystemMessageId.FRIEND_LIST_FOOTER);

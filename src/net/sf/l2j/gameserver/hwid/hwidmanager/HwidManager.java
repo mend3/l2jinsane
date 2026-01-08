@@ -56,7 +56,7 @@ public class HwidManager {
         return SingletonHolder.INSTANCE;
     }
 
-    public boolean validBox(Player activeChar, Integer numberBox, Collection<Player> world, Boolean forcedLogOut) {
+    public void validBox(Player activeChar, Integer numberBox, Collection<Player> world, Boolean forcedLogOut) {
         if (multiboxKickTask(activeChar, numberBox, world)) {
             if (forcedLogOut) {
                 GameClient client = activeChar.getClient();
@@ -74,9 +74,7 @@ public class HwidManager {
                 waitSecs(30);
                 client.closeNow();
             }
-            return true;
         }
-        return false;
     }
 
     public void showChatWindow(Player player, int val) {

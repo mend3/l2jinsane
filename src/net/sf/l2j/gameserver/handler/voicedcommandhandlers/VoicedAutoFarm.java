@@ -40,7 +40,7 @@ public class VoicedAutoFarm implements IVoicedCommandHandler {
         activeChar.sendPacket(html);
     }
 
-    public boolean useVoicedCommand(String command, Player activeChar, String args) {
+    public void useVoicedCommand(String command, Player activeChar, String args) {
         AutofarmPlayerRoutine bot = activeChar.getBot();
         if (command.startsWith("autofarm"))
             showAutoFarm(activeChar);
@@ -192,7 +192,7 @@ public class VoicedAutoFarm implements IVoicedCommandHandler {
                 monsterId = ((Monster) target).getNpcId();
             if (target == null) {
                 activeChar.sendMessage("You dont have a target");
-                return false;
+                return;
             }
             activeChar.sendMessage(target.getName() + " has been added to the ignore list.");
             activeChar.ignoredMonster(monsterId);
@@ -204,12 +204,11 @@ public class VoicedAutoFarm implements IVoicedCommandHandler {
                 monsterId = ((Monster) target).getNpcId();
             if (target == null) {
                 activeChar.sendMessage("You dont have a target");
-                return false;
+                return;
             }
             activeChar.sendMessage(target.getName() + " has been removed from the ignore list.");
             activeChar.activeMonster(monsterId);
         }
-        return false;
     }
 
     public String[] getVoicedCommandList() {

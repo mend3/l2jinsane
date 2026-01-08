@@ -45,14 +45,11 @@ public class Q121_PavelTheGiant extends Quest {
                 htmltext = (player.getLevel() < 46) ? "31961-1a.htm" : "31961-1.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 31961:
-                        htmltext = "31961-2a.htm";
-                        break;
-                    case 32041:
-                        htmltext = "32041-1.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 31961 -> "31961-2a.htm";
+                    case 32041 -> "32041-1.htm";
+                    default -> htmltext;
+                };
                 break;
             case 2:
                 htmltext = getAlreadyCompletedMsg();

@@ -10,7 +10,7 @@ public final class VillageMasterFighter extends VillageMaster {
         super(objectId, template);
     }
 
-    protected final boolean checkVillageMasterRace(ClassId pclass) {
+    protected boolean checkVillageMasterRace(ClassId pclass) {
         if (pclass == null) {
             return false;
         } else {
@@ -18,7 +18,7 @@ public final class VillageMasterFighter extends VillageMaster {
         }
     }
 
-    protected final boolean checkVillageMasterTeachType(ClassId pclass) {
+    protected boolean checkVillageMasterTeachType(ClassId pclass) {
         if (pclass == null) {
             return false;
         } else {

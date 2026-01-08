@@ -161,7 +161,7 @@ public final class Auctioneer extends Folk {
                         StringBuilder sb = new StringBuilder(bidders.size() * 150);
 
                         for (Bidder bidder : bidders) {
-                            StringUtil.append(sb, new Object[]{"<tr><td width=90 align=center>", bidder.getClanName(), "</td><td width=90 align=center>", bidder.getName(), "</td><td width=90 align=center>", sdf.format(bidder.getTime()), "</td></tr>"});
+                            StringUtil.append(sb, "<tr><td width=90 align=center>", bidder.getClanName(), "</td><td width=90 align=center>", bidder.getName(), "</td><td width=90 align=center>", sdf.format(bidder.getTime()), "</td></tr>");
                         }
 
                         NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
@@ -347,13 +347,13 @@ public final class Auctioneer extends Folk {
 
         for (ClanHall ch : chs) {
             Auction auction = ch.getAuction();
-            StringUtil.append(sb, new Object[]{"<tr><td><font color=\"aaaaff\">", ch.getLocation(), "</font></td><td><font color=\"ffffaa\"><a action=\"bypass -h npc_", this.getObjectId(), "_bidding ", ch.getId(), "\">", ch.getName(), " [", auction.getBidders().size(), "]</a></font></td><td>", sdf.format(auction.getEndDate()), "</td><td><font color=\"aaffff\">", auction.getMinimumBid(), "</font></td></tr>"});
+            StringUtil.append(sb, "<tr><td><font color=\"aaaaff\">", ch.getLocation(), "</font></td><td><font color=\"ffffaa\"><a action=\"bypass -h npc_", this.getObjectId(), "_bidding ", ch.getId(), "\">", ch.getName(), " [", auction.getBidders().size(), "]</a></font></td><td>", sdf.format(auction.getEndDate()), "</td><td><font color=\"aaffff\">", auction.getMinimumBid(), "</font></td></tr>");
         }
 
         sb.append("</table><table width=280><tr>");
 
         for (int j = 1; j <= max; ++j) {
-            StringUtil.append(sb, new Object[]{"<td><center><a action=\"bypass -h npc_", this.getObjectId(), "_list ", j, "\"> Page ", j, " </a></center></td>"});
+            StringUtil.append(sb, "<td><center><a action=\"bypass -h npc_", this.getObjectId(), "_list ", j, "\"> Page ", j, " </a></center></td>");
         }
 
         sb.append("</tr></table>");

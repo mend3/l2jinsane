@@ -43,27 +43,16 @@ public class AdminAdmin implements IAdminCommandHandler {
             mode = Integer.parseInt(command.substring(11));
         } catch (Exception ignored) {
         }
-        switch (mode) {
-            case 1:
-                filename = "main";
-                break;
-            case 2:
-                filename = "game";
-                break;
-            case 3:
-                filename = "effects";
-                break;
-            case 4:
-                filename = "server";
-                break;
-            default:
-                filename = "main";
-                break;
-        }
+        filename = switch (mode) {
+            case 2 -> "game";
+            case 3 -> "effects";
+            case 4 -> "server";
+            default -> "main";
+        };
         AdminHelpPage.showHelpPage(activeChar, filename + "_menu.htm");
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_admin")) {
             showMainPage(activeChar, command);
         } else if (command.startsWith("admin_gmlist")) {
@@ -78,7 +67,7 @@ public class AdminAdmin implements IAdminCommandHandler {
                 } else {
                     kill(activeChar, (Creature) obj);
                 }
-                return true;
+                return;
             }
             String firstParam = st.nextToken();
             Player player = World.getInstance().getPlayer(firstParam);
@@ -207,13 +196,13 @@ public class AdminAdmin implements IAdminCommandHandler {
             st.nextToken();
             if (!st.hasMoreTokens()) {
                 activeChar.sendMessage("Write the name.");
-                return false;
+                return;
             }
             String target_name = st.nextToken();
             Player player = World.getInstance().getPlayer(target_name);
             if (player == null) {
                 activeChar.sendMessage("Player is offline");
-                return false;
+                return;
             }
             activeChar.setInstance(player.getInstance(), false);
             activeChar.sendMessage("You are with the same instance of player " + target_name);
@@ -221,7 +210,6 @@ public class AdminAdmin implements IAdminCommandHandler {
             activeChar.setInstance(InstanceManager.getInstance().getInstance(0), false);
             activeChar.sendMessage("Your instance is now default");
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

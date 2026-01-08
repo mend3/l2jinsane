@@ -22,8 +22,8 @@ public class DungeonManagerNpc extends Folk {
             long total = ((Long[]) DungeonManager.getInstance().getPlayerData().get(ip))[dungeonId] + 43200000L - System.currentTimeMillis();
             if (total > 0L) {
                 int hours = (int) (total / 1000L / 60L / 60L);
-                int minutes = (int) (total / 1000L / 60L - (long) (hours * 60));
-                int seconds = (int) (total / 1000L - (long) (hours * 60 * 60 + minutes * 60));
+                int minutes = (int) (total / 1000L / 60L - (hours * 60L));
+                int seconds = (int) (total / 1000L - ((long) hours * 60 * 60 + minutes * 60L));
                 s = String.format("%02d:%02d:%02d", hours, minutes, seconds);
             }
         }

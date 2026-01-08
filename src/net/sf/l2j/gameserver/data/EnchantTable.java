@@ -44,23 +44,14 @@ public class EnchantTable {
                             for (int i = 0; i < list.length; i++)
                                 chance[i] = Byte.parseByte(list[i]);
                             CrystalType grade_test = CrystalType.NONE;
-                            switch (grade) {
-                                case 1:
-                                    grade_test = CrystalType.D;
-                                    break;
-                                case 2:
-                                    grade_test = CrystalType.C;
-                                    break;
-                                case 3:
-                                    grade_test = CrystalType.B;
-                                    break;
-                                case 4:
-                                    grade_test = CrystalType.A;
-                                    break;
-                                case 5:
-                                    grade_test = CrystalType.S;
-                                    break;
-                            }
+                            grade_test = switch (grade) {
+                                case 1 -> CrystalType.D;
+                                case 2 -> CrystalType.C;
+                                case 3 -> CrystalType.B;
+                                case 4 -> CrystalType.A;
+                                case 5 -> CrystalType.S;
+                                default -> grade_test;
+                            };
                             _map.put(id, new L2EnchantScroll(grade_test, weapon, breaks, maintain, chance));
                         }
                     }

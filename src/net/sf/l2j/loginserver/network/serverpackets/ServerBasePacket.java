@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public abstract class ServerBasePacket {
-    ByteArrayOutputStream _bao = new ByteArrayOutputStream();
+    final ByteArrayOutputStream _bao = new ByteArrayOutputStream();
 
     protected void writeD(int value) {
         this._bao.write(value & 0xFF);
@@ -67,5 +67,5 @@ public abstract class ServerBasePacket {
         return this._bao.toByteArray();
     }
 
-    public abstract byte[] getContent() throws IOException;
+    public abstract byte[] getContent();
 }

@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q086_SagaOfTheHierophant extends SagasSuperClass {
     public Q086_SagaOfTheHierophant() {
         super(86, "Saga of the Hierophant");

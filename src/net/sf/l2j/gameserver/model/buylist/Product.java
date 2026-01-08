@@ -68,7 +68,7 @@ public class Product {
         if (this._count == null)
             return 0;
         int count = this._count.get();
-        return (count > 0) ? count : 0;
+        return Math.max(count, 0);
     }
 
     public void setCount(int currentCount) {

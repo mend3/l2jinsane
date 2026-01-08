@@ -16,30 +16,30 @@ import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 public class Escape implements IUserCommandHandler {
     private static final int[] COMMAND_IDS = new int[]{52};
 
-    public boolean useUserCommand(int id, Player activeChar) {
+    public void useUserCommand(int id, Player activeChar) {
         if (activeChar.isCastingNow() || activeChar.isSitting() || activeChar.isMovementDisabled() || activeChar.isOutOfControl() || activeChar.isInOlympiadMode() || activeChar.isInObserverMode() || activeChar.isFestivalParticipant() || activeChar.isInJail() || activeChar.isInsideZone(ZoneId.BOSS)) {
             activeChar.sendPacket(SystemMessageId.NO_UNSTUCK_PLEASE_SEND_PETITION);
-            return false;
+            return;
         }
         if ((TvTEventManager.getInstance().getActiveEvent() != null && TvTEventManager.getInstance().getActiveEvent().isInEvent(activeChar)) || activeChar.getDungeon() != null) {
             activeChar.sendMessage("Your current state doesn't allow you to use the /unstuck command.");
-            return false;
+            return;
         }
         if ((CtfEventManager.getInstance().getActiveEvent() != null && CtfEventManager.getInstance().getActiveEvent().isInEvent(activeChar)) || activeChar.getDungeon() != null) {
             activeChar.sendMessage("Your current state doesn't allow you to use the /unstuck command.");
-            return false;
+            return;
         }
         if ((DmEventManager.getInstance().getActiveEvent() != null && DmEventManager.getInstance().getActiveEvent().isInEvent(activeChar)) || activeChar.getDungeon() != null) {
             activeChar.sendMessage("Your current state doesn't allow you to use the /unstuck command.");
-            return false;
+            return;
         }
         if (activeChar.isInEvent()) {
             activeChar.sendMessage("Your current state doesn't allow you to use the /unstuck command.");
-            return false;
+            return;
         }
         if (activeChar.isInsideZone(ZoneId.PVPEVENT) || activeChar.isInsideZone(ZoneId.RANDOMZONE) || activeChar.isInsideZone(ZoneId.AUTOFARMZONE) || activeChar.isInsideZone(ZoneId.PARTYFARMZONE)) {
             activeChar.sendMessage("Use command: .exit");
-            return false;
+            return;
         }
         activeChar.stopMove(null);
         if (activeChar.isGM()) {
@@ -56,7 +56,6 @@ public class Escape implements IUserCommandHandler {
                 activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_S2).addString("You will unstuck i " + unstuckTimer / 60000 + " minutes."));
             }
         }
-        return true;
     }
 
     public int[] getUserCommandList() {

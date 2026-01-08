@@ -33,10 +33,8 @@ public class L2SkillTeleport extends L2Skill {
             boolean bsps = activeChar.isChargedShot(ShotType.BLESSED_SPIRITSHOT);
 
             for (WorldObject obj : targets) {
-                if (obj instanceof Creature) {
-                    Creature target = (Creature) obj;
-                    if (target instanceof Player) {
-                        Player targetChar = (Player) target;
+                if (obj instanceof Creature target) {
+                    if (target instanceof Player targetChar) {
                         if (targetChar.isFestivalParticipant() || targetChar.isInJail() || targetChar.isInDuel() || targetChar != activeChar && (targetChar.isInOlympiadMode() || targetChar.isInsideZone(ZoneId.BOSS))) {
                             continue;
                         }

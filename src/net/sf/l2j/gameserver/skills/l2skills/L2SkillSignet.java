@@ -13,7 +13,7 @@ import net.sf.l2j.gameserver.model.location.Location;
 
 public final class L2SkillSignet extends L2Skill {
     private final int _effectNpcId;
-    public int effectId;
+    public final int effectId;
 
     public L2SkillSignet(StatSet set) {
         super(set);

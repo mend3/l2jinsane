@@ -61,14 +61,11 @@ public class Q688_DefeatTheElrokianRaiders extends Quest {
         QuestState st = player.getQuestState("Q688_DefeatTheElrokianRaiders");
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 75) ? "32105-00.htm" : "32105-01.htm";
-                break;
-            case 1:
-                htmltext = !st.hasQuestItems(8785) ? "32105-04.htm" : "32105-05.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 75) ? "32105-00.htm" : "32105-01.htm";
+            case 1 -> !st.hasQuestItems(8785) ? "32105-04.htm" : "32105-05.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

@@ -28,17 +28,15 @@ public class StaticObjectData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "object", (objectNode) -> {
-                StatSet set = this.parseAttributes(objectNode);
-                StaticObject obj = new StaticObject(IdFactory.getInstance().getNextId());
-                obj.setStaticObjectId(set.getInteger("id"));
-                obj.setType(set.getInteger("type"));
-                obj.setMap(set.getString("texture"), set.getInteger("mapX"), set.getInteger("mapY"));
-                obj.spawnMe(set.getInteger("x"), set.getInteger("y"), set.getInteger("z"));
-                this._objects.put(obj.getObjectId(), obj);
-            });
-        });
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "object", (objectNode) -> {
+            StatSet set = this.parseAttributes(objectNode);
+            StaticObject obj = new StaticObject(IdFactory.getInstance().getNextId());
+            obj.setStaticObjectId(set.getInteger("id"));
+            obj.setType(set.getInteger("type"));
+            obj.setMap(set.getString("texture"), set.getInteger("mapX"), set.getInteger("mapY"));
+            obj.spawnMe(set.getInteger("x"), set.getInteger("y"), set.getInteger("z"));
+            this._objects.put(obj.getObjectId(), obj);
+        }));
     }
 
     public Collection<StaticObject> getStaticObjects() {

@@ -11,16 +11,14 @@ import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class VoicedEpic implements IVoicedCommandHandler {
     private static final String[] _voicedCommands = new String[]{"epic"};
 
-    public boolean useVoicedCommand(String command, Player activeChar, String target) {
+    public void useVoicedCommand(String command, Player activeChar, String target) {
         if (command.startsWith("epic"))
             showMainPage(activeChar);
-        return true;
     }
 
     public void showMainPage(Player player) {
@@ -42,9 +40,9 @@ public class VoicedEpic implements IVoicedCommandHandler {
         sb.append("<img src=\"L2UI.SquareGray\" width=300 height=1>");
         sb.append("<table width=\"300\" bgcolor=\"000000\">");
         sb.append("<tr>");
-        sb.append("<td><center>SVR Data: <font color=\"ff4d4d\">" + (new SimpleDateFormat("dd/MM/yyyy")).format(new Date(System.currentTimeMillis())) + "</font></center></td>");
+        sb.append("<td><center>SVR Data: <font color=\"ff4d4d\">").append((new SimpleDateFormat("dd/MM/yyyy")).format(new Date(System.currentTimeMillis()))).append("</font></center></td>");
         sb.append("<td><center></center></td>");
-        sb.append("<td><center>SVR Time: <font color=\"ff4d4d\">" + (new SimpleDateFormat("HH:mm:ss")).format(new Date(System.currentTimeMillis())) + "</font></center></td>");
+        sb.append("<td><center>SVR Time: <font color=\"ff4d4d\">").append((new SimpleDateFormat("HH:mm:ss")).format(new Date(System.currentTimeMillis()))).append("</font></center></td>");
         sb.append("</tr>");
         sb.append("</table>");
         sb.append("<center><img src=\"L2UI.SquareGray\" width=300 height=1></center>");
@@ -55,8 +53,7 @@ public class VoicedEpic implements IVoicedCommandHandler {
         sb.append("</table>");
         sb.append("<img src=\"L2UI.SquareGray\" width=300 height=1>");
         sb.append("<table bgcolor=\"000000\" width=\"318\">");
-        for (Iterator<Integer> iterator = infos.iterator(); iterator.hasNext(); ) {
-            int bossId = iterator.next();
+        for (int bossId : infos) {
             NpcTemplate template = NpcData.getInstance().getTemplate(bossId);
             if (template == null)
                 continue;
@@ -66,14 +63,14 @@ public class VoicedEpic implements IVoicedCommandHandler {
             long respawnTime = RaidBossInfoManager.getInstance().getRaidBossRespawnTime(bossId);
             if (respawnTime <= System.currentTimeMillis()) {
                 sb.append("<tr>");
-                sb.append("<td><a action=\"" + bossId + "\">" + bossName + "</a></td>");
+                sb.append("<td><a action=\"").append(bossId).append("\">").append(bossName).append("</a></td>");
                 sb.append("<td><font color=\"9CC300\">Alive</font></td>");
                 sb.append("</tr>");
                 continue;
             }
             sb.append("<tr>");
-            sb.append("<td width=\"159\" align=\"left\"><a action=\"" + bossId + "\">" + bossName + "</a></td>");
-            sb.append("<td width=\"159\" align=\"left\"><font color=\"FB5858\">Dead</font> " + (new SimpleDateFormat(Config.RAID_BOSS_DATE_FORMAT)).format(new Date(respawnTime)) + "</td>");
+            sb.append("<td width=\"159\" align=\"left\"><a action=\"").append(bossId).append("\">").append(bossName).append("</a></td>");
+            sb.append("<td width=\"159\" align=\"left\"><font color=\"FB5858\">Dead</font> ").append((new SimpleDateFormat(Config.RAID_BOSS_DATE_FORMAT)).format(new Date(respawnTime))).append("</td>");
             sb.append("</tr>");
         }
         sb.append("</table>");

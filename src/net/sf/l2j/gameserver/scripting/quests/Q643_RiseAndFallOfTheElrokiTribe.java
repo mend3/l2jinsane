@@ -62,14 +62,11 @@ public class Q643_RiseAndFallOfTheElrokiTribe extends Quest {
                 htmltext = (player.getLevel() < 75) ? "32106-00.htm" : "32106-01.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 32106:
-                        htmltext = st.hasQuestItems(8776) ? "32106-06.htm" : "32106-05.htm";
-                        break;
-                    case 32117:
-                        htmltext = "32117-01.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 32106 -> st.hasQuestItems(8776) ? "32106-06.htm" : "32106-05.htm";
+                    case 32117 -> "32117-01.htm";
+                    default -> htmltext;
+                };
                 break;
         }
         return htmltext;

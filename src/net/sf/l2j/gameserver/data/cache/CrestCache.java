@@ -27,8 +27,7 @@ public class CrestCache {
         File[] var1 = (new File("./data/crests/")).listFiles();
         int var2 = var1.length;
 
-        for (int var3 = 0; var3 < var2; ++var3) {
-            File file = var1[var3];
+        for (File file : var1) {
             String fileName = file.getName();
             if (!this._ddsFilter.accept(file)) {
                 file.delete();
@@ -57,11 +56,10 @@ public class CrestCache {
                     continue;
                 }
 
-                CrestCache.CrestType[] var14 = CrestCache.CrestType.values();
+                CrestType[] var14 = CrestType.values();
                 int var8 = var14.length;
 
-                for (int var9 = 0; var9 < var8; ++var9) {
-                    CrestCache.CrestType type = var14[var9];
+                for (CrestType type : var14) {
                     if (fileName.startsWith(type.getPrefix())) {
                         if (data.length != type.getSize()) {
                             file.delete();
@@ -144,11 +142,6 @@ public class CrestCache {
         CrestType(String prefix, int size) {
             this._prefix = prefix;
             this._size = size;
-        }
-
-        // $FF: synthetic method
-        private static CrestCache.CrestType[] $values() {
-            return new CrestCache.CrestType[]{PLEDGE, PLEDGE_LARGE, ALLY};
         }
 
         public final String getPrefix() {

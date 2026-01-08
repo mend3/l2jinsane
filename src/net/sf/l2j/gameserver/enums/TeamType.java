@@ -12,11 +12,6 @@ public enum TeamType {
         this._id = id;
     }
 
-    // $FF: synthetic method
-    private static TeamType[] $values() {
-        return new TeamType[]{NONE, BLUE, RED};
-    }
-
     public int getId() {
         return this._id;
     }

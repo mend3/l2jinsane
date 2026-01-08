@@ -72,8 +72,7 @@ public class NodeBuffer {
         Node[][] var10 = this._buffer;
         int var3 = var10.length;
 
-        for (int var4 = 0; var4 < var3; ++var4) {
-            Node[] nodes = var10[var4];
+        for (Node[] nodes : var10) {
             Node[] var6 = nodes;
             int var7 = nodes.length;
 
@@ -97,8 +96,7 @@ public class NodeBuffer {
         Node[][] var1 = this._buffer;
         int var2 = var1.length;
 
-        for (int var3 = 0; var3 < var2; ++var3) {
-            Node[] nodes = var1[var3];
+        for (Node[] nodes : var1) {
             Node[] var5 = nodes;
             int var6 = nodes.length;
 
@@ -118,7 +116,7 @@ public class NodeBuffer {
         return this._lastElapsedTime;
     }
 
-    private final void expand() {
+    private void expand() {
         byte nswe = this._current.getLoc().getNSWE();
         if (nswe != 0) {
             int x = this._current.getLoc().getGeoX();
@@ -159,7 +157,7 @@ public class NodeBuffer {
         }
     }
 
-    private final Node getNode(int x, int y, short z) {
+    private Node getNode(int x, int y, short z) {
         int ix = x - this._cx;
         if (ix >= 0 && ix < this._size) {
             int iy = y - this._cy;
@@ -178,7 +176,7 @@ public class NodeBuffer {
         }
     }
 
-    private final void addNode(int x, int y, short z, int weight) {
+    private void addNode(int x, int y, short z, int weight) {
         Node node = this.getNode(x, y, z);
         if (node != null) {
             if (node.getLoc().getZ() > z + 16) {
@@ -214,7 +212,7 @@ public class NodeBuffer {
         }
     }
 
-    private final double getCostH(int x, int y, int i) {
+    private double getCostH(int x, int y, int i) {
         int dX = x - this._gtx;
         int dY = y - this._gty;
         int dZ = (i - this._gtz) / 8;

@@ -25,10 +25,6 @@ public class SiegeFlag extends Npc {
 
     }
 
-    public boolean isAttackable() {
-        return true;
-    }
-
     public boolean isAutoAttackable(Creature attacker) {
         return true;
     }

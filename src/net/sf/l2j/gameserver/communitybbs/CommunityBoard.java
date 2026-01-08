@@ -4,8 +4,8 @@ import enginemods.main.EngineModsManager;
 import mods.balancer.ClassBalanceGui;
 import mods.balancer.SkillBalanceGui;
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.communitybbs.Custom.*;
-import net.sf.l2j.gameserver.communitybbs.Manager.*;
+import net.sf.l2j.gameserver.communitybbs.custom.*;
+import net.sf.l2j.gameserver.communitybbs.manager.*;
 import net.sf.l2j.gameserver.enums.ZoneId;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.network.GameClient;
@@ -94,20 +94,15 @@ public class CommunityBoard {
             player.sendPacket(SystemMessageId.CB_OFFLINE);
             return;
         }
-        if (url.equals("Topic")) {
-            TopicBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
-        } else if (url.equals("Post")) {
-            PostBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
-        } else if (url.equals("_bbsloc")) {
-            RegionBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
-        } else if (url.equals("_bbsclan")) {
-            ClanBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
-        } else if (url.equals("Mail")) {
-            MailBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
-        } else if (url.equals("_friend")) {
-            FriendsBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
-        } else {
-            BaseBBSManager.separateAndSend("<html><body><br><br><center>The command: " + url + " isn't implemented.</center></body></html>", player);
+        switch (url) {
+            case "Topic" -> TopicBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
+            case "Post" -> PostBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
+            case "_bbsloc" -> RegionBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
+            case "_bbsclan" -> ClanBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
+            case "Mail" -> MailBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
+            case "_friend" -> FriendsBBSManager.getInstance().parseWrite(arg1, arg2, arg3, arg4, arg5, player);
+            default ->
+                    BaseBBSManager.separateAndSend("<html><body><br><br><center>The command: " + url + " isn't implemented.</center></body></html>", player);
         }
     }
 

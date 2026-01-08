@@ -27,8 +27,6 @@ import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 import net.sf.l2j.gameserver.network.serverpackets.SpecialCamera;
 import net.sf.l2j.gameserver.scripting.scripts.ai.L2AttackableAIScript;
 
-import java.util.Iterator;
-
 public class Valakas extends L2AttackableAIScript {
     public static final byte DORMANT = 0;
     public static final byte WAITING = 1;
@@ -195,8 +193,7 @@ public class Valakas extends L2AttackableAIScript {
             SpawnLocation[] var11 = CUBE_LOC;
             int var10 = var11.length;
 
-            for (int var6 = 0; var6 < var10; ++var6) {
-                SpawnLocation loc = var11[var6];
+            for (SpawnLocation loc : var11) {
                 this.addSpawn(31759, loc, false, 900000L, false);
             }
 
@@ -299,7 +296,7 @@ public class Valakas extends L2AttackableAIScript {
 
             } else {
                 L2Skill skill = SkillTable.getInstance().getInfo(getRandomSkill(npc), 1);
-                if (MathUtil.checkIfInRange(skill.getCastRange() < 600 ? 600 : skill.getCastRange(), npc, this._actualVictim, true)) {
+                if (MathUtil.checkIfInRange(Math.max(skill.getCastRange(), 600), npc, this._actualVictim, true)) {
                     npc.getAI().setIntention(IntentionType.IDLE);
                     npc.setTarget(this._actualVictim);
                     npc.doCast(skill);

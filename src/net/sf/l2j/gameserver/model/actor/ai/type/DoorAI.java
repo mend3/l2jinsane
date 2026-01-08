@@ -36,12 +36,6 @@ public class DoorAI extends CreatureAI {
     protected void onIntentionPickUp(WorldObject item) {
     }
 
-    protected void onEvtAttacked(Creature attacker) {
-    }
-
-    protected void onEvtAggression(Creature target, int aggro) {
-    }
-
     protected void onEvtStunned(Creature attacker) {
     }
 

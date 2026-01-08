@@ -65,14 +65,11 @@ public class Q661_MakingTheHarvestGroundsSafe extends Quest {
         String htmltext = getNoQuestMsg();
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 21) ? "30210-01a.htm" : "30210-01.htm";
-                break;
-            case 1:
-                htmltext = st.hasAtLeastOneQuestItem(8283, 8284, 8285) ? "30210-03.htm" : "30210-05.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 21) ? "30210-01a.htm" : "30210-01.htm";
+            case 1 -> st.hasAtLeastOneQuestItem(8283, 8284, 8285) ? "30210-03.htm" : "30210-05.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

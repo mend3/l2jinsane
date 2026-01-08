@@ -17,7 +17,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -99,8 +98,7 @@ public class GameServerManager implements IXmlReader {
     }
 
     public boolean registerWithFirstAvailableId(GameServerInfo gsi) {
-        for (Iterator<Integer> iterator = this._serverNames.keySet().iterator(); iterator.hasNext(); ) {
-            int id = iterator.next();
+        for (int id : this._serverNames.keySet()) {
             if (!this._registeredServers.containsKey(id)) {
                 this._registeredServers.put(id, gsi);
                 gsi.setId(id);

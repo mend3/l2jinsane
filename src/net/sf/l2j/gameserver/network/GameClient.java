@@ -57,7 +57,7 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
     private static final String DELETE_CHAR_ITEMS = "DELETE FROM items WHERE owner_id=?";
     private static final String DELETE_CHAR_RBP = "DELETE FROM character_raid_points WHERE char_id=?";
     private static final String DELETE_CHAR = "DELETE FROM characters WHERE obj_Id=?";
-    protected final ScheduledFuture<?> _autoSaveInDB;
+    private final ScheduledFuture<?> _autoSaveInDB;
     private final long[] _floodProtectors;
     private final ArrayBlockingQueue<ReceivablePacket<GameClient>> _packetQueue;
     private final ReentrantLock _queueLock;
@@ -66,7 +66,7 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
     private final ClientStats _stats;
     private final long _connectionStartTime;
     public GameClientState _state;
-    protected ScheduledFuture<?> _cleanupTask;
+    private ScheduledFuture<?> _cleanupTask;
     private String _accountName;
     private SessionKey _sessionId;
     private Player _player;
@@ -266,10 +266,9 @@ public final class GameClient extends MMOClient<MMOConnection<GameClient>> imple
         return true;
     }
 
-    public boolean encrypt(ByteBuffer buf, int size) {
+    public void encrypt(ByteBuffer buf, int size) {
         this._crypt.encrypt(buf.array(), buf.position(), size);
         buf.position(buf.position() + size);
-        return true;
     }
 
     protected void onDisconnection() {

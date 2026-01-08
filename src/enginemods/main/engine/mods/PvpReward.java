@@ -26,8 +26,7 @@ public class PvpReward extends AbstractMods {
 
     }
 
-    public static PvpReward getInstance() {
-        return PvpReward.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
@@ -44,13 +43,6 @@ public class PvpReward extends AbstractMods {
         protected static final PvpReward INSTANCE = new PvpReward();
     }
 
-    public class PvPHolder {
-        public int _victim;
-        public long _time;
-
-        public PvPHolder(int victim, long time) {
-            this._victim = victim;
-            this._time = time;
-        }
+    public record PvPHolder(int _victim, long _time) {
     }
 }

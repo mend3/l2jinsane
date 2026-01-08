@@ -238,10 +238,5 @@ public final class OlympiadGameTask implements Runnable {
         TELE_TO_TOWN,
         CLEANUP,
         IDLE;
-
-        // $FF: synthetic method
-        private static OlympiadGameTask.GameState[] $values() {
-            return new OlympiadGameTask.GameState[]{BEGIN, TELE_TO_ARENA, GAME_STARTED, BATTLE_COUNTDOWN, BATTLE_STARTED, BATTLE_IN_PROGRESS, GAME_STOPPED, TELE_TO_TOWN, CLEANUP, IDLE};
-        }
     }
 }

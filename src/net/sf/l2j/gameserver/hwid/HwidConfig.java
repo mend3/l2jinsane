@@ -77,7 +77,7 @@ public class HwidConfig {
     protected static Properties getSettings(String CONFIGURATION_FILE) {
         Properties serverSettings = new Properties();
         try {
-            InputStream is = new FileInputStream(new File(CONFIGURATION_FILE));
+            InputStream is = new FileInputStream(CONFIGURATION_FILE);
             try {
                 serverSettings.load(is);
                 is.close();

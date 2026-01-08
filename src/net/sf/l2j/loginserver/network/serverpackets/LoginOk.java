@@ -8,8 +8,8 @@ public final class LoginOk extends L2LoginServerPacket {
     private final int _loginOk2;
 
     public LoginOk(SessionKey sessionKey) {
-        this._loginOk1 = sessionKey.loginOkID1;
-        this._loginOk2 = sessionKey.loginOkID2;
+        this._loginOk1 = sessionKey.loginOkID1();
+        this._loginOk2 = sessionKey.loginOkID2();
     }
 
     protected void write() {

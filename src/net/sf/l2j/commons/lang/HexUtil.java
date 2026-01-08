@@ -6,8 +6,8 @@ public class HexUtil {
         int counter = 0;
         for (int i = 0; i < len; i++) {
             if (counter % 16 == 0)
-                result.append(fillHex(i, 4) + ": ");
-            result.append(fillHex(data[i] & 0xFF, 2) + " ");
+                result.append(fillHex(i, 4)).append(": ");
+            result.append(fillHex(data[i] & 0xFF, 2)).append(" ");
             counter++;
             if (counter == 16) {
                 result.append("   ");
@@ -43,10 +43,10 @@ public class HexUtil {
     }
 
     public static String fillHex(int data, int digits) {
-        String number = Integer.toHexString(data);
+        StringBuilder number = new StringBuilder(Integer.toHexString(data));
         for (int i = number.length(); i < digits; i++)
-            number = "0" + number;
-        return number;
+            number.insert(0, "0");
+        return number.toString();
     }
 
     public static String printData(byte[] raw) {

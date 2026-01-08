@@ -27,8 +27,7 @@ public class CastleBlacksmith extends Folk {
 
                 try {
                     val = Integer.parseInt(command.substring(5));
-                } catch (IndexOutOfBoundsException ignored) {
-                } catch (NumberFormatException ignored) {
+                } catch (IndexOutOfBoundsException | NumberFormatException ignored) {
                 }
 
                 this.showChatWindow(player, val);

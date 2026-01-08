@@ -32,7 +32,7 @@ public final class SiegeGuard extends Attackable {
     }
 
     public boolean isAutoAttackable(Creature attacker) {
-        return attacker != null && attacker.getActingPlayer() != null && this.getCastle() != null && this.getCastle().getSiege().isInProgress() && !this.getCastle().getSiege().checkSides(attacker.getActingPlayer().getClan(), new SiegeSide[]{SiegeSide.DEFENDER, SiegeSide.OWNER});
+        return attacker != null && attacker.getActingPlayer() != null && this.getCastle() != null && this.getCastle().getSiege().isInProgress() && !this.getCastle().getSiege().checkSides(attacker.getActingPlayer().getClan(), SiegeSide.DEFENDER, SiegeSide.OWNER);
     }
 
     public boolean hasRandomAnimation() {

@@ -8,7 +8,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q605_AllianceWithKetraOrcs extends Quest {
@@ -83,8 +82,7 @@ public class Q605_AllianceWithKetraOrcs extends Quest {
         setItemsIds(7216, 7217, 7218);
         addStartNpc(31371);
         addTalkId(31371);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int mobs = iterator.next();
+        for (int mobs : CHANCES.keySet()) {
             addKillId(mobs);
         }
     }

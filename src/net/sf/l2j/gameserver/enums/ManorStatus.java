@@ -6,9 +6,4 @@ public enum ManorStatus {
     MODIFIABLE,
     MAINTENANCE,
     APPROVED;
-
-    // $FF: synthetic method
-    private static ManorStatus[] $values() {
-        return new ManorStatus[]{DISABLED, MODIFIABLE, MAINTENANCE, APPROVED};
-    }
 }

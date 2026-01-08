@@ -24,16 +24,16 @@ public class BypassHandler {
 
     public void registerBypassHandler(IBypassHandler handler) {
         String[] ids = handler.getBypassHandlersList();
-        for (int i = 0; i < ids.length; i++) {
+        for (String id : ids) {
             if (Config.PACKET_HANDLER_DEBUG)
-                LOGGER.info("Adding handler for command " + ids[i]);
-            this._datatable.put(ids[i].hashCode(), handler);
+                LOGGER.info("Adding handler for command " + id);
+            this._datatable.put(id.hashCode(), handler);
         }
     }
 
     public IBypassHandler getBypassHandler(String bypass) {
         String command = bypass;
-        if (bypass.indexOf(" ") != -1)
+        if (bypass.contains(" "))
             command = bypass.substring(0, bypass.indexOf(" "));
         if (Config.PACKET_HANDLER_DEBUG)
             LOGGER.info("getting handler for command: " + command + " -> " + ((this._datatable.get(command.hashCode()) != null) ? 1 : 0));

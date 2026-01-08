@@ -9,7 +9,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q617_GatherTheFlames extends Quest {
@@ -58,8 +57,7 @@ public class Q617_GatherTheFlames extends Quest {
         setItemsIds(7264);
         addStartNpc(31539, 31271);
         addTalkId(31539, 31271, 32049);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int mobs = iterator.next();
+        for (int mobs : CHANCES.keySet()) {
             addKillId(mobs);
         }
     }
@@ -104,17 +102,12 @@ public class Q617_GatherTheFlames extends Quest {
                 htmltext = "" + npc.getNpcId() + npc.getNpcId();
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 31539:
-                        htmltext = (st.getQuestItemsCount(7264) >= 1000) ? "31539-04.htm" : "31539-05.htm";
-                        break;
-                    case 31271:
-                        htmltext = "31271-04.htm";
-                        break;
-                    case 32049:
-                        htmltext = (st.getQuestItemsCount(7264) >= 1200) ? "32049-01.htm" : "32049-02.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 31539 -> (st.getQuestItemsCount(7264) >= 1000) ? "31539-04.htm" : "31539-05.htm";
+                    case 31271 -> "31271-04.htm";
+                    case 32049 -> (st.getQuestItemsCount(7264) >= 1200) ? "32049-01.htm" : "32049-02.htm";
+                    default -> htmltext;
+                };
                 break;
         }
         return htmltext;

@@ -1,13 +1,13 @@
 package net.sf.l2j.commons.mmocore;
 
 public final class SelectorConfig {
-    public int READ_BUFFER_SIZE = 65536;
+    public final int READ_BUFFER_SIZE = 65536;
 
-    public int WRITE_BUFFER_SIZE = 65536;
+    public final int WRITE_BUFFER_SIZE = 65536;
 
     public int HELPER_BUFFER_COUNT = 20;
 
-    public int HELPER_BUFFER_SIZE = 65536;
+    public final int HELPER_BUFFER_SIZE = 65536;
 
     public int MAX_SEND_PER_PASS = 10;
 
@@ -15,5 +15,5 @@ public final class SelectorConfig {
 
     public int SLEEP_TIME = 10;
 
-    public boolean TCP_NODELAY = true;
+    public final boolean TCP_NODELAY = true;
 }

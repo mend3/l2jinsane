@@ -3,7 +3,6 @@ package net.sf.l2j.gameserver.network.serverpackets;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class AdminForgePacket extends L2GameServerPacket {
@@ -17,37 +16,30 @@ public class AdminForgePacket extends L2GameServerPacket {
 
     }
 
-    public boolean generate(byte b, String string) {
+    public void generate(byte b, String string) {
         if (b != 67 && b != 99) {
             if (b != 68 && b != 100) {
                 if (b != 72 && b != 104) {
                     if (b != 70 && b != 102) {
                         if (b != 83 && b != 115) {
                             if (b != 66 && b != 98 && b != 88 && b != 120) {
-                                return false;
                             } else {
                                 this.writeB((new BigInteger(string)).toByteArray());
-                                return true;
                             }
                         } else {
                             this.writeS(string);
-                            return true;
                         }
                     } else {
                         this.writeF(Double.parseDouble(string));
-                        return true;
                     }
                 } else {
                     this.writeH(Integer.decode(string));
-                    return true;
                 }
             } else {
                 this.writeD(Integer.decode(string));
-                return true;
             }
         } else {
             this.writeC(Integer.decode(string));
-            return true;
         }
     }
 
@@ -56,8 +48,8 @@ public class AdminForgePacket extends L2GameServerPacket {
     }
 
     private static class Part {
-        public byte b;
-        public String str;
+        public final byte b;
+        public final String str;
 
         public Part(final AdminForgePacket param1, byte bb, String string) {
             this.b = bb;

@@ -1,8 +1,8 @@
-package net.sf.l2j.gameserver.communitybbs.Custom;
+package net.sf.l2j.gameserver.communitybbs.custom;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.commons.lang.StringUtil;
-import net.sf.l2j.gameserver.communitybbs.Manager.BaseBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.BaseBBSManager;
 import net.sf.l2j.gameserver.data.SkillTable;
 import net.sf.l2j.gameserver.data.cache.HtmCache;
 import net.sf.l2j.gameserver.data.manager.BufferManager;
@@ -16,14 +16,14 @@ import net.sf.l2j.gameserver.network.serverpackets.MagicSkillUse;
 import java.util.*;
 
 public class BufferBBSManager extends BaseBBSManager {
-    int[] magebuffs = new int[]{
+    final int[] magebuffs = new int[]{
             1204, 1048, 1045, 1040, 1035, 1085, 1303, 1304, 1243, 1036,
             1087, 1059, 1078, 1062, 1363, 273, 276, 277, 365, 264,
             265, 266, 267, 268, 270, 304, 349, 364, 1393, 1392,
             1352, 1353, 1354, 311, 307, 309, 306, 308, 1259, 1182,
             1189, 1191, 4703, 1389, 1416, 1323};
 
-    int[] fighterbuffs = new int[]{
+    final int[] fighterbuffs = new int[]{
             1204, 1048, 1045, 1068, 1040, 1035, 1086, 1242, 1036, 1240,
             1268, 1077, 1087, 1062, 1363, 271, 272, 274, 275, 277,
             310, 264, 265, 266, 267, 268, 269, 270, 304, 305,
@@ -50,8 +50,7 @@ public class BufferBBSManager extends BaseBBSManager {
 
     private static String getGroupSkillList(Player player, String groupType, String schemeName) {
         List<Integer> skills = new ArrayList<>();
-        for (Iterator<Integer> iterator1 = BufferManager.getInstance().getSkillsIdsByType(groupType).iterator(); iterator1.hasNext(); ) {
-            int skillId = iterator1.next();
+        for (int skillId : BufferManager.getInstance().getSkillsIdsByType(groupType)) {
             if (BufferManager.getInstance().getSchemeContainsSkill(player.getObjectId(), schemeName, skillId))
                 continue;
             skills.add(skillId);
@@ -61,18 +60,17 @@ public class BufferBBSManager extends BaseBBSManager {
         StringBuilder sb = new StringBuilder(500);
         sb.append("<table>");
         int count = 0;
-        for (Iterator<Integer> iterator2 = skills.iterator(); iterator2.hasNext(); ) {
-            int skillId = iterator2.next();
+        for (int skillId : skills) {
             if (BufferManager.getInstance().getSchemeContainsSkill(player.getObjectId(), schemeName, skillId))
                 continue;
             if (count == 0)
                 sb.append("<tr>");
             if (skillId < 100) {
-                sb.append("<td width=180><font color=\"949490\"><a action=\"bypass _bbsbuffer;skillselect;" + groupType + ";" + schemeName + ";" + skillId + "\">" + SkillTable.getInstance().getInfo(skillId, 1).getName() + "</a></font></td>");
+                sb.append("<td width=180><font color=\"949490\"><a action=\"bypass _bbsbuffer;skillselect;").append(groupType).append(";").append(schemeName).append(";").append(skillId).append("\">").append(SkillTable.getInstance().getInfo(skillId, 1).getName()).append("</a></font></td>");
             } else if (skillId < 1000) {
-                sb.append("<td width=180><font color=\"949490\"><a action=\"bypass _bbsbuffer;skillselect;" + groupType + ";" + schemeName + ";" + skillId + "\">" + SkillTable.getInstance().getInfo(skillId, 1).getName() + "</a></font></td>");
+                sb.append("<td width=180><font color=\"949490\"><a action=\"bypass _bbsbuffer;skillselect;").append(groupType).append(";").append(schemeName).append(";").append(skillId).append("\">").append(SkillTable.getInstance().getInfo(skillId, 1).getName()).append("</a></font></td>");
             } else {
-                sb.append("<td width=180><font color=\"949490\"><a action=\"bypass _bbsbuffer;skillselect;" + groupType + ";" + schemeName + ";" + skillId + "\">" + SkillTable.getInstance().getInfo(skillId, 1).getName() + "</a></font></td>");
+                sb.append("<td width=180><font color=\"949490\"><a action=\"bypass _bbsbuffer;skillselect;").append(groupType).append(";").append(schemeName).append(";").append(skillId).append("\">").append(SkillTable.getInstance().getInfo(skillId, 1).getName()).append("</a></font></td>");
             }
             count++;
             if (count == 2) {
@@ -93,16 +91,15 @@ public class BufferBBSManager extends BaseBBSManager {
         StringBuilder sb = new StringBuilder(500);
         sb.append("<table>");
         int count = 0;
-        for (Iterator<Integer> iterator = skills.iterator(); iterator.hasNext(); ) {
-            int sk = iterator.next();
+        for (int sk : skills) {
             if (count == 0)
                 sb.append("<tr>");
             if (sk < 100) {
-                sb.append("<td width=180><font color=\"6e6e6a\"><a action=\"bypass _bbsbuffer;skillunselect;" + groupType + ";" + schemeName + ";" + sk + "\">" + SkillTable.getInstance().getInfo(sk, 1).getName() + "</a></font></td>");
+                sb.append("<td width=180><font color=\"6e6e6a\"><a action=\"bypass _bbsbuffer;skillunselect;").append(groupType).append(";").append(schemeName).append(";").append(sk).append("\">").append(SkillTable.getInstance().getInfo(sk, 1).getName()).append("</a></font></td>");
             } else if (sk < 1000) {
-                sb.append("<td width=180><font color=\"6e6e6a\"><a action=\"bypass _bbsbuffer;skillunselect;" + groupType + ";" + schemeName + ";" + sk + "\">" + SkillTable.getInstance().getInfo(sk, 1).getName() + "</a></font></td>");
+                sb.append("<td width=180><font color=\"6e6e6a\"><a action=\"bypass _bbsbuffer;skillunselect;").append(groupType).append(";").append(schemeName).append(";").append(sk).append("\">").append(SkillTable.getInstance().getInfo(sk, 1).getName()).append("</a></font></td>");
             } else {
-                sb.append("<td width=180><font color=\"6e6e6a\"><a action=\"bypass _bbsbuffer;skillunselect;" + groupType + ";" + schemeName + ";" + sk + "\">" + SkillTable.getInstance().getInfo(sk, 1).getName() + "</a></font></td>");
+                sb.append("<td width=180><font color=\"6e6e6a\"><a action=\"bypass _bbsbuffer;skillunselect;").append(groupType).append(";").append(schemeName).append(";").append(sk).append("\">").append(SkillTable.getInstance().getInfo(sk, 1).getName()).append("</a></font></td>");
             }
             count++;
             if (count == 2) {
@@ -144,8 +141,7 @@ public class BufferBBSManager extends BaseBBSManager {
         if (Config.BUFFER_STATIC_BUFF_COST > 0)
             return list.size() * Config.BUFFER_STATIC_BUFF_COST;
         int fee = 0;
-        for (Iterator<Integer> iterator = list.iterator(); iterator.hasNext(); ) {
-            int sk = iterator.next();
+        for (int sk : list) {
             fee += BufferManager.getInstance().getAvailableBuff(sk).getValue();
         }
         return fee;
@@ -287,15 +283,13 @@ public class BufferBBSManager extends BaseBBSManager {
                 int cost = Integer.parseInt(st.nextToken());
                 if (player.getBuff() == 0) {
                     if (cost == 0 || player.reduceAdena("NPC Buffer", cost, player, true))
-                        for (Iterator<Integer> iterator = BufferManager.getInstance().getScheme(player.getObjectId(), schemeName).iterator(); iterator.hasNext(); ) {
-                            int skillId = iterator.next();
+                        for (int skillId : BufferManager.getInstance().getScheme(player.getObjectId(), schemeName)) {
                             SkillTable.getInstance().getInfo(skillId, SkillTable.getInstance().getMaxLevel(skillId)).getEffects(player, player);
                         }
                 } else if (player.getSummon() != null) {
                     Summon summon = player.getSummon();
                     if (cost == 0 || player.reduceAdena("NPC Buffer", cost, player, true))
-                        for (Iterator<Integer> iterator = BufferManager.getInstance().getScheme(player.getObjectId(), schemeName).iterator(); iterator.hasNext(); ) {
-                            int skillId = iterator.next();
+                        for (int skillId : BufferManager.getInstance().getScheme(player.getObjectId(), schemeName)) {
                             SkillTable.getInstance().getInfo(skillId, SkillTable.getInstance().getMaxLevel(skillId)).getEffects(summon, summon);
                         }
                 }

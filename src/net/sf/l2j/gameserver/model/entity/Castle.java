@@ -158,7 +158,7 @@ public class Castle {
 
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("UPDATE castle SET treasury = ? WHERE id = ?");
+                    PreparedStatement ps = con.prepareStatement("UPDATE castle SET treasury = ? WHERE id = ?")
             ) {
                 ps.setLong(1, this._treasury);
                 ps.setInt(2, this._castleId);
@@ -204,7 +204,7 @@ public class Castle {
         if (save) {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("UPDATE castle SET certificates=? WHERE id=?");
+                    PreparedStatement ps = con.prepareStatement("UPDATE castle SET certificates=? WHERE id=?")
             ) {
                 ps.setInt(1, leftCertificates);
                 ps.setInt(2, this._castleId);
@@ -303,7 +303,7 @@ public class Castle {
         if (save) {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("UPDATE castle SET taxPercent = ? WHERE id = ?");
+                    PreparedStatement ps = con.prepareStatement("UPDATE castle SET taxPercent = ? WHERE id = ?")
             ) {
                 ps.setInt(1, taxPercent);
                 ps.setInt(2, this._castleId);
@@ -343,7 +343,7 @@ public class Castle {
             if (db) {
                 try (
                         Connection con = ConnectionPool.getConnection();
-                        PreparedStatement ps = con.prepareStatement("REPLACE INTO castle_doorupgrade (doorId, hp, castleId) VALUES (?,?,?)");
+                        PreparedStatement ps = con.prepareStatement("REPLACE INTO castle_doorupgrade (doorId, hp, castleId) VALUES (?,?,?)")
                 ) {
                     ps.setInt(1, doorId);
                     ps.setInt(2, hp);
@@ -360,7 +360,7 @@ public class Castle {
     public void loadDoorUpgrade() {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("SELECT * FROM castle_doorupgrade WHERE castleId=?");
+                PreparedStatement ps = con.prepareStatement("SELECT * FROM castle_doorupgrade WHERE castleId=?")
         ) {
             ps.setInt(1, this._castleId);
 
@@ -382,7 +382,7 @@ public class Castle {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM castle_doorupgrade WHERE castleId=?");
+                PreparedStatement ps = con.prepareStatement("DELETE FROM castle_doorupgrade WHERE castleId=?")
         ) {
             ps.setInt(1, this._castleId);
             ps.executeUpdate();
@@ -408,7 +408,7 @@ public class Castle {
         try (
                 Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("UPDATE clan_data SET hasCastle=0 WHERE hasCastle=?");
-                PreparedStatement ps2 = con.prepareStatement("UPDATE clan_data SET hasCastle=? WHERE clan_id=?");
+                PreparedStatement ps2 = con.prepareStatement("UPDATE clan_data SET hasCastle=? WHERE clan_id=?")
         ) {
             ps.setInt(1, this._castleId);
             ps.executeUpdate();
@@ -489,7 +489,7 @@ public class Castle {
                             spawn.setRespawnState(false);
                             this._siegeGuards.add(spawn.doSpawn(false));
                         } catch (Exception e) {
-                            LOGGER.error("Couldn't spawn npc ticket {}. ", e, new Object[]{ticket.getNpcId()});
+                            LOGGER.error("Couldn't spawn npc ticket {}. ", e, ticket.getNpcId());
                         }
 
                         item.decayMe();
@@ -524,7 +524,7 @@ public class Castle {
     public void loadTrapUpgrade() {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("SELECT * FROM castle_trapupgrade WHERE castleId=?");
+                PreparedStatement ps = con.prepareStatement("SELECT * FROM castle_trapupgrade WHERE castleId=?")
         ) {
             ps.setInt(1, this._castleId);
 
@@ -634,7 +634,7 @@ public class Castle {
         if (save) {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("REPLACE INTO castle_trapupgrade (castleId, towerIndex, level) values (?,?,?)");
+                    PreparedStatement ps = con.prepareStatement("REPLACE INTO castle_trapupgrade (castleId, towerIndex, level) values (?,?,?)")
             ) {
                 ps.setInt(1, this._castleId);
                 ps.setInt(2, towerIndex);
@@ -659,7 +659,7 @@ public class Castle {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM castle_trapupgrade WHERE castleId=?");
+                PreparedStatement ps = con.prepareStatement("DELETE FROM castle_trapupgrade WHERE castleId=?")
         ) {
             ps.setInt(1, this._castleId);
             ps.executeUpdate();
@@ -676,7 +676,7 @@ public class Castle {
         } else {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("UPDATE items SET loc='INVENTORY' WHERE item_id IN (?, 6841) AND owner_id=? AND loc='PAPERDOLL'");
+                    PreparedStatement ps = con.prepareStatement("UPDATE items SET loc='INVENTORY' WHERE item_id IN (?, 6841) AND owner_id=? AND loc='PAPERDOLL'")
             ) {
                 ps.setInt(1, this._circletId);
                 ps.setInt(2, member.getObjectId());
@@ -691,7 +691,7 @@ public class Castle {
     public void checkItemsForClan(Clan clan) {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("UPDATE items SET loc='INVENTORY' WHERE item_id IN (?, 6841) AND owner_id=? AND loc='PAPERDOLL'");
+                PreparedStatement ps = con.prepareStatement("UPDATE items SET loc='INVENTORY' WHERE item_id IN (?, 6841) AND owner_id=? AND loc='PAPERDOLL'")
         ) {
             ps.setInt(1, this._circletId);
 

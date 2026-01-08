@@ -48,14 +48,11 @@ public class Q112_WalkOfFate extends Quest {
                 htmltext = (player.getLevel() < 20) ? "30572-00.htm" : "30572-01.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 30572:
-                        htmltext = "30572-03.htm";
-                        break;
-                    case 32017:
-                        htmltext = "32017-01.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 30572 -> "30572-03.htm";
+                    case 32017 -> "32017-01.htm";
+                    default -> htmltext;
+                };
                 break;
             case 2:
                 htmltext = getAlreadyCompletedMsg();

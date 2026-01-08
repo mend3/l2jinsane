@@ -56,8 +56,7 @@ public class Q325_GrimCollector extends Quest {
         setItemsIds(1350, 1351, 1352, 1353, 1354, 1355, 1356, 1357, 1358, 1349);
         addStartNpc(30336);
         addTalkId(30336, 30342, 30434);
-        for (Iterator<Integer> iterator = DROPLIST.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : DROPLIST.keySet()) {
             addKillId(npcId);
         }
     }

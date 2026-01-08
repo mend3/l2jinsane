@@ -61,9 +61,8 @@ public class PlayerStat extends PlayableStat {
         }
     }
 
-    public boolean addExpAndSp(long addToExp, int addToSp, Map<Creature, RewardInfo> rewards) {
+    public void addExpAndSp(long addToExp, int addToSp, Map<Creature, RewardInfo> rewards) {
         if (!this.getActiveChar().getAccessLevel().canGainExp()) {
-            return false;
         } else {
             if (this.getActiveChar().hasPet()) {
                 Pet pet = (Pet) this.getActiveChar().getSummon();
@@ -72,8 +71,8 @@ public class PlayerStat extends PlayableStat {
                     long petExp = 0L;
                     int petSp = 0;
                     if (ratio == -1) {
-                        RewardInfo r = (RewardInfo) rewards.get(pet);
-                        RewardInfo reward = (RewardInfo) rewards.get(this.getActiveChar());
+                        RewardInfo r = rewards.get(pet);
+                        RewardInfo reward = rewards.get(this.getActiveChar());
                         if (r != null && reward != null) {
                             double damageDoneByPet = (double) r.getDamage() / (double) reward.getDamage();
                             petExp = (long) ((double) addToExp * damageDoneByPet);
@@ -94,7 +93,7 @@ public class PlayerStat extends PlayableStat {
                 }
             }
 
-            return this.addExpAndSp(addToExp, addToSp);
+            this.addExpAndSp(addToExp, addToSp);
         }
     }
 
@@ -138,7 +137,7 @@ public class PlayerStat extends PlayableStat {
                     }
                 }
 
-                this.getActiveChar().setCurrentCp((double) this.getMaxCp());
+                this.getActiveChar().setCurrentCp(this.getMaxCp());
                 this.getActiveChar().broadcastPacket(new SocialAction(this.getActiveChar(), 15));
                 this.getActiveChar().sendPacket(SystemMessageId.YOU_INCREASED_YOUR_LEVEL);
                 ClassMaster.showQuestionMark(this.getActiveChar());
@@ -152,7 +151,7 @@ public class PlayerStat extends PlayableStat {
                     member.refreshLevel();
                 }
 
-                clan.broadcastToOnlineMembers(new L2GameServerPacket[]{new PledgeShowMemberListUpdate(this.getActiveChar())});
+                clan.broadcastToOnlineMembers(new PledgeShowMemberListUpdate(this.getActiveChar()));
             }
 
             Party party = this.getActiveChar().getParty();
@@ -206,7 +205,7 @@ public class PlayerStat extends PlayableStat {
     }
 
     public final int getMaxCp() {
-        int val = (int) this.calcStat(Stats.MAX_CP, this.getActiveChar().getTemplate().getBaseCpMax(this.getActiveChar().getLevel()), (Creature) null, (L2Skill) null);
+        int val = (int) this.calcStat(Stats.MAX_CP, this.getActiveChar().getTemplate().getBaseCpMax(this.getActiveChar().getLevel()), null, null);
         if (val != this._oldMaxCp) {
             this._oldMaxCp = val;
             if (this.getActiveChar().getStatus().getCurrentCp() != (double) val) {
@@ -294,7 +293,7 @@ public class PlayerStat extends PlayableStat {
     public float getMoveSpeed() {
         float baseValue = this.getActiveChar().isInsideZone(ZoneId.WATER) ? (float) this.getBaseSwimSpeed() : (float) this.getBaseMoveSpeed();
         if (this.getActiveChar().isInsideZone(ZoneId.SWAMP)) {
-            SwampZone zone = (SwampZone) ZoneManager.getInstance().getZone(this.getActiveChar(), SwampZone.class);
+            SwampZone zone = ZoneManager.getInstance().getZone(this.getActiveChar(), SwampZone.class);
             if (zone != null) {
                 baseValue = (float) ((double) baseValue * ((double) (100 + zone.getMoveBonus()) / (double) 100.0F));
             }
@@ -302,47 +301,47 @@ public class PlayerStat extends PlayableStat {
 
         int penalty = this.getActiveChar().getExpertiseArmorPenalty();
         if (penalty > 0) {
-            baseValue = (float) ((double) baseValue * Math.pow(0.84, (double) penalty));
+            baseValue = (float) ((double) baseValue * Math.pow(0.84, penalty));
         }
 
-        return (float) this.calcStat(Stats.RUN_SPEED, (double) baseValue, (Creature) null, (L2Skill) null);
+        return (float) this.calcStat(Stats.RUN_SPEED, baseValue, null, null);
     }
 
     public int getMAtk(Creature target, L2Skill skill) {
         if (this.getActiveChar().isMounted()) {
             double base = this.getActiveChar().getPetDataEntry().getMountMAtk();
             if (this.getActiveChar().getLevel() < this.getActiveChar().getMountLevel()) {
-                base /= (double) 2.0F;
+                base /= 2.0F;
             }
 
-            return (int) this.calcStat(Stats.MAGIC_ATTACK, base, (Creature) null, (L2Skill) null);
+            return (int) this.calcStat(Stats.MAGIC_ATTACK, base, null, null);
         } else {
             return super.getMAtk(target, skill);
         }
     }
 
     public int getMAtkSpd() {
-        double base = (double) 333.0F;
+        double base = 333.0F;
         if (this.getActiveChar().isMounted() && this.getActiveChar().checkFoodState(this.getActiveChar().getPetTemplate().getHungryLimit())) {
-            base /= (double) 2.0F;
+            base /= 2.0F;
         }
 
         int penalty = this.getActiveChar().getExpertiseArmorPenalty();
         if (penalty > 0) {
-            base *= Math.pow(0.84, (double) penalty);
+            base *= Math.pow(0.84, penalty);
         }
 
-        return (int) this.calcStat(Stats.MAGIC_ATTACK_SPEED, base, (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.MAGIC_ATTACK_SPEED, base, null, null);
     }
 
     public int getPAtk(Creature target) {
         if (this.getActiveChar().isMounted()) {
             double base = this.getActiveChar().getPetDataEntry().getMountPAtk();
             if (this.getActiveChar().getLevel() < this.getActiveChar().getMountLevel()) {
-                base /= (double) 2.0F;
+                base /= 2.0F;
             }
 
-            return (int) this.calcStat(Stats.POWER_ATTACK, base, (Creature) null, (L2Skill) null);
+            return (int) this.calcStat(Stats.POWER_ATTACK, base, null, null);
         } else {
             return super.getPAtk(target);
         }
@@ -357,7 +356,7 @@ public class PlayerStat extends PlayableStat {
                 base /= 2;
             }
 
-            return (int) this.calcStat(Stats.POWER_ATTACK_SPEED, (double) base, (Creature) null, (L2Skill) null);
+            return (int) this.calcStat(Stats.POWER_ATTACK_SPEED, base, null, null);
         } else {
             return super.getPAtkSpd();
         }
@@ -383,30 +382,30 @@ public class PlayerStat extends PlayableStat {
     }
 
     public int getPhysicalAttackRange() {
-        return (int) this.calcStat(Stats.POWER_ATTACK_RANGE, (double) this.getActiveChar().getAttackType().getRange(), (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.POWER_ATTACK_RANGE, this.getActiveChar().getAttackType().getRange(), null, null);
     }
 
     public final int getSTR() {
-        return (int) this.calcStat(Stats.STAT_STR, (double) (this.getActiveChar().getTemplate().getBaseSTR() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_STR)), (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.STAT_STR, this.getActiveChar().getTemplate().getBaseSTR() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_STR), null, null);
     }
 
     public final int getDEX() {
-        return (int) this.calcStat(Stats.STAT_DEX, (double) (this.getActiveChar().getTemplate().getBaseDEX() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_DEX)), (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.STAT_DEX, this.getActiveChar().getTemplate().getBaseDEX() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_DEX), null, null);
     }
 
     public final int getCON() {
-        return (int) this.calcStat(Stats.STAT_CON, (double) (this.getActiveChar().getTemplate().getBaseCON() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_CON)), (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.STAT_CON, this.getActiveChar().getTemplate().getBaseCON() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_CON), null, null);
     }
 
     public int getINT() {
-        return (int) this.calcStat(Stats.STAT_INT, (double) (this.getActiveChar().getTemplate().getBaseINT() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_INT)), (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.STAT_INT, this.getActiveChar().getTemplate().getBaseINT() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_INT), null, null);
     }
 
     public final int getMEN() {
-        return (int) this.calcStat(Stats.STAT_MEN, (double) (this.getActiveChar().getTemplate().getBaseMEN() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_MEN)), (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.STAT_MEN, this.getActiveChar().getTemplate().getBaseMEN() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_MEN), null, null);
     }
 
     public final int getWIT() {
-        return (int) this.calcStat(Stats.STAT_WIT, (double) (this.getActiveChar().getTemplate().getBaseWIT() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_WIT)), (Creature) null, (L2Skill) null);
+        return (int) this.calcStat(Stats.STAT_WIT, this.getActiveChar().getTemplate().getBaseWIT() + PlayerData.get(this.getActiveChar().getActingPlayer()).getCustomStat(Stats.STAT_WIT), null, null);
     }
 }

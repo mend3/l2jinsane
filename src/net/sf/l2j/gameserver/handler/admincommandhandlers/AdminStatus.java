@@ -11,52 +11,50 @@ import net.sf.l2j.gameserver.network.serverpackets.GMViewSkillInfo;
 public class AdminStatus implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_statustarget", "admin_inventorytarget", "admin_skillstarget"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (!activeChar.isGM()) {
             activeChar.sendMessage("You're not a GM.");
-            return false;
+            return;
         }
         if (command.startsWith("admin_statustarget")) {
             if (activeChar.getTarget() == null) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             if (!(activeChar.getTarget() instanceof Player targetCharacter)) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             Player targetPlayer = targetCharacter.getActingPlayer();
             activeChar.sendPacket(new GMViewCharacterInfo(targetPlayer));
             activeChar.sendPacket(new GMViewHennaInfo(targetPlayer));
-            return true;
+            return;
         }
         if (command.startsWith("admin_inventorytarget")) {
             if (activeChar.getTarget() == null) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             if (!(activeChar.getTarget() instanceof Player targetCharacter)) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             Player targetPlayer = targetCharacter.getActingPlayer();
             activeChar.sendPacket(new GMViewItemList(targetPlayer));
-            return true;
+            return;
         }
         if (command.startsWith("admin_skillstarget")) {
             if (activeChar.getTarget() == null) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             if (!(activeChar.getTarget() instanceof Player targetCharacter)) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             Player targetPlayer = targetCharacter.getActingPlayer();
             activeChar.sendPacket(new GMViewSkillInfo(targetPlayer));
-            return true;
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

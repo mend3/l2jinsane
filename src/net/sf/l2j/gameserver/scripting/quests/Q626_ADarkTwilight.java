@@ -7,7 +7,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q626_ADarkTwilight extends Quest {
@@ -38,8 +37,7 @@ public class Q626_ADarkTwilight extends Quest {
         setItemsIds(7169);
         addStartNpc(31517);
         addTalkId(31517);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : CHANCES.keySet()) {
             addKillId(npcId);
         }
     }

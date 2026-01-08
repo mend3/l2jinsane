@@ -18,24 +18,15 @@ public class ConditionPlayerState extends Condition {
     public boolean testImpl(Env env) {
         Creature character = env.getCharacter();
         Player player = env.getPlayer();
-        switch (this._check) {
-            case RESTING:
-                return (player == null) ? (!this._required) : ((player.isSitting() == this._required));
-            case MOVING:
-                return (character.isMoving() == this._required);
-            case RUNNING:
-                return (character.isMoving() == this._required && character.isRunning() == this._required);
-            case RIDING:
-                return (character.isRiding() == this._required);
-            case FLYING:
-                return (character.isFlying() == this._required);
-            case BEHIND:
-                return (character.isBehindTarget() == this._required);
-            case FRONT:
-                return (character.isInFrontOfTarget() == this._required);
-            case OLYMPIAD:
-                return (player == null) ? (!this._required) : ((player.isInOlympiadMode() == this._required));
-        }
-        return !this._required;
+        return switch (this._check) {
+            case RESTING -> (player == null) ? (!this._required) : ((player.isSitting() == this._required));
+            case MOVING -> (character.isMoving() == this._required);
+            case RUNNING -> (character.isMoving() == this._required && character.isRunning() == this._required);
+            case RIDING -> (character.isRiding() == this._required);
+            case FLYING -> (character.isFlying() == this._required);
+            case BEHIND -> (character.isBehindTarget() == this._required);
+            case FRONT -> (character.isInFrontOfTarget() == this._required);
+            case OLYMPIAD -> (player == null) ? (!this._required) : ((player.isInOlympiadMode() == this._required));
+        };
     }
 }

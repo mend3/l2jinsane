@@ -218,16 +218,15 @@ public class AugmentationData implements IXmlReader {
 
         L2Skill skill = null;
         if (generateSkill) {
-            switch (resultColor) {
-                case 1:
-                    stat34 = (Integer) ((List) this._blueSkills.get(lifeStoneLevel)).get(Rnd.get(0, this._blueSkills.get(lifeStoneLevel).size() - 1));
-                    break;
-                case 2:
-                    stat34 = (Integer) ((List) this._purpleSkills.get(lifeStoneLevel)).get(Rnd.get(0, this._purpleSkills.get(lifeStoneLevel).size() - 1));
-                    break;
-                case 3:
-                    stat34 = (Integer) ((List) this._redSkills.get(lifeStoneLevel)).get(Rnd.get(0, this._redSkills.get(lifeStoneLevel).size() - 1));
-            }
+            stat34 = switch (resultColor) {
+                case 1 ->
+                        (Integer) ((List<?>) this._blueSkills.get(lifeStoneLevel)).get(Rnd.get(0, this._blueSkills.get(lifeStoneLevel).size() - 1));
+                case 2 ->
+                        (Integer) ((List<?>) this._purpleSkills.get(lifeStoneLevel)).get(Rnd.get(0, this._purpleSkills.get(lifeStoneLevel).size() - 1));
+                case 3 ->
+                        (Integer) ((List<?>) this._redSkills.get(lifeStoneLevel)).get(Rnd.get(0, this._redSkills.get(lifeStoneLevel).size() - 1));
+                default -> stat34;
+            };
 
             skill = this._allSkills.get(stat34).getSkill();
         }
@@ -268,12 +267,12 @@ public class AugmentationData implements IXmlReader {
                 byte stat2 = STATS2_MAP[stat];
                 AugmentationData.AugmentationStat as;
                 if (stat1 == stat2) {
-                    as = (AugmentationData.AugmentationStat) ((List) this._augStats.get(color)).get(stat1);
+                    as = (AugmentationData.AugmentationStat) ((List<?>) this._augStats.get(color)).get(stat1);
                     temp.add(new AugmentationData.AugStat(as.getStat(), as.getSingleStatValue(level)));
                 } else {
-                    as = (AugmentationData.AugmentationStat) ((List) this._augStats.get(color)).get(stat1);
+                    as = (AugmentationData.AugmentationStat) ((List<?>) this._augStats.get(color)).get(stat1);
                     temp.add(new AugmentationData.AugStat(as.getStat(), as.getCombinedStatValue(level)));
-                    as = (AugmentationData.AugmentationStat) ((List) this._augStats.get(color)).get(stat2);
+                    as = (AugmentationData.AugmentationStat) ((List<?>) this._augStats.get(color)).get(stat2);
                     temp.add(new AugmentationData.AugStat(as.getStat(), as.getCombinedStatValue(level)));
                 }
             } else if (stats[i] >= 16341 && stats[i] <= 16344) {

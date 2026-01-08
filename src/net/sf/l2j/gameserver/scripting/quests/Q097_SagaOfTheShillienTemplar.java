@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q097_SagaOfTheShillienTemplar extends SagasSuperClass {
     public Q097_SagaOfTheShillienTemplar() {
         super(97, "Saga of the Shillien Templar");

@@ -37,7 +37,6 @@ public class BalanceLife implements ISkillHandler {
             fullHP += target.getMaxHp();
             currentHPs += target.getCurrentHp();
             finalList.add(target);
-            continue;
         }
         if (!finalList.isEmpty()) {
             double percentHP = currentHPs / fullHP;

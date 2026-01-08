@@ -14,11 +14,6 @@ public enum ClassRace {
         this._breathMultiplier = breathMultiplier;
     }
 
-    // $FF: synthetic method
-    private static ClassRace[] $values() {
-        return new ClassRace[]{HUMAN, ELF, DARK_ELF, ORC, DWARF};
-    }
-
     public double getBreathMultiplier() {
         return this._breathMultiplier;
     }

@@ -23,7 +23,7 @@ public class InitialPartyFarm {
     }
 
     public String getRestartNextTime() {
-        return this.format.format(this.NextEvent.getTime());
+        return this.NextEvent == null ? "No Scheduled" : this.format.format(this.NextEvent.getTime());
     }
 
     public void StartCalculationOfNextEventTime() {
@@ -38,11 +38,11 @@ public class InitialPartyFarm {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
                 String[] splitTimeOfDay = timeOfDay.split(":");
-                testStartTime.set(11, Integer.parseInt(splitTimeOfDay[0]));
-                testStartTime.set(12, Integer.parseInt(splitTimeOfDay[1]));
-                testStartTime.set(13, 0);
+                testStartTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(splitTimeOfDay[0]));
+                testStartTime.set(Calendar.MINUTE, Integer.parseInt(splitTimeOfDay[1]));
+                testStartTime.set(Calendar.SECOND, 0);
                 if (testStartTime.getTimeInMillis() < currentTime.getTimeInMillis()) {
-                    testStartTime.add(5, 1);
+                    testStartTime.add(Calendar.DATE, 1);
                 }
 
                 timeL = testStartTime.getTimeInMillis() - currentTime.getTimeInMillis();
@@ -59,7 +59,7 @@ public class InitialPartyFarm {
                 ++count;
             }
 
-            _log.info("[Party Farm]: Next event: " + this.NextEvent.getTime().toString());
+            _log.info("[Party Farm]: Next event: " + this.NextEvent.getTime());
             ThreadPool.schedule(new StartEventTask(), flush2);
         } catch (Exception var13) {
             System.out.println("[Party Farm]: Some error in the configs was found!");

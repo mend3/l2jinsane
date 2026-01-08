@@ -45,17 +45,12 @@ public class Q052_WilliesSpecialBait extends Quest {
         String htmltext = getNoQuestMsg();
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 48) ? "31574-02.htm" : "31574-01.htm";
-                break;
-            case 1:
-                htmltext = (st.getQuestItemsCount(7623) == 100) ? "31574-04.htm" : "31574-05.htm";
-                break;
-            case 2:
-                htmltext = getAlreadyCompletedMsg();
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 48) ? "31574-02.htm" : "31574-01.htm";
+            case 1 -> (st.getQuestItemsCount(7623) == 100) ? "31574-04.htm" : "31574-05.htm";
+            case 2 -> getAlreadyCompletedMsg();
+            default -> htmltext;
+        };
         return htmltext;
     }
 

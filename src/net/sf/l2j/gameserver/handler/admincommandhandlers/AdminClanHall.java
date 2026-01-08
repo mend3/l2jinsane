@@ -76,7 +76,7 @@ public class AdminClanHall implements IAdminCommandHandler {
         player.sendPacket(html);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         try {
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
@@ -87,11 +87,11 @@ public class AdminClanHall implements IAdminCommandHandler {
             ClanHall ch = ClanHallManager.getInstance().getClanHall(chId);
             if (chId == 0 || ch == null) {
                 showClanHallSelectPage(activeChar);
-                return true;
+                return;
             }
             if (!st.hasMoreTokens()) {
                 showClanHallSelectPage(activeChar, ch);
-                return true;
+                return;
             }
             command = st.nextToken();
             if (command.equalsIgnoreCase("set")) {
@@ -134,7 +134,6 @@ public class AdminClanHall implements IAdminCommandHandler {
         } catch (Exception e) {
             activeChar.sendMessage("Usage: //ch chId <set|del|open|close|goto|end>.");
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

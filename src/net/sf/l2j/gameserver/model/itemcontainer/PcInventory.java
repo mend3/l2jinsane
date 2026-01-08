@@ -89,7 +89,7 @@ public class PcInventory extends Inventory {
             if (!isDuplicate && (!onlyAvailable || (item.isSellable() && item.isAvailable(getOwner(), false, false))))
                 list.add(item);
         }
-        return list.toArray(new ItemInstance[list.size()]);
+        return list.toArray(new ItemInstance[0]);
     }
 
     public ItemInstance[] getUniqueItemsByEnchantLevel(boolean allowAdena, boolean allowAncientAdena) {
@@ -115,7 +115,7 @@ public class PcInventory extends Inventory {
             if (!isDuplicate && (!onlyAvailable || (item.isSellable() && item.isAvailable(getOwner(), false, false))))
                 list.add(item);
         }
-        return list.toArray(new ItemInstance[list.size()]);
+        return list.toArray(new ItemInstance[0]);
     }
 
     public ItemInstance[] getAllItemsByItemId(int itemId) {
@@ -130,7 +130,7 @@ public class PcInventory extends Inventory {
             if (item.getItemId() == itemId && (includeEquipped || !item.isEquipped()))
                 list.add(item);
         }
-        return list.toArray(new ItemInstance[list.size()]);
+        return list.toArray(new ItemInstance[0]);
     }
 
     public ItemInstance[] getAllItemsByItemId(int itemId, int enchantment) {
@@ -145,7 +145,7 @@ public class PcInventory extends Inventory {
             if (item.getItemId() == itemId && item.getEnchantLevel() == enchantment && (includeEquipped || !item.isEquipped()))
                 list.add(item);
         }
-        return list.toArray(new ItemInstance[list.size()]);
+        return list.toArray(new ItemInstance[0]);
     }
 
     public ItemInstance[] getAvailableItems(boolean allowAdena, boolean allowNonTradeable) {
@@ -154,7 +154,7 @@ public class PcInventory extends Inventory {
             if (item != null && item.isAvailable(getOwner(), allowAdena, allowNonTradeable))
                 list.add(item);
         }
-        return list.toArray(new ItemInstance[list.size()]);
+        return list.toArray(new ItemInstance[0]);
     }
 
     public List<ItemInstance> getSellableItems() {
@@ -167,7 +167,7 @@ public class PcInventory extends Inventory {
             if (item != null && item.isAugmented())
                 list.add(item);
         }
-        return list.toArray(new ItemInstance[list.size()]);
+        return list.toArray(new ItemInstance[0]);
     }
 
     public TradeItem[] getAvailableItems(TradeList tradeList) {
@@ -179,7 +179,7 @@ public class PcInventory extends Inventory {
                     list.add(adjItem);
             }
         }
-        return list.toArray(new TradeItem[list.size()]);
+        return list.toArray(new TradeItem[0]);
     }
 
     public void adjustAvailableItem(TradeItem item) {

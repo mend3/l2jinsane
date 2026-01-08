@@ -13,7 +13,7 @@ public class MathUtil {
     }
 
     public static int limit(int numToTest, int min, int max) {
-        return (numToTest > max) ? max : ((numToTest < min) ? min : numToTest);
+        return (numToTest > max) ? max : (Math.max(numToTest, min));
     }
 
     public static double calculateAngleFrom(WorldObject obj1, WorldObject obj2) {
@@ -101,13 +101,14 @@ public class MathUtil {
             rad += ((Creature) obj2).getCollisionRadius();
         double dx = (obj1.getX() - obj2.getX());
         double dy = (obj1.getY() - obj2.getY());
+        double _range = (range * range) + (2 * range) * rad + rad * rad;
         if (includeZAxis) {
             double dz = (obj1.getZ() - obj2.getZ());
             double d1 = dx * dx + dy * dy + dz * dz;
-            return (d1 <= (range * range) + (2 * range) * rad + rad * rad);
+            return (d1 <= _range);
         }
         double d = dx * dx + dy * dy;
-        return (d <= (range * range) + (2 * range) * rad + rad * rad);
+        return (d <= _range);
     }
 
     public static float roundTo(float val, int numPlaces) {

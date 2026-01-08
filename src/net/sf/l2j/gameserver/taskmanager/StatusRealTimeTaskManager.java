@@ -10,8 +10,7 @@ public class StatusRealTimeTaskManager implements Runnable {
         ThreadPool.scheduleAtFixedRate(this, 500L, 500L);
     }
 
-    public static StatusRealTimeTaskManager getInstance() {
-        return StatusRealTimeTaskManager.SingletonHolder._instance;
+    public static void getInstance() {
     }
 
     private static void updateStatus(Player _target, Player player) {

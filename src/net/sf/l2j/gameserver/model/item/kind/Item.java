@@ -145,15 +145,15 @@ public abstract class Item {
                     int id = Integer.parseInt(skillSplit[0]);
                     int level = Integer.parseInt(skillSplit[1]);
                     if (id == 0) {
-                        _log.info("Ignoring item_skill(" + element + ") for item " + this.toString() + ". Skill id is 0.");
+                        _log.info("Ignoring item_skill(" + element + ") for item " + this + ". Skill id is 0.");
                     } else if (level == 0) {
-                        _log.info("Ignoring item_skill(" + element + ") for item " + this.toString() + ". Skill level is 0.");
+                        _log.info("Ignoring item_skill(" + element + ") for item " + this + ". Skill level is 0.");
                     } else {
                         this._skillHolder[used] = new IntIntHolder(id, level);
                         ++used;
                     }
                 } catch (Exception var12) {
-                    _log.warning("Failed to parse item_skill(" + element + ") for item " + this.toString() + ". The used format is wrong.");
+                    _log.warning("Failed to parse item_skill(" + element + ") for item " + this + ". The used format is wrong.");
                 }
             }
 
@@ -222,25 +222,19 @@ public abstract class Item {
 
     public final int getCrystalCount(int enchantLevel) {
         if (enchantLevel > 3) {
-            switch (this._type2) {
-                case 0:
-                    return this._crystalCount + this.getCrystalType().getCrystalEnchantBonusWeapon() * (2 * enchantLevel - 3);
-                case 1:
-                case 2:
-                    return this._crystalCount + this.getCrystalType().getCrystalEnchantBonusArmor() * (3 * enchantLevel - 6);
-                default:
-                    return this._crystalCount;
-            }
+            return switch (this._type2) {
+                case 0 ->
+                        this._crystalCount + this.getCrystalType().getCrystalEnchantBonusWeapon() * (2 * enchantLevel - 3);
+                case 1, 2 ->
+                        this._crystalCount + this.getCrystalType().getCrystalEnchantBonusArmor() * (3 * enchantLevel - 6);
+                default -> this._crystalCount;
+            };
         } else if (enchantLevel > 0) {
-            switch (this._type2) {
-                case 0:
-                    return this._crystalCount + this.getCrystalType().getCrystalEnchantBonusWeapon() * enchantLevel;
-                case 1:
-                case 2:
-                    return this._crystalCount + this.getCrystalType().getCrystalEnchantBonusArmor() * enchantLevel;
-                default:
-                    return this._crystalCount;
-            }
+            return switch (this._type2) {
+                case 0 -> this._crystalCount + this.getCrystalType().getCrystalEnchantBonusWeapon() * enchantLevel;
+                case 1, 2 -> this._crystalCount + this.getCrystalType().getCrystalEnchantBonusArmor() * enchantLevel;
+                default -> this._crystalCount;
+            };
         } else {
             return this._crystalCount;
         }

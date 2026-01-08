@@ -5,7 +5,7 @@ import mods.dungeon.DungeonManager;
 import mods.pvpZone.RandomZoneManager;
 import net.sf.l2j.Config;
 import net.sf.l2j.commons.pool.ConnectionPool;
-import net.sf.l2j.gameserver.communitybbs.Manager.MailBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.MailBBSManager;
 import net.sf.l2j.gameserver.data.DollsData;
 import net.sf.l2j.gameserver.data.SkillTable;
 import net.sf.l2j.gameserver.data.manager.*;
@@ -218,7 +218,7 @@ public class EnterWorld extends L2GameClientPacket {
 
                 try (
                         Connection con = ConnectionPool.getConnection();
-                        PreparedStatement ps = con.prepareStatement(LOAD_PLAYER_QUESTS);
+                        PreparedStatement ps = con.prepareStatement(LOAD_PLAYER_QUESTS)
                 ) {
                     ps.setInt(1, objectId);
 

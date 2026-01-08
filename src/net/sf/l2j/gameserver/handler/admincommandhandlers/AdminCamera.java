@@ -11,7 +11,7 @@ import net.sf.l2j.gameserver.network.serverpackets.SpecialCamera;
 public class AdminCamera implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_camera", "admin_cameramode"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_camera ")) {
             try {
                 Creature target = (Creature) activeChar.getTarget();
@@ -19,7 +19,6 @@ public class AdminCamera implements IAdminCommandHandler {
                 target.broadcastPacket(new SpecialCamera(target.getObjectId(), Integer.parseInt(com[1]), Integer.parseInt(com[2]), Integer.parseInt(com[3]), Integer.parseInt(com[4]), Integer.parseInt(com[5]), Integer.parseInt(com[6]), Integer.parseInt(com[7]), Integer.parseInt(com[8]), Integer.parseInt(com[9])));
             } catch (Exception e) {
                 activeChar.sendMessage("Usage: //camera dist yaw pitch time duration turn rise widescreen unknown");
-                return false;
             }
         } else if (command.equals("admin_cameramode")) {
             if (!activeChar.getAppearance().getInvisible() || !activeChar.isImmobilized()) {
@@ -40,7 +39,6 @@ public class AdminCamera implements IAdminCommandHandler {
                 activeChar.teleportTo(activeChar.getX(), activeChar.getY(), activeChar.getZ(), 0);
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

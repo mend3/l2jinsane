@@ -6,9 +6,4 @@ public enum MessageType {
     LEFT,
     NONE,
     DISCONNECTED;
-
-    // $FF: synthetic method
-    private static MessageType[] $values() {
-        return new MessageType[]{EXPELLED, LEFT, NONE, DISCONNECTED};
-    }
 }

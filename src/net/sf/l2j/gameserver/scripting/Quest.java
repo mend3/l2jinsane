@@ -787,7 +787,7 @@ public class Quest {
             return;
         }
 
-        if (res != null && res.length() > 0) {
+        if (res != null && !res.isEmpty()) {
             this.showResult(npc, player, res);
         } else {
             player.sendPacket(ActionFailed.STATIC_PACKET);
@@ -902,8 +902,7 @@ public class Quest {
 
     }
 
-    public String onDecay(Npc npc) {
-        return null;
+    public void onDecay(Npc npc) {
     }
 
     public void addSkillSeeId(int... npcIds) {

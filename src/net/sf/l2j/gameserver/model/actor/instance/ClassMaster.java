@@ -111,11 +111,11 @@ public final class ClassMaster extends Folk {
 
                     for (ClassId cid : ClassId.VALUES) {
                         if (cid.level() == level && validateClassId(currentClassId, cid)) {
-                            StringUtil.append(menu, new Object[]{"<a action=\"bypass -h npc_%objectId%_change_class ", cid.getId(), "\">", PlayerClassData.getInstance().getClassNameById(cid.getId()), "</a><br>"});
+                            StringUtil.append(menu, "<a action=\"bypass -h npc_%objectId%_change_class ", cid.getId(), "\">", PlayerClassData.getInstance().getClassNameById(cid.getId()), "</a><br>");
                         }
                     }
 
-                    if (menu.length() > 0) {
+                    if (!menu.isEmpty()) {
                         html.setFile("data/html/classmaster/template.htm");
                         html.replace("%name%", PlayerClassData.getInstance().getClassNameById(currentClassId.getId()));
                         html.replace("%menu%", menu.toString());
@@ -141,7 +141,7 @@ public final class ClassMaster extends Folk {
 
             for (ClassId cid : ClassId.values()) {
                 if (validateClassId(currentClassId, cid)) {
-                    StringUtil.append(menu, new Object[]{"<a action=\"link CO", String.valueOf(cid.getId()), "\">", PlayerClassData.getInstance().getClassNameById(cid.getId()), "</a><br>"});
+                    StringUtil.append(menu, "<a action=\"link CO", String.valueOf(cid.getId()), "\">", PlayerClassData.getInstance().getClassNameById(cid.getId()), "</a><br>");
                 }
             }
 
@@ -247,7 +247,7 @@ public final class ClassMaster extends Folk {
             StringBuilder sb = new StringBuilder();
 
             for (IntIntHolder item : neededItems) {
-                StringUtil.append(sb, new Object[]{"<tr><td><font color=\"LEVEL\">", item.getValue(), "</font></td><td>", ItemTable.getInstance().getTemplate(item.getId()).getName(), "</td></tr>"});
+                StringUtil.append(sb, "<tr><td><font color=\"LEVEL\">", item.getValue(), "</font></td><td>", ItemTable.getInstance().getTemplate(item.getId()).getName(), "</td></tr>");
             }
 
             return sb.toString();

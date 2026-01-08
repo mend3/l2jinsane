@@ -52,6 +52,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
+import static net.sf.l2j.gameserver.model.World.*;
+
 public abstract class Creature extends WorldObject {
     private final Calculator[] _calculators;
     private final byte[] _zones;
@@ -62,7 +64,7 @@ public abstract class Creature extends WorldObject {
     protected String _title;
     protected FusionSkill _fusionSkill;
     protected byte _zoneValidateCounter;
-    protected CharEffectList _effects;
+    protected final CharEffectList _effects;
     protected MoveData _move;
     protected CreatureAI _ai;
     protected Future<?> _skillCast;
@@ -430,10 +432,9 @@ public abstract class Creature extends WorldObject {
                     if (!hitted) {
                         this.abortAttack();
                     } else {
-                        if (this instanceof Attackable) {
+                        if (this instanceof Attackable mob) {
                             Player victim = target.getActingPlayer();
                             if (victim != null) {
-                                Npc mob = (Npc) this;
                                 List<Quest> scripts = mob.getTemplate().getEventQuests(ScriptEventType.ON_ATTACK_ACT);
                                 if (scripts != null) {
                                     for (Quest quest : scripts) {
@@ -618,7 +619,7 @@ public abstract class Creature extends WorldObject {
             Creature target = null;
             WorldObject[] targets = skill.getTargetList(this);
             boolean doit = false;
-            Object var6;
+            Creature var6;
             switch (skill.getTargetType()) {
                 case TARGET_AREA_SUMMON:
                     var6 = this.getSummon();
@@ -668,7 +669,7 @@ public abstract class Creature extends WorldObject {
                     }
             }
 
-            this.beginCast(skill, simultaneously, (Creature) var6, targets);
+            this.beginCast(skill, simultaneously, var6, targets);
         }
     }
 
@@ -993,7 +994,7 @@ public abstract class Creature extends WorldObject {
 
     public void setAI(CreatureAI newAI) {
         CreatureAI oldAI = this.getAI();
-        if (oldAI != null && oldAI != newAI && oldAI instanceof AttackableAI) {
+        if (oldAI != newAI && oldAI instanceof AttackableAI) {
             oldAI.stopAITask();
         }
 
@@ -1162,17 +1163,19 @@ public abstract class Creature extends WorldObject {
             this.broadcastPacket(new ChangeMoveType(this));
         }
 
-        if (this instanceof Player) {
-            ((Player) this).broadcastUserInfo();
-        } else if (this instanceof Summon) {
-            this.broadcastStatusUpdate();
-        } else if (this instanceof Npc) {
-            for (Player player : this.getKnownType(Player.class)) {
-                if (this.getMoveSpeed() == 0) {
-                    player.sendPacket(new ServerObjectInfo((Npc) this, player));
-                } else {
-                    player.sendPacket(new AbstractNpcInfo.NpcInfo((Npc) this, player));
+        switch (this) {
+            case Player player1 -> player1.broadcastUserInfo();
+            case Summon summon -> this.broadcastStatusUpdate();
+            case Npc npc -> {
+                for (Player player : this.getKnownType(Player.class)) {
+                    if (this.getMoveSpeed() == 0) {
+                        player.sendPacket(new ServerObjectInfo(npc, player));
+                    } else {
+                        player.sendPacket(new AbstractNpcInfo.NpcInfo(npc, player));
+                    }
                 }
+            }
+            default -> {
             }
         }
 
@@ -1973,8 +1976,8 @@ public abstract class Creature extends WorldObject {
                 int originalX = x;
                 int originalY = y;
                 int originalZ = z;
-                int gtx = x - -131072 >> 4;
-                int gty = y - -262144 >> 4;
+                int gtx = x - WORLD_X_MIN >> 4;
+                int gty = y - WORLD_Y_MIN >> 4;
                 if (!(this instanceof Attackable) || !((Attackable) this).isReturningToSpawnPoint() || this instanceof Player && (!isInBoat || !(distance > (double) 1500.0F)) || this instanceof Summon && this.getAI().getDesire().getIntention() != IntentionType.FOLLOW || this.isAfraid() || this instanceof RiftInvader) {
                     if (this.isOnGeodataPath()) {
                         try {
@@ -1987,7 +1990,7 @@ public abstract class Creature extends WorldObject {
                         }
                     }
 
-                    if (curX < -131072 || curX > 229376 || curY < -262144 || curY > 262144) {
+                    if (curX < WORLD_X_MIN || curX > WORLD_X_MAX || curY < WORLD_Y_MIN || curY > WORLD_Y_MAX) {
                         this.getAI().setIntention(IntentionType.IDLE);
                         if (this instanceof Player) {
                             ((Player) this).logout(false);
@@ -2160,16 +2163,17 @@ public abstract class Creature extends WorldObject {
         double dx = x - this.getX();
         double dy = y - this.getY();
         double dz = z - this.getZ();
+        double XY = dx * dx + dy * dy;
         if (strictCheck) {
             if (checkZ) {
-                return dx * dx + dy * dy + dz * dz < (double) (radius * radius);
+                return XY + dz * dz < (double) (radius * radius);
             } else {
-                return dx * dx + dy * dy < (double) (radius * radius);
+                return XY < (double) (radius * radius);
             }
         } else if (checkZ) {
-            return dx * dx + dy * dy + dz * dz <= (double) (radius * radius);
+            return XY + dz * dz <= (double) (radius * radius);
         } else {
-            return dx * dx + dy * dy <= (double) (radius * radius);
+            return XY <= (double) (radius * radius);
         }
     }
 
@@ -2510,7 +2514,7 @@ public abstract class Creature extends WorldObject {
                     return;
                 }
 
-                mut.targets = targetList.toArray(new Creature[targetList.size()]);
+                mut.targets = targetList.toArray(new Creature[0]);
             }
 
             if ((!mut.simultaneously || this.isCastingSimultaneouslyNow()) && (mut.simultaneously || this.isCastingNow()) && (!this.isAlikeDead() || skill.isPotion())) {
@@ -2918,7 +2922,7 @@ public abstract class Creature extends WorldObject {
         if (target == null) {
             return false;
         } else {
-            double maxAngleDiff = maxAngle / 2;
+            double maxAngleDiff = (double) maxAngle / 2;
             double angleTarget = MathUtil.calculateAngleFrom(this, target);
             double angleChar = MathUtil.convertHeadingToDegree(this.getHeading());
             double angleDiff = angleChar - angleTarget;
@@ -3217,7 +3221,7 @@ public abstract class Creature extends WorldObject {
             random = 5 + (int) Math.sqrt(this.getLevel());
         }
 
-        return (double) 1.0F + (double) Rnd.get(0 - random, random) / (double) 100.0F;
+        return (double) 1.0F + (double) Rnd.get(-random, random) / (double) 100.0F;
     }
 
     public void disableCoreAI(boolean val) {
@@ -3353,28 +3357,18 @@ public abstract class Creature extends WorldObject {
         this._isStopMov = value;
     }
 
-    private static class QueuedMagicUseTask implements Runnable {
-        private final Player _player;
-        private final L2Skill _skill;
-        private final boolean _isCtrlPressed;
-        private final boolean _isShiftPressed;
-
-        public QueuedMagicUseTask(Player player, L2Skill skill, boolean isCtrlPressed, boolean isShiftPressed) {
-            this._player = player;
-            this._skill = skill;
-            this._isCtrlPressed = isCtrlPressed;
-            this._isShiftPressed = isShiftPressed;
-        }
+    private record QueuedMagicUseTask(Player _player, L2Skill _skill, boolean _isCtrlPressed,
+                                      boolean _isShiftPressed) implements Runnable {
 
         public void run() {
-            try {
-                this._player.useMagic(this._skill, this._isCtrlPressed, this._isShiftPressed);
-            } catch (Exception e) {
-                WorldObject.LOGGER.error("Couldn't process magic use for {}, skillId {}.", e, this._player == null ? "noname" : this._player.getName(), this._skill == null ? "not found" : this._skill.getId());
-            }
+                try {
+                    this._player.useMagic(this._skill, this._isCtrlPressed, this._isShiftPressed);
+                } catch (Exception e) {
+                    WorldObject.LOGGER.error("Couldn't process magic use for {}, skillId {}.", e, this._player == null ? "noname" : this._player.getName(), this._skill == null ? "not found" : this._skill.getId());
+                }
 
+            }
         }
-    }
 
     public static class MoveData {
         public long _moveStartTime;
@@ -3396,12 +3390,12 @@ public abstract class Creature extends WorldObject {
     }
 
     class HitTask implements Runnable {
-        Creature _hitTarget;
-        int _damage;
-        boolean _crit;
-        boolean _miss;
-        byte _shld;
-        boolean _soulshot;
+        final Creature _hitTarget;
+        final int _damage;
+        final boolean _crit;
+        final boolean _miss;
+        final byte _shld;
+        final boolean _soulshot;
 
         public HitTask(Creature target, int damage, boolean crit, boolean miss, boolean soulshot, byte shld) {
             this._hitTarget = target;
@@ -3417,13 +3411,13 @@ public abstract class Creature extends WorldObject {
         }
     }
 
-    class MagicUseTask implements Runnable {
+    public class MagicUseTask implements Runnable {
         WorldObject[] targets;
-        L2Skill skill;
+        final L2Skill skill;
         int hitTime;
-        int coolTime;
+        final int coolTime;
         int phase;
-        boolean simultaneously;
+        final boolean simultaneously;
 
         public MagicUseTask(WorldObject[] tgts, L2Skill s, int hit, int coolT, boolean simultaneous) {
             this.targets = tgts;

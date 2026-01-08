@@ -42,7 +42,7 @@ public final class RequestCrystallizeItem extends L2GameClientPacket {
         boolean canCrystallize = true;
         switch (item.getItem().getCrystalType()) {
             case C:
-                if (skillLevel <= 1)
+                if (skillLevel == 1)
                     canCrystallize = false;
                 break;
             case B:

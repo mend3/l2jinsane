@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q078_SagaOfTheDoomcryer extends SagasSuperClass {
     public Q078_SagaOfTheDoomcryer() {
         super(78, "Saga of the Doomcryer");

@@ -50,14 +50,11 @@ public class Q013_ParcelDelivery extends Quest {
                 htmltext = (player.getLevel() < 74) ? "31274-1.htm" : "31274-0.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 31274:
-                        htmltext = "31274-2.htm";
-                        break;
-                    case 31539:
-                        htmltext = "31539-0.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 31274 -> "31274-2.htm";
+                    case 31539 -> "31539-0.htm";
+                    default -> htmltext;
+                };
                 break;
             case 2:
                 htmltext = getAlreadyCompletedMsg();

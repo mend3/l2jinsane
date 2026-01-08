@@ -1,7 +1,7 @@
-package net.sf.l2j.gameserver.communitybbs.Custom;
+package net.sf.l2j.gameserver.communitybbs.custom;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.communitybbs.Manager.BaseBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.BaseBBSManager;
 import net.sf.l2j.gameserver.data.ItemTable;
 import net.sf.l2j.gameserver.data.cache.HtmCache;
 import net.sf.l2j.gameserver.data.manager.RaidBossInfoManager;
@@ -42,8 +42,7 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
     }
 
     private void showRaidBossInfo(Player player, int pageId) {
-        List<Integer> infos = new ArrayList<>();
-        infos.addAll(Config.LIST_RAID_BOSS_IDS);
+        List<Integer> infos = new ArrayList<>(Config.LIST_RAID_BOSS_IDS);
         int limit = Config.RAID_BOSS_INFO_PAGE_LIMIT;
         int max = infos.size() / limit + ((infos.size() % limit == 0) ? 0 : 1);
         infos = infos.subList((pageId - 1) * limit, Math.min(pageId * limit, infos.size()));
@@ -59,8 +58,7 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
         sb.append("</table>");
         sb.append("<br>");
         sb.append("<table width=\"256\">");
-        for (Iterator<Integer> iterator = infos.iterator(); iterator.hasNext(); ) {
-            int bossId = iterator.next();
+        for (int bossId : infos) {
             NpcTemplate template = NpcData.getInstance().getTemplate(bossId);
             if (template == null)
                 continue;
@@ -70,14 +68,14 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
             long respawnTime = RaidBossInfoManager.getInstance().getRaidBossRespawnTime(bossId);
             if (respawnTime <= System.currentTimeMillis()) {
                 sb.append("<tr>");
-                sb.append("<td width=\"146\" align=\"left\"><a action=\"bypass _bbsRBdrop " + bossId + "\">" + bossName + "</a></td>");
+                sb.append("<td width=\"146\" align=\"left\"><a action=\"bypass _bbsRBdrop ").append(bossId).append("\">").append(bossName).append("</a></td>");
                 sb.append("<td width=\"110\" align=\"right\"><font color=\"9CC300\">Alive</font></td>");
                 sb.append("</tr>");
                 continue;
             }
             sb.append("<tr>");
-            sb.append("<td width=\"146\" align=\"left\"><a action=\"bypass _bbsRBdrop " + bossId + "\">" + bossName + "</a></td>");
-            sb.append("<td width=\"110\" align=\"right\"><font color=\"FB5858\">Dead</font> " + (new SimpleDateFormat(Config.RAID_BOSS_DATE_FORMAT)).format(new Date(respawnTime)) + "</td>");
+            sb.append("<td width=\"146\" align=\"left\"><a action=\"bypass _bbsRBdrop ").append(bossId).append("\">").append(bossName).append("</a></td>");
+            sb.append("<td width=\"110\" align=\"right\"><font color=\"FB5858\">Dead</font> ").append((new SimpleDateFormat(Config.RAID_BOSS_DATE_FORMAT)).format(new Date(respawnTime))).append("</td>");
             sb.append("</tr>");
         }
         sb.append("</table>");
@@ -87,9 +85,9 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
         for (int x = 0; x < max; x++) {
             int pageNr = x + 1;
             if (pageId == pageNr) {
-                sb.append("<td align=\"center\">" + pageNr + "</td>");
+                sb.append("<td align=\"center\">").append(pageNr).append("</td>");
             } else {
-                sb.append("<td align=\"center\"><a action=\"bypass _bbsRBinfo " + pageNr + "\">" + pageNr + "</a></td>");
+                sb.append("<td align=\"center\"><a action=\"bypass _bbsRBinfo ").append(pageNr).append("\">").append(pageNr).append("</a></td>");
             }
         }
         sb.append("</tr>");
@@ -134,12 +132,11 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
         sb.append("</table>");
         sb.append("<br>");
         sb.append("<table width=\"256\">");
-        for (Iterator<Integer> iterator = drops.iterator(); iterator.hasNext(); ) {
-            int itemId = iterator.next();
+        for (int itemId : drops) {
             String itemName = ItemTable.getInstance().getTemplate(itemId).getName();
             if (itemName.length() > 47)
                 itemName = itemName.substring(0, 47) + "...";
-            sb.append("<tr><td width=\"256\" align=\"center\">" + itemName + "</td></tr>");
+            sb.append("<tr><td width=\"256\" align=\"center\">").append(itemName).append("</td></tr>");
         }
         sb.append("</table>");
         sb.append("<br>");
@@ -148,9 +145,9 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
         for (int x = 0; x < max; x++) {
             int pageNr = x + 1;
             if (pageId == pageNr) {
-                sb.append("<td align=\"center\">" + pageNr + "</td>");
+                sb.append("<td align=\"center\">").append(pageNr).append("</td>");
             } else {
-                sb.append("<td align=\"center\"><a action=\"bypass _bbsRBdrop " + bossId + " " + pageNr + "\">" + pageNr + "</a></td>");
+                sb.append("<td align=\"center\"><a action=\"bypass _bbsRBdrop ").append(bossId).append(" ").append(pageNr).append("\">").append(pageNr).append("</a></td>");
             }
         }
         sb.append("</tr>");
@@ -158,7 +155,7 @@ public class RaidBossInfoBBSManager extends BaseBBSManager {
         sb.append("<br>");
         sb.append("<table width=\"160\" cellspacing=\"2\">");
         sb.append("<tr>");
-        sb.append("<td width=\"160\" align=\"center\"><a action=\"bypass _bbsRBinfo " + this._lastPage.get(player.getObjectId()) + "\">Return</a></td>");
+        sb.append("<td width=\"160\" align=\"center\"><a action=\"bypass _bbsRBinfo ").append(this._lastPage.get(player.getObjectId())).append("\">Return</a></td>");
         sb.append("</tr>");
         sb.append("</table>");
         sb.append("<br>");

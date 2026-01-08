@@ -40,14 +40,14 @@ public class Cubic {
     public static final int SKILL_CUBIC_HEAL = 4051;
     public static final int SKILL_CUBIC_CURE = 5579;
     private final boolean _givenByOther;
-    protected Player _owner;
+    protected final Player _owner;
     protected Creature _target;
-    protected int _id;
-    protected int _matk;
-    protected int _activationtime;
-    protected int _activationchance;
+    protected final int _id;
+    protected final int _matk;
+    protected final int _activationtime;
+    protected final int _activationchance;
     protected boolean _active;
-    protected List<L2Skill> _skills = new ArrayList<>();
+    protected final List<L2Skill> _skills = new ArrayList<>();
     private Future<?> _disappearTask;
     private Future<?> _actionTask;
 
@@ -268,7 +268,6 @@ public class Cubic {
 
                             if (targetIt) {
                                 this._target = enemy;
-                                return;
                             }
                         }
                     }

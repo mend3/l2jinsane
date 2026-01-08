@@ -93,69 +93,72 @@ public class AdminZoneCreation implements IAdminCommandHandler {
     }
 
     private static boolean canStoreLocs(Player gm) {
-        switch (shape.ordinal()) {
-            case 1:
+        return switch (shape.ordinal()) {
+            case 1 -> {
                 if (savedLocs.size() < 3) {
                     gm.sendMessage("You have to set atleast 3 coordinates!");
-                    return false;
+                    yield false;
                 }
 
-                return true;
-            case 2:
+                yield true;
+            }
+            case 2 -> {
                 if (savedLocs.size() != 2) {
                     gm.sendMessage("You have to set 2 coordinates.");
-                    return false;
+                    yield false;
                 }
 
-                return true;
-            case 3:
+                yield true;
+            }
+            case 3 -> {
                 if (savedLocs.size() != 1) {
                     gm.sendMessage("Only 1 location required for this shape.");
-                    return false;
+                    yield false;
                 }
 
-                return true;
-            default:
+                yield true;
+            }
+            default -> {
                 gm.sendMessage("You have to select the zone shape first.");
-                return false;
-        }
+                yield false;
+            }
+        };
     }
 
     private static boolean canSaveLoc(Player activeChar) {
-        switch (shape.ordinal()) {
-            case 1:
-                return true;
-            case 2:
+        return switch (shape.ordinal()) {
+            case 1 -> true;
+            case 2 -> {
                 if (savedLocs.size() >= 2) {
                     activeChar.sendMessage("You have reached the maximum locations for this shape.");
-                    return false;
+                    yield false;
                 }
 
-                return true;
-            case 3:
-                if (savedLocs.size() >= 1) {
+                yield true;
+            }
+            case 3 -> {
+                if (!savedLocs.isEmpty()) {
                     activeChar.sendMessage("Only 1 locations required for this shape.");
-                    return false;
+                    yield false;
                 }
 
-                return true;
-            default:
+                yield true;
+            }
+            default -> {
                 activeChar.sendMessage("You have to select the zone shape first.");
-                return false;
-        }
+                yield false;
+            }
+        };
     }
 
     private static String getHeadLine() {
-        switch (shape.ordinal()) {
-            case 1:
-                return String.format("<zone shape='NPoly' minZ='%s' maxZ='%s'>\r\n", calcZ(true), calcZ(false));
-            case 2:
-                return String.format("<zone shape='Cuboid' minZ='%s' maxZ='%s'>\r\n", calcZ(true), calcZ(false));
-            case 3:
-                return String.format("<zone shape='Cylinder' minZ='%s' maxZ='%s' rad='%s'>\r\n", calcZ(true), calcZ(false), getRad());
-            default:
-                return "";
-        }
+        return switch (shape.ordinal()) {
+            case 1 -> String.format("<zone shape='NPoly' minZ='%s' maxZ='%s'>\r\n", calcZ(true), calcZ(false));
+            case 2 -> String.format("<zone shape='Cuboid' minZ='%s' maxZ='%s'>\r\n", calcZ(true), calcZ(false));
+            case 3 ->
+                    String.format("<zone shape='Cylinder' minZ='%s' maxZ='%s' rad='%s'>\r\n", calcZ(true), calcZ(false), getRad());
+            default -> "";
+        };
     }
 
     private static boolean setRadius(int val) {
@@ -183,7 +186,7 @@ public class AdminZoneCreation implements IAdminCommandHandler {
                 html.replace("%zoneShape%", "Empty");
                 html.replace("%locsSize%", "Locations Saved: Null");
                 html.replace("%proceed%", "");
-                html.replace("%undo%", savedLocs.size() > 0 ? "<button value=\"Undo\" action=\"bypass admin_removeLoc\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\">" : "");
+                html.replace("%undo%", !savedLocs.isEmpty() ? "<button value=\"Undo\" action=\"bypass admin_removeLoc\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\">" : "");
                 html.replace("%dist%", "");
                 break;
             case 1:
@@ -191,7 +194,7 @@ public class AdminZoneCreation implements IAdminCommandHandler {
                 var10002 = savedLocs.size();
                 html.replace("%locsSize%", "Locations Saved: " + var10002);
                 html.replace("%proceed%", savedLocs.size() > 2 ? "<button value=\"Store\" action=\"bypass admin_storeLocs\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\">" : "");
-                html.replace("%undo%", savedLocs.size() > 0 ? "<button value=\"Undo\" action=\"bypass admin_removeLoc\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\">" : "");
+                html.replace("%undo%", !savedLocs.isEmpty() ? "<button value=\"Undo\" action=\"bypass admin_removeLoc\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\">" : "");
                 html.replace("%dist%", "");
                 break;
             case 2:
@@ -199,7 +202,7 @@ public class AdminZoneCreation implements IAdminCommandHandler {
                 var10002 = savedLocs.size();
                 html.replace("%locsSize%", "Locations Saved: " + var10002);
                 html.replace("%proceed%", savedLocs.size() == 2 ? "<button value=\"Store\" action=\"bypass admin_storeLocs\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\">" : "");
-                html.replace("%undo%", savedLocs.size() > 0 ? "<button value=\"Undo\" action=\"bypass admin_removeLoc\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\">" : "");
+                html.replace("%undo%", !savedLocs.isEmpty() ? "<button value=\"Undo\" action=\"bypass admin_removeLoc\" back=\"l2ui_ch3.smallbutton2_down\" width=65 height=20 fore=\"l2ui_ch3.smallbutton2\">" : "");
                 html.replace("%dist%", "");
                 break;
             case 3:
@@ -230,7 +233,7 @@ public class AdminZoneCreation implements IAdminCommandHandler {
         radius = 0;
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         StringTokenizer st = new StringTokenizer(command);
         st.nextToken();
         if (command.startsWith("admin_create_zone")) {
@@ -267,7 +270,7 @@ public class AdminZoneCreation implements IAdminCommandHandler {
             activeChar.sendMessage("Reset completed.");
             openHtml(activeChar);
         } else if (command.startsWith("admin_removeLoc")) {
-            if (savedLocs.size() > 0) {
+            if (!savedLocs.isEmpty()) {
                 List<Location> var10001 = savedLocs;
                 int var10002 = savedLocs.size();
                 activeChar.sendMessage(var10001.remove(var10002 - 1) + " removed.");
@@ -277,7 +280,7 @@ public class AdminZoneCreation implements IAdminCommandHandler {
         } else if (command.startsWith("admin_storeLocs")) {
             if (savedLocs.isEmpty()) {
                 activeChar.sendMessage("Empty locs..");
-                return false;
+                return;
             }
 
             store(activeChar);
@@ -291,7 +294,6 @@ public class AdminZoneCreation implements IAdminCommandHandler {
             openHtml(activeChar);
         }
 
-        return true;
     }
 
     public String[] getAdminCommandList() {
@@ -303,10 +305,5 @@ public class AdminZoneCreation implements IAdminCommandHandler {
         NPoly,
         Cuboid,
         Cylinder;
-
-        // $FF: synthetic method
-        private static AdminZoneCreation.ZoneShape[] $values() {
-            return new AdminZoneCreation.ZoneShape[]{NONE, NPoly, Cuboid, Cylinder};
-        }
     }
 }

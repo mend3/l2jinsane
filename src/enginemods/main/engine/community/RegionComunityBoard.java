@@ -45,8 +45,7 @@ public class RegionComunityBoard extends AbstractMods {
         return "<td fixwidth=" + widthMid + " align=center><button value=\"" + text + "\" width=" + widthMid + " height=21 back=L2UI_CH3.FrameBackMid fore=L2UI_CH3.FrameBackMid></td>";
     }
 
-    public static RegionComunityBoard getInstance() {
-        return SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {

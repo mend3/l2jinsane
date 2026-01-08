@@ -10,11 +10,11 @@ public class AdminRideWyvern implements IAdminCommandHandler {
 
     private int _petRideId;
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_ride")) {
             if (activeChar.isCursedWeaponEquipped()) {
                 activeChar.sendMessage("You can't use //ride owning a Cursed Weapon.");
-                return false;
+                return;
             }
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
@@ -26,11 +26,11 @@ public class AdminRideWyvern implements IAdminCommandHandler {
                     this._petRideId = 12526;
                 } else {
                     activeChar.sendMessage("Parameter '" + mount + "' isn't recognized for that command.");
-                    return false;
+                    return;
                 }
             } else {
                 activeChar.sendMessage("You must enter a parameter for that command.");
-                return false;
+                return;
             }
             if (activeChar.isMounted()) {
                 activeChar.dismount();
@@ -41,7 +41,6 @@ public class AdminRideWyvern implements IAdminCommandHandler {
         } else if (command.equals("admin_unride")) {
             activeChar.dismount();
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

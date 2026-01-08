@@ -26,7 +26,7 @@ public class AdminMaintenance implements IAdminCommandHandler {
         activeChar.sendPacket(html);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_server")) {
             sendHtmlForm(activeChar);
         } else if (command.startsWith("admin_server_shutdown")) {
@@ -63,7 +63,6 @@ public class AdminMaintenance implements IAdminCommandHandler {
                 activeChar.sendMessage("The parameter must be a valid number.");
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

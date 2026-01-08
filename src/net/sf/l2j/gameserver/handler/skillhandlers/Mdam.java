@@ -56,7 +56,6 @@ public class Mdam implements ISkillHandler {
                         }
                     }
             }
-            continue;
         }
         if (skill.hasSelfEffects()) {
             L2Effect effect = activeChar.getFirstEffect(skill.getId());

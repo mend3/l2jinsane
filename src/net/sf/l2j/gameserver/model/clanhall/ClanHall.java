@@ -258,7 +258,7 @@ public class ClanHall {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM clanhall_functions WHERE hall_id=?");
+                PreparedStatement ps = con.prepareStatement("DELETE FROM clanhall_functions WHERE hall_id=?")
         ) {
             ps.setInt(1, this.getId());
             ps.execute();
@@ -293,7 +293,7 @@ public class ClanHall {
     public void updateDb() {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("UPDATE clanhall SET ownerId=?, paidUntil=?, paid=?, sellerBid=?, sellerName=?, sellerClanName=?, endDate=? WHERE id=?");
+                PreparedStatement ps = con.prepareStatement("UPDATE clanhall SET ownerId=?, paidUntil=?, paid=?, sellerBid=?, sellerName=?, sellerClanName=?, endDate=? WHERE id=?")
         ) {
             ps.setInt(1, this._ownerId);
             ps.setLong(2, this._paidUntil);

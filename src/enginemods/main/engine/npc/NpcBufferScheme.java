@@ -73,11 +73,10 @@ public class NpcBufferScheme extends AbstractMods {
             SummonStat petStat = target.getStat();
             petStatus.setCurrentHp(petStat.getMaxHp());
             petStatus.setCurrentMp(petStat.getMaxMp());
-            if (!(target instanceof Pet)) {
+            if (!(target instanceof Pet pet)) {
                 throw new RuntimeException();
             }
 
-            Pet pet = (Pet) target;
             pet.setCurrentFed(pet.getPetData().getMaxMeal());
             player.sendPacket(new SetSummonRemainTime(pet.getPetData().getMaxMeal(), pet.getCurrentFed()));
         }
@@ -96,23 +95,23 @@ public class NpcBufferScheme extends AbstractMods {
 
     private static void showText(Player player, String type, String text, boolean buttonEnabled, String buttonName, String location) {
         HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.HTML_TYPE);
-        hb.append(new Object[]{"<html><head><title>", "Buffer", "</title></head><body>"});
+        hb.append("<html><head><title>", "Buffer", "</title></head><body>");
         hb.append(Html.headHtml("BUFFER"));
         hb.append("<center>");
         hb.append("<br>");
-        hb.append(new Object[]{"<font color=LEVEL>", type, "</font>"});
-        hb.append(new Object[]{"<br>", text, "<br>"});
+        hb.append("<font color=LEVEL>", type, "</font>");
+        hb.append("<br>", text, "<br>");
         if (buttonEnabled) {
-            hb.append(new Object[]{"<button value=\"" + buttonName + "\" action=\"bypass -h Engine NpcBufferScheme redirect_", location, " 0 0\" width=75 height=21  back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+            hb.append("<button value=\"" + buttonName + "\" action=\"bypass -h Engine NpcBufferScheme redirect_", location, " 0 0\" width=75 height=21  back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         }
 
-        hb.append(new Object[]{"<font color=303030>", "Buffer", "</font></center></body></html>"});
+        hb.append("<font color=303030>", "Buffer", "</font></center></body></html>");
         sendHtml(player, null, hb);
     }
 
     private static void createScheme(Player player) {
         HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.HTML_TYPE);
-        hb.append(new Object[]{"<html><head><title>", "Buffer", "</title></head><body>"});
+        hb.append("<html><head><title>", "Buffer", "</title></head><body>");
         hb.append(Html.headHtml("BUFFER"));
         hb.append("<center>");
         hb.append("<br><br>");
@@ -120,11 +119,11 @@ public class NpcBufferScheme extends AbstractMods {
         hb.append("<br><br>");
         hb.append("Scheme name: <edit var=\"name\" width=100>");
         hb.append("<br><br>");
-        hb.append(new Object[]{"<button value=\"Create Scheme\" action=\"bypass -h Engine NpcBufferScheme create $name no_name\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+        hb.append("<button value=\"Create Scheme\" action=\"bypass -h Engine NpcBufferScheme create $name no_name\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         hb.append("<br>");
-        hb.append(new Object[]{"<button value=\"Back\" action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+        hb.append("<button value=\"Back\" action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         hb.append("<br>");
-        hb.append(new Object[]{"<font color=303030>", "Buffer", "</font>"});
+        hb.append("<font color=303030>", "Buffer", "</font>");
         hb.append("</center>");
         hb.append("</body></html>");
         sendHtml(player, null, hb);
@@ -132,7 +131,7 @@ public class NpcBufferScheme extends AbstractMods {
 
     private static void buildHtml(Player player, BuffType buffType, int page) {
         HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.HTML_TYPE);
-        hb.append(new Object[]{"<html><head><title>", "Buffer", "</title></head><body>"});
+        hb.append("<html><head><title>", "Buffer", "</title></head><body>");
         hb.append("<center><br>");
         List<BuffHolder> buffs = new ArrayList<>();
 
@@ -144,7 +143,7 @@ public class NpcBufferScheme extends AbstractMods {
             }
         }
 
-        if (buffs.size() == 0) {
+        if (buffs.isEmpty()) {
             hb.append("No buffs are available at this moment!");
         } else {
             hb.append("All buffs are for <font color=LEVEL>free</font>!");
@@ -158,12 +157,12 @@ public class NpcBufferScheme extends AbstractMods {
                 if (count < searchPage) {
                     ++count;
                 } else if (count < searchPage + MAX_PER_PAGE) {
-                    hb.append(new Object[]{"<table width=264", count % 2 == 0 ? " bgcolor=000000>" : ">"});
+                    hb.append("<table width=264", count % 2 == 0 ? " bgcolor=000000>" : ">");
                     String name = bh.getSkill().getName().replace("+", " ");
                     hb.append("<tr>");
-                    hb.append(new Object[]{"<td height=32 fixwidth=32>", getSkillIconHtml(bh.getId(), bh.getLevel()), "</td>"});
-                    hb.append(new Object[]{"<td height=32 fixwidth=232 align=center><a action=\"bypass -h Engine NpcBufferScheme giveBuffs ", bh.getId(), " ", bh.getLevel(), " ", buffType.name(), " ", page, "\">", name, "</a></td>"});
-                    hb.append(new Object[]{"<td height=32 fixwidth=32>", getSkillIconHtml(bh.getId(), bh.getLevel()), "</td>"});
+                    hb.append("<td height=32 fixwidth=32>", getSkillIconHtml(bh.getId(), bh.getLevel()), "</td>");
+                    hb.append("<td height=32 fixwidth=232 align=center><a action=\"bypass -h Engine NpcBufferScheme giveBuffs ", bh.getId(), " ", bh.getLevel(), " ", buffType.name(), " ", page, "\">", name, "</a></td>");
+                    hb.append("<td height=32 fixwidth=32>", getSkillIconHtml(bh.getId(), bh.getLevel()), "</td>");
                     hb.append("</tr>");
                     hb.append("</table>");
                     hb.append(Html.newImage("L2UI.SquareWhite", 264, 1));
@@ -179,7 +178,7 @@ public class NpcBufferScheme extends AbstractMods {
 
             for (int i = 0; i < buffs.size(); ++i) {
                 if (i % MAX_PER_PAGE == 0) {
-                    hb.append(new Object[]{"<td width=20 align=center><a action=\"bypass -h Engine NpcBufferScheme redirect_view_", buffType.name().toLowerCase(), " ", currentPage, "\">", currentPage, "</a></td>"});
+                    hb.append("<td width=20 align=center><a action=\"bypass -h Engine NpcBufferScheme redirect_view_", buffType.name().toLowerCase(), " ", currentPage, "\">", currentPage, "</a></td>");
                     ++currentPage;
                 }
             }
@@ -191,16 +190,15 @@ public class NpcBufferScheme extends AbstractMods {
         }
 
         hb.append("<br>");
-        hb.append(new Object[]{"<button value=\"Back\" action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+        hb.append("<button value=\"Back\" action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         hb.append("<br>");
-        hb.append(new Object[]{"<font color=303030>", "Buffer", "</font>"});
+        hb.append("<font color=303030>", "Buffer", "</font>");
         hb.append("</center>");
         hb.append("</body></html>");
         sendHtml(player, null, hb);
     }
 
-    public static NpcBufferScheme getInstance() {
-        return NpcBufferScheme.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
@@ -214,6 +212,7 @@ public class NpcBufferScheme extends AbstractMods {
             String eventParam2 = st.hasMoreTokens() ? st.nextToken() : "";
             String eventParam3 = st.hasMoreTokens() ? st.nextToken() : "";
             String eventParam4 = st.hasMoreTokens() ? st.nextToken() : "";
+            int page = eventParam1.isEmpty() ? 1 : Integer.parseInt(eventParam1);
             switch (bypass) {
                 case "reloadscript":
                     if (eventParam1.equals("0")) {
@@ -224,28 +223,28 @@ public class NpcBufferScheme extends AbstractMods {
                     this.rebuildMainHtml(player);
                     return;
                 case "redirect_view_buff":
-                    buildHtml(player, BuffType.BUFF, eventParam1.equals("") ? 1 : Integer.parseInt(eventParam1));
+                    buildHtml(player, BuffType.BUFF, page);
                     return;
                 case "redirect_view_resist":
-                    buildHtml(player, BuffType.RESIST, eventParam1.equals("") ? 1 : Integer.parseInt(eventParam1));
+                    buildHtml(player, BuffType.RESIST, page);
                     return;
                 case "redirect_view_song":
-                    buildHtml(player, BuffType.SONG, eventParam1.equals("") ? 1 : Integer.parseInt(eventParam1));
+                    buildHtml(player, BuffType.SONG, page);
                     return;
                 case "redirect_view_dances":
-                    buildHtml(player, BuffType.DANCE, eventParam1.equals("") ? 1 : Integer.parseInt(eventParam1));
+                    buildHtml(player, BuffType.DANCE, page);
                     return;
                 case "redirect_view_chants":
-                    buildHtml(player, BuffType.CHANT, eventParam1.equals("") ? 1 : Integer.parseInt(eventParam1));
+                    buildHtml(player, BuffType.CHANT, page);
                     return;
                 case "redirect_view_other":
-                    buildHtml(player, BuffType.OTHER, eventParam1.equals("") ? 1 : Integer.parseInt(eventParam1));
+                    buildHtml(player, BuffType.OTHER, page);
                     return;
                 case "redirect_view_special":
-                    buildHtml(player, BuffType.SPECIAL, eventParam1.equals("") ? 1 : Integer.parseInt(eventParam1));
+                    buildHtml(player, BuffType.SPECIAL, page);
                     return;
                 case "redirect_view_cubic":
-                    buildHtml(player, BuffType.CUBIC, eventParam1.equals("") ? 1 : Integer.parseInt(eventParam1));
+                    buildHtml(player, BuffType.CUBIC, page);
                     return;
                 case "buffpet":
                     if (this.checkTimeOut(player)) {
@@ -257,7 +256,7 @@ public class NpcBufferScheme extends AbstractMods {
                     return;
                 case "create":
                     String name = eventParam1.replaceAll("[ !\"#$%&'()*+,/:;<=>?@\\[\\\\\\]\\^`{|}~]", "");
-                    if (name.length() != 0 && !name.equals("no_name")) {
+                    if (!name.isEmpty() && !name.equals("no_name")) {
                         String allSchemes = this.getValueDB(player.getObjectId(), "schemeName");
                         if (allSchemes == null) {
                             allSchemes = "";
@@ -274,12 +273,11 @@ public class NpcBufferScheme extends AbstractMods {
                         allSchemes = allSchemes + name + ",";
                         this.setValueDB(player.getObjectId(), "schemeName", allSchemes);
                         this.rebuildMainHtml(player);
-                        return;
                     } else {
                         player.sendPacket(SystemMessageId.INCORRECT_NAME_TRY_AGAIN);
                         showText(player, "Info", "Please, enter the scheme name!", true, "Return", "main");
-                        return;
                     }
+                    return;
                 case "delete":
                     this.removeValueDB(player.getObjectId(), eventParam1);
                     String schemes = this.getValueDB(player.getObjectId(), "schemeName");
@@ -490,7 +488,7 @@ public class NpcBufferScheme extends AbstractMods {
                             this.addTimeout(player, GaugeColor.CYAN, 0, 600);
                         }
 
-                        buildHtml(player, BuffType.valueOf(eventParam3), eventParam4.equals("") ? 1 : Integer.parseInt(eventParam4));
+                        buildHtml(player, BuffType.valueOf(eventParam3), eventParam4.isEmpty() ? 1 : Integer.parseInt(eventParam4));
                         return;
                     }
                 case "castBuffSet":
@@ -555,7 +553,7 @@ public class NpcBufferScheme extends AbstractMods {
     }
 
     private void addTimeout(Player player, GaugeColor gaugeColor, int amount, int offset) {
-        int endtime = (int) ((System.currentTimeMillis() + (long) (amount * 1000)) / 1000L);
+        int endtime = (int) ((System.currentTimeMillis() + (amount * 1000L)) / 1000L);
         this.setValueDB(player.getObjectId(), "blockUntilTime", String.valueOf(endtime));
         player.sendPacket(new SetupGauge(gaugeColor, amount * 1000 + offset));
     }
@@ -582,30 +580,30 @@ public class NpcBufferScheme extends AbstractMods {
             bottonA = "Auto Buff";
             bottonB = "Heal";
             bottonC = "Remove Buffs";
-            hb.append(new Object[]{"<button value=\"Char Options\" action=\"bypass -h Engine NpcBufferScheme buffpet 1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+            hb.append("<button value=\"Char Options\" action=\"bypass -h Engine NpcBufferScheme buffpet 1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         } else {
             bottonA = "Auto Buff Pet";
             bottonB = "Heal My Pet";
             bottonC = "Remove Buffs";
-            hb.append(new Object[]{"<button value=\"Pet Options\" action=\"bypass -h Engine NpcBufferScheme buffpet 0\" width=75 height=21  back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+            hb.append("<button value=\"Pet Options\" action=\"bypass -h Engine NpcBufferScheme buffpet 0\" width=75 height=21  back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         }
 
         hb.append("<table width=80% cellspacing=0 cellpadding=1>");
         hb.append("<tr>");
-        hb.append(new Object[]{"<td height=32 align=center><button value=Buffs action=\"bypass -h Engine NpcBufferScheme redirect_view_buff\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
-        hb.append(new Object[]{"<td height=32 align=center><button value=Resist action=\"bypass -h Engine NpcBufferScheme redirect_view_resist\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
+        hb.append("<td height=32 align=center><button value=Buffs action=\"bypass -h Engine NpcBufferScheme redirect_view_buff\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
+        hb.append("<td height=32 align=center><button value=Resist action=\"bypass -h Engine NpcBufferScheme redirect_view_resist\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
         hb.append("</tr>");
         hb.append("<tr>");
-        hb.append(new Object[]{"<td height=32 align=center><button value=Songs action=\"bypass -h Engine NpcBufferScheme redirect_view_song\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
-        hb.append(new Object[]{"<td height=32 align=center><button value=Dances action=\"bypass -h Engine NpcBufferScheme redirect_view_dances\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
+        hb.append("<td height=32 align=center><button value=Songs action=\"bypass -h Engine NpcBufferScheme redirect_view_song\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
+        hb.append("<td height=32 align=center><button value=Dances action=\"bypass -h Engine NpcBufferScheme redirect_view_dances\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
         hb.append("</tr>");
         hb.append("<tr>");
-        hb.append(new Object[]{"<td height=32 align=center><button value=Chants action=\"bypass -h Engine NpcBufferScheme redirect_view_chants\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
-        hb.append(new Object[]{"<td height=32 align=center><button value=Special action=\"bypass -h Engine NpcBufferScheme redirect_view_special\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
+        hb.append("<td height=32 align=center><button value=Chants action=\"bypass -h Engine NpcBufferScheme redirect_view_chants\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
+        hb.append("<td height=32 align=center><button value=Special action=\"bypass -h Engine NpcBufferScheme redirect_view_special\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
         hb.append("</tr>");
         hb.append("<tr>");
-        hb.append(new Object[]{"<td height=32 align=center><button value=Others action=\"bypass -h Engine NpcBufferScheme redirect_view_other\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
-        hb.append(new Object[]{"<td height=32 align=center><button value=Cubics action=\"bypass -h Engine NpcBufferScheme redirect_view_cubic\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
+        hb.append("<td height=32 align=center><button value=Others action=\"bypass -h Engine NpcBufferScheme redirect_view_other\" width=75 height=21back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
+        hb.append("<td height=32 align=center><button value=Cubics action=\"bypass -h Engine NpcBufferScheme redirect_view_cubic\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append(Html.newImage("L2UI.SquareWhite", 264, 1));
@@ -617,9 +615,9 @@ public class NpcBufferScheme extends AbstractMods {
         hb.append(Html.newImage("L2UI.SquareWhite", 264, 1));
         hb.append("<table width=100% height=37 border=0 cellspacing=0 cellpadding=5>");
         hb.append("<tr>");
-        hb.append(new Object[]{"<td><button value=\"", bottonA, "\" action=\"bypass -h Engine NpcBufferScheme castBuffSet 0 0 0\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
-        hb.append(new Object[]{"<td><button value=\"", bottonB, "\" action=\"bypass -h Engine NpcBufferScheme heal\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
-        hb.append(new Object[]{"<td><button value=\"", bottonC, "\" action=\"bypass -h Engine NpcBufferScheme removeBuffs 0 0 0\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
+        hb.append("<td><button value=\"", bottonA, "\" action=\"bypass -h Engine NpcBufferScheme castBuffSet 0 0 0\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
+        hb.append("<td><button value=\"", bottonB, "\" action=\"bypass -h Engine NpcBufferScheme heal\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
+        hb.append("<td><button value=\"", bottonC, "\" action=\"bypass -h Engine NpcBufferScheme removeBuffs 0 0 0\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
         hb.append("</tr>");
         hb.append("</table>");
         hb.append("");
@@ -655,7 +653,7 @@ public class NpcBufferScheme extends AbstractMods {
                     td = 0;
                 }
 
-                hb.append(new Object[]{TRS[td] + "<button value=\"", schemeNames.split(",")[i], "\" action=\"bypass -h Engine NpcBufferScheme cast ", schemeNames.split(",")[i], "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">", TRS[td + 1]});
+                hb.append(TRS[td] + "<button value=\"", schemeNames.split(",")[i], "\" action=\"bypass -h Engine NpcBufferScheme cast ", schemeNames.split(",")[i], "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">", TRS[td + 1]);
                 td += 2;
             }
 
@@ -665,11 +663,11 @@ public class NpcBufferScheme extends AbstractMods {
         if (schemeNames != null && schemeNames.split(",").length >= 3) {
             hb.append("<br1><table width=100><tr>");
         } else {
-            hb.append(new Object[]{"<br1><table><tr><td><button value=\"Create\" action=\"bypass -h Engine NpcBufferScheme create_1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
+            hb.append("<br1><table><tr><td><button value=\"Create\" action=\"bypass -h Engine NpcBufferScheme create_1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
         }
 
         if (schemeNames != null) {
-            hb.append(new Object[]{"<td><button value=\"Edit\" action=\"bypass -h Engine NpcBufferScheme edit_1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td><td><button value=\"Delete\" action=\"bypass -h Engine NpcBufferScheme delete_1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td></tr></table>"});
+            hb.append("<td><button value=\"Edit\" action=\"bypass -h Engine NpcBufferScheme edit_1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td><td><button value=\"Delete\" action=\"bypass -h Engine NpcBufferScheme delete_1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td></tr></table>");
         } else {
             hb.append("</tr></table>");
         }
@@ -704,18 +702,18 @@ public class NpcBufferScheme extends AbstractMods {
 
     private void deleteScheme(Player player) {
         HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.HTML_TYPE);
-        hb.append(new Object[]{"<html><head><title>", "Buffer", "</title></head><body>"});
+        hb.append("<html><head><title>", "Buffer", "</title></head><body>");
         hb.append(Html.headHtml("BUFFER"));
         hb.append("<center>");
         hb.append("<br>Available schemes:<br><br>");
         String schemeNames = this.getValueDB(player.getObjectId(), "schemeName");
 
         for (String scheme : schemeNames.split(",")) {
-            hb.append(new Object[]{"<button value=\"", scheme, "\" action=\"bypass -h Engine NpcBufferScheme delete_c ", scheme, " x\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+            hb.append("<button value=\"", scheme, "\" action=\"bypass -h Engine NpcBufferScheme delete_c ", scheme, " x\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         }
 
         hb.append("<br>");
-        hb.append(new Object[]{"<button value=\"Back\" action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+        hb.append("<button value=\"Back\" action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         hb.append("<br>");
         hb.append("<font color=303030>Buffer</font>");
         hb.append("</center>");
@@ -725,18 +723,18 @@ public class NpcBufferScheme extends AbstractMods {
 
     private void editScheme(Player player) {
         HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.HTML_TYPE);
-        hb.append(new Object[]{"<html><head><title>", "Buffer", "</title></head><body>"});
+        hb.append("<html><head><title>", "Buffer", "</title></head><body>");
         hb.append(Html.headHtml("BUFFER"));
         hb.append("<center>");
         hb.append("<br>Select a scheme that you would like to manage:<br><br>");
         String schemeNames = this.getValueDB(player.getObjectId(), "schemeName");
 
         for (String scheme : schemeNames.split(",")) {
-            hb.append(new Object[]{"<button value=\"" + scheme + "\" action=\"bypass -h Engine NpcBufferScheme manage_scheme_select " + scheme + "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+            hb.append("<button value=\"" + scheme + "\" action=\"bypass -h Engine NpcBufferScheme manage_scheme_select " + scheme + "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         }
 
         hb.append("<br>");
-        hb.append(new Object[]{"<button value=\"Back\" action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+        hb.append("<button value=\"Back\" action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         hb.append("<br>");
         hb.append("<font color=303030>Buffer</font>");
         hb.append("</center>");
@@ -747,21 +745,21 @@ public class NpcBufferScheme extends AbstractMods {
     private void getOptionList(Player player, String scheme) {
         int bcount = this.getBuffCount(player, scheme);
         HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.HTML_TYPE);
-        hb.append(new Object[]{"<html><head><title>", "Buffer", "</title></head><body>"});
+        hb.append("<html><head><title>", "Buffer", "</title></head><body>");
         hb.append(Html.headHtml("BUFFER"));
         hb.append("<center>");
-        hb.append(new Object[]{"<br>There are ", Html.newFontColor("LEVEL", bcount), " buffs in current scheme!<br><br>"});
+        hb.append("<br>There are ", Html.newFontColor("LEVEL", bcount), " buffs in current scheme!<br><br>");
         if (bcount < 36) {
-            hb.append(new Object[]{"<button value=\"Add buffs\" action=\"bypass -h Engine NpcBufferScheme manage_scheme_add ", scheme, " 1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+            hb.append("<button value=\"Add buffs\" action=\"bypass -h Engine NpcBufferScheme manage_scheme_add ", scheme, " 1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         }
 
         if (bcount > 0) {
-            hb.append(new Object[]{"<button value=\"Remove buffs\" action=\"bypass -h Engine NpcBufferScheme manage_scheme_remove ", scheme, " 1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+            hb.append("<button value=\"Remove buffs\" action=\"bypass -h Engine NpcBufferScheme manage_scheme_remove ", scheme, " 1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         }
 
         hb.append("<br>");
-        hb.append(new Object[]{"<button value=\"Back\" action=\"bypass -h Engine NpcBufferScheme edit_1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
-        hb.append(new Object[]{"<button value=\"Home\" action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+        hb.append("<button value=\"Back\" action=\"bypass -h Engine NpcBufferScheme edit_1\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
+        hb.append("<button value=\"Home\" action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         hb.append("<br>");
         hb.append(Html.newFontColor("303030", "Buffer"));
         hb.append("</center>");
@@ -799,7 +797,7 @@ public class NpcBufferScheme extends AbstractMods {
 
     private void viewAllSchemeBuffs(Player player, String schemeName, String page, String action) {
         HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.HTML_TYPE);
-        hb.append(new Object[]{"<html><head><title>", "Buffer", "</title></head><body>"});
+        hb.append("<html><head><title>", "Buffer", "</title></head><body>");
         hb.append(Html.headHtml("BUFFER"));
         hb.append("<center>");
         hb.append("<br>");
@@ -809,7 +807,7 @@ public class NpcBufferScheme extends AbstractMods {
         int daceSong = Integer.parseInt(eventSplit[2]);
         List<BuffHolder> buffs = new ArrayList<>();
         if (action.equals("add")) {
-            hb.append(new Object[]{"You can add <font color=LEVEL>", 24 - buffsCount, "</font> Buffs and <font color=LEVEL>", 12 - daceSong, "</font> Dances more!"});
+            hb.append("You can add <font color=LEVEL>", 24 - buffsCount, "</font> Buffs and <font color=LEVEL>", 12 - daceSong, "</font> Dances more!");
 
             for (BuffHolder bh : SchemeBuffData.getAllGeneralBuffs()) {
                 if ((daceSong <= 12 || bh.getType() != BuffType.DANCE && bh.getType() != BuffType.SONG) && (buffsCount <= 24 || bh.getType() == BuffType.DANCE || bh.getType() == BuffType.SONG)) {
@@ -821,7 +819,7 @@ public class NpcBufferScheme extends AbstractMods {
                 throw new RuntimeException();
             }
 
-            hb.append(new Object[]{"You have <font color=LEVEL>", buffsCount, "</font> Buffs and <font color=LEVEL>", daceSong, "</font> Dances"});
+            hb.append("You have <font color=LEVEL>", buffsCount, "</font> Buffs and <font color=LEVEL>", daceSong, "</font> Dances");
             String buffList = this.getValueDB(player.getObjectId(), schemeName);
             if (buffList == null) {
                 System.out.println("error en remove buff");
@@ -834,7 +832,7 @@ public class NpcBufferScheme extends AbstractMods {
             }
         }
 
-        hb.append(new Object[]{"<br1>", Html.newImage("L2UI.SquareWhite", 264, 1), "<table border=0 bgcolor=000000><tr>"});
+        hb.append("<br1>", Html.newImage("L2UI.SquareWhite", 264, 1), "<table border=0 bgcolor=000000><tr>");
         int buffsPerPage = 10;
         int pc = (buffs.size() - 1) / 10 + 1;
         String width;
@@ -846,19 +844,19 @@ public class NpcBufferScheme extends AbstractMods {
 
         for (int ii = 1; ii <= pc; ++ii) {
             if (ii == Integer.parseInt(page)) {
-                hb.append(new Object[]{"<td width=", width, " align=center><font color=LEVEL>", ii, "</font></td>"});
+                hb.append("<td width=", width, " align=center><font color=LEVEL>", ii, "</font></td>");
             } else if (action.equals("add")) {
-                hb.append(new Object[]{"<td width=", width, ">", "<a action=\"bypass -h Engine NpcBufferScheme manage_scheme_add ", schemeName, " ", ii, " x\">", ii, "</a></td>"});
+                hb.append("<td width=", width, ">", "<a action=\"bypass -h Engine NpcBufferScheme manage_scheme_add ", schemeName, " ", ii, " x\">", ii, "</a></td>");
             } else {
                 if (!action.equals("remove")) {
                     throw new RuntimeException();
                 }
 
-                hb.append(new Object[]{"<td width=", width, ">", "<a action=\"bypass -h Engine NpcBufferScheme manage_scheme_remove ", schemeName, " ", ii, " x\">", ii, "</a></td>"});
+                hb.append("<td width=", width, ">", "<a action=\"bypass -h Engine NpcBufferScheme manage_scheme_remove ", schemeName, " ", ii, " x\">", ii, "</a></td>");
             }
         }
 
-        hb.append(new Object[]{"</tr></table>", Html.newImage("L2UI.SquareWhite", 264, 1)});
+        hb.append("</tr></table>", Html.newImage("L2UI.SquareWhite", 264, 1));
         int limit = 10 * Integer.parseInt(page);
         int start = limit - 10;
         int end = Math.min(limit, buffs.size());
@@ -872,30 +870,30 @@ public class NpcBufferScheme extends AbstractMods {
             if (action.equals("add")) {
                 if (!this.isUsed(player, schemeName, id, level)) {
                     if (k % 2 != 0) {
-                        hb.append(new Object[]{"<br1>", Html.newImage("L2UI.SquareGray", 264, 1), "<table border=0>"});
+                        hb.append("<br1>", Html.newImage("L2UI.SquareGray", 264, 1), "<table border=0>");
                     } else {
-                        hb.append(new Object[]{"<br1>", Html.newImage("L2UI.SquareGray", 264, 1), "<table border=0 bgcolor=000000>"});
+                        hb.append("<br1>", Html.newImage("L2UI.SquareGray", 264, 1), "<table border=0 bgcolor=000000>");
                     }
 
                     hb.append("<tr>");
-                    hb.append(new Object[]{"<td width=35>", getSkillIconHtml(id, level), "</td>"});
-                    hb.append(new Object[]{"<td fixwidth=170>", name, "</td>"});
-                    hb.append(new Object[]{"<td><button value=\"Add\" action=\"bypass -h Engine NpcBufferScheme add_buff ", schemeName, "_", id, "_", level, " ", page, " ", buffsTotal, "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
+                    hb.append("<td width=35>", getSkillIconHtml(id, level), "</td>");
+                    hb.append("<td fixwidth=170>", name, "</td>");
+                    hb.append("<td><button value=\"Add\" action=\"bypass -h Engine NpcBufferScheme add_buff ", schemeName, "_", id, "_", level, " ", page, " ", buffsTotal, "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
                     hb.append("</tr>");
                     hb.append("</table>");
                     ++k;
                 }
             } else if (action.equals("remove")) {
                 if (k % 2 != 0) {
-                    hb.append(new Object[]{"<br1>", Html.newImage("L2UI.SquareGray", 264, 1), "<table border=0>"});
+                    hb.append("<br1>", Html.newImage("L2UI.SquareGray", 264, 1), "<table border=0>");
                 } else {
-                    hb.append(new Object[]{"<br1>", Html.newImage("L2UI.SquareGray", 264, 1), "<table border=0 bgcolor=000000>"});
+                    hb.append("<br1>", Html.newImage("L2UI.SquareGray", 264, 1), "<table border=0 bgcolor=000000>");
                 }
 
                 hb.append("<tr>");
-                hb.append(new Object[]{"<td width=35>", getSkillIconHtml(id, level), "</td>"});
-                hb.append(new Object[]{"<td fixwidth=170>", name, "</td>"});
-                hb.append(new Object[]{"<td><button value=\"Remove\" action=\"bypass -h Engine NpcBufferScheme remove_buff ", schemeName, "_", id, "_", level, " ", page, " ", buffsTotal, "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>"});
+                hb.append("<td width=35>", getSkillIconHtml(id, level), "</td>");
+                hb.append("<td fixwidth=170>", name, "</td>");
+                hb.append("<td><button value=\"Remove\" action=\"bypass -h Engine NpcBufferScheme remove_buff ", schemeName, "_", id, "_", level, " ", page, " ", buffsTotal, "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", "></td>");
                 hb.append("</tr>");
                 hb.append("</table>");
                 ++k;
@@ -903,10 +901,10 @@ public class NpcBufferScheme extends AbstractMods {
         }
 
         hb.append("<br><br>");
-        hb.append(new Object[]{"<button value=Back action=\"bypass -h Engine NpcBufferScheme manage_scheme_select ", schemeName, "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
-        hb.append(new Object[]{"<button value=Home action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">"});
+        hb.append("<button value=Back action=\"bypass -h Engine NpcBufferScheme manage_scheme_select ", schemeName, "\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
+        hb.append("<button value=Home action=\"bypass -h Engine NpcBufferScheme redirect_main\" width=75 height=21 back=", "L2UI_CH3.Btn1_normalOn", " fore=", "L2UI_CH3.Btn1_normal", ">");
         hb.append("<br>");
-        hb.append(new Object[]{"<font color=303030>", "Buffer", "</font>"});
+        hb.append("<font color=303030>", "Buffer", "</font>");
         hb.append("</center>");
         hb.append("</body></html>");
         sendHtml(player, null, hb);

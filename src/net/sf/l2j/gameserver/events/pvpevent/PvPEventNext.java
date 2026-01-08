@@ -3,7 +3,6 @@ package net.sf.l2j.gameserver.events.pvpevent;
 import net.sf.l2j.Config;
 import net.sf.l2j.commons.logging.CLogger;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -36,7 +35,7 @@ public class PvPEventNext {
 
     public static void loadPvPConfig() {
         try {
-            InputStream is = new FileInputStream(new File("./config/events/pvpEvent.properties"));
+            InputStream is = new FileInputStream("./config/events/pvpEvent.properties");
             try {
                 Properties eventSettings = new Properties();
                 eventSettings.load(is);

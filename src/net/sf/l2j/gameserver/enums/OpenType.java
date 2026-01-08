@@ -6,9 +6,4 @@ public enum OpenType {
     TIME,
     SKILL,
     NPC;
-
-    // $FF: synthetic method
-    private static OpenType[] $values() {
-        return new OpenType[]{CLICK, TIME, SKILL, NPC};
-    }
 }

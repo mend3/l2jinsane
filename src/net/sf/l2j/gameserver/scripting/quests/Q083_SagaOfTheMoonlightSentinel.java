@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q083_SagaOfTheMoonlightSentinel extends SagasSuperClass {
     public Q083_SagaOfTheMoonlightSentinel() {
         super(83, "Saga of the Moonlight Sentinel");

@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q073_SagaOfTheDuelist extends SagasSuperClass {
     public Q073_SagaOfTheDuelist() {
         super(73, "Saga of the Duelist");

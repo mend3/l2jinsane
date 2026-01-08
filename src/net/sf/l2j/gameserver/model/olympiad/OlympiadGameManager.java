@@ -11,7 +11,7 @@ import java.util.List;
 public class OlympiadGameManager implements Runnable {
     private static final CLogger LOGGER = new CLogger(OlympiadGameManager.class.getName());
     private final OlympiadGameTask[] _tasks;
-    Collection<OlympiadStadiumZone> _zones;
+    final Collection<OlympiadStadiumZone> _zones;
     private volatile boolean _battleStarted = false;
 
     private OlympiadGameManager() {
@@ -58,7 +58,6 @@ public class OlympiadGameManager implements Runnable {
                                 } else {
                                     readyNonClassed = false;
                                 }
-                                continue;
                             }
                         }
                     }

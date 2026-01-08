@@ -1,5 +1,5 @@
 /**/
-package net.sf.l2j.gameserver.communitybbs.Manager;
+package net.sf.l2j.gameserver.communitybbs.manager;
 
 import net.sf.l2j.commons.lang.StringUtil;
 import net.sf.l2j.commons.pool.ConnectionPool;
@@ -173,19 +173,22 @@ public class MailBBSManager extends BaseBBSManager {
                             return;
                         }
 
-                        if (action.equals("view")) {
-                            this.showMailView(player, mail);
-                            if (mail.unread) {
-                                this.setMailToRead(player, mail.mailId);
+                        switch (action) {
+                            case "view" -> {
+                                this.showMailView(player, mail);
+                                if (mail.unread) {
+                                    this.setMailToRead(player, mail.mailId);
+                                }
                             }
-                        } else if (action.equals("reply")) {
-                            showWriteView(player, mail);
-                        } else if (action.equals("del")) {
-                            this.deleteMail(player, mail.mailId);
-                            this.showLastForum(player);
-                        } else if (action.equals("store")) {
-                            this.setMailLocation(player, mail.mailId, MailBBSManager.MailType.ARCHIVE);
-                            this.showMailList(player, 1, MailBBSManager.MailType.ARCHIVE);
+                            case "reply" -> showWriteView(player, mail);
+                            case "del" -> {
+                                this.deleteMail(player, mail.mailId);
+                                this.showLastForum(player);
+                            }
+                            case "store" -> {
+                                this.setMailLocation(player, mail.mailId, MailType.ARCHIVE);
+                                this.showMailList(player, 1, MailType.ARCHIVE);
+                            }
                         }
                     }
                 } else {
@@ -374,15 +377,11 @@ public class MailBBSManager extends BaseBBSManager {
     }
 
     private MailBBSManager.Mail getMail(Player player, int mailId) {
-        return this.getPlayerMails(player.getObjectId()).stream().filter((l) -> {
-            return l.mailId == mailId;
-        }).findFirst().orElse(null);
+        return this.getPlayerMails(player.getObjectId()).stream().filter((l) -> l.mailId == mailId).findFirst().orElse(null);
     }
 
     public int checkUnreadMail(Player player) {
-        return (int) this.getPlayerMails(player.getObjectId()).stream().filter((l) -> {
-            return l.unread;
-        }).count();
+        return (int) this.getPlayerMails(player.getObjectId()).stream().filter((l) -> l.unread).count();
     }
 
     private void showMailList(Player player, int page, MailBBSManager.MailType type) {
@@ -390,8 +389,8 @@ public class MailBBSManager extends BaseBBSManager {
     }
 
     private void showMailList(Player player, int page, MailBBSManager.MailType type, String sType, String search) {
-        Object mails;
-        if (!sType.equals("") && !search.equals("")) {
+        Set<Mail> mails;
+        if (!sType.isEmpty() && !search.isEmpty()) {
             mails = ConcurrentHashMap.newKeySet();
             boolean byTitle = sType.equalsIgnoreCase("title");
             Iterator<Mail> var8 = this.getPlayerMails(player.getObjectId()).iterator();
@@ -405,11 +404,11 @@ public class MailBBSManager extends BaseBBSManager {
 
                     MailBBSManager.Mail mail = var8.next();
                     if (byTitle && mail.subject.toLowerCase().contains(search.toLowerCase())) {
-                        ((Set) mails).add(mail);
+                        mails.add(mail);
                     } else if (!byTitle) {
                         String writer = getPlayerName(mail.senderId);
                         if (writer.toLowerCase().contains(search.toLowerCase())) {
-                            ((Set) mails).add(mail);
+                            mails.add(mail);
                         }
                     }
                 }
@@ -441,7 +440,7 @@ public class MailBBSManager extends BaseBBSManager {
         content = content.replace("%htype%", type.toString().toLowerCase());
         StringBuilder sb = new StringBuilder();
 
-        for (Object o : (Set) mails) {
+        for (Object o : mails) {
             Mail mail = (Mail) o;
             if (mail.location.equals(type)) {
                 if (index < minIndex) {
@@ -469,7 +468,7 @@ public class MailBBSManager extends BaseBBSManager {
 
         content = content.replace("%maillist%", sb.toString());
         sb.setLength(0);
-        String fullSearch = !sType.equals("") && !search.equals("") ? ";" + sType + ";" + search : "";
+        String fullSearch = !sType.isEmpty() && !search.isEmpty() ? ";" + sType + ";" + search : "";
         StringUtil.append(sb, "<td><table><tr><td></td></tr><tr><td><button action=\"bypass _bbsmail;", type, ";", page == 1 ? page : page - 1, fullSearch, "\" back=\"l2ui_ch3.prev1_down\" fore=\"l2ui_ch3.prev1\" width=16 height=16></td></tr></table></td>");
         int i;
         if (maxpage > 21) {
@@ -541,9 +540,7 @@ public class MailBBSManager extends BaseBBSManager {
     public void sendMail(String recipients, String subject, String message, Player player) {
         long currentDate = Calendar.getInstance().getTimeInMillis();
         Timestamp ts = new Timestamp(currentDate - 86400000L);
-        if (this.getPlayerMails(player.getObjectId()).stream().filter((l) -> {
-            return l.sentDate.after(ts) && l.location == MailBBSManager.MailType.SENTBOX;
-        }).count() >= 10L) {
+        if (this.getPlayerMails(player.getObjectId()).stream().filter((l) -> l.sentDate.after(ts) && l.location == MailType.SENTBOX).count() >= 10L) {
             player.sendPacket(SystemMessageId.NO_MORE_MESSAGES_TODAY);
         } else {
             String[] recipientNames = recipients.trim().split(";");
@@ -696,7 +693,7 @@ public class MailBBSManager extends BaseBBSManager {
 
     private int getMailCount(int objectId, MailBBSManager.MailType location, String type, String search) {
         int count = 0;
-        if (!type.equals("") && !search.equals("")) {
+        if (!type.isEmpty() && !search.isEmpty()) {
             boolean byTitle = type.equalsIgnoreCase("title");
             Iterator<Mail> var11 = this.getPlayerMails(objectId).iterator();
 
@@ -907,11 +904,6 @@ public class MailBBSManager extends BaseBBSManager {
         MailType(String bypass, String description) {
             this._description = description;
             this._bypass = bypass;
-        }
-
-        // $FF: synthetic method
-        private static MailBBSManager.MailType[] $values() {
-            return new MailBBSManager.MailType[]{INBOX, SENTBOX, ARCHIVE, TEMPARCHIVE};
         }
 
         public String getDescription() {

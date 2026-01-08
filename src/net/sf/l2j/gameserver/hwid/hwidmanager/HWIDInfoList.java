@@ -66,10 +66,5 @@ public class HWIDInfoList {
         PLAYER_LOCK,
         ACCOUNT_LOCK,
         NONE;
-
-        // $FF: synthetic method
-        private static HWIDInfoList.LockType[] $values() {
-            return new HWIDInfoList.LockType[]{PLAYER_LOCK, ACCOUNT_LOCK, NONE};
-        }
     }
 }

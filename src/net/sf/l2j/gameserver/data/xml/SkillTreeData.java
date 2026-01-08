@@ -36,23 +36,15 @@ public class SkillTreeData implements IXmlReader {
 
     public void parseDocument(Document doc, Path path) {
         this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "clanSkill", (clanSkillNode) -> {
-                this._clanSkills.add(new ClanSkillNode(this.parseAttributes(clanSkillNode)));
-            });
-            this.forEach(listNode, "fishingSkill", (fishingSkillNode) -> {
-                this._fishingSkills.add(new FishingSkillNode(this.parseAttributes(fishingSkillNode)));
-            });
-            this.forEach(listNode, "enchantSkill", (enchantSkillNode) -> {
-                this._enchantSkills.add(new EnchantSkillNode(this.parseAttributes(enchantSkillNode)));
-            });
+            this.forEach(listNode, "clanSkill", (clanSkillNode) -> this._clanSkills.add(new ClanSkillNode(this.parseAttributes(clanSkillNode))));
+            this.forEach(listNode, "fishingSkill", (fishingSkillNode) -> this._fishingSkills.add(new FishingSkillNode(this.parseAttributes(fishingSkillNode))));
+            this.forEach(listNode, "enchantSkill", (enchantSkillNode) -> this._enchantSkills.add(new EnchantSkillNode(this.parseAttributes(enchantSkillNode))));
         });
     }
 
     public List<FishingSkillNode> getFishingSkillsFor(Player player) {
         List<FishingSkillNode> result = new ArrayList<>();
-        this._fishingSkills.stream().filter((s) -> {
-            return s.getMinLvl() <= player.getLevel() && (!s.isDwarven() || player.hasDwarvenCraft() && s.isDwarven());
-        }).forEach((s) -> {
+        this._fishingSkills.stream().filter((s) -> s.getMinLvl() <= player.getLevel() && (!s.isDwarven() || player.hasDwarvenCraft() && s.isDwarven())).forEach((s) -> {
             if (player.getSkillLevel(s.getId()) == s.getValue() - 1) {
                 result.add(s);
             }
@@ -62,9 +54,7 @@ public class SkillTreeData implements IXmlReader {
     }
 
     public FishingSkillNode getFishingSkillFor(Player player, int skillId, int skillLevel) {
-        FishingSkillNode fsn = this._fishingSkills.stream().filter((s) -> {
-            return s.getId() == skillId && s.getValue() == skillLevel && (!s.isDwarven() || player.hasDwarvenCraft() && s.isDwarven());
-        }).findFirst().orElse(null);
+        FishingSkillNode fsn = this._fishingSkills.stream().filter((s) -> s.getId() == skillId && s.getValue() == skillLevel && (!s.isDwarven() || player.hasDwarvenCraft() && s.isDwarven())).findFirst().orElse(null);
         if (fsn == null) {
             return null;
         } else if (fsn.getMinLvl() > player.getLevel()) {
@@ -75,11 +65,7 @@ public class SkillTreeData implements IXmlReader {
     }
 
     public int getRequiredLevelForNextFishingSkill(Player player) {
-        return this._fishingSkills.stream().filter((s) -> {
-            return s.getMinLvl() > player.getLevel() && (!s.isDwarven() || player.hasDwarvenCraft() && s.isDwarven());
-        }).min((s1, s2) -> {
-            return Integer.compare(s1.getMinLvl(), s2.getMinLvl());
-        }).map(SkillNode::getMinLvl).orElse(0);
+        return this._fishingSkills.stream().filter((s) -> s.getMinLvl() > player.getLevel() && (!s.isDwarven() || player.hasDwarvenCraft() && s.isDwarven())).min(Comparator.comparingInt(SkillNode::getMinLvl)).map(SkillNode::getMinLvl).orElse(0);
     }
 
     public List<ClanSkillNode> getClanSkillsFor(Player player) {
@@ -88,9 +74,7 @@ public class SkillTreeData implements IXmlReader {
             return Collections.emptyList();
         } else {
             List<ClanSkillNode> result = new ArrayList<>();
-            this._clanSkills.stream().filter((s) -> {
-                return s.getMinLvl() <= clan.getLevel();
-            }).forEach((s) -> {
+            this._clanSkills.stream().filter((s) -> s.getMinLvl() <= clan.getLevel()).forEach((s) -> {
                 L2Skill clanSkill = clan.getClanSkills().get(s.getId());
                 if (clanSkill == null && s.getValue() == 1 || clanSkill != null && clanSkill.getLevel() == s.getValue() - 1) {
                     result.add(s);
@@ -106,9 +90,7 @@ public class SkillTreeData implements IXmlReader {
         if (clan == null) {
             return null;
         } else {
-            ClanSkillNode csn = this._clanSkills.stream().filter((s) -> {
-                return s.getId() == skillId && s.getValue() == skillLevel;
-            }).findFirst().orElse(null);
+            ClanSkillNode csn = this._clanSkills.stream().filter((s) -> s.getId() == skillId && s.getValue() == skillLevel).findFirst().orElse(null);
             if (csn == null) {
                 return null;
             } else if (csn.getMinLvl() > clan.getLevel()) {
@@ -143,9 +125,7 @@ public class SkillTreeData implements IXmlReader {
     }
 
     public EnchantSkillNode getEnchantSkillFor(Player player, int skillId, int skillLevel) {
-        EnchantSkillNode esn = this._enchantSkills.stream().filter((s) -> {
-            return s.getId() == skillId && s.getValue() == skillLevel;
-        }).findFirst().orElse(null);
+        EnchantSkillNode esn = this._enchantSkills.stream().filter((s) -> s.getId() == skillId && s.getValue() == skillLevel).findFirst().orElse(null);
         if (esn == null) {
             return null;
         } else {

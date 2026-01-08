@@ -28,7 +28,7 @@ public class Tournament extends Folk {
         NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile(filename);
         html.replace("%objectId%", this.getObjectId());
-        if (Arena2x2.registered.size() == 0) {
+        if (Arena2x2.registered.isEmpty()) {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena2x2.registered.size() == 1) {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_1_over\" fore=\"L2UI_CH3.calculate1_1\">");
@@ -50,7 +50,7 @@ public class Tournament extends Folk {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_9_over\" fore=\"L2UI_CH3.calculate1_9\">");
         }
 
-        if (Arena2x2.registered.size() == 0) {
+        if (Arena2x2.registered.isEmpty()) {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena2x2.registered.size() == 1) {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
@@ -72,7 +72,7 @@ public class Tournament extends Folk {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         }
 
-        if (Arena2x2.registered.size() == 0) {
+        if (Arena2x2.registered.isEmpty()) {
             html.replace("%9x9%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena2x2.registered.size() == 1) {
             html.replace("%9x9%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
@@ -103,7 +103,7 @@ public class Tournament extends Folk {
         NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile(filename);
         html.replace("%objectId%", this.getObjectId());
-        if (Arena4x4.registered.size() == 0) {
+        if (Arena4x4.registered.isEmpty()) {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena4x4.registered.size() == 1) {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_1_over\" fore=\"L2UI_CH3.calculate1_1\">");
@@ -125,7 +125,7 @@ public class Tournament extends Folk {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_9_over\" fore=\"L2UI_CH3.calculate1_9\">");
         }
 
-        if (Arena4x4.registered.size() == 0) {
+        if (Arena4x4.registered.isEmpty()) {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena4x4.registered.size() == 1) {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
@@ -147,7 +147,7 @@ public class Tournament extends Folk {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         }
 
-        if (Arena4x4.registered.size() == 0) {
+        if (Arena4x4.registered.isEmpty()) {
             html.replace("%9x9%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena4x4.registered.size() == 1) {
             html.replace("%9x9%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
@@ -178,7 +178,7 @@ public class Tournament extends Folk {
         NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile(filename);
         html.replace("%objectId%", this.getObjectId());
-        if (Arena9x9.registered.size() == 0) {
+        if (Arena9x9.registered.isEmpty()) {
             html.replace("%9x9%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena9x9.registered.size() == 1) {
             html.replace("%9x9%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_1_over\" fore=\"L2UI_CH3.calculate1_1\">");
@@ -196,11 +196,11 @@ public class Tournament extends Folk {
             html.replace("%9x9%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_7_over\" fore=\"L2UI_CH3.calculate1_7\">");
         } else if (Arena9x9.registered.size() == 8) {
             html.replace("%9x9%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_8_over\" fore=\"L2UI_CH3.calculate1_8\">");
-        } else if (Arena9x9.registered.size() >= 9) {
+        } else {
             html.replace("%9x9%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_9_over\" fore=\"L2UI_CH3.calculate1_9\">");
         }
 
-        if (Arena9x9.registered.size() == 0) {
+        if (Arena9x9.registered.isEmpty()) {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena9x9.registered.size() == 1) {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
@@ -218,11 +218,11 @@ public class Tournament extends Folk {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena9x9.registered.size() == 8) {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
-        } else if (Arena9x9.registered.size() >= 9) {
+        } else {
             html.replace("%2x2%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         }
 
-        if (Arena9x9.registered.size() == 0) {
+        if (Arena9x9.registered.isEmpty()) {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena9x9.registered.size() == 1) {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
@@ -240,7 +240,7 @@ public class Tournament extends Folk {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         } else if (Arena9x9.registered.size() == 8) {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
-        } else if (Arena9x9.registered.size() >= 9) {
+        } else {
             html.replace("%4x4%", "<button value=\"\" action=\"\" width=32 height=32 back=\"L2UI_CH3.calculate1_0_over\" fore=\"L2UI_CH3.calculate1_0\">");
         }
 
@@ -377,20 +377,20 @@ public class Tournament extends Folk {
             }
 
             Player assist = player.getParty().getMembers().get(1);
-            Object assist2 = player.getParty().getMembers().get(2);
+            Player assist2 = player.getParty().getMembers().get(2);
             Player assist3 = player.getParty().getMembers().get(3);
-            if (player.isCursedWeaponEquipped() || assist.isCursedWeaponEquipped() || ((Player) assist2).isCursedWeaponEquipped() || assist3.isCursedWeaponEquipped() || player.isInStoreMode() || assist.isInStoreMode() || ((Player) assist2).isInStoreMode() || assist3.isInStoreMode() || player.getKarma() > 0 || assist.getKarma() > 0 || ((Player) assist2).getKarma() > 0 || assist3.getKarma() > 0) {
+            if (player.isCursedWeaponEquipped() || assist.isCursedWeaponEquipped() || assist2.isCursedWeaponEquipped() || assist3.isCursedWeaponEquipped() || player.isInStoreMode() || assist.isInStoreMode() || assist2.isInStoreMode() || assist3.isInStoreMode() || player.getKarma() > 0 || assist.getKarma() > 0 || assist2.getKarma() > 0 || assist3.getKarma() > 0) {
                 player.sendMessage("Tournament: You or your member does not have the necessary requirements.");
                 assist.sendMessage("Tournament: You or your member does not have the necessary requirements.");
-                ((Player) assist2).sendMessage("Tournament: You or your member does not have the necessary requirements.");
+                assist2.sendMessage("Tournament: You or your member does not have the necessary requirements.");
                 assist3.sendMessage("Tournament: You or your member does not have the necessary requirements.");
                 return;
             }
 
-            if (OlympiadManager.getInstance().isRegistered(player) || OlympiadManager.getInstance().isRegistered(assist) || OlympiadManager.getInstance().isRegistered((Player) assist2) || OlympiadManager.getInstance().isRegistered(assist3)) {
+            if (OlympiadManager.getInstance().isRegistered(player) || OlympiadManager.getInstance().isRegistered(assist) || OlympiadManager.getInstance().isRegistered(assist2) || OlympiadManager.getInstance().isRegistered(assist3)) {
                 player.sendMessage("Tournament: You or your member is registered in the Olympiad.");
                 assist.sendMessage("Tournament: You or your member is registered in the Olympiad.");
-                ((Player) assist2).sendMessage("Tournament: You or your member is registered in the Olympiad.");
+                assist2.sendMessage("Tournament: You or your member is registered in the Olympiad.");
                 assist3.sendMessage("Tournament: You or your member is registered in the Olympiad.");
                 return;
             }
@@ -480,18 +480,18 @@ public class Tournament extends Folk {
                 return;
             }
 
-            if (Arena4x4.getInstance().register(player, assist, (Player) assist2, assist3) && player.getParty().getMembers().get(1) != null && player.getParty().getMembers().get(2) != null && player.getParty().getMembers().get(3) != null) {
+            if (Arena4x4.getInstance().register(player, assist, assist2, assist3) && player.getParty().getMembers().get(1) != null && player.getParty().getMembers().get(2) != null && player.getParty().getMembers().get(3) != null) {
                 player.sendMessage("Tournament: Your participation has been approved.");
                 assist.sendMessage("Tournament: Your participation has been approved.");
-                ((Player) assist2).sendMessage("Tournament: Your participation has been approved.");
+                assist2.sendMessage("Tournament: Your participation has been approved.");
                 assist3.sendMessage("Tournament: Your participation has been approved.");
                 player.setArenaProtection(true);
                 assist.setArenaProtection(true);
-                ((Player) assist2).setArenaProtection(true);
+                assist2.setArenaProtection(true);
                 assist3.setArenaProtection(true);
                 player.setArena4x4(true);
                 assist.setArena4x4(true);
-                ((Player) assist2).setArena4x4(true);
+                assist2.setArena4x4(true);
                 assist3.setArena4x4(true);
                 this.clean(player);
                 this.showChatWindow1(player);

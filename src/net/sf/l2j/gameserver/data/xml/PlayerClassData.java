@@ -40,36 +40,26 @@ public class PlayerClassData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "class", (classNode) -> {
-                StatSet set = new StatSet();
-                this.forEach(classNode, "set", (setNode) -> {
-                    set.putAll(this.parseAttributes(setNode));
-                });
-                this.forEach(classNode, "items", (itemsNode) -> {
-                    List<ItemTemplateHolder> items = new ArrayList<>();
-                    this.forEach(itemsNode, "item", (itemNode) -> {
-                        items.add(new ItemTemplateHolder(this.parseAttributes(itemNode)));
-                    });
-                    set.set("items", items);
-                });
-                this.forEach(classNode, "skills", (skillsNode) -> {
-                    List<GeneralSkillNode> skills = new ArrayList<>();
-                    this.forEach(skillsNode, "skill", (skillNode) -> {
-                        skills.add(new GeneralSkillNode(this.parseAttributes(skillNode)));
-                    });
-                    set.set("skills", skills);
-                });
-                this.forEach(classNode, "spawns", (spawnsNode) -> {
-                    List<Location> locs = new ArrayList<>();
-                    this.forEach(spawnsNode, "spawn", (spawnNode) -> {
-                        locs.add(new Location(this.parseAttributes(spawnNode)));
-                    });
-                    set.set("spawnLocations", locs);
-                });
-                this._templates.put(set.getInteger("id"), new PlayerTemplate(set));
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "class", (classNode) -> {
+            StatSet set = new StatSet();
+            this.forEach(classNode, "set", (setNode) -> set.putAll(this.parseAttributes(setNode)));
+            this.forEach(classNode, "items", (itemsNode) -> {
+                List<ItemTemplateHolder> items = new ArrayList<>();
+                this.forEach(itemsNode, "item", (itemNode) -> items.add(new ItemTemplateHolder(this.parseAttributes(itemNode))));
+                set.set("items", items);
             });
-        });
+            this.forEach(classNode, "skills", (skillsNode) -> {
+                List<GeneralSkillNode> skills = new ArrayList<>();
+                this.forEach(skillsNode, "skill", (skillNode) -> skills.add(new GeneralSkillNode(this.parseAttributes(skillNode))));
+                set.set("skills", skills);
+            });
+            this.forEach(classNode, "spawns", (spawnsNode) -> {
+                List<Location> locs = new ArrayList<>();
+                this.forEach(spawnsNode, "spawn", (spawnNode) -> locs.add(new Location(this.parseAttributes(spawnNode))));
+                set.set("spawnLocations", locs);
+            });
+            this._templates.put(set.getInteger("id"), new PlayerTemplate(set));
+        }));
     }
 
     public PlayerTemplate getTemplate(ClassId classId) {

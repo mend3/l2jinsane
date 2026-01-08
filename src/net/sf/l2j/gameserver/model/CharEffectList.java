@@ -162,7 +162,7 @@ public class CharEffectList {
     private boolean doesStack(L2Skill checkSkill) {
         if (this._buffs != null && !this._buffs.isEmpty()) {
             if (checkSkill._effectTemplates != null && !checkSkill._effectTemplates.isEmpty()) {
-                String stackType = checkSkill._effectTemplates.get(0).stackType;
+                String stackType = checkSkill._effectTemplates.getFirst().stackType;
                 if (stackType != null && !"none".equals(stackType)) {
                     for (L2Effect e : this._buffs) {
                         if (e.getStackType() != null && e.getStackType().equals(stackType)) {
@@ -430,7 +430,7 @@ public class CharEffectList {
                     if (index == 0) {
                         this._owner.removeStatsByOwner(effect);
                         if (!stackQueue.isEmpty()) {
-                            L2Effect newStackedEffect = this.listsContains(stackQueue.get(0));
+                            L2Effect newStackedEffect = this.listsContains(stackQueue.getFirst());
                             if (newStackedEffect != null && newStackedEffect.setInUse(true)) {
                                 this._owner.addStatFuncs(newStackedEffect.getStatFuncs());
                             }
@@ -559,7 +559,7 @@ public class CharEffectList {
                     if (stackQueue != null) {
                         int pos = 0;
                         if (!stackQueue.isEmpty()) {
-                            effectToRemove = this.listsContains(stackQueue.get(0));
+                            effectToRemove = this.listsContains(stackQueue.getFirst());
 
                             for (Iterator<L2Effect> queueIterator = stackQueue.iterator(); queueIterator.hasNext() && newEffect.getStackOrder() < queueIterator.next().getStackOrder(); ++pos) {
                             }
@@ -573,16 +573,16 @@ public class CharEffectList {
                                 }
                             }
                         } else {
-                            stackQueue.add(0, newEffect);
+                            stackQueue.addFirst(newEffect);
                         }
                     } else {
                         stackQueue = new ArrayList<>();
-                        stackQueue.add(0, newEffect);
+                        stackQueue.addFirst(newEffect);
                     }
 
                     this._stackedEffects.put(newEffect.getStackType(), stackQueue);
                     if (!stackQueue.isEmpty()) {
-                        effectToAdd = this.listsContains(stackQueue.get(0));
+                        effectToAdd = this.listsContains(stackQueue.getFirst());
                     }
 
                     if (effectToRemove != effectToAdd) {
@@ -758,6 +758,7 @@ public class CharEffectList {
             for (L2Effect e : this._debuffs) {
                 if (e != null && e.getSkill().isRemovedOnDamage()) {
                     foundRemovedOnDamage = true;
+                    break;
                 }
             }
         }
@@ -773,7 +774,7 @@ public class CharEffectList {
         }
     }
 
-    private final void computeEffectFlags() {
+    private void computeEffectFlags() {
         int flags = 0;
         if (this._buffs != null) {
             for (L2Effect e : this._buffs) {

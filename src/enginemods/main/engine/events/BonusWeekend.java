@@ -14,8 +14,7 @@ public class BonusWeekend extends AbstractMods {
         this.registerMod(ConfigData.ENABLE_BonusWeekend, ConfigData.BONUS_WEEKEND_ENABLE_DAY);
     }
 
-    public static BonusWeekend getInstance() {
-        return BonusWeekend.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {

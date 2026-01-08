@@ -30,32 +30,30 @@ public class NewbieBuffData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "buff", (buffNode) -> {
-                StatSet set = this.parseAttributes(buffNode);
-                int lowerLevel = set.getInteger("lowerLevel");
-                int upperLevel = set.getInteger("upperLevel");
-                if (set.getBool("isMagicClass")) {
-                    if (lowerLevel < this._magicLowestLevel) {
-                        this._magicLowestLevel = lowerLevel;
-                    }
-
-                    if (upperLevel > this._magicHighestLevel) {
-                        this._magicHighestLevel = upperLevel;
-                    }
-                } else {
-                    if (lowerLevel < this._physicLowestLevel) {
-                        this._physicLowestLevel = lowerLevel;
-                    }
-
-                    if (upperLevel > this._physicHighestLevel) {
-                        this._physicHighestLevel = upperLevel;
-                    }
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "buff", (buffNode) -> {
+            StatSet set = this.parseAttributes(buffNode);
+            int lowerLevel = set.getInteger("lowerLevel");
+            int upperLevel = set.getInteger("upperLevel");
+            if (set.getBool("isMagicClass")) {
+                if (lowerLevel < this._magicLowestLevel) {
+                    this._magicLowestLevel = lowerLevel;
                 }
 
-                this._buffs.add(new NewbieBuff(set));
-            });
-        });
+                if (upperLevel > this._magicHighestLevel) {
+                    this._magicHighestLevel = upperLevel;
+                }
+            } else {
+                if (lowerLevel < this._physicLowestLevel) {
+                    this._physicLowestLevel = lowerLevel;
+                }
+
+                if (upperLevel > this._physicHighestLevel) {
+                    this._physicHighestLevel = upperLevel;
+                }
+            }
+
+            this._buffs.add(new NewbieBuff(set));
+        }));
     }
 
     public List<NewbieBuff> getBuffs() {

@@ -9,7 +9,7 @@ public class ExpSpBonusHolder {
 
     public ExpSpBonusHolder(ExpSpType type, int bonus) {
         this._type = type;
-        this._bonus = (bonus / 100);
+        this._bonus = ((double) bonus / 100);
     }
 
     public ExpSpType getType() {

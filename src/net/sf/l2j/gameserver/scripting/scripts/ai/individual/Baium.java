@@ -72,8 +72,7 @@ public class Baium extends L2AttackableAIScript {
             SpawnLocation[] var10 = ANGEL_LOCATION;
             int var11 = var10.length;
 
-            for (int var12 = 0; var12 < var11; ++var12) {
-                SpawnLocation loc = var10[var12];
+            for (SpawnLocation loc : var10) {
                 Npc angel = this.addSpawn(29021, loc.getX(), loc.getY(), loc.getZ(), loc.getHeading(), false, 0L, true);
                 ((Monster) angel).setMinion(true);
                 angel.setRunning();
@@ -229,8 +228,7 @@ public class Baium extends L2AttackableAIScript {
                 SpawnLocation[] var11 = ANGEL_LOCATION;
                 int var10 = var11.length;
 
-                for (int var14 = 0; var14 < var10; ++var14) {
-                    SpawnLocation loc = var11[var14];
+                for (SpawnLocation loc : var11) {
                     Npc angel = this.addSpawn(29021, loc.getX(), loc.getY(), loc.getZ(), loc.getHeading(), false, 0L, true);
                     ((Monster) angel).setMinion(true);
                     angel.setRunning();

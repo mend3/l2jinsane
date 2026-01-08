@@ -19,15 +19,13 @@ public class VoicedCombine implements IVoicedCommandHandler {
 
     private final String CONFIRM_COMMAND = "confirm";
 
-    private static boolean handleMainPage(Player player) {
+    private static void handleMainPage(Player player) {
         sendHtmlText("combineitem.htm", player);
-        return true;
     }
 
-    private static boolean handlePageRequest(Player player, String pageNumber) {
+    private static void handlePageRequest(Player player, String pageNumber) {
         String htmlFile = "combineitem-%s.htm".formatted(pageNumber);
         sendHtmlText(htmlFile, player);
-        return true;
     }
 
     private static Optional<CombineEntry> findCombineEntry(int result) {
@@ -81,48 +79,50 @@ public class VoicedCombine implements IVoicedCommandHandler {
         player.sendPacket(html);
     }
 
-    public boolean useVoicedCommand(String command, Player player, String target) {
+    public void useVoicedCommand(String command, Player player, String target) {
         try {
             String[] parts = command.split(" ");
             if (parts.length == 0 || !"combine".equalsIgnoreCase(parts[0]))
-                return false;
-            if (parts.length == 1)
-                return handleMainPage(player);
-            if (parts.length == 3 && "page".equalsIgnoreCase(parts[1]))
-                return handlePageRequest(player, parts[2]);
-            if (parts.length >= 3 && "confirm".equalsIgnoreCase(parts[1]))
-                return handleCombineConfirm(player, parts);
-            return false;
+                return;
+            if (parts.length == 1) {
+                handleMainPage(player);
+                return;
+            }
+            if (parts.length == 3 && "page".equalsIgnoreCase(parts[1])) {
+                handlePageRequest(player, parts[2]);
+                return;
+            }
+            if (parts.length >= 3 && "confirm".equalsIgnoreCase(parts[1])) {
+                handleCombineConfirm(player, parts);
+            }
         } catch (NumberFormatException e) {
             player.sendMessage("Invalid number format in command.");
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
             player.sendMessage("Error processing combination command.");
-            return true;
         }
     }
 
-    private boolean handleCombineConfirm(Player player, String[] parts) {
+    private void handleCombineConfirm(Player player, String[] parts) {
         int result = Integer.parseInt(parts[2]);
         Optional<CombineEntry> entryOpt = findCombineEntry(result);
         if (entryOpt.isEmpty()) {
             player.sendMessage("Invalid combination.");
-            return true;
+            return;
         }
         CombineEntry entry = entryOpt.get();
         if (!hasRequiredItems(player, entry)) {
             player.sendMessage("You don't have the required items.");
-            return true;
+            return;
         }
         if (!hasRequiredAdena(player, entry)) {
             player.sendMessage("You need %d adena to combine.".formatted(entry.getAdena()));
-            return true;
+            return;
         }
-        return processCombination(player, entry, parts);
+        processCombination(player, entry, parts);
     }
 
-    private boolean processCombination(Player player, CombineEntry entry, String[] parts) {
+    private void processCombination(Player player, CombineEntry entry, String[] parts) {
         int qtyToRemove1 = entry.getCount1();
         int qtyToRemove2 = entry.getCount2();
         int qtyToRemove3 = entry.getCounAdena();
@@ -134,7 +134,7 @@ public class VoicedCombine implements IVoicedCommandHandler {
                 .getAdena(), qtyToRemove3, player, player);
         if (!areItemsRemoved(removed1, removed2, removedAdena)) {
             player.sendMessage("Error removing combination items. Please try again.");
-            return true;
+            return;
         }
         updateInventory(player, removed1, removed2, removedAdena);
         boolean success = performCombination(player, entry);
@@ -147,7 +147,6 @@ public class VoicedCombine implements IVoicedCommandHandler {
         player.refreshExpertisePenalty();
         player.sendPacket(new UserInfo(player));
         player.broadcastUserInfo();
-        return true;
     }
 
     private boolean performCombination(Player player, CombineEntry entry) {

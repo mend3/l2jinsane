@@ -7,7 +7,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q369_CollectorOfJewels extends Quest {
@@ -34,8 +33,7 @@ public class Q369_CollectorOfJewels extends Quest {
         setItemsIds(5882, 5883);
         addStartNpc(30376);
         addTalkId(30376);
-        for (Iterator<Integer> iterator = DROPLIST.keySet().iterator(); iterator.hasNext(); ) {
-            int mob = iterator.next();
+        for (int mob : DROPLIST.keySet()) {
             addKillId(mob);
         }
     }

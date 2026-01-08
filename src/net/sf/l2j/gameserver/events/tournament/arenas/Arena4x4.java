@@ -21,8 +21,8 @@ import java.util.*;
 public class Arena4x4 implements Runnable {
     public static List<Arena4x4.Pair> registered;
     int free;
-    Arena4x4.Arena[] arenas;
-    Map<Integer, String> fights;
+    final Arena4x4.Arena[] arenas;
+    final Map<Integer, String> fights;
 
     public Arena4x4() {
         this.free = Config.ARENA_EVENT_COUNT_4X4;
@@ -89,13 +89,13 @@ public class Arena4x4 implements Runnable {
         return this.fights;
     }
 
-    public boolean remove(Player player) {
+    public void remove(Player player) {
         Iterator<Pair> var2 = registered.iterator();
 
         Arena4x4.Pair p;
         do {
             if (!var2.hasNext()) {
-                return false;
+                return;
             }
 
             p = var2.next();
@@ -103,7 +103,6 @@ public class Arena4x4 implements Runnable {
 
         p.removeMessage();
         registered.remove(p);
-        return true;
     }
 
     public synchronized void run() {
@@ -150,7 +149,7 @@ public class Arena4x4 implements Runnable {
                 return null;
             }
 
-            opponents.add(0, pairOne);
+            opponents.addFirst(pairOne);
             registered.remove(first);
 
             second = Rnd.get(this.getRegisteredCount());
@@ -180,11 +179,11 @@ public class Arena4x4 implements Runnable {
     }
 
     private static class Arena {
-        protected int x;
-        protected int y;
-        protected int z;
+        protected final int x;
+        protected final int y;
+        protected final int z;
         protected boolean isFree = true;
-        int id;
+        final int id;
 
         public Arena(final Arena4x4 param1, int id, int x, int y, int z) {
             this.id = id;
@@ -198,11 +197,11 @@ public class Arena4x4 implements Runnable {
         }
     }
 
-    private class Pair {
-        Player leader;
-        Player assist;
-        Player assist2;
-        Player assist3;
+    public class Pair {
+        final Player leader;
+        final Player assist;
+        final Player assist2;
+        final Player assist3;
 
         public Pair(Player leader, Player assist, Player assist2, Player assist3) {
             this.leader = leader;
@@ -935,8 +934,7 @@ public class Arena4x4 implements Runnable {
             Arena4x4.Arena[] var1 = Arena4x4.this.arenas;
             int var2 = var1.length;
 
-            for (int var3 = 0; var3 < var2; ++var3) {
-                Arena4x4.Arena arena = var1[var3];
+            for (Arena arena : var1) {
                 if (arena.isFree) {
                     this.arena = arena;
                     arena.setFree(false);

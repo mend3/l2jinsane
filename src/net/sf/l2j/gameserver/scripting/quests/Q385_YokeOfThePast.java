@@ -7,7 +7,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q385_YokeOfThePast extends Quest {
@@ -70,8 +69,7 @@ public class Q385_YokeOfThePast extends Quest {
         setItemsIds(5902);
         addStartNpc(GATEKEEPER_ZIGGURAT);
         addTalkId(GATEKEEPER_ZIGGURAT);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : CHANCES.keySet()) {
             addKillId(npcId);
         }
     }

@@ -43,7 +43,7 @@ public final class RequestBypassToServer extends L2GameClientPacket {
     private static final String DESATIVED = "<font color=FF0000>STOPPED</font>";
     private static final String STOP = "STOP";
     private static final String START = "START";
-    static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+    static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
     private String _command;
 
     public static void showAutoFarm(Player activeChar) {
@@ -311,7 +311,7 @@ public final class RequestBypassToServer extends L2GameClientPacket {
             ach.useAdminCommand(this._command, player);
         } else if (this._command.startsWith("player_help ")) {
             String path = this._command.substring(12);
-            if (path.indexOf("..") != -1)
+            if (path.contains(".."))
                 return;
             StringTokenizer st = new StringTokenizer(path);
             String[] cmd = st.nextToken().split("#");
@@ -340,7 +340,7 @@ public final class RequestBypassToServer extends L2GameClientPacket {
             }
             try {
                 WorldObject object = World.getInstance().getObject(Integer.parseInt(id));
-                if (object != null && object instanceof Npc && endOfId > 0 && ((Npc) object).canInteract(player))
+                if (object instanceof Npc && endOfId > 0 && ((Npc) object).canInteract(player))
                     ((Npc) object).onBypassFeedback(player, this._command.substring(endOfId + 1));
                 player.sendPacket(ActionFailed.STATIC_PACKET);
             } catch (NumberFormatException ignored) {

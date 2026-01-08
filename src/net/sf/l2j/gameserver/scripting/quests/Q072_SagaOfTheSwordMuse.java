@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q072_SagaOfTheSwordMuse extends SagasSuperClass {
     public Q072_SagaOfTheSwordMuse() {
         super(72, "Saga of the Sword Muse");

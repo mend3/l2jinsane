@@ -50,7 +50,7 @@ public class AdminKnownlist implements IAdminCommandHandler {
         activeChar.sendPacket(html);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_knownlist")) {
             Player player = null;
             StringTokenizer st = new StringTokenizer(command, " ");
@@ -78,7 +78,6 @@ public class AdminKnownlist implements IAdminCommandHandler {
                 }
             showKnownlist(activeChar, player, page);
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

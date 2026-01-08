@@ -31,7 +31,7 @@ public class AntiBot extends AbstractMods {
         hb.append("<br>");
         hb.append(Html.headHtml("ANTI BOT"));
         hb.append("<br>");
-        hb.append(new Object[]{"has ", PlayerData.get(activeChar).getAttempts(), " attemps!<br>"});
+        hb.append("has ", PlayerData.get(activeChar).getAttempts(), " attemps!<br>");
         List<Integer> aux = Arrays.asList(0, 1, 3, 4, 5);
         ItemIconType itemIconType1 = ItemIconType.values()[aux.get(Rnd.get(aux.size()))];
 
@@ -39,7 +39,7 @@ public class AntiBot extends AbstractMods {
         for (itemIconType2 = ItemIconType.values()[aux.get(Rnd.get(aux.size()))]; itemIconType1 == itemIconType2; itemIconType2 = ItemIconType.values()[aux.get(Rnd.get(aux.size()))]) {
         }
 
-        hb.append(new Object[]{"It indicates which of these items is: <font color=\"LEVEL\">", itemIconType1.name().toLowerCase(), "</font><br>"});
+        hb.append("It indicates which of these items is: <font color=\"LEVEL\">", itemIconType1.name().toLowerCase(), "</font><br>");
         hb.append("<table>");
         hb.append("<tr>");
         int rnd = Rnd.get(0, 3);
@@ -54,7 +54,7 @@ public class AntiBot extends AbstractMods {
             }
 
             hb.append("<td align=\"center\" fixwidth=\"32\">");
-            hb.append(new Object[]{"<button value=\"\" action=\"bypass -h Engine AntiBot ", i, "\" width=\"32\" height=\"32\" back=\"", icon, "\" fore=\"", icon, "\">"});
+            hb.append("<button value=\"\" action=\"bypass -h Engine AntiBot ", i, "\" width=\"32\" height=\"32\" back=\"", icon, "\" fore=\"", icon, "\">");
             hb.append("</td>");
         }
 
@@ -74,8 +74,7 @@ public class AntiBot extends AbstractMods {
 
     }
 
-    public static AntiBot getInstance() {
-        return AntiBot.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
@@ -108,7 +107,7 @@ public class AntiBot extends AbstractMods {
                     activeChar.setIsParalyzed(true);
                     activeChar.setIsInvul(true);
                     generateHtmlIndex(activeChar);
-                    this.startTimer("sendJail", ConfigData.TIME_CHECK_ANTIBOT * 1000, null, activeChar, false);
+                    this.startTimer("sendJail", ConfigData.TIME_CHECK_ANTIBOT * 1000L, null, activeChar, false);
                 }
 
             }
@@ -121,7 +120,7 @@ public class AntiBot extends AbstractMods {
                 if (PlayerData.get(player).getAttempts() <= 0) {
                     sendPlayerJail(player);
                 } else {
-                    this.startTimer("sendJail", ConfigData.TIME_CHECK_ANTIBOT * 1000, null, player, false);
+                    this.startTimer("sendJail", ConfigData.TIME_CHECK_ANTIBOT * 1000L, null, player, false);
                     PlayerData.get(player).decreaseAttempts();
                     generateHtmlIndex(player);
                 }
@@ -143,7 +142,7 @@ public class AntiBot extends AbstractMods {
                 sendPlayerJail(player);
             } else {
                 this.cancelTimer("sendJail", null, player);
-                this.startTimer("sendJail", ConfigData.TIME_CHECK_ANTIBOT * 1000, null, player, false);
+                this.startTimer("sendJail", ConfigData.TIME_CHECK_ANTIBOT * 1000L, null, player, false);
                 PlayerData.get(player).decreaseAttempts();
                 generateHtmlIndex(player);
             }

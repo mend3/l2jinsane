@@ -72,7 +72,7 @@ public class OlympiadManager {
         return isRegistered(noble, false);
     }
 
-    private final boolean isRegistered(Player player, boolean showMessage) {
+    private boolean isRegistered(Player player, boolean showMessage) {
         Integer objId = player.getObjectId();
         if (this._nonClassBasedRegisters.contains(objId)) {
             if (showMessage)
@@ -92,20 +92,20 @@ public class OlympiadManager {
         return (isRegistered(noble, false) || isInCompetition(noble, false));
     }
 
-    public final boolean registerNoble(Player player, OlympiadType type) {
+    public final void registerNoble(Player player, OlympiadType type) {
         List<Integer> classed;
         if (!Olympiad.getInstance().isInCompPeriod()) {
             player.sendPacket(SystemMessageId.THE_OLYMPIAD_GAME_IS_NOT_CURRENTLY_IN_PROGRESS);
-            return false;
+            return;
         }
         if (Olympiad.getInstance().getMillisToCompEnd() < 600000L) {
             player.sendPacket(SystemMessageId.GAME_REQUEST_CANNOT_BE_MADE);
-            return false;
+            return;
         }
         switch (type) {
             case CLASSED:
                 if (!checkNoble(player))
-                    return false;
+                    return;
                 classed = this._classBasedRegisters.get(player.getBaseClass());
                 if (classed != null) {
                     classed.add(player.getObjectId());
@@ -118,42 +118,39 @@ public class OlympiadManager {
                 break;
             case NON_CLASSED:
                 if (!checkNoble(player))
-                    return false;
+                    return;
                 this._nonClassBasedRegisters.add(player.getObjectId());
                 player.sendPacket(SystemMessageId.YOU_HAVE_BEEN_REGISTERED_IN_A_WAITING_LIST_OF_NO_CLASS_GAMES);
                 break;
         }
-        return true;
     }
 
-    public final boolean unRegisterNoble(Player player) {
+    public final void unRegisterNoble(Player player) {
         if (!Olympiad.getInstance().isInCompPeriod()) {
             player.sendPacket(SystemMessageId.THE_OLYMPIAD_GAME_IS_NOT_CURRENTLY_IN_PROGRESS);
-            return false;
+            return;
         }
         if (!player.isNoble()) {
             player.sendPacket(SystemMessageId.NOBLESSE_ONLY);
-            return false;
+            return;
         }
         if (!isRegistered(player, false)) {
             player.sendPacket(SystemMessageId.YOU_HAVE_NOT_BEEN_REGISTERED_IN_A_WAITING_LIST_OF_A_GAME);
-            return false;
+            return;
         }
         if (isInCompetition(player, false))
-            return false;
+            return;
         Integer objectId = player.getObjectId();
         if (this._nonClassBasedRegisters.remove(objectId)) {
             player.sendPacket(SystemMessageId.YOU_HAVE_BEEN_DELETED_FROM_THE_WAITING_LIST_OF_A_GAME);
-            return true;
+            return;
         }
         List<Integer> classed = this._classBasedRegisters.get(player.getBaseClass());
         if (classed != null && classed.remove(objectId)) {
             this._classBasedRegisters.remove(player.getBaseClass());
             this._classBasedRegisters.put(player.getBaseClass(), classed);
             player.sendPacket(SystemMessageId.YOU_HAVE_BEEN_DELETED_FROM_THE_WAITING_LIST_OF_A_GAME);
-            return true;
         }
-        return false;
     }
 
     public final void removeDisconnectedCompetitor(Player player) {
@@ -168,7 +165,7 @@ public class OlympiadManager {
         }
     }
 
-    private final boolean checkNoble(Player player) {
+    private boolean checkNoble(Player player) {
         if (!player.isNoble()) {
             player.sendPacket(SystemMessageId.ONLY_NOBLESS_CAN_PARTICIPATE_IN_THE_OLYMPIAD);
             return false;

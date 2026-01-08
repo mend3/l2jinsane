@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
 public class AdminGm implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_gm"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_gm")) {
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
@@ -30,7 +30,6 @@ public class AdminGm implements IAdminCommandHandler {
                 activeChar.sendMessage("Your previous access level has been rehabilitated.");
             }, (numberOfMinutes * 60000L));
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

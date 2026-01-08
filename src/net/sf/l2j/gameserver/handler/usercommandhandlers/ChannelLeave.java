@@ -10,17 +10,16 @@ import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 public class ChannelLeave implements IUserCommandHandler {
     private static final int[] COMMAND_IDS = new int[]{96};
 
-    public boolean useUserCommand(int id, Player player) {
+    public void useUserCommand(int id, Player player) {
         Party party = player.getParty();
         if (party == null || !party.isLeader(player))
-            return false;
+            return;
         CommandChannel channel = party.getCommandChannel();
         if (channel == null)
-            return false;
+            return;
         channel.removeParty(party);
         party.broadcastMessage(SystemMessageId.LEFT_COMMAND_CHANNEL);
         channel.broadcastPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_PARTY_LEFT_COMMAND_CHANNEL).addCharName(player));
-        return true;
     }
 
     public int[] getUserCommandList() {

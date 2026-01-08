@@ -15,7 +15,6 @@ import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.instance.Monster;
 import net.sf.l2j.gameserver.model.actor.player.Experience;
 
-import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -163,8 +162,7 @@ public class FavoriteCommunityBoard extends AbstractMods {
         return hb.toString();
     }
 
-    public static FavoriteCommunityBoard getInstance() {
-        return FavoriteCommunityBoard.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {

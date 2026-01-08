@@ -76,128 +76,126 @@ public class ZoneManager implements IXmlReader {
             return;
         }
 
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "zone", (zoneNode) -> {
-                NamedNodeMap attrs = zoneNode.getAttributes();
-                Node attribute = attrs.getNamedItem("id");
-                int var10000;
-                if (attribute == null) {
-                    int var10002 = this._lastDynamicId;
-                    var10000 = var10002;
-                    this._lastDynamicId = var10002 + 1;
-                } else {
-                    var10000 = Integer.parseInt(attribute.getNodeValue());
-                }
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "zone", (zoneNode) -> {
+            NamedNodeMap attrs = zoneNode.getAttributes();
+            Node attribute = attrs.getNamedItem("id");
+            int var10000;
+            if (attribute == null) {
+                int var10002 = this._lastDynamicId;
+                var10000 = var10002;
+                this._lastDynamicId = var10002 + 1;
+            } else {
+                var10000 = Integer.parseInt(attribute.getNodeValue());
+            }
 
-                int zoneId = var10000;
+            int zoneId = var10000;
 
-                ZoneType temp;
-                try {
-                    temp = (ZoneType) zoneConstructor.newInstance(zoneId);
-                } catch (Exception var18) {
-                    LOGGER.error("The zone id {} couldn't be instantiated.", var18, zoneId);
-                    return;
-                }
+            ZoneType temp;
+            try {
+                temp = (ZoneType) zoneConstructor.newInstance(zoneId);
+            } catch (Exception var18) {
+                LOGGER.error("The zone id {} couldn't be instantiated.", var18, zoneId);
+                return;
+            }
 
-                String zoneShape = this.parseString(attrs, "shape");
-                int minZ = this.parseInteger(attrs, "minZ");
-                int maxZ = this.parseInteger(attrs, "maxZ");
-                List<IntIntHolder> nodes = new ArrayList<>();
-                this.forEach(zoneNode, "node", (nodeNode) -> {
-                    NamedNodeMap nodeAttrs = nodeNode.getAttributes();
-                    nodes.add(new IntIntHolder(this.parseInteger(nodeAttrs, "x"), this.parseInteger(nodeAttrs, "y")));
+            String zoneShape = this.parseString(attrs, "shape");
+            int minZ = this.parseInteger(attrs, "minZ");
+            int maxZ = this.parseInteger(attrs, "maxZ");
+            List<IntIntHolder> nodes = new ArrayList<>();
+            this.forEach(zoneNode, "node", (nodeNode) -> {
+                NamedNodeMap nodeAttrs = nodeNode.getAttributes();
+                nodes.add(new IntIntHolder(this.parseInteger(nodeAttrs, "x"), this.parseInteger(nodeAttrs, "y")));
+            });
+            if (nodes.isEmpty()) {
+                LOGGER.warn("Missing nodes for zone {} in file {}.", zoneId, zoneType);
+            } else {
+                this.forEach(zoneNode, "stat", (statNode) -> {
+                    NamedNodeMap statAttrs = statNode.getAttributes();
+                    temp.setParameter(this.parseString(statAttrs, "name"), this.parseString(statAttrs, "val"));
                 });
-                if (nodes.isEmpty()) {
-                    LOGGER.warn("Missing nodes for zone {} in file {}.", zoneId, zoneType);
-                } else {
-                    this.forEach(zoneNode, "stat", (statNode) -> {
-                        NamedNodeMap statAttrs = statNode.getAttributes();
-                        temp.setParameter(this.parseString(statAttrs, "name"), this.parseString(statAttrs, "val"));
+                if (temp instanceof SpawnZoneType) {
+                    this.forEach(zoneNode, "spawn", (spawnNode) -> {
+                        NamedNodeMap spawnAttrs = spawnNode.getAttributes();
+                        ((SpawnZoneType) temp).addLoc(this.parseLocation(spawnNode), this.parseBoolean(spawnAttrs, "isChaotic", false));
                     });
-                    if (temp instanceof SpawnZoneType) {
-                        this.forEach(zoneNode, "spawn", (spawnNode) -> {
-                            NamedNodeMap spawnAttrs = spawnNode.getAttributes();
-                            ((SpawnZoneType) temp).addLoc(this.parseLocation(spawnNode), this.parseBoolean(spawnAttrs, "isChaotic", false));
-                        });
-                    }
+                }
 
-                    IntIntHolder[] coords = nodes.toArray(new IntIntHolder[nodes.size()]);
-                    byte var14 = -1;
-                    switch (zoneShape.hashCode()) {
-                        case -284734474:
-                            if (zoneShape.equals("Cylinder")) {
-                                var14 = 2;
-                            }
-                            break;
-                        case 74528058:
-                            if (zoneShape.equals("NPoly")) {
-                                var14 = 1;
-                            }
-                            break;
-                        case 2029234618:
-                            if (zoneShape.equals("Cuboid")) {
-                                var14 = 0;
-                            }
-                    }
+                IntIntHolder[] coords = nodes.toArray(new IntIntHolder[0]);
+                byte var14 = -1;
+                switch (zoneShape.hashCode()) {
+                    case -284734474:
+                        if (zoneShape.equals("Cylinder")) {
+                            var14 = 2;
+                        }
+                        break;
+                    case 74528058:
+                        if (zoneShape.equals("NPoly")) {
+                            var14 = 1;
+                        }
+                        break;
+                    case 2029234618:
+                        if (zoneShape.equals("Cuboid")) {
+                            var14 = 0;
+                        }
+                }
 
-                    int xLoc;
-                    int y;
-                    switch (var14) {
-                        case 0:
-                            if (coords.length != 2) {
-                                LOGGER.warn("Missing cuboid nodes for zone {} in file {}.", zoneId, zoneType);
-                                return;
-                            }
-
-                            temp.setZone(new ZoneCuboid(coords[0].getId(), coords[1].getId(), coords[0].getValue(), coords[1].getValue(), minZ, maxZ));
-                            break;
-                        case 1:
-                            if (coords.length <= 2) {
-                                LOGGER.warn("Missing NPoly nodes for zone {} in file {}.", zoneId, zoneType);
-                                return;
-                            }
-
-                            int[] aX = new int[coords.length];
-                            int[] aY = new int[coords.length];
-
-                            for (y = 0; y < coords.length; ++y) {
-                                aX[y] = coords[y].getId();
-                                aY[y] = coords[y].getValue();
-                            }
-
-                            temp.setZone(new ZoneNPoly(aX, aY, minZ, maxZ));
-                            break;
-                        case 2:
-                            xLoc = this.parseInteger(attrs, "rad");
-                            if (coords.length != 1 || xLoc <= 0) {
-                                LOGGER.warn("Missing Cylinder nodes for zone {} in file {}.", zoneId, zoneType);
-                                return;
-                            }
-
-                            temp.setZone(new ZoneCylinder(coords[0].getId(), coords[0].getValue(), minZ, maxZ, xLoc));
-                            break;
-                        default:
-                            LOGGER.warn("Unknown {} shape in file {}.", zoneShape, zoneType);
+                int xLoc;
+                int y;
+                switch (var14) {
+                    case 0:
+                        if (coords.length != 2) {
+                            LOGGER.warn("Missing cuboid nodes for zone {} in file {}.", zoneId, zoneType);
                             return;
-                    }
+                        }
 
-                    this.addZone(zoneId, temp);
-                    WorldRegion[][] regions = World.getInstance().getWorldRegions();
+                        temp.setZone(new ZoneCuboid(coords[0].getId(), coords[1].getId(), coords[0].getValue(), coords[1].getValue(), minZ, maxZ));
+                        break;
+                    case 1:
+                        if (coords.length <= 2) {
+                            LOGGER.warn("Missing NPoly nodes for zone {} in file {}.", zoneId, zoneType);
+                            return;
+                        }
 
-                    for (int x = 0; x < regions.length; ++x) {
-                        xLoc = World.getRegionX(x);
-                        int xLoc2 = World.getRegionX(x + 1);
+                        int[] aX = new int[coords.length];
+                        int[] aY = new int[coords.length];
 
-                        for (y = 0; y < regions[x].length; ++y) {
-                            if (temp.getZone().intersectsRectangle(xLoc, xLoc2, World.getRegionY(y), World.getRegionY(y + 1))) {
-                                regions[x][y].addZone(temp);
-                            }
+                        for (y = 0; y < coords.length; ++y) {
+                            aX[y] = coords[y].getId();
+                            aY[y] = coords[y].getValue();
+                        }
+
+                        temp.setZone(new ZoneNPoly(aX, aY, minZ, maxZ));
+                        break;
+                    case 2:
+                        xLoc = this.parseInteger(attrs, "rad");
+                        if (coords.length != 1 || xLoc <= 0) {
+                            LOGGER.warn("Missing Cylinder nodes for zone {} in file {}.", zoneId, zoneType);
+                            return;
+                        }
+
+                        temp.setZone(new ZoneCylinder(coords[0].getId(), coords[0].getValue(), minZ, maxZ, xLoc));
+                        break;
+                    default:
+                        LOGGER.warn("Unknown {} shape in file {}.", zoneShape, zoneType);
+                        return;
+                }
+
+                this.addZone(zoneId, temp);
+                WorldRegion[][] regions = World.getInstance().getWorldRegions();
+
+                for (int x = 0; x < regions.length; ++x) {
+                    xLoc = World.getRegionX(x);
+                    int xLoc2 = World.getRegionX(x + 1);
+
+                    for (y = 0; y < regions[x].length; ++y) {
+                        if (temp.getZone().intersectsRectangle(xLoc, xLoc2, World.getRegionY(y), World.getRegionY(y + 1))) {
+                            regions[x][y].addZone(temp);
                         }
                     }
-
                 }
-            });
-        });
+
+            }
+        }));
     }
 
     public void reload() {
@@ -205,8 +203,7 @@ public class ZoneManager implements IXmlReader {
         WorldRegion[][] var1 = World.getInstance().getWorldRegions();
         int var2 = var1.length;
 
-        for (int var3 = 0; var3 < var2; ++var3) {
-            WorldRegion[] regions = var1[var3];
+        for (WorldRegion[] regions : var1) {
             WorldRegion[] var5 = regions;
             int var6 = regions.length;
 
@@ -311,7 +308,7 @@ public class ZoneManager implements IXmlReader {
     }
 
     public <T extends ZoneType> void addZone(Integer id, T zone) {
-        Map<Integer, T> map = (Map) this._zones.get(zone.getClass());
+        Map<Integer, T> map = (Map<Integer, T>) this._zones.get(zone.getClass());
         if (map == null) {
             map = new HashMap<>();
             map.put(id, zone);
@@ -323,13 +320,13 @@ public class ZoneManager implements IXmlReader {
     }
 
     public <T extends ZoneType> Collection<T> getAllZones(Class<T> type) {
-        return ((Map) this._zones.get(type)).values();
+        return ((Map<Integer, T>) this._zones.get(type)).values();
     }
 
     public ZoneType getZoneById(int id) {
         Iterator<Map<Integer, ? extends ZoneType>> var2 = this._zones.values().iterator();
 
-        Map map;
+        Map<Integer, ? extends ZoneType> map;
         do {
             if (!var2.hasNext()) {
                 return null;
@@ -338,11 +335,11 @@ public class ZoneManager implements IXmlReader {
             map = var2.next();
         } while (!map.containsKey(id));
 
-        return (ZoneType) map.get(id);
+        return map.get(id);
     }
 
     public <T extends ZoneType> T getZoneById(int id, Class<T> type) {
-        return (T) ((Map) this._zones.get(type)).get(id);
+        return (T) this._zones.get(type).get(id);
     }
 
     public List<ZoneType> getZones(WorldObject object) {

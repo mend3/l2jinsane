@@ -36,7 +36,6 @@ public class CpDamPercent implements ISkillHandler {
             activeChar.sendDamageMessage(target, damage, false, false, false);
             target.setCurrentCp(target.getCurrentCp() - damage);
             target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_GAVE_YOU_S2_DMG).addCharName(activeChar).addNumber(damage));
-            continue;
         }
         activeChar.setChargedShot(ShotType.SOULSHOT, skill.isStaticReuse());
     }

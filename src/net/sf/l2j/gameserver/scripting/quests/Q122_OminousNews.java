@@ -45,14 +45,11 @@ public class Q122_OminousNews extends Quest {
                 htmltext = (player.getLevel() < 20) ? "31979-01.htm" : "31979-02.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 31979:
-                        htmltext = "31979-03.htm";
-                        break;
-                    case 32017:
-                        htmltext = "32017-01.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 31979 -> "31979-03.htm";
+                    case 32017 -> "32017-01.htm";
+                    default -> htmltext;
+                };
                 break;
             case 2:
                 htmltext = getAlreadyCompletedMsg();

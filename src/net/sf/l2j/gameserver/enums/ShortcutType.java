@@ -10,9 +10,4 @@ public enum ShortcutType {
     RECIPE;
 
     public static final ShortcutType[] VALUES = values();
-
-    // $FF: synthetic method
-    private static ShortcutType[] $values() {
-        return new ShortcutType[]{NONE, ITEM, SKILL, ACTION, MACRO, RECIPE};
-    }
 }

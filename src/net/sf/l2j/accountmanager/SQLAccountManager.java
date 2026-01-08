@@ -38,17 +38,17 @@ public class SQLAccountManager {
                     _mode = _scn.next();
                 }
                 if (_mode.equals("1") || _mode.equals("2") || _mode.equals("3")) {
-                    while (_uname.trim().length() == 0) {
+                    while (_uname.trim().isEmpty()) {
                         System.out.print("Username: ");
                         _uname = _scn.next().toLowerCase();
                     }
                     if (_mode.equals("1"))
-                        while (_pass.trim().length() == 0) {
+                        while (_pass.trim().isEmpty()) {
                             System.out.print("Password: ");
                             _pass = _scn.next();
                         }
                     if (_mode.equals("1") || _mode.equals("2"))
-                        while (_level.trim().length() == 0) {
+                        while (_level.trim().isEmpty()) {
                             System.out.print("Access level: ");
                             _level = _scn.next();
                         }
@@ -105,13 +105,12 @@ public class SQLAccountManager {
     private static void printAccInfo(String m) {
         int count = 0;
         String q = "SELECT login, access_level FROM accounts ";
-        if (m.equals("1")) {
-            q = q.concat("WHERE access_level < 0");
-        } else if (m.equals("2")) {
-            q = q.concat("WHERE access_level > 0");
-        } else if (m.equals("3")) {
-            q = q.concat("WHERE access_level = 0");
-        }
+        q = switch (m) {
+            case "1" -> q.concat("WHERE access_level < 0");
+            case "2" -> q.concat("WHERE access_level > 0");
+            case "3" -> q.concat("WHERE access_level = 0");
+            default -> "SELECT login, access_level FROM accounts ";
+        };
         q = q.concat(" ORDER BY login ASC");
         try {
             Connection con = ConnectionPool.getConnection();

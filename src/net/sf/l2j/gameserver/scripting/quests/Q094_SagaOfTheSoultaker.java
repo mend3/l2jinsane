@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q094_SagaOfTheSoultaker extends SagasSuperClass {
     public Q094_SagaOfTheSoultaker() {
         super(94, "Saga of the Soultaker");

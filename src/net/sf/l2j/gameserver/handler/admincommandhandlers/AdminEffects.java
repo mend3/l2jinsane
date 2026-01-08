@@ -40,7 +40,7 @@ public class AdminEffects implements IAdminCommandHandler {
         return false;
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         StringTokenizer st = new StringTokenizer(command);
         st.nextToken();
         if (command.startsWith("admin_hide")) {
@@ -60,7 +60,7 @@ public class AdminEffects implements IAdminCommandHandler {
                 player = activeChar;
             if (!(player instanceof Creature)) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             Creature target = player;
             target.setIsInvul(!target.isInvul());
@@ -72,7 +72,7 @@ public class AdminEffects implements IAdminCommandHandler {
                 player = activeChar;
             if (!(player instanceof Creature)) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             Creature target = player;
             target.setIsMortal(!target.isMortal());
@@ -90,22 +90,29 @@ public class AdminEffects implements IAdminCommandHandler {
                 String state = st.nextToken();
                 L2GameServerPacket packet = null;
                 if (type.equals("ssqinfo")) {
-                    if (state.equals("dawn")) {
-                        SSQInfo sSQInfo = SSQInfo.DAWN_SKY_PACKET;
-                    } else if (state.equals("dusk")) {
-                        SSQInfo sSQInfo = SSQInfo.DUSK_SKY_PACKET;
-                    } else if (state.equals("red")) {
-                        SSQInfo sSQInfo = SSQInfo.RED_SKY_PACKET;
-                    } else if (state.equals("regular")) {
-                        SSQInfo sSQInfo = SSQInfo.REGULAR_SKY_PACKET;
+                    switch (state) {
+                        case "dawn" -> {
+                            SSQInfo sSQInfo = SSQInfo.DAWN_SKY_PACKET;
+                        }
+                        case "dusk" -> {
+                            SSQInfo sSQInfo = SSQInfo.DUSK_SKY_PACKET;
+                        }
+                        case "red" -> {
+                            SSQInfo sSQInfo = SSQInfo.RED_SKY_PACKET;
+                        }
+                        case "regular" -> {
+                            SSQInfo sSQInfo = SSQInfo.REGULAR_SKY_PACKET;
+                        }
                     }
                 } else if (type.equals("sky")) {
-                    if (state.equals("night")) {
-                        SunSet sunSet = SunSet.STATIC_PACKET;
-                    } else if (state.equals("day")) {
-                        SunRise sunRise = SunRise.STATIC_PACKET;
-                    } else if (state.equals("red")) {
-                        exRedSky = new ExRedSky(10);
+                    switch (state) {
+                        case "night" -> {
+                            SunSet sunSet = SunSet.STATIC_PACKET;
+                        }
+                        case "day" -> {
+                            SunRise sunRise = SunRise.STATIC_PACKET;
+                        }
+                        case "red" -> exRedSky = new ExRedSky(10);
                     }
                 } else {
                     activeChar.sendMessage("Usage: //atmosphere <ssqinfo dawn|dusk|red|regular>");
@@ -144,7 +151,7 @@ public class AdminEffects implements IAdminCommandHandler {
             WorldObject target = activeChar.getTarget();
             if (!(target instanceof Creature creature)) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             creature.startAbnormalEffect(AbnormalEffect.HOLD_2);
             creature.setIsParalyzed(true);
@@ -153,7 +160,7 @@ public class AdminEffects implements IAdminCommandHandler {
             WorldObject target = activeChar.getTarget();
             if (!(target instanceof Creature creature)) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             creature.stopAbnormalEffect(AbnormalEffect.HOLD_2);
             creature.setIsParalyzed(false);
@@ -269,7 +276,6 @@ public class AdminEffects implements IAdminCommandHandler {
             }
             AdminHelpPage.showHelpPage(activeChar, filename);
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

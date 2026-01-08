@@ -91,7 +91,7 @@ public class AdminEnchant implements IAdminCommandHandler {
         AdminHelpPage.showHelpPage(activeChar, "enchant.htm");
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_enchant")) {
             showMainPage(activeChar);
         } else {
@@ -143,7 +143,6 @@ public class AdminEnchant implements IAdminCommandHandler {
             showMainPage(activeChar);
         }
 
-        return true;
     }
 
     public String[] getAdminCommandList() {

@@ -4,7 +4,6 @@ import net.sf.l2j.gameserver.enums.AttackType;
 
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -47,11 +46,11 @@ public class ClassBalanceHolder {
     }
 
     public double getOlyBalanceValue(AttackType type) {
-        return !this._olyBalance.containsKey(type) ? 1.0D : this._olyBalance.get(type);
+        return this._olyBalance.getOrDefault(type, 1.0D);
     }
 
     public double getBalanceValue(AttackType type) {
-        return !this._normalBalance.containsKey(type) ? 1.0D : this._normalBalance.get(type);
+        return this._normalBalance.getOrDefault(type, 1.0D);
     }
 
     public void remove(AttackType type) {
@@ -72,14 +71,7 @@ public class ClassBalanceHolder {
         public int compare(AttackType l, AttackType r) {
             int left = l.getId();
             int right = r.getId();
-            if (left > right) {
-                return 1;
-            } else if (left < right) {
-                return -1;
-            } else {
-                Random rnd = new Random();
-                return 1;
-            }
+            return Integer.compare(left, right);
         }
 
     }

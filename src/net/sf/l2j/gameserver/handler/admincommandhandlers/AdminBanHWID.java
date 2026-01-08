@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class AdminBanHWID implements IAdminCommandHandler {
     protected static final Logger _log = Logger.getLogger(AdminBanHWID.class.getName());
     private static final String[] _adminCommands = new String[]{"admin_ban_ip"};
-    static String INSERT_DATA = "REPLACE INTO banned_hwid (char_name, hwid) VALUES (?,?)";
+    static final String INSERT_DATA = "REPLACE INTO banned_hwid (char_name, hwid) VALUES (?,?)";
 
     public static void updateDatabase(Player player) {
         if (player == null)
@@ -55,7 +55,7 @@ public class AdminBanHWID implements IAdminCommandHandler {
         }
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         StringTokenizer st = new StringTokenizer(command);
         st.nextToken();
         String player = "";
@@ -68,7 +68,7 @@ public class AdminBanHWID implements IAdminCommandHandler {
         }
         if (targetPlayer != null && targetPlayer.equals(activeChar)) {
             activeChar.sendPacket(SystemMessageId.CANNOT_USE_ON_YOURSELF);
-            return false;
+            return;
         }
         if (command.startsWith("admin_ban_ip") && targetPlayer != null) {
             String hwid = targetPlayer.getHWID();
@@ -84,7 +84,6 @@ public class AdminBanHWID implements IAdminCommandHandler {
                 activeChar.sendMessage("HWID: " + hwid + " Banned");
             }
         }
-        return false;
     }
 
     public String[] getAdminCommandList() {

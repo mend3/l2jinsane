@@ -92,11 +92,6 @@ public class PvPEventManager implements Runnable {
         AWAITING,
         ACTIVE,
         INACTIVE;
-
-        // $FF: synthetic method
-        private static PvPEventManager.EngineState[] $values() {
-            return new PvPEventManager.EngineState[]{AWAITING, ACTIVE, INACTIVE};
-        }
     }
 
     private static class SingletonHolder {

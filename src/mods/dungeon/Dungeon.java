@@ -15,7 +15,6 @@ import net.sf.l2j.gameserver.network.serverpackets.ExShowScreenMessage;
 import net.sf.l2j.gameserver.network.serverpackets.MagicSkillUse;
 import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -154,8 +153,7 @@ public class Dungeon {
     }
 
     private void beginStage() {
-        for (Iterator<Integer> iterator = this.currentStage.mobs().keySet().iterator(); iterator.hasNext(); ) {
-            int mobId = iterator.next();
+        for (int mobId : this.currentStage.mobs().keySet()) {
             spawnMob(mobId, this.currentStage.mobs().get(mobId));
         }
         this.stageBeginTime = System.currentTimeMillis();

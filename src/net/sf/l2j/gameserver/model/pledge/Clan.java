@@ -5,8 +5,8 @@ import net.sf.l2j.commons.lang.StringUtil;
 import net.sf.l2j.commons.logging.CLogger;
 import net.sf.l2j.commons.math.MathUtil;
 import net.sf.l2j.commons.pool.ConnectionPool;
-import net.sf.l2j.gameserver.communitybbs.BB.Forum;
-import net.sf.l2j.gameserver.communitybbs.Manager.ForumsBBSManager;
+import net.sf.l2j.gameserver.communitybbs.bb.Forum;
+import net.sf.l2j.gameserver.communitybbs.manager.ForumsBBSManager;
 import net.sf.l2j.gameserver.data.SkillTable;
 import net.sf.l2j.gameserver.data.cache.CrestCache;
 import net.sf.l2j.gameserver.data.manager.CastleManager;
@@ -856,30 +856,18 @@ public class Clan {
     }
 
     public int getMaxNrOfMembers(int pledgeType) {
-        switch (pledgeType) {
-            case 0:
-                switch (this._level) {
-                    case 0:
-                        return 10;
-                    case 1:
-                        return 15;
-                    case 2:
-                        return 20;
-                    case 3:
-                        return 30;
-                }
-                return 40;
-            case -1:
-            case 100:
-            case 200:
-                return 20;
-            case 1001:
-            case 1002:
-            case 2001:
-            case 2002:
-                return 10;
-        }
-        return 0;
+        return switch (pledgeType) {
+            case 0 -> switch (this._level) {
+                case 0 -> 10;
+                case 1 -> 15;
+                case 2 -> 20;
+                case 3 -> 30;
+                default -> 40;
+            };
+            case -1, 100, 200 -> 20;
+            case 1001, 1002, 2001, 2002 -> 10;
+            default -> 0;
+        };
     }
 
     public Player[] getOnlineMembers() {
@@ -888,7 +876,7 @@ public class Clan {
             if (temp != null && temp.isOnline())
                 list.add(temp.getPlayerInstance());
         }
-        return list.toArray(new Player[list.size()]);
+        return list.toArray(new Player[0]);
     }
 
     public int getOnlineMembersCount() {

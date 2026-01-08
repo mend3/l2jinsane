@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q096_SagaOfTheSpectralDancer extends SagasSuperClass {
     public Q096_SagaOfTheSpectralDancer() {
         super(96, "Saga of the Spectral Dancer");

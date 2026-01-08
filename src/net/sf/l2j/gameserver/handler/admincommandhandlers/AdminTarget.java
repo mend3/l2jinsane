@@ -22,10 +22,9 @@ public class AdminTarget implements IAdminCommandHandler {
         }
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_target"))
             handleTarget(command, activeChar);
-        return true;
     }
 
     public String[] getAdminCommandList() {

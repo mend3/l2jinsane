@@ -94,7 +94,6 @@ public class Heal implements ISkillHandler {
                 } else {
                     target.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_HP_RESTORED).addNumber((int) hp));
                 }
-            continue;
         }
     }
 

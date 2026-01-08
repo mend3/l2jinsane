@@ -19,7 +19,7 @@ public class AdminMenu implements IAdminCommandHandler {
         AdminHelpPage.showHelpPage(activeChar, "charmanage.htm");
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_char_manage")) {
             showMainPage(activeChar);
         } else if (command.startsWith("admin_teleport_character_to_menu")) {
@@ -32,7 +32,6 @@ public class AdminMenu implements IAdminCommandHandler {
             }
             showMainPage(activeChar);
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

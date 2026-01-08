@@ -103,11 +103,11 @@ public class ClientStats {
         return (this._floodsInMin > Config.CLIENT_PACKET_QUEUE_MAX_FLOODS_PER_MIN);
     }
 
-    private final boolean longFloodDetected() {
+    private boolean longFloodDetected() {
         return (this._totalCount / this.BUFFER_SIZE > Config.CLIENT_PACKET_QUEUE_MAX_AVERAGE_PACKETS_PER_SECOND);
     }
 
-    private final synchronized boolean countPacket() {
+    private synchronized boolean countPacket() {
         this._totalCount++;
         long tick = System.currentTimeMillis();
         if (tick - this._packetCountStartTick > 1000L) {

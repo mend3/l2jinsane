@@ -21,20 +21,6 @@ public final class SkillList extends L2GameServerPacket {
         }
     }
 
-    static class Skill {
-        public int id;
-
-        public int level;
-
-        public boolean passive;
-
-        public boolean disabled;
-
-        Skill(int pId, int pLevel, boolean pPassive, boolean pDisabled) {
-            this.id = pId;
-            this.level = pLevel;
-            this.passive = pPassive;
-            this.disabled = pDisabled;
-        }
+    record Skill(int id, int level, boolean passive, boolean disabled) {
     }
 }

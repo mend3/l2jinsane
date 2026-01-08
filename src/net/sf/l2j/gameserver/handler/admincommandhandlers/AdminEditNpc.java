@@ -181,14 +181,14 @@ public class AdminEditNpc implements IAdminCommandHandler {
         activeChar.sendPacket(html);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         StringTokenizer st = new StringTokenizer(command, " ");
         st.nextToken();
         if (command.startsWith("admin_show_minion")) {
             WorldObject target = activeChar.getTarget();
             if (!(target instanceof Monster monster)) {
                 activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                return false;
+                return;
             }
             NpcHtmlMessage html = new NpcHtmlMessage(0);
             html.setFile("data/html/admin/minion.htm");
@@ -241,7 +241,6 @@ public class AdminEditNpc implements IAdminCommandHandler {
                 activeChar.sendMessage("Usage: //show_scripts <npc_id>");
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

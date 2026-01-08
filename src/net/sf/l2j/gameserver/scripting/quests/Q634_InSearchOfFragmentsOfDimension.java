@@ -44,14 +44,11 @@ public class Q634_InSearchOfFragmentsOfDimension extends Quest {
         String htmltext = getNoQuestMsg();
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 20) ? "01a.htm" : "01.htm";
-                break;
-            case 1:
-                htmltext = "03.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 20) ? "01a.htm" : "01.htm";
+            case 1 -> "03.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

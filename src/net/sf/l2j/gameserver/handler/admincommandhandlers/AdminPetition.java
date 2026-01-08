@@ -9,7 +9,7 @@ import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 public class AdminPetition implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_view_petitions", "admin_view_petition", "admin_accept_petition", "admin_reject_petition", "admin_reset_petitions"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         int petitionId = -1;
         try {
             petitionId = Integer.parseInt(command.split(" ")[1]);
@@ -22,11 +22,11 @@ public class AdminPetition implements IAdminCommandHandler {
         } else if (command.startsWith("admin_accept_petition")) {
             if (PetitionManager.getInstance().isPlayerInConsultation(activeChar)) {
                 activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.ONLY_ONE_ACTIVE_PETITION_AT_TIME));
-                return true;
+                return;
             }
             if (PetitionManager.getInstance().isPetitionInProcess(petitionId)) {
                 activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.PETITION_UNDER_PROCESS));
-                return true;
+                return;
             }
             if (!PetitionManager.getInstance().acceptPetition(activeChar, petitionId))
                 activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.NOT_UNDER_PETITION_CONSULTATION));
@@ -36,11 +36,10 @@ public class AdminPetition implements IAdminCommandHandler {
         } else if (command.equals("admin_reset_petitions")) {
             if (PetitionManager.getInstance().isPetitionInProcess()) {
                 activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.PETITION_UNDER_PROCESS));
-                return false;
+                return;
             }
             PetitionManager.getInstance().getPendingPetitions().clear();
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

@@ -35,7 +35,7 @@ public class SystemAio extends AbstractMods {
         hb.append("<br>");
         hb.append(Html.headHtml("AIO"));
         hb.append("<br>");
-        hb.append(new Object[]{"<font color=9900CC>AIO Expire Date: </font>", PlayerData.get(player).getAioExpireDateFormat(), "<br>"});
+        hb.append("<font color=9900CC>AIO Expire Date: </font>", PlayerData.get(player).getAioExpireDateFormat(), "<br>");
         hb.append("<font color=9900CC>The AIO have the skills:</font><br>");
         hb.append("<table>");
         int MAX_PER_PAGE = 12;
@@ -47,8 +47,8 @@ public class SystemAio extends AbstractMods {
                 ++count;
             } else if (count < searchPage + MAX_PER_PAGE) {
                 hb.append("<tr>");
-                hb.append(new Object[]{"<td width=32><img src=", SkillData.getSkillIcon(bh.getId()), " width=32 height=16></td>"});
-                hb.append(new Object[]{"<td width=200><font color=LEVEL>", bh.getSkill().getName(), "</font></td>"});
+                hb.append("<td width=32><img src=", SkillData.getSkillIcon(bh.getId()), " width=32 height=16></td>");
+                hb.append("<td width=200><font color=LEVEL>", bh.getSkill().getName(), "</font></td>");
                 hb.append("</tr>");
                 ++count;
             }
@@ -63,7 +63,7 @@ public class SystemAio extends AbstractMods {
 
         for (int i = 0; i < ConfigData.AIO_LIST_SKILLS.size(); ++i) {
             if (i % MAX_PER_PAGE == 0) {
-                hb.append(new Object[]{"<td width=18 align=center><a action=\"bypass -h Engine SystemAio aioInfo ", currentPage, "\">" + currentPage, "</a></td>"});
+                hb.append("<td width=18 align=center><a action=\"bypass -h Engine SystemAio aioInfo ", currentPage, "\">" + currentPage, "</a></td>");
                 ++currentPage;
             }
         }
@@ -103,9 +103,6 @@ public class SystemAio extends AbstractMods {
 
     public boolean onInteract(Player player, Creature npc) {
         return PlayerData.get(player.getObjectId()).isAio() && !Util.areObjectType(Gatekeeper.class, npc);
-    }
-
-    public void onEnterZone(Creature player, ZoneType zone) {
     }
 
     public void onExitZone(Creature player, ZoneType zone) {
@@ -163,7 +160,7 @@ public class SystemAio extends AbstractMods {
 
                     Player aio = (Player) player.getTarget();
                     Calendar time = new GregorianCalendar();
-                    time.add(6, Integer.parseInt(days));
+                    time.add(Calendar.DAY_OF_YEAR, Integer.parseInt(days));
                     this.setValueDB(aio, "aio", "" + time.getTimeInMillis());
                     PlayerData.get(aio).setAio(true);
                     PlayerData.get(aio).setAioExpireDate(time.getTimeInMillis());
@@ -266,9 +263,9 @@ public class SystemAio extends AbstractMods {
                 if (count < searchPage) {
                     ++count;
                 } else if (count < searchPage + MAX_PER_PAGE) {
-                    hb.append(new Object[]{"<table", count % 2 == 0 ? " bgcolor=000000>" : ">"});
+                    hb.append("<table", count % 2 == 0 ? " bgcolor=000000>" : ">");
                     hb.append("<tr>");
-                    hb.append(new Object[]{"<td width=64>", ph.getName(), "</td><td width=200>", ph.getAioExpireDateFormat(), "</td>"});
+                    hb.append("<td width=64>", ph.getName(), "</td><td width=200>", ph.getAioExpireDateFormat(), "</td>");
                     hb.append("</tr>");
                     hb.append("</table>");
                     ++count;
@@ -284,7 +281,7 @@ public class SystemAio extends AbstractMods {
 
         for (int i = 0; i < countAio; ++i) {
             if (i % MAX_PER_PAGE == 0) {
-                hb.append(new Object[]{"<td width=18 align=center><a action=\"bypass -h Engine SystemAio allAio ", currentPage, "\">", currentPage, "</a></td>"});
+                hb.append("<td width=18 align=center><a action=\"bypass -h Engine SystemAio allAio ", currentPage, "\">", currentPage, "</a></td>");
                 ++currentPage;
             }
         }

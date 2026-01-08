@@ -80,17 +80,12 @@ public class Q351_BlackSwan extends Quest {
                 htmltext = (player.getLevel() < 32) ? "30916-00.htm" : "30916-01.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 30916:
-                        htmltext = "30916-04.htm";
-                        break;
-                    case 30969:
-                        htmltext = "30969-01.htm";
-                        break;
-                    case 30897:
-                        htmltext = st.hasQuestItems(4310) ? "30897-01.htm" : "30897-02.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 30916 -> "30916-04.htm";
+                    case 30969 -> "30969-01.htm";
+                    case 30897 -> st.hasQuestItems(4310) ? "30897-01.htm" : "30897-02.htm";
+                    default -> htmltext;
+                };
                 break;
         }
         return htmltext;

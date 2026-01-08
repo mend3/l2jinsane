@@ -15,11 +15,6 @@ public enum CabalType {
         this._fullName = fullName;
     }
 
-    // $FF: synthetic method
-    private static CabalType[] $values() {
-        return new CabalType[]{NORMAL, DUSK, DAWN};
-    }
-
     public String getShortName() {
         return this._shortName;
     }

@@ -41,8 +41,8 @@ public abstract class AbstractMemo extends StatSet {
         return this._hasChanges.get();
     }
 
-    public final boolean compareAndSetChanges(boolean expect, boolean update) {
-        return this._hasChanges.compareAndSet(expect, update);
+    public final void compareAndSetChanges(boolean expect, boolean update) {
+        this._hasChanges.compareAndSet(expect, update);
     }
 
     public final void remove(String name) {

@@ -55,7 +55,7 @@ public class GoldenRamMercenary extends Folk {
         String actualCommand = st.nextToken();
         if (actualCommand.contains("buff")) {
             if (qs != null && qs.getInt("cond") == 3) {
-                int[] buffData = data[Integer.valueOf(st.nextToken())];
+                int[] buffData = data[Integer.parseInt(st.nextToken())];
                 int coins = buffData[2];
                 int val = 3;
                 if (qs.getQuestItemsCount(7251) >= coins) {
@@ -68,7 +68,6 @@ public class GoldenRamMercenary extends Folk {
                 NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
                 html.setFile("data/html/default/31556-" + val + ".htm");
                 player.sendPacket(html);
-                return;
             }
         } else if (command.startsWith("gmultisell")) {
             if (qs != null && qs.getInt("cond") == 3) {

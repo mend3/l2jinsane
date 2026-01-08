@@ -151,7 +151,7 @@ public class Q350_EnhanceYourWeapon extends Quest {
     public String onItemUse(ItemInstance item, Player user, WorldObject target) {
         if (user.isDead())
             return null;
-        if (target == null || !(target instanceof Monster mob))
+        if (!(target instanceof Monster mob))
             return null;
         if (mob.isDead() || !SoulCrystalData.getInstance().getLevelingInfos().containsKey(mob.getNpcId()))
             return null;

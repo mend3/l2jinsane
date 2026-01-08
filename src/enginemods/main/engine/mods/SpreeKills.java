@@ -19,7 +19,7 @@ public class SpreeKills extends AbstractMods {
         this.registerMod(ConfigData.ENABLE_SpreeKills);
     }
 
-    public static boolean announcements(Player player, int count) {
+    public static void announcements(Player player, int count) {
         String announcement = "";
 
         for (Map.Entry<Integer, String> kill : ConfigData.ANNOUNCEMENTS_KILLS.entrySet()) {
@@ -30,20 +30,16 @@ public class SpreeKills extends AbstractMods {
         }
 
         World.toAllOnlinePlayers(new CreatureSay(0, 2, "", announcement.replace("%s1", player.getName())));
-        return true;
     }
 
-    public static SpreeKills getInstance() {
-        return SpreeKills.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
     }
 
     public void onDeath(Creature player) {
-        if (players.containsKey(player.getObjectId())) {
-            players.remove(player.getObjectId());
-        }
+        players.remove(player.getObjectId());
 
     }
 
@@ -66,6 +62,6 @@ public class SpreeKills extends AbstractMods {
     }
 
     private static class SingletonHolder {
-        protected static SpreeKills INSTANCE = new SpreeKills();
+        protected static final SpreeKills INSTANCE = new SpreeKills();
     }
 }

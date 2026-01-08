@@ -13,7 +13,7 @@ import net.sf.l2j.commons.mmocore.SelectorThread;
 import net.sf.l2j.commons.pool.ConnectionPool;
 import net.sf.l2j.commons.pool.ThreadPool;
 import net.sf.l2j.commons.util.SysUtil;
-import net.sf.l2j.gameserver.communitybbs.Manager.ForumsBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.ForumsBBSManager;
 import net.sf.l2j.gameserver.data.EnchantTable;
 import net.sf.l2j.gameserver.data.ItemTable;
 import net.sf.l2j.gameserver.data.SkillTable;

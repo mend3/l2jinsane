@@ -57,7 +57,7 @@ public class Chests extends L2AttackableAIScript {
                             }
                             return super.onSkillSee(npc, caster, skill, targets, isPet);
                     }
-                    chest.doCast(SkillTable.getInstance().getInfo(4143, Math.min(10, Math.round((npc.getLevel() / 10)))));
+                    chest.doCast(SkillTable.getInstance().getInfo(4143, Math.min(10, Math.round(((float) npc.getLevel() / 10)))));
                 } else {
                     attack(chest, isPet ? (Creature) caster.getSummon() : (Creature) caster);
                 }
@@ -71,7 +71,7 @@ public class Chests extends L2AttackableAIScript {
             if (!chest.isInteracted()) {
                 chest.setInteracted();
                 if (Rnd.get(100) < 40)
-                    chest.doCast(SkillTable.getInstance().getInfo(4143, Math.min(10, Math.round((npc.getLevel() / 10)))));
+                    chest.doCast(SkillTable.getInstance().getInfo(4143, Math.min(10, Math.round(((float) npc.getLevel() / 10)))));
             }
         }
         return super.onAttack(npc, attacker, damage, skill);

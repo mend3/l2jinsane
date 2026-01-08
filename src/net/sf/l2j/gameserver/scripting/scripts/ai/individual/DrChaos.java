@@ -15,8 +15,6 @@ import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 import net.sf.l2j.gameserver.network.serverpackets.SpecialCamera;
 import net.sf.l2j.gameserver.scripting.scripts.ai.L2AttackableAIScript;
 
-import java.util.Iterator;
-
 public class DrChaos extends L2AttackableAIScript {
     private static final int DOCTOR_CHAOS = 32033;
     private static final int CHAOS_GOLEM = 25512;

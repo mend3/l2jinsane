@@ -27,8 +27,7 @@ public class NpcTeleporter extends AbstractMods {
         this.spawnGuards();
     }
 
-    public static NpcTeleporter getInstance() {
-        return NpcTeleporter.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {

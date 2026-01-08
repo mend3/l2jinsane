@@ -21,19 +21,18 @@ public class SubClassAcumulatives extends AbstractMods {
         this.registerMod(ConfigData.ENABLE_SubClassAcumulatives);
     }
 
-    public static SubClassAcumulatives getInstance() {
-        return SubClassAcumulatives.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
     }
 
-    public boolean onRestoreSkills(Player player) {
+    public void onRestoreSkills(Player player) {
         Map<Integer, Integer> skills = new HashMap<>();
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement(RESTORE_SKILLS_FOR_CHAR);
+                PreparedStatement ps = con.prepareStatement(RESTORE_SKILLS_FOR_CHAR)
         ) {
             ps.setInt(1, player.getObjectId());
 
@@ -74,7 +73,6 @@ public class SubClassAcumulatives extends AbstractMods {
             }
         }
 
-        return true;
     }
 
     private static class SingletonHolder {

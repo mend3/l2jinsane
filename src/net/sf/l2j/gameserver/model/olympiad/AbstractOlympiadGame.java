@@ -41,7 +41,7 @@ public abstract class AbstractOlympiadGame {
 
     protected long _startTime = 0L;
 
-    protected boolean _aborted = false;
+    protected final boolean _aborted = false;
 
     protected AbstractOlympiadGame(int id) {
         this._stadiumId = id;

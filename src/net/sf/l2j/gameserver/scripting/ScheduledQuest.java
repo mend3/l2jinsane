@@ -18,21 +18,16 @@ public abstract class ScheduledQuest extends Quest {
     }
 
     private static int getDayOfWeek(String day) throws Exception {
-        if (day.equals("MON"))
-            return 2;
-        if (day.equals("TUE"))
-            return 3;
-        if (day.equals("WED"))
-            return 4;
-        if (day.equals("THU"))
-            return 5;
-        if (day.equals("FRI"))
-            return 6;
-        if (day.equals("SAT"))
-            return 7;
-        if (day.equals("SUN"))
-            return 1;
-        throw new Exception();
+        return switch (day) {
+            case "MON" -> 2;
+            case "TUE" -> 3;
+            case "WED" -> 4;
+            case "THU" -> 5;
+            case "FRI" -> 6;
+            case "SAT" -> 7;
+            case "SUN" -> 1;
+            default -> throw new Exception();
+        };
     }
 
     public final boolean isStarted() {
@@ -80,7 +75,7 @@ public abstract class ScheduledQuest extends Quest {
         }
     }
 
-    private final Calendar parseTimeStamp(String value) throws Exception {
+    private Calendar parseTimeStamp(String value) throws Exception {
         String[] timeStamp, params, date;
         if (value == null)
             return null;
@@ -204,7 +199,7 @@ public abstract class ScheduledQuest extends Quest {
 
     protected abstract void onEnd();
 
-    private final void print(Calendar c) {
+    private void print(Calendar c) {
         LOGGER.debug("{}: {} = {}.", toString(), (c == this._start) ? "Next start" : "Next end", String.format("%d.%d.%d %d:%02d:%02d", c.get(Calendar.DATE), c.get(Calendar.MONTH) + 1, c.get(Calendar.YEAR), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND)));
     }
 }

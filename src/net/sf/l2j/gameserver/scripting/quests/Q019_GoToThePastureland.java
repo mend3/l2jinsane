@@ -55,14 +55,11 @@ public class Q019_GoToThePastureland extends Quest {
                 htmltext = (player.getLevel() < 63) ? "31302-03.htm" : "31302-00.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 31302:
-                        htmltext = "31302-02.htm";
-                        break;
-                    case 31537:
-                        htmltext = "31537-00.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 31302 -> "31302-02.htm";
+                    case 31537 -> "31537-00.htm";
+                    default -> htmltext;
+                };
                 break;
             case 2:
                 htmltext = getAlreadyCompletedMsg();

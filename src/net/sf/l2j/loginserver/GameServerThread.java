@@ -180,8 +180,7 @@ public class GameServerThread extends Thread {
         if (isAuthed()) {
             final PlayerInGame pig = new PlayerInGame(data);
 
-            for (String account : pig.getAccounts())
-                _accountsOnGameServer.add(account);
+            _accountsOnGameServer.addAll(pig.getAccounts());
         } else
             forceClose(LoginServerFail.NOT_AUTHED);
     }

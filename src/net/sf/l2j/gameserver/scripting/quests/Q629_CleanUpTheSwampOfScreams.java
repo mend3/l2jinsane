@@ -7,7 +7,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q629_CleanUpTheSwampOfScreams extends Quest {
@@ -36,8 +35,7 @@ public class Q629_CleanUpTheSwampOfScreams extends Quest {
         setItemsIds(7250, 7251);
         addStartNpc(31553);
         addTalkId(31553);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : CHANCES.keySet()) {
             addKillId(npcId);
         }
     }
@@ -77,14 +75,11 @@ public class Q629_CleanUpTheSwampOfScreams extends Quest {
             return htmltext;
         if (!st.hasAtLeastOneQuestItem(7246, 7247))
             return "31553-6.htm";
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 66) ? "31553-0a.htm" : "31553-0.htm";
-                break;
-            case 1:
-                htmltext = (st.getQuestItemsCount(7250) >= 100) ? "31553-2.htm" : "31553-1a.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 66) ? "31553-0a.htm" : "31553-0.htm";
+            case 1 -> (st.getQuestItemsCount(7250) >= 100) ? "31553-2.htm" : "31553-1a.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

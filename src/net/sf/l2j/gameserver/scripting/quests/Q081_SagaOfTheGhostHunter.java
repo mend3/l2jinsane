@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q081_SagaOfTheGhostHunter extends SagasSuperClass {
     public Q081_SagaOfTheGhostHunter() {
         super(81, "Saga of the Ghost Hunter");

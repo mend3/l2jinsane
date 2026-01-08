@@ -21,7 +21,7 @@ public class AdminTournament implements IAdminCommandHandler {
         ThreadPool.schedule(ArenaTask::finishEvent, 10L);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_tour"))
             if (ArenaTask._started) {
                 LOGGER.info("----------------------------------------------------------------------------");
@@ -39,7 +39,6 @@ public class AdminTournament implements IAdminCommandHandler {
                 _arena_manual = true;
                 activeChar.sendMessage("SYS: Voce ativou o evento Tournament Manualmente..");
             }
-        return true;
     }
 
     public String[] getAdminCommandList() {

@@ -151,8 +151,8 @@ public class HennaList {
 
     public int size() {
         int result = 0;
-        for (int i = 0; i < this._hennas.length; i++) {
-            if (this._hennas[i] != null)
+        for (Henna henna : this._hennas) {
+            if (henna != null)
                 result++;
         }
         return result;

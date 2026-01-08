@@ -7,7 +7,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q627_HeartInSearchOfPower extends Quest {
@@ -51,8 +50,7 @@ public class Q627_HeartInSearchOfPower extends Quest {
         setItemsIds(7171);
         addStartNpc(31518);
         addTalkId(31518, 31519);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : CHANCES.keySet()) {
             addKillId(npcId);
         }
     }

@@ -22,42 +22,19 @@ public final class RaidPointReset extends ScheduledQuest {
             for (Map.Entry<Integer, Integer> entry : ranks.entrySet()) {
                 if (!clan.isMember(entry.getKey()))
                     continue;
-                int points = 0;
-                switch (entry.getValue()) {
-                    case 1:
-                        points = 1250;
-                        break;
-                    case 2:
-                        points = 900;
-                        break;
-                    case 3:
-                        points = 700;
-                        break;
-                    case 4:
-                        points = 600;
-                        break;
-                    case 5:
-                        points = 450;
-                        break;
-                    case 6:
-                        points = 350;
-                        break;
-                    case 7:
-                        points = 300;
-                        break;
-                    case 8:
-                        points = 200;
-                        break;
-                    case 9:
-                        points = 150;
-                        break;
-                    case 10:
-                        points = 100;
-                        break;
-                    default:
-                        points = (entry.getValue() <= 50) ? 25 : 12;
-                        break;
-                }
+                int points = switch (entry.getValue()) {
+                    case 1 -> 1250;
+                    case 2 -> 900;
+                    case 3 -> 700;
+                    case 4 -> 600;
+                    case 5 -> 450;
+                    case 6 -> 350;
+                    case 7 -> 300;
+                    case 8 -> 200;
+                    case 9 -> 150;
+                    case 10 -> 100;
+                    default -> (entry.getValue() <= 50) ? 25 : 12;
+                };
                 rewards.merge(clan, points, Integer::sum);
             }
         }

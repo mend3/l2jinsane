@@ -41,8 +41,8 @@ public final class MariaDB {
         }
     }
 
-    public static boolean set(String query, Object... parameters) {
-        return setEx(null, query, parameters);
+    public static void set(String query, Object... parameters) {
+        setEx(null, query, parameters);
     }
 
     public static boolean set(String query) {
@@ -87,7 +87,7 @@ public final class MariaDB {
         }
     }
 
-    public static void setVars(PreparedStatement statement, Object... parameters) throws SQLException {
+    public static void setVars(PreparedStatement statement, Object... parameters) {
         // Byte code:
         //   0: iconst_0
         //   1: istore_2

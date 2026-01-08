@@ -27,12 +27,10 @@ public class ArmorSetData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "armorset", (armorsetNode) -> {
-                StatSet set = this.parseAttributes(armorsetNode);
-                this._armorSets.put(set.getInteger("chest"), new ArmorSet(set));
-            });
-        });
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "armorset", (armorsetNode) -> {
+            StatSet set = this.parseAttributes(armorsetNode);
+            this._armorSets.put(set.getInteger("chest"), new ArmorSet(set));
+        }));
     }
 
     public ArmorSet getSet(int chestId) {

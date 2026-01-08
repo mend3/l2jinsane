@@ -155,14 +155,11 @@ public class Q660_AidingTheFloranVillage extends Quest {
             return htmltext;
         switch (st.getState()) {
             case 0:
-                switch (npc.getNpcId()) {
-                    case 30608:
-                        htmltext = (player.getLevel() < 30) ? "30608-01.htm" : "30608-02.htm";
-                        break;
-                    case 30291:
-                        htmltext = "30291-01.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 30608 -> (player.getLevel() < 30) ? "30608-01.htm" : "30608-02.htm";
+                    case 30291 -> "30291-01.htm";
+                    default -> htmltext;
+                };
                 break;
             case 1:
                 switch (npc.getNpcId()) {

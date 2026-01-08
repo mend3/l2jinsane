@@ -18,11 +18,6 @@ public enum AttributeType {
         this._id = id;
     }
 
-    // $FF: synthetic method
-    private static AttributeType[] $values() {
-        return new AttributeType[]{NONE, STATUS, CLOCK, BRACKETS, AGE_LIMIT, TEST_SERVER, PVP_SERVER, MAX_PLAYERS};
-    }
-
     public int getId() {
         return this._id;
     }

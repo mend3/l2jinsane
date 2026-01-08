@@ -50,14 +50,11 @@ public class Q014_WhereaboutsOfTheArchaeologist extends Quest {
                 htmltext = (player.getLevel() < 74) ? "31263-1.htm" : "31263-0.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 31263:
-                        htmltext = "31263-2.htm";
-                        break;
-                    case 31538:
-                        htmltext = "31538-0.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 31263 -> "31263-2.htm";
+                    case 31538 -> "31538-0.htm";
+                    default -> htmltext;
+                };
                 break;
             case 2:
                 htmltext = getAlreadyCompletedMsg();

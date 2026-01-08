@@ -4,7 +4,6 @@ import net.sf.l2j.gameserver.enums.skills.SkillChangeType;
 
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,7 +52,7 @@ public class SkillBalanceHolder {
     }
 
     public double getValue(SkillChangeType sct) {
-        return this._list.containsKey(sct) ? this._list.get(sct) : 1.0D;
+        return this._list.getOrDefault(sct, 1.0D);
     }
 
     public void removeOly(SkillChangeType sct) {
@@ -66,7 +65,7 @@ public class SkillBalanceHolder {
     }
 
     public double getOlyBalanceValue(SkillChangeType sct) {
-        return this._olyList.containsKey(sct) ? this._olyList.get(sct) : 1.0D;
+        return this._olyList.getOrDefault(sct, 1.0D);
     }
 
     private static class AttackTypeComparator implements Comparator<SkillChangeType> {
@@ -76,14 +75,7 @@ public class SkillBalanceHolder {
         public int compare(SkillChangeType l, SkillChangeType r) {
             int left = l.getId();
             int right = r.getId();
-            if (left > right) {
-                return 1;
-            } else if (left < right) {
-                return -1;
-            } else {
-                Random rnd = new Random();
-                return 1;
-            }
+            return Integer.compare(left, right);
         }
     }
 }

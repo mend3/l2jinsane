@@ -130,7 +130,7 @@ public class VillageMaster extends Folk {
                             leaderPlayer.sendPacket(new UserInfo(leaderPlayer));
                         }
 
-                        clan.broadcastToOnlineMembers(new L2GameServerPacket[]{new PledgeShowMemberListAll(clan, subPledge.getId()), SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_SELECTED_AS_CAPTAIN_OF_S2).addString(leaderName).addString(clanName)});
+                        clan.broadcastToOnlineMembers(new PledgeShowMemberListAll(clan, subPledge.getId()), SystemMessage.getSystemMessage(SystemMessageId.S1_HAS_BEEN_SELECTED_AS_CAPTAIN_OF_S2).addString(leaderName).addString(clanName));
                     }
                 } else {
                     if (subPledge.getId() >= 1001) {
@@ -213,7 +213,7 @@ public class VillageMaster extends Folk {
             }
 
             Clan clan = player.getClan();
-            SubPledge subPledge = player.getClan().getSubPledge(Integer.valueOf(cmdParams));
+            SubPledge subPledge = player.getClan().getSubPledge(Integer.parseInt(cmdParams));
             if (subPledge == null) {
                 player.sendMessage("Pledge doesn't exist.");
                 return;
@@ -231,7 +231,7 @@ public class VillageMaster extends Folk {
 
             subPledge.setName(cmdParams2);
             clan.updateSubPledgeInDB(subPledge);
-            clan.broadcastToOnlineMembers(new L2GameServerPacket[]{new PledgeShowMemberListAll(clan, subPledge.getId())});
+            clan.broadcastToOnlineMembers(new PledgeShowMemberListAll(clan, subPledge.getId()));
             player.sendMessage("Pledge name have been changed to: " + cmdParams2);
         } else if (actualCommand.equalsIgnoreCase("create_royal")) {
             if (cmdParams.isEmpty()) {
@@ -433,7 +433,7 @@ public class VillageMaster extends Folk {
                         StringBuilder sb = new StringBuilder(300);
 
                         for (ClassId subClass : subsAvailable) {
-                            StringUtil.append(sb, new Object[]{"<a action=\"bypass -h npc_%objectId%_Subclass 4 ", subClass.getId(), "\" msg=\"1268;", subClass, "\">", subClass, "</a><br>"});
+                            StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 4 ", subClass.getId(), "\" msg=\"1268;", subClass, "\">", subClass, "</a><br>");
                         }
 
                         html.setFile("data/html/villagemaster/SubClass_Add.htm");
@@ -456,16 +456,16 @@ public class VillageMaster extends Folk {
                     } else {
                         StringBuilder sb = new StringBuilder(300);
                         if (this.checkVillageMaster(player.getBaseClass())) {
-                            StringUtil.append(sb, new Object[]{"<a action=\"bypass -h npc_%objectId%_Subclass 5 0\">", PlayerClassData.getInstance().getClassNameById(player.getBaseClass()), "</a><br>"});
+                            StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 5 0\">", PlayerClassData.getInstance().getClassNameById(player.getBaseClass()), "</a><br>");
                         }
 
                         for (SubClass subclass : player.getSubClasses().values()) {
                             if (this.checkVillageMaster(subclass.getClassDefinition())) {
-                                StringUtil.append(sb, new Object[]{"<a action=\"bypass -h npc_%objectId%_Subclass 5 ", subclass.getClassIndex(), "\">", subclass.getClassDefinition(), "</a><br>"});
+                                StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 5 ", subclass.getClassIndex(), "\">", subclass.getClassDefinition(), "</a><br>");
                             }
                         }
 
-                        if (sb.length() > 0) {
+                        if (!sb.isEmpty()) {
                             html.setFile("data/html/villagemaster/SubClass_Change.htm");
                             html.replace("%list%", sb.toString());
                         } else {
@@ -579,7 +579,7 @@ public class VillageMaster extends Folk {
                     StringBuilder sb = new StringBuilder(300);
 
                     for (ClassId subClass : subsAvailable) {
-                        StringUtil.append(sb, new Object[]{"<a action=\"bypass -h npc_%objectId%_Subclass 7 ", paramOne, " ", subClass.getId(), "\" msg=\"1445;", "\">", subClass, "</a><br>"});
+                        StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Subclass 7 ", paramOne, " ", subClass.getId(), "\" msg=\"1445;", "\">", subClass, "</a><br>");
                     }
 
                     switch (paramOne) {
@@ -637,7 +637,7 @@ public class VillageMaster extends Folk {
         }
     }
 
-    private final Set<ClassId> getAvailableSubClasses(Player player) {
+    private Set<ClassId> getAvailableSubClasses(Player player) {
         Set<ClassId> availSubs = ClassId.getAvailableSubclasses(player);
         if (availSubs != null && !availSubs.isEmpty()) {
             Iterator<ClassId> availSub = availSubs.iterator();
@@ -660,7 +660,7 @@ public class VillageMaster extends Folk {
         return availSubs;
     }
 
-    private final boolean isValidNewSubClass(Player player, int classId) {
+    private boolean isValidNewSubClass(Player player, int classId) {
         if (!this.checkVillageMaster(classId)) {
             return false;
         } else {

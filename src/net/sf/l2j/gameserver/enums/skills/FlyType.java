@@ -5,9 +5,4 @@ public enum FlyType {
     THROW_UP,
     THROW_HORIZONTAL,
     DUMMY;
-
-    // $FF: synthetic method
-    private static FlyType[] $values() {
-        return new FlyType[]{THROW_UP, THROW_HORIZONTAL, DUMMY};
-    }
 }

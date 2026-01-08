@@ -33,8 +33,7 @@ public class EventInformation implements Runnable {
         String finalMsg = this.msg;
 
         for (String r : this.replacements.keySet()) {
-            Object var10002 = this.replacements.get(r);
-            finalMsg = finalMsg.replaceAll(r, "" + String.valueOf(var10002));
+            finalMsg = finalMsg.replaceAll(r, String.valueOf(this.replacements.get(r)));
         }
 
         ExShowScreenMessage sm = new ExShowScreenMessage(finalMsg, 3000, 2, false);

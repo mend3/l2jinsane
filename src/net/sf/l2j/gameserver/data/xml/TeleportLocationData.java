@@ -26,12 +26,10 @@ public class TeleportLocationData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "teleport", (teleportNode) -> {
-                StatSet set = this.parseAttributes(teleportNode);
-                this._teleports.put(set.getInteger("id"), new TeleportLocation(set));
-            });
-        });
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "teleport", (teleportNode) -> {
+            StatSet set = this.parseAttributes(teleportNode);
+            this._teleports.put(set.getInteger("id"), new TeleportLocation(set));
+        }));
     }
 
     public void reload() {

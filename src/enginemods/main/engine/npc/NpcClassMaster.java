@@ -51,14 +51,14 @@ public class NpcClassMaster extends AbstractMods {
                 for (ClassId cid : ClassId.values()) {
                     if (validateClassId(currentClassId, cid) && cid.level() == level) {
                         menu.append("<button value=\"");
-                        menu.append(PlayerClassData.getInstance().getClassNameById(cid.getId()) + "\" ");
+                        menu.append(PlayerClassData.getInstance().getClassNameById(cid.getId())).append("\" ");
                         menu.append("action=\"bypass -h Engine NpcClassMaster change_class ");
-                        menu.append(String.valueOf(cid.getId()) + "\"");
+                        menu.append(cid.getId()).append("\"");
                         menu.append(" width=204 height=20 back=\"sek.cbui77\" fore=\"sek.cbui75\"><br>");
                     }
                 }
 
-                if (menu.length() > 0) {
+                if (!menu.isEmpty()) {
                     html.setFile("data/html/engine/npc/classmaster/template.htm");
                     html.replace("%name%", PlayerClassData.getInstance().getClassNameById(currentClassId.getId()));
                     html.replace("%menu%", menu.toString());
@@ -125,8 +125,8 @@ public class NpcClassMaster extends AbstractMods {
             int count = ITEM_LIST.get(level).getPriceItemCount();
             String itemName = ItemTable.getInstance().getTemplate(ITEM_LIST.get(level).getPriceItemId()).getName();
             sb.append("<tr><td><img src=\"Icon.Item_System04\" width=32 height=32></td>");
-            sb.append("<td><font color=\"LEVEL\">[" + count + "]</font></td>");
-            sb.append("<td>[" + itemName + "]</td>");
+            sb.append("<td><font color=\"LEVEL\">[").append(count).append("]</font></td>");
+            sb.append("<td>[").append(itemName).append("]</td>");
             sb.append("<td><img src=\"Icon.Item_System05\" width=32 height=32></td></tr>");
         } else {
             sb.append("<tr><td>Free</td></tr>");
@@ -174,8 +174,7 @@ public class NpcClassMaster extends AbstractMods {
         }
     }
 
-    public static NpcClassMaster getInstance() {
-        return NpcClassMaster.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
@@ -199,26 +198,26 @@ public class NpcClassMaster extends AbstractMods {
             hb.append("<html><body>");
             hb.append(Html.headHtml("CLASS MASTER"));
             hb.append("<br>");
-            hb.append(new Object[]{"Welcome my name is ", npc.getName(), " and take care to meet the most famous players in the world.<br>"});
+            hb.append("Welcome my name is ", npc.getName(), " and take care to meet the most famous players in the world.<br>");
             hb.append("You probably want to know who it is!<br>");
             hb.append("I actually have a list, I can show it to you if you want.<br>");
             hb.append("What would you like to see?<br>");
             hb.append("<center>");
             hb.append("<table width=280>");
             hb.append("<tr>");
-            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
+            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
             hb.append("<td><button value=\"Complete the first class transfer\" action=\"bypass -h Engine NpcClassMaster 1stClass\" width=216 height=32 back=L2UI_CH3.refinegrade3_21 fore=L2UI_CH3.refinegrade3_21></td>");
-            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
+            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
             hb.append("</tr>");
             hb.append("<tr>");
-            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
+            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
             hb.append("<td><button value=\"Complete the second class transfer\" action=\"bypass -h Engine NpcClassMaster 2ndClass\" width=216 height=32 back=L2UI_CH3.refinegrade3_21 fore=L2UI_CH3.refinegrade3_21></td>");
-            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
+            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
             hb.append("</tr>");
             hb.append("<tr>");
-            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
+            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
             hb.append("<td><button value=\"Complete the third class transfer\" action=\"bypass -h Engine NpcClassMaster 3rdClass\" width=216 height=32 back=L2UI_CH3.refinegrade3_21 fore=L2UI_CH3.refinegrade3_21></td>");
-            hb.append(new Object[]{"<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
+            hb.append("<td align=center>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
             hb.append("</tr>");
             hb.append("</table>");
             hb.append("</center>");
@@ -255,7 +254,7 @@ public class NpcClassMaster extends AbstractMods {
         protected static final NpcClassMaster INSTANCE = new NpcClassMaster();
     }
 
-    public class ClassMasterList {
+    public static class ClassMasterList {
         private final int _priceItemId;
         private final int _priceItemCount;
         private final int _rewardItemId;

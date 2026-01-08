@@ -26,12 +26,10 @@ public class SpellbookData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "book", (bookNode) -> {
-                NamedNodeMap attrs = bookNode.getAttributes();
-                this._books.put(this.parseInteger(attrs, "skillId"), this.parseInteger(attrs, "itemId"));
-            });
-        });
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "book", (bookNode) -> {
+            NamedNodeMap attrs = bookNode.getAttributes();
+            this._books.put(this.parseInteger(attrs, "skillId"), this.parseInteger(attrs, "itemId"));
+        }));
     }
 
     public int getBookForSkill(int skillId, int level) {
@@ -39,25 +37,20 @@ public class SpellbookData implements IXmlReader {
             if (!Config.DIVINE_SP_BOOK_NEEDED) {
                 return 0;
             } else {
-                switch (level) {
-                    case 1:
-                        return 8618;
-                    case 2:
-                        return 8619;
-                    case 3:
-                        return 8620;
-                    case 4:
-                        return 8621;
-                    default:
-                        return 0;
-                }
+                return switch (level) {
+                    case 1 -> 8618;
+                    case 2 -> 8619;
+                    case 3 -> 8620;
+                    case 4 -> 8621;
+                    default -> 0;
+                };
             }
         } else if (level != 1) {
             return 0;
         } else if (!Config.SP_BOOK_NEEDED) {
             return 0;
         } else {
-            return !this._books.containsKey(skillId) ? 0 : this._books.get(skillId);
+            return this._books.getOrDefault(skillId, 0);
         }
     }
 

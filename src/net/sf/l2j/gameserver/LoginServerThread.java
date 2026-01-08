@@ -46,7 +46,7 @@ public class LoginServerThread extends Thread {
     private byte[] _blowfishKey;
     private RSAPublicKey _publicKey;
     private byte[] _hexId;
-    private int _requestId;
+    private final int _requestId;
     private int _maxPlayers;
     private StatusType _status;
 
@@ -77,7 +77,7 @@ public class LoginServerThread extends Thread {
     public void run() {
         while (!this.isInterrupted()) {
             try {
-                LOGGER.info("Connecting to login on {}:{}.", new Object[]{Config.GAME_SERVER_LOGIN_HOST, Config.GAME_SERVER_LOGIN_PORT});
+                LOGGER.info("Connecting to login on {}:{}.", Config.GAME_SERVER_LOGIN_HOST, Config.GAME_SERVER_LOGIN_PORT);
                 this._loginSocket = new Socket(Config.GAME_SERVER_LOGIN_HOST, Config.GAME_SERVER_LOGIN_PORT);
                 this._in = this._loginSocket.getInputStream();
                 this._out = new BufferedOutputStream(this._loginSocket.getOutputStream());
@@ -136,14 +136,14 @@ public class LoginServerThread extends Thread {
                             break;
                         case 1:
                             LoginServerFail lsf = new LoginServerFail(decrypt);
-                            LOGGER.info("LoginServer registration failed: {}.", new Object[]{lsf.getReasonString()});
+                            LOGGER.info("LoginServer registration failed: {}.", lsf.getReasonString());
                             break;
                         case 2:
                             AuthResponse aresp = new AuthResponse(decrypt);
                             this._serverId = aresp.getServerId();
                             this._serverName = aresp.getServerName();
                             Config.saveHexid(this._serverId, (new BigInteger(this._hexId)).toString(16));
-                            LOGGER.info("Registered as server: [{}] {}.", new Object[]{this._serverId, this._serverName});
+                            LOGGER.info("Registered as server: [{}] {}.", this._serverId, this._serverName);
                             ServerStatus ss = new ServerStatus();
                             ss.addAttribute(AttributeType.STATUS, Config.SERVER_GMONLY ? StatusType.GM_ONLY.getId() : StatusType.AUTO.getId());
                             ss.addAttribute(AttributeType.CLOCK, Config.SERVER_LIST_CLOCK);
@@ -172,7 +172,7 @@ public class LoginServerThread extends Thread {
                                 if (par.isAuthed()) {
                                     this.sendPacket(new PlayerInGame(par.getAccount()));
                                     client.setState(GameClient.GameClientState.AUTHED);
-                                    client.sendPacket(new CharSelectInfo(par.getAccount(), client.getSessionId().playOkID1));
+                                    client.sendPacket(new CharSelectInfo(par.getAccount(), client.getSessionId().playOkID1()));
                                 } else {
                                     client.sendPacket(new AuthLoginFail(FailReason.SYSTEM_ERROR_LOGIN_LATER));
                                     client.closeNow();
@@ -190,12 +190,12 @@ public class LoginServerThread extends Thread {
             } finally {
                 try {
                     this._loginSocket.close();
-                    if (this.isInterrupted()) {
-                        return;
-                    }
                 } catch (Exception ignored) {
                 }
 
+            }
+            if (this.isInterrupted()) {
+                return;
             }
 
             try {

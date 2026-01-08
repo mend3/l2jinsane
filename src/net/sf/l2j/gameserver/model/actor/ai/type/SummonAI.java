@@ -8,7 +8,6 @@ import net.sf.l2j.gameserver.model.WorldObject;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.Summon;
-import net.sf.l2j.gameserver.model.location.SpawnLocation;
 import net.sf.l2j.gameserver.taskmanager.AttackStanceTaskManager;
 
 public class SummonAI extends PlayableAI {

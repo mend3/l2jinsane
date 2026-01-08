@@ -10,27 +10,27 @@ import net.sf.l2j.gameserver.model.actor.template.NpcTemplate;
 import net.sf.l2j.gameserver.model.pledge.Clan;
 
 public abstract class AbstractNpcInfo extends L2GameServerPacket {
-    protected int _x;
+    protected final int _x;
 
-    protected int _y;
+    protected final int _y;
 
-    protected int _z;
+    protected final int _z;
 
-    protected int _heading;
+    protected final int _heading;
 
     protected int _idTemplate;
 
     protected boolean _isAttackable;
 
-    protected boolean _isSummoned;
+    protected final boolean _isSummoned;
 
-    protected int _mAtkSpd;
+    protected final int _mAtkSpd;
 
-    protected int _pAtkSpd;
+    protected final int _pAtkSpd;
 
-    protected int _runSpd;
+    protected final int _runSpd;
 
-    protected int _walkSpd;
+    protected final int _walkSpd;
 
     protected int _rhand;
 

@@ -17,11 +17,6 @@ public enum AttackType {
         this._attackId = attackId;
     }
 
-    // $FF: synthetic method
-    private static AttackType[] $values() {
-        return new AttackType[]{Normal, Magic, Crit, MCrit, Blow, PhysicalSkillDamage, PhysicalSkillCritical};
-    }
-
     public int getId() {
         return this._attackId;
     }

@@ -78,14 +78,11 @@ public class Q354_ConquestOfAlligatorIsland extends Quest {
         QuestState st = player.getQuestState("Q354_ConquestOfAlligatorIsland");
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 38) ? "30895-00.htm" : "30895-01.htm";
-                break;
-            case 1:
-                htmltext = st.hasQuestItems(5864) ? "30895-03a.htm" : "30895-03.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 38) ? "30895-00.htm" : "30895-01.htm";
+            case 1 -> st.hasQuestItems(5864) ? "30895-03a.htm" : "30895-03.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

@@ -60,7 +60,7 @@ public class AdminTeleport implements IAdminCommandHandler {
         }
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_runmod") || command.equals("admin_instant_move"))
             activeChar.setTeleMode(1);
         if (command.equals("admin_runmod tele"))
@@ -79,7 +79,7 @@ public class AdminTeleport implements IAdminCommandHandler {
                 Player player = World.getInstance().getPlayer(plyr);
                 if (player == null) {
                     activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                    return false;
+                    return;
                 }
                 teleportToCharacter(activeChar, player);
             }
@@ -89,7 +89,7 @@ public class AdminTeleport implements IAdminCommandHandler {
                 Player player = World.getInstance().getPlayer(targetName);
                 if (player == null) {
                     activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                    return false;
+                    return;
                 }
                 teleportCharacter(player, activeChar.getX(), activeChar.getY(), activeChar.getZ());
             } catch (StringIndexOutOfBoundsException ignored) {
@@ -100,7 +100,7 @@ public class AdminTeleport implements IAdminCommandHandler {
                 Player player = World.getInstance().getPlayer(targetName);
                 if (player == null) {
                     activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                    return false;
+                    return;
                 }
                 Party party = player.getParty();
                 if (party != null) {
@@ -119,7 +119,7 @@ public class AdminTeleport implements IAdminCommandHandler {
                 Player player = World.getInstance().getPlayer(targetName);
                 if (player == null) {
                     activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                    return false;
+                    return;
                 }
                 Clan clan = player.getClan();
                 if (clan != null) {
@@ -147,7 +147,7 @@ public class AdminTeleport implements IAdminCommandHandler {
                 Player player = World.getInstance().getPlayer(plyr);
                 if (player == null) {
                     activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
-                    return false;
+                    return;
                 }
                 sendHome(player);
             } else {
@@ -161,7 +161,6 @@ public class AdminTeleport implements IAdminCommandHandler {
                 sendHome(player);
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

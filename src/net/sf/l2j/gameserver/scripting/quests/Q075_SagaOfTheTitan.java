@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q075_SagaOfTheTitan extends SagasSuperClass {
     public Q075_SagaOfTheTitan() {
         super(75, "Saga of the Titan");

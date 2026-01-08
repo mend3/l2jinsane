@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q091_SagaOfTheArcanaLord extends SagasSuperClass {
     public Q091_SagaOfTheArcanaLord() {
         super(91, "Saga of the Arcana Lord");

@@ -17,11 +17,6 @@ public enum LootRule {
         this._smId = smId;
     }
 
-    // $FF: synthetic method
-    private static LootRule[] $values() {
-        return new LootRule[]{ITEM_LOOTER, ITEM_RANDOM, ITEM_RANDOM_SPOIL, ITEM_ORDER, ITEM_ORDER_SPOIL};
-    }
-
     public SystemMessageId getMessageId() {
         return this._smId;
     }

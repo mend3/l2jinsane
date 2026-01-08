@@ -130,7 +130,7 @@ public class HwidBan {
     }
 
     public boolean checkFullHWIDBanned(GameClient client) {
-        if (_lists.size() == 0)
+        if (_lists.isEmpty())
             return false;
         for (int i = 0; i < _lists.size(); i++) {
             if (_lists.get(i).getHWID().equals(client.getHWID()))

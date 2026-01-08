@@ -37,7 +37,7 @@ public class PetFood implements IItemHandler {
         }
     }
 
-    public boolean useFood(Playable activeChar, int magicId, ItemInstance item) {
+    public void useFood(Playable activeChar, int magicId, ItemInstance item) {
         L2Skill skill = SkillTable.getInstance().getInfo(magicId, 1);
         if (skill != null)
             if (activeChar instanceof Pet pet) {
@@ -46,7 +46,6 @@ public class PetFood implements IItemHandler {
                     pet.setCurrentFed(pet.getCurrentFed() + skill.getFeed() * Config.PET_FOOD_RATE);
                     if (pet.checkAutoFeedState())
                         pet.getOwner().sendPacket(SystemMessageId.YOUR_PET_ATE_A_LITTLE_BUT_IS_STILL_HUNGRY);
-                    return true;
                 }
             } else if (activeChar instanceof Player player) {
                 int itemId = item.getItemId();
@@ -55,11 +54,9 @@ public class PetFood implements IItemHandler {
                         player.broadcastPacket(new MagicSkillUse(activeChar, activeChar, magicId, 1, 0, 0));
                         player.setCurrentFeed(player.getCurrentFeed() + skill.getFeed() * Config.PET_FOOD_RATE);
                     }
-                    return true;
+                    return;
                 }
                 activeChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.S1_CANNOT_BE_USED).addItemName(itemId));
-                return false;
             }
-        return false;
     }
 }

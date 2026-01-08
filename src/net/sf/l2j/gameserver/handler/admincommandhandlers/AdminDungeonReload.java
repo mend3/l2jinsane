@@ -5,11 +5,11 @@ import net.sf.l2j.gameserver.handler.IAdminCommandHandler;
 import net.sf.l2j.gameserver.model.actor.Player;
 
 public class AdminDungeonReload implements IAdminCommandHandler {
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_dungeon_reload")) {
             if (DungeonManager.getInstance().isReloading()) {
                 activeChar.sendMessage("A reload command has already been issued.");
-                return false;
+                return;
             }
             if (DungeonManager.getInstance().reload()) {
                 activeChar.sendMessage("dungeons.xml has been reloaded.");
@@ -17,7 +17,6 @@ public class AdminDungeonReload implements IAdminCommandHandler {
                 activeChar.sendMessage("There are currently active dungeons running, the reload will be completed when they finish.");
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

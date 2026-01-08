@@ -42,9 +42,7 @@ public class MapRegionData implements IXmlReader {
     }
 
     public static TownZone getTown(int townId) {
-        return ZoneManager.getInstance().getAllZones(TownZone.class).stream().filter((t) -> {
-            return t.getTownId() == townId;
-        }).findFirst().orElse(null);
+        return ZoneManager.getInstance().getAllZones(TownZone.class).stream().filter((t) -> t.getTownId() == townId).findFirst().orElse(null);
     }
 
     public static TownZone getTown(int x, int y, int z) {
@@ -61,17 +59,15 @@ public class MapRegionData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "map", (mapNode) -> {
-                NamedNodeMap attrs = mapNode.getAttributes();
-                int rY = this.parseInteger(attrs, "geoY") - 10;
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "map", (mapNode) -> {
+            NamedNodeMap attrs = mapNode.getAttributes();
+            int rY = this.parseInteger(attrs, "geoY") - 10;
 
-                for (int rX = 0; rX < 11; ++rX) {
-                    this._regions[rX][rY] = this.parseInteger(attrs, "geoX_" + (rX + 16));
-                }
+            for (int rX = 0; rX < 11; ++rX) {
+                this._regions[rX][rY] = this.parseInteger(attrs, "geoX_" + (rX + 16));
+            }
 
-            });
-        });
+        }));
     }
 
     public final int getMapRegion(int posX, int posY) {
@@ -232,7 +228,7 @@ public class MapRegionData implements IXmlReader {
         CASTLE,
         CLAN_HALL,
         SIEGE_FLAG,
-        TOWN;
+        TOWN
 
     }
 

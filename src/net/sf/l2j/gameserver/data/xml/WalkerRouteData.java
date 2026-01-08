@@ -28,18 +28,14 @@ public class WalkerRouteData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "route", (routeNode) -> {
-                NamedNodeMap attrs = routeNode.getAttributes();
-                List<WalkerLocation> list = new ArrayList<>();
-                int npcId = this.parseInteger(attrs, "npcId");
-                boolean run = this.parseBoolean(attrs, "run");
-                this.forEach(routeNode, "node", (nodeNode) -> {
-                    list.add(new WalkerLocation(this.parseAttributes(nodeNode), run));
-                });
-                this._routes.put(npcId, list);
-            });
-        });
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "route", (routeNode) -> {
+            NamedNodeMap attrs = routeNode.getAttributes();
+            List<WalkerLocation> list = new ArrayList<>();
+            int npcId = this.parseInteger(attrs, "npcId");
+            boolean run = this.parseBoolean(attrs, "run");
+            this.forEach(routeNode, "node", (nodeNode) -> list.add(new WalkerLocation(this.parseAttributes(nodeNode), run)));
+            this._routes.put(npcId, list);
+        }));
     }
 
     public void reload() {

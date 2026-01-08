@@ -33,22 +33,15 @@ public class DimensionalRiftManager implements IXmlReader {
     }
 
     private static int getNeededItems(byte type) {
-        switch (type) {
-            case 1:
-                return Config.RIFT_ENTER_COST_RECRUIT;
-            case 2:
-                return Config.RIFT_ENTER_COST_SOLDIER;
-            case 3:
-                return Config.RIFT_ENTER_COST_OFFICER;
-            case 4:
-                return Config.RIFT_ENTER_COST_CAPTAIN;
-            case 5:
-                return Config.RIFT_ENTER_COST_COMMANDER;
-            case 6:
-                return Config.RIFT_ENTER_COST_HERO;
-            default:
-                throw new IndexOutOfBoundsException();
-        }
+        return switch (type) {
+            case 1 -> Config.RIFT_ENTER_COST_RECRUIT;
+            case 2 -> Config.RIFT_ENTER_COST_SOLDIER;
+            case 3 -> Config.RIFT_ENTER_COST_OFFICER;
+            case 4 -> Config.RIFT_ENTER_COST_CAPTAIN;
+            case 5 -> Config.RIFT_ENTER_COST_COMMANDER;
+            case 6 -> Config.RIFT_ENTER_COST_HERO;
+            default -> throw new IndexOutOfBoundsException();
+        };
     }
 
     public static DimensionalRiftManager getInstance() {
@@ -61,43 +54,41 @@ public class DimensionalRiftManager implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "area", (areaNode) -> {
-                NamedNodeMap areaAttrs = areaNode.getAttributes();
-                byte type = Byte.parseByte(areaAttrs.getNamedItem("type").getNodeValue());
-                if (!this._rooms.containsKey(type)) {
-                    this._rooms.put(type, new HashMap<>(9));
-                }
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "area", (areaNode) -> {
+            NamedNodeMap areaAttrs = areaNode.getAttributes();
+            byte type = Byte.parseByte(areaAttrs.getNamedItem("type").getNodeValue());
+            if (!this._rooms.containsKey(type)) {
+                this._rooms.put(type, new HashMap<>(9));
+            }
 
-                this.forEach(areaNode, "room", (roomNode) -> {
-                    DimensionalRiftRoom riftRoom = new DimensionalRiftRoom(type, this.parseAttributes(roomNode));
-                    ((HashMap) this._rooms.get(type)).put(riftRoom.getId(), riftRoom);
-                    this.forEach(roomNode, "spawn", (spawnNode) -> {
-                        NamedNodeMap spawnAttrs = spawnNode.getAttributes();
-                        int mobId = Integer.parseInt(spawnAttrs.getNamedItem("mobId").getNodeValue());
-                        int delay = Integer.parseInt(spawnAttrs.getNamedItem("delay").getNodeValue());
-                        int count = Integer.parseInt(spawnAttrs.getNamedItem("count").getNodeValue());
-                        NpcTemplate template = NpcData.getInstance().getTemplate(mobId);
-                        if (template == null) {
-                            LOGGER.warn("Template " + mobId + " not found!");
-                        } else {
-                            try {
-                                for (int i = 0; i < count; ++i) {
-                                    L2Spawn spawnDat = new L2Spawn(template);
-                                    spawnDat.setLoc(riftRoom.getRandomX(), riftRoom.getRandomY(), -6752, -1);
-                                    spawnDat.setRespawnDelay(delay);
-                                    SpawnTable.getInstance().addSpawn(spawnDat, false);
-                                    riftRoom.getSpawns().add(spawnDat);
-                                }
-                            } catch (Exception var9) {
-                                LOGGER.error("Failed to initialize a spawn.", var9);
+            this.forEach(areaNode, "room", (roomNode) -> {
+                DimensionalRiftRoom riftRoom = new DimensionalRiftRoom(type, this.parseAttributes(roomNode));
+                (this._rooms.get(type)).put(riftRoom.getId(), riftRoom);
+                this.forEach(roomNode, "spawn", (spawnNode) -> {
+                    NamedNodeMap spawnAttrs = spawnNode.getAttributes();
+                    int mobId = Integer.parseInt(spawnAttrs.getNamedItem("mobId").getNodeValue());
+                    int delay = Integer.parseInt(spawnAttrs.getNamedItem("delay").getNodeValue());
+                    int count = Integer.parseInt(spawnAttrs.getNamedItem("count").getNodeValue());
+                    NpcTemplate template = NpcData.getInstance().getTemplate(mobId);
+                    if (template == null) {
+                        LOGGER.warn("Template " + mobId + " not found!");
+                    } else {
+                        try {
+                            for (int i = 0; i < count; ++i) {
+                                L2Spawn spawnDat = new L2Spawn(template);
+                                spawnDat.setLoc(riftRoom.getRandomX(), riftRoom.getRandomY(), -6752, -1);
+                                spawnDat.setRespawnDelay(delay);
+                                SpawnTable.getInstance().addSpawn(spawnDat, false);
+                                riftRoom.getSpawns().add(spawnDat);
                             }
-
+                        } catch (Exception var9) {
+                            LOGGER.error("Failed to initialize a spawn.", var9);
                         }
-                    });
+
+                    }
                 });
             });
-        });
+        }));
     }
 
     public void reload() {
@@ -211,9 +202,7 @@ public class DimensionalRiftManager implements IXmlReader {
     }
 
     public List<DimensionalRiftRoom> getFreeRooms(byte type, boolean canUseBossRoom) {
-        return (this._rooms.get(type)).values().stream().filter((r) -> {
-            return !r.isPartyInside() && (canUseBossRoom || !r.isBossRoom());
-        }).collect(Collectors.toList());
+        return (this._rooms.get(type)).values().stream().filter((r) -> !r.isPartyInside() && (canUseBossRoom || !r.isBossRoom())).collect(Collectors.toList());
     }
 
     public void onPartyEdit(Party party) {

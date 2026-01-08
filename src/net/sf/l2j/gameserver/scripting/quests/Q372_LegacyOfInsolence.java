@@ -93,23 +93,14 @@ public class Q372_LegacyOfInsolence extends Quest {
                 htmltext = (player.getLevel() < 59) ? "30844-01.htm" : "30844-02.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 30844:
-                        htmltext = "30844-05.htm";
-                        break;
-                    case 30839:
-                        htmltext = checkAndRewardItems(st, 1, 4, 30839);
-                        break;
-                    case 30929:
-                        htmltext = checkAndRewardItems(st, 2, 5, 30929);
-                        break;
-                    case 31001:
-                        htmltext = checkAndRewardItems(st, 3, 6, 31001);
-                        break;
-                    case 30855:
-                        htmltext = checkAndRewardItems(st, 4, 7, 30855);
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 30844 -> "30844-05.htm";
+                    case 30839 -> checkAndRewardItems(st, 1, 4, 30839);
+                    case 30929 -> checkAndRewardItems(st, 2, 5, 30929);
+                    case 31001 -> checkAndRewardItems(st, 3, 6, 31001);
+                    case 30855 -> checkAndRewardItems(st, 4, 7, 30855);
+                    default -> htmltext;
+                };
                 break;
         }
         return htmltext;

@@ -79,15 +79,9 @@ public class QueenAnt extends L2AttackableAIScript {
                 npc.broadcastPacket(new SocialAction(npc, Rnd.nextBoolean() ? 3 : 4));
             }
 
-            ((Monster) npc).getMinionList().getSpawnedMinions().stream().filter((m) -> {
-                return m.getNpcId() == 29005 && !ZONE.isInsideZone(m);
-            }).forEach(Monster::teleToMaster);
+            ((Monster) npc).getMinionList().getSpawnedMinions().stream().filter((m) -> m.getNpcId() == 29005 && !ZONE.isInsideZone(m)).forEach(Monster::teleToMaster);
         } else if (event.equalsIgnoreCase("chaos")) {
-            ((Monster) npc).getMinionList().getSpawnedMinions().stream().filter((m) -> {
-                return m.getNpcId() == 29005 && m.isInCombat() && Rnd.get(100) < 66;
-            }).forEach((m) -> {
-                ((AttackableAI) m.getAI()).aggroReconsider();
-            });
+            ((Monster) npc).getMinionList().getSpawnedMinions().stream().filter((m) -> m.getNpcId() == 29005 && m.isInCombat() && Rnd.get(100) < 66).forEach((m) -> ((AttackableAI) m.getAI()).aggroReconsider());
             this.startQuestTimer("chaos", 90000 + Rnd.get(240000), npc, null, false);
         } else if (event.equalsIgnoreCase("clean")) {
             this._larva.deleteMe();

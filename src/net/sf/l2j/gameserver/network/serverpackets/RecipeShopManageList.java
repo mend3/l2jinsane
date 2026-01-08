@@ -5,7 +5,6 @@ import net.sf.l2j.gameserver.model.craft.ManufactureItem;
 import net.sf.l2j.gameserver.model.item.Recipe;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public class RecipeShopManageList extends L2GameServerPacket {
@@ -24,12 +23,7 @@ public class RecipeShopManageList extends L2GameServerPacket {
             this._recipes = seller.getCommonRecipeBook();
         }
         if (seller.getCreateList() != null) {
-            Iterator<ManufactureItem> it = seller.getCreateList().getList().iterator();
-            while (it.hasNext()) {
-                ManufactureItem item = it.next();
-                if (item.isDwarven() != this._isDwarven || !seller.hasRecipeList(item.getId()))
-                    it.remove();
-            }
+            seller.getCreateList().getList().removeIf(item -> item.isDwarven() != this._isDwarven || !seller.hasRecipeList(item.getId()));
         }
     }
 

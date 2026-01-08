@@ -10,7 +10,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q384_WarehouseKeepersPastime extends Quest {
@@ -65,8 +64,7 @@ public class Q384_WarehouseKeepersPastime extends Quest {
         setItemsIds(5964);
         addStartNpc(30182);
         addTalkId(30182, 30685);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : CHANCES.keySet()) {
             addKillId(npcId);
         }
     }
@@ -139,7 +137,7 @@ public class Q384_WarehouseKeepersPastime extends Quest {
                 if (winningLines == 3) {
                     htmltext = getHtmlText(npcId + "-23.htm");
                     int chance = Rnd.get(100);
-                    for (int[] reward : (st.get("bet") == "10") ? _rewards_10_win : _rewards_100_win) {
+                    for (int[] reward : (st.get("bet").equals("10")) ? _rewards_10_win : _rewards_100_win) {
                         if (chance < reward[0]) {
                             st.giveItems(reward[1], 1);
                             if (reward[1] == 2437)
@@ -150,7 +148,7 @@ public class Q384_WarehouseKeepersPastime extends Quest {
                 } else if (winningLines == 0) {
                     htmltext = getHtmlText(npcId + "-25.htm");
                     int chance = Rnd.get(100);
-                    for (int[] reward : (st.get("bet") == "10") ? _rewards_10_lose : _rewards_100_lose) {
+                    for (int[] reward : (st.get("bet").equals("10")) ? _rewards_10_lose : _rewards_100_lose) {
                         if (chance < reward[0]) {
                             st.giveItems(reward[1], 1);
                             break;
@@ -178,14 +176,11 @@ public class Q384_WarehouseKeepersPastime extends Quest {
                 htmltext = (player.getLevel() < 40) ? "30182-04.htm" : "30182-01.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 30182:
-                        htmltext = (st.getQuestItemsCount(5964) < 10) ? "30182-06.htm" : "30182-07.htm";
-                        break;
-                    case 30685:
-                        htmltext = (st.getQuestItemsCount(5964) < 10) ? "30685-01.htm" : "30685-02.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 30182 -> (st.getQuestItemsCount(5964) < 10) ? "30182-06.htm" : "30182-07.htm";
+                    case 30685 -> (st.getQuestItemsCount(5964) < 10) ? "30685-01.htm" : "30685-02.htm";
+                    default -> htmltext;
+                };
                 break;
         }
         return htmltext;

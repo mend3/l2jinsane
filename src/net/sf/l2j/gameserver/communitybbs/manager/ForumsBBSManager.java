@@ -1,7 +1,7 @@
-package net.sf.l2j.gameserver.communitybbs.Manager;
+package net.sf.l2j.gameserver.communitybbs.manager;
 
 import net.sf.l2j.commons.pool.ConnectionPool;
-import net.sf.l2j.gameserver.communitybbs.BB.Forum;
+import net.sf.l2j.gameserver.communitybbs.bb.Forum;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -35,27 +35,25 @@ public class AnnouncementData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "announcement", (announcementNode) -> {
-                NamedNodeMap attrs = announcementNode.getAttributes();
-                String message = this.parseString(attrs, "message");
-                if (message != null && !message.isEmpty()) {
-                    boolean critical = this.parseBoolean(attrs, "critical", false);
-                    boolean auto = this.parseBoolean(attrs, "auto", false);
-                    if (auto) {
-                        int initialDelay = this.parseInteger(attrs, "initial_delay");
-                        int delay = this.parseInteger(attrs, "delay");
-                        int limit = Math.max(this.parseInteger(attrs, "limit"), 0);
-                        this._announcements.put(this._announcements.size(), new Announcement(message, critical, auto, initialDelay, delay, limit));
-                    } else {
-                        this._announcements.put(this._announcements.size(), new Announcement(message, critical));
-                    }
-
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "announcement", (announcementNode) -> {
+            NamedNodeMap attrs = announcementNode.getAttributes();
+            String message = this.parseString(attrs, "message");
+            if (message != null && !message.isEmpty()) {
+                boolean critical = this.parseBoolean(attrs, "critical", false);
+                boolean auto = this.parseBoolean(attrs, "auto", false);
+                if (auto) {
+                    int initialDelay = this.parseInteger(attrs, "initial_delay");
+                    int delay = this.parseInteger(attrs, "delay");
+                    int limit = Math.max(this.parseInteger(attrs, "limit"), 0);
+                    this._announcements.put(this._announcements.size(), new Announcement(message, critical, auto, initialDelay, delay, limit));
                 } else {
-                    LOGGER.warn("The message is empty on an announcement. Ignoring it.");
+                    this._announcements.put(this._announcements.size(), new Announcement(message, critical));
                 }
-            });
-        });
+
+            } else {
+                LOGGER.warn("The message is empty on an announcement. Ignoring it.");
+            }
+        }));
     }
 
     public void reload() {

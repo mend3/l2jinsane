@@ -101,47 +101,55 @@ public class Q223_TestOfTheChampion extends Quest {
         QuestState st = player.getQuestState("Q223_TestOfTheChampion");
         if (st == null)
             return htmltext;
-        if (event.equals("30624-06.htm")) {
-            st.setState((byte) 1);
-            st.set("cond", "1");
-            st.playSound("ItemSound.quest_accept");
-            st.giveItems(3277, 1);
-            if (!player.getMemos().getBool("secondClassChange39", false)) {
-                htmltext = "30624-06a.htm";
-                st.giveItems(7562, DF_REWARD_39.get(player.getClassId().getId()));
-                player.getMemos().set("secondClassChange39", true);
+        switch (event) {
+            case "30624-06.htm" -> {
+                st.setState((byte) 1);
+                st.set("cond", "1");
+                st.playSound("ItemSound.quest_accept");
+                st.giveItems(3277, 1);
+                if (!player.getMemos().getBool("secondClassChange39", false)) {
+                    htmltext = "30624-06a.htm";
+                    st.giveItems(7562, DF_REWARD_39.get(player.getClassId().getId()));
+                    player.getMemos().set("secondClassChange39", true);
+                }
             }
-        } else if (event.equals("30624-10.htm")) {
-            st.set("cond", "5");
-            st.playSound("ItemSound.quest_middle");
-            st.takeItems(3278, 1);
-            st.giveItems(3280, 1);
-        } else if (event.equals("30624-14.htm")) {
-            st.set("cond", "9");
-            st.playSound("ItemSound.quest_middle");
-            st.takeItems(3282, 1);
-            st.giveItems(3283, 1);
-        } else if (event.equals("30625-03.htm")) {
-            st.set("cond", "2");
-            st.playSound("ItemSound.quest_middle");
-            st.takeItems(3277, 1);
-            st.giveItems(3279, 1);
-        } else if (event.equals("30093-02.htm")) {
-            st.set("cond", "6");
-            st.playSound("ItemSound.quest_middle");
-            st.takeItems(3280, 1);
-            st.giveItems(3281, 1);
-        } else if (event.equals("30196-03.htm")) {
-            st.set("cond", "10");
-            st.playSound("ItemSound.quest_middle");
-            st.takeItems(3283, 1);
-            st.giveItems(3284, 1);
-        } else if (event.equals("30196-06.htm")) {
-            st.set("cond", "12");
-            st.playSound("ItemSound.quest_middle");
-            st.takeItems(3284, 1);
-            st.takeItems(3291, 1);
-            st.giveItems(3285, 1);
+            case "30624-10.htm" -> {
+                st.set("cond", "5");
+                st.playSound("ItemSound.quest_middle");
+                st.takeItems(3278, 1);
+                st.giveItems(3280, 1);
+            }
+            case "30624-14.htm" -> {
+                st.set("cond", "9");
+                st.playSound("ItemSound.quest_middle");
+                st.takeItems(3282, 1);
+                st.giveItems(3283, 1);
+            }
+            case "30625-03.htm" -> {
+                st.set("cond", "2");
+                st.playSound("ItemSound.quest_middle");
+                st.takeItems(3277, 1);
+                st.giveItems(3279, 1);
+            }
+            case "30093-02.htm" -> {
+                st.set("cond", "6");
+                st.playSound("ItemSound.quest_middle");
+                st.takeItems(3280, 1);
+                st.giveItems(3281, 1);
+            }
+            case "30196-03.htm" -> {
+                st.set("cond", "10");
+                st.playSound("ItemSound.quest_middle");
+                st.takeItems(3283, 1);
+                st.giveItems(3284, 1);
+            }
+            case "30196-06.htm" -> {
+                st.set("cond", "12");
+                st.playSound("ItemSound.quest_middle");
+                st.takeItems(3284, 1);
+                st.takeItems(3291, 1);
+                st.giveItems(3285, 1);
+            }
         }
         return htmltext;
     }

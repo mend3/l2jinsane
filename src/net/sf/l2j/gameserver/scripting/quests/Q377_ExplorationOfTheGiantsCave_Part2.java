@@ -65,14 +65,11 @@ public class Q377_ExplorationOfTheGiantsCave_Part2 extends Quest {
         QuestState st = player.getQuestState("Q377_ExplorationOfTheGiantsCave_Part2");
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 57 || !st.hasQuestItems(5892)) ? "31147-01.htm" : "31147-02.htm";
-                break;
-            case 1:
-                htmltext = checkItems(st);
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 57 || !st.hasQuestItems(5892)) ? "31147-01.htm" : "31147-02.htm";
+            case 1 -> checkItems(st);
+            default -> htmltext;
+        };
         return htmltext;
     }
 

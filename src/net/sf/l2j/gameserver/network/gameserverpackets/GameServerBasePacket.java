@@ -67,5 +67,5 @@ public abstract class GameServerBasePacket {
         return this._bao.toByteArray();
     }
 
-    public abstract byte[] getContent() throws IOException;
+    public abstract byte[] getContent();
 }

@@ -18,7 +18,7 @@ public class DungeonMemo {
             player.sendMessage("Variable is not exist...");
         } else {
             getVarObject(player, name).setValue(value);
-            MariaDB.set("UPDATE character_memo_alt SET value=? WHERE obj_id=? AND name=?", new Object[]{value, player.getObjectId(), name});
+            MariaDB.set("UPDATE character_memo_alt SET value=? WHERE obj_id=? AND name=?", value, player.getObjectId(), name);
         }
     }
 
@@ -31,7 +31,7 @@ public class DungeonMemo {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement stm = con.prepareStatement("REPLACE INTO character_memo_alt (obj_id, name, value, expire_time) VALUES (?,?,?,?)");
+                PreparedStatement stm = con.prepareStatement("REPLACE INTO character_memo_alt (obj_id, name, value, expire_time) VALUES (?,?,?,?)")
         ) {
             stm.setInt(1, player.getObjectId());
             stm.setString(2, name);
@@ -72,7 +72,7 @@ public class DungeonMemo {
                         pv.getOwner().broadcastUserInfo();
                     }
 
-                    MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", new Object[]{pv.getOwner().getObjectId(), name});
+                    MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", pv.getOwner().getObjectId(), name);
                     pv.stopExpireTask();
                 }
 
@@ -86,7 +86,7 @@ public class DungeonMemo {
                 player.deleteTempItem(Integer.parseInt(value));
             }
 
-            MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", new Object[]{player.getObjectId(), name});
+            MariaDB.set("DELETE FROM character_memo_alt WHERE obj_id=? AND name=? LIMIT 1", player.getObjectId(), name);
         }
     }
 
@@ -100,7 +100,7 @@ public class DungeonMemo {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement statement = con.prepareStatement("SELECT expire_time FROM character_memo_alt WHERE obj_id = ? AND name = ?");
+                PreparedStatement statement = con.prepareStatement("SELECT expire_time FROM character_memo_alt WHERE obj_id = ? AND name = ?")
         ) {
             statement.setLong(1, (long) player.getObjectId());
             statement.setString(2, name);
@@ -149,7 +149,7 @@ public class DungeonMemo {
     public static void loadVariables(Player player) {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement offline = con.prepareStatement("SELECT * FROM character_memo_alt WHERE obj_id = ?");
+                PreparedStatement offline = con.prepareStatement("SELECT * FROM character_memo_alt WHERE obj_id = ?")
         ) {
             offline.setInt(1, player.getObjectId());
 
@@ -177,7 +177,7 @@ public class DungeonMemo {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement offline = con.prepareStatement("SELECT value FROM character_memo_alt WHERE obj_id = ? AND name = ?");
+                PreparedStatement offline = con.prepareStatement("SELECT value FROM character_memo_alt WHERE obj_id = ? AND name = ?")
         ) {
             offline.setInt(1, player.getObjectId());
             offline.setString(2, var);
@@ -199,7 +199,7 @@ public class DungeonMemo {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement offline = con.prepareStatement("SELECT value FROM character_memo_alt WHERE obj_id = ? AND name = ?");
+                PreparedStatement offline = con.prepareStatement("SELECT value FROM character_memo_alt WHERE obj_id = ? AND name = ?")
         ) {
             offline.setInt(1, objectId);
             offline.setString(2, var);

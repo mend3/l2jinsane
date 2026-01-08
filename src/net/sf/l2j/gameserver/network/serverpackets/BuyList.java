@@ -32,7 +32,7 @@ public final class BuyList extends L2GameServerPacket {
                 writeH(product.getItem().getType1());
                 writeD(product.getItemId());
                 writeD(product.getItemId());
-                writeD((product.getCount() < 0) ? 0 : product.getCount());
+                writeD(Math.max(product.getCount(), 0));
                 writeH(product.getItem().getType2());
                 writeH(0);
                 writeD(product.getItem().getBodyPart());

@@ -45,19 +45,11 @@ public class MultisellData implements IXmlReader {
             this.forEach(listNode, "item", (itemNode) -> {
                 List<Ingredient> ingredients = new ArrayList<>();
                 List<Ingredient> products = new ArrayList<>();
-                this.forEach(itemNode, "ingredient", (ingredientNode) -> {
-                    ingredients.add(new Ingredient(this.parseAttributes(ingredientNode)));
-                });
-                this.forEach(itemNode, "production", (productionNode) -> {
-                    products.add(new Ingredient(this.parseAttributes(productionNode)));
-                });
+                this.forEach(itemNode, "ingredient", (ingredientNode) -> ingredients.add(new Ingredient(this.parseAttributes(ingredientNode))));
+                this.forEach(itemNode, "production", (productionNode) -> products.add(new Ingredient(this.parseAttributes(productionNode))));
                 list.getEntries().add(new Entry(ingredients, products));
             });
-            this.forEach(listNode, "npcs", (npcsNode) -> {
-                this.forEach(npcsNode, "npc", (npcNode) -> {
-                    list.allowNpc(Integer.parseInt(npcNode.getTextContent()));
-                });
-            });
+            this.forEach(listNode, "npcs", (npcsNode) -> this.forEach(npcsNode, "npc", (npcNode) -> list.allowNpc(Integer.parseInt(npcNode.getTextContent()))));
             this._entries.put(id, list);
         });
     }

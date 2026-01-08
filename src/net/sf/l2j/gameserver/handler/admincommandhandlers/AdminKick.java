@@ -26,7 +26,7 @@ public class AdminKick implements IAdminCommandHandler {
         }
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_character_disconnect") || command.equals("admin_kick"))
             disconnectCharacter(activeChar);
         if (command.startsWith("admin_kick")) {
@@ -51,7 +51,6 @@ public class AdminKick implements IAdminCommandHandler {
             }
             activeChar.sendMessage("A total of " + counter + " players have been kicked.");
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

@@ -9,7 +9,7 @@ public class AdminMovieMaker implements IAdminCommandHandler {
             "admin_addseq", "admin_playseqq", "admin_delsequence", "admin_editsequence", "admin_addsequence", "admin_playsequence", "admin_movie", "admin_updatesequence", "admin_broadcast", "admin_playmovie",
             "admin_broadmovie"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_movie")) {
             MovieMakerManager.getInstance().mainHtm(activeChar);
         } else if (command.startsWith("admin_playseqq")) {
@@ -18,7 +18,6 @@ public class AdminMovieMaker implements IAdminCommandHandler {
             } catch (Exception e) {
                 activeChar.sendMessage("You entered an invalid sequence id.");
                 MovieMakerManager.getInstance().mainHtm(activeChar);
-                return false;
             }
         } else if (command.equals("admin_addseq")) {
             MovieMakerManager.getInstance().addSequence(activeChar);
@@ -28,7 +27,6 @@ public class AdminMovieMaker implements IAdminCommandHandler {
             } catch (Exception e) {
                 activeChar.sendMessage("You entered an invalid sequence id.");
                 MovieMakerManager.getInstance().mainHtm(activeChar);
-                return false;
             }
         } else if (command.startsWith("admin_broadcast")) {
             try {
@@ -36,7 +34,6 @@ public class AdminMovieMaker implements IAdminCommandHandler {
             } catch (Exception e) {
                 activeChar.sendMessage("You entered an invalid sequence id.");
                 MovieMakerManager.getInstance().mainHtm(activeChar);
-                return false;
             }
         } else if (command.equals("admin_playmovie")) {
             MovieMakerManager.getInstance().playMovie(0, activeChar);
@@ -48,13 +45,12 @@ public class AdminMovieMaker implements IAdminCommandHandler {
             } catch (Exception e) {
                 activeChar.sendMessage("You entered an invalid sequence id.");
                 MovieMakerManager.getInstance().mainHtm(activeChar);
-                return false;
             }
         } else {
             String[] args = command.split(" ");
             if (args.length < 10) {
                 activeChar.sendMessage("Some arguments are missing.");
-                return false;
+                return;
             }
             int targ = (activeChar.getTarget() != null) ? activeChar.getTarget().getObjectId() : activeChar.getObjectId();
             if (command.startsWith("admin_addsequence")) {
@@ -65,7 +61,6 @@ public class AdminMovieMaker implements IAdminCommandHandler {
                 MovieMakerManager.getInstance().updateSequence(activeChar, Integer.parseInt(args[1]), targ, Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]), Integer.parseInt(args[6]), Integer.parseInt(args[7]), Integer.parseInt(args[8]), Integer.parseInt(args[9]));
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

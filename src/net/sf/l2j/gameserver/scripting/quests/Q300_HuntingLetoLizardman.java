@@ -73,14 +73,11 @@ public class Q300_HuntingLetoLizardman extends Quest {
         String htmltext = getNoQuestMsg();
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 34) ? "30126-01.htm" : "30126-02.htm";
-                break;
-            case 1:
-                htmltext = (st.getInt("cond") == 1) ? "30126-04a.htm" : "30126-04.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 34) ? "30126-01.htm" : "30126-02.htm";
+            case 1 -> (st.getInt("cond") == 1) ? "30126-04a.htm" : "30126-04.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

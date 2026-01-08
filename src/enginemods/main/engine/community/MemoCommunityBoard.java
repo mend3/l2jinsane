@@ -418,8 +418,7 @@ public class MemoCommunityBoard extends AbstractMods {
         return id;
     }
 
-    public static MemoCommunityBoard getInstance() {
-        return SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {

@@ -10,10 +10,10 @@ public class AutoSpawn {
     private final List<SpawnLocation> _locList = new ArrayList<>();
     private final List<Npc> _npcList = new ArrayList<>();
     protected int _objectId;
-    protected int _npcId;
-    protected int _initDelay;
-    protected int _resDelay;
-    protected int _desDelay;
+    protected final int _npcId;
+    protected final int _initDelay;
+    protected final int _resDelay;
+    protected final int _desDelay;
     protected int _spawnCount = 1;
     protected int _lastLocIndex = -1;
     private boolean _spawnActive;
@@ -27,12 +27,12 @@ public class AutoSpawn {
         this._desDelay = despawnDelay;
     }
 
-    public boolean addNpcInstance(Npc npcInst) {
-        return this._npcList.add(npcInst);
+    public void addNpcInstance(Npc npcInst) {
+        this._npcList.add(npcInst);
     }
 
-    public boolean removeNpcInstance(Npc npcInst) {
-        return this._npcList.remove(npcInst);
+    public void removeNpcInstance(Npc npcInst) {
+        this._npcList.remove(npcInst);
     }
 
     public int getObjectId() {
@@ -76,7 +76,7 @@ public class AutoSpawn {
     }
 
     public SpawnLocation[] getLocationList() {
-        return this._locList.toArray(new SpawnLocation[this._locList.size()]);
+        return this._locList.toArray(new SpawnLocation[0]);
     }
 
     public Npc[] getNPCInstanceList() {
@@ -94,7 +94,7 @@ public class AutoSpawn {
             npcSpawns.add(npcInst.getSpawn());
         }
 
-        return npcSpawns.toArray(new L2Spawn[npcSpawns.size()]);
+        return npcSpawns.toArray(new L2Spawn[0]);
     }
 
     public void setBroadcast(boolean broadcastValue) {
@@ -121,11 +121,13 @@ public class AutoSpawn {
         return this._broadcastAnnouncement;
     }
 
-    public boolean addSpawnLocation(int x, int y, int z, int heading) {
-        return this._locList.add(new SpawnLocation(x, y, z, heading));
+    public void addSpawnLocation(int x, int y, int z, int heading) {
+        this._locList.add(new SpawnLocation(x, y, z, heading));
     }
 
-    public boolean addSpawnLocation(int[] spawnLoc) {
-        return spawnLoc.length != 3 ? false : this.addSpawnLocation(spawnLoc[0], spawnLoc[1], spawnLoc[2], -1);
+    public void addSpawnLocation(int[] spawnLoc) {
+        if (spawnLoc.length == 3) {
+            this.addSpawnLocation(spawnLoc[0], spawnLoc[1], spawnLoc[2], -1);
+        }
     }
 }

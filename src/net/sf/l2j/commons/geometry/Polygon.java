@@ -43,7 +43,7 @@ public class Polygon extends AShape {
     private static boolean getPolygonOrientation(List<int[]> points) {
         int size = points.size();
         int index = 0;
-        int[] point = points.get(0);
+        int[] point = points.getFirst();
         for (int i = 1; i < size; i++) {
             int[] pt = points.get(i);
             if (pt[0] < point[0] || (pt[0] == point[0] && pt[1] > point[1])) {
@@ -116,8 +116,8 @@ public class Polygon extends AShape {
     private static boolean isEar(boolean isCw, List<int[]> nonConvexPoints, int[] A, int[] B, int[] C) {
         if (!isConvex(isCw, A, B, C))
             return false;
-        for (int i = 0; i < nonConvexPoints.size(); i++) {
-            if (isInside(A, B, C, nonConvexPoints.get(i)))
+        for (int[] nonConvexPoint : nonConvexPoints) {
+            if (isInside(A, B, C, nonConvexPoint))
                 return false;
         }
         return true;

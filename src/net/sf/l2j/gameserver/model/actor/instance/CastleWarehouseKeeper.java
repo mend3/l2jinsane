@@ -14,10 +14,6 @@ public class CastleWarehouseKeeper extends WarehouseKeeper {
         super(objectId, template);
     }
 
-    public boolean isWarehouse() {
-        return true;
-    }
-
     public void showChatWindow(Player player, int val) {
         player.sendPacket(ActionFailed.STATIC_PACKET);
         String filename = "data/html/castlewarehouse/castlewarehouse-no.htm";

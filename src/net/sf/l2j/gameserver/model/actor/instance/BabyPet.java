@@ -115,13 +115,11 @@ public final class BabyPet extends Pet {
                         skill = BabyPet.this._majorHeal.getSkill();
                         if (!this._baby.isSkillDisabled(skill) && Rnd.get(100) <= 75 && this._baby.getCurrentMp() >= (double) skill.getMpConsume()) {
                             BabyPet.this.castSkill(skill);
-                            return;
                         }
                     } else if (BabyPet.this._majorHeal.getSkill() != BabyPet.this._minorHeal.getSkill() && hpPercent < 0.8) {
                         skill = BabyPet.this._minorHeal.getSkill();
                         if (!this._baby.isSkillDisabled(skill) && Rnd.get(100) <= 25 && this._baby.getCurrentMp() >= (double) skill.getMpConsume()) {
                             BabyPet.this.castSkill(skill);
-                            return;
                         }
                     }
                 }

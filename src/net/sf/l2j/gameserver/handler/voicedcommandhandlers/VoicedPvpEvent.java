@@ -57,10 +57,10 @@ public class VoicedPvpEvent implements IVoicedCommandHandler {
                                     status = "<font color=FF0000>Offline</font>";
                                 }
                                 tb.append("<tr>");
-                                tb.append("<td><center><font color =\"AAAAAA\">" + pos + "</font></center></td>");
-                                tb.append("<td><center><font color=00FFFF>" + pl + "</font></center></td>");
-                                tb.append("<td><center>" + pvpKills + "</center></td>");
-                                tb.append("<td><center>" + status + "</center></td>");
+                                tb.append("<td><center><font color =\"AAAAAA\">").append(pos).append("</font></center></td>");
+                                tb.append("<td><center><font color=00FFFF>").append(pl).append("</font></center></td>");
+                                tb.append("<td><center>").append(pvpKills).append("</center></td>");
+                                tb.append("<td><center>").append(status).append("</center></td>");
                                 tb.append("</tr>");
                             }
                             if (result != null)
@@ -113,10 +113,9 @@ public class VoicedPvpEvent implements IVoicedCommandHandler {
         }
     }
 
-    public boolean useVoicedCommand(String command, Player activeChar, String target) {
+    public void useVoicedCommand(String command, Player activeChar, String target) {
         if ((command.equals("pvpEvent") || command.equals("pvpevent")) && Config.PVP_EVENT_ENABLED)
             getTopHtml(activeChar);
-        return true;
     }
 
     public String[] getVoicedCommandList() {

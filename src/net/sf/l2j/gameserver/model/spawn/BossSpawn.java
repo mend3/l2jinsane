@@ -91,15 +91,15 @@ public class BossSpawn {
 
     public void onDeath() {
         int respawnDelay = this._spawn.getRespawnMinDelay() + Rnd.get(-this._spawn.getRespawnMaxDelay(), this._spawn.getRespawnMaxDelay());
-        long respawnTime = System.currentTimeMillis() + (long) (respawnDelay * 3600000);
+        long respawnTime = System.currentTimeMillis() + (respawnDelay * 3600000L);
         this._status = BossStatus.DEAD;
         this._currentHp = 0.0F;
         this._currentMp = 0.0F;
         this._respawnTime = respawnTime;
         this.cancelTask();
-        this._task = ThreadPool.schedule(this::onSpawn, respawnDelay * 3600000);
+        this._task = ThreadPool.schedule(this::onSpawn, respawnDelay * 3600000L);
         this.updateOnDb();
-        LOGGER.info("Raid boss: {} - {} ({}h).", new Object[]{this._spawn.getNpc().getName(), (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(respawnTime), respawnDelay});
+        LOGGER.info("Raid boss: {} - {} ({}h).", this._spawn.getNpc().getName(), (new SimpleDateFormat("dd-MM-yyyy HH:mm")).format(respawnTime), respawnDelay);
         if (Config.LIST_RAID_BOSS_IDS.contains(this._spawn.getNpc().getNpcId())) {
             RaidBossInfoManager.getInstance().updateRaidBossInfo(this._spawn.getNpc().getNpcId(), respawnTime);
         }
@@ -114,7 +114,7 @@ public class BossSpawn {
         this._respawnTime = 0L;
         this.cancelTask();
         this.updateOnDb();
-        LOGGER.info("{} raid boss has spawned.", new Object[]{npc.getName()});
+        LOGGER.info("{} raid boss has spawned.", npc.getName());
         if (Config.LIST_RAID_BOSS_IDS.contains(npc.getNpcId())) {
             RaidBossInfoManager.getInstance().updateRaidBossInfo(npc.getNpcId(), 0L);
         }
@@ -130,12 +130,12 @@ public class BossSpawn {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM raidboss_spawnlist WHERE boss_id=?");
+                PreparedStatement ps = con.prepareStatement("DELETE FROM raidboss_spawnlist WHERE boss_id=?")
         ) {
             ps.setInt(1, this._spawn.getNpcId());
             ps.executeUpdate();
         } catch (Exception e) {
-            LOGGER.error("Couldn't remove raid boss #{}.", e, new Object[]{this._spawn.getNpcId()});
+            LOGGER.error("Couldn't remove raid boss #{}.", e, this._spawn.getNpcId());
         }
 
         this._spawn = null;
@@ -144,7 +144,7 @@ public class BossSpawn {
     private void updateOnDb() {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("UPDATE raidboss_spawnlist SET respawn_time = ?, currentHP = ?, currentMP = ? WHERE boss_id = ?");
+                PreparedStatement ps = con.prepareStatement("UPDATE raidboss_spawnlist SET respawn_time = ?, currentHP = ?, currentMP = ? WHERE boss_id = ?")
         ) {
             ps.setLong(1, this._respawnTime);
             ps.setDouble(2, this._currentHp);
@@ -152,7 +152,7 @@ public class BossSpawn {
             ps.setInt(4, this._spawn.getNpcId());
             ps.executeUpdate();
         } catch (Exception e) {
-            LOGGER.error("Couldn't update raid boss #{}.", e, new Object[]{this._spawn.getNpcId()});
+            LOGGER.error("Couldn't update raid boss #{}.", e, this._spawn.getNpcId());
         }
 
     }

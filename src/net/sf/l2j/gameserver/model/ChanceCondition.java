@@ -74,7 +74,7 @@ public final class ChanceCondition {
         return "Trigger[" + var10000 + ";" + this._triggerType.toString() + "]";
     }
 
-    public static enum TriggerType {
+    public enum TriggerType {
         ON_HIT(1),
         ON_CRIT(2),
         ON_CAST(4),
@@ -95,7 +95,7 @@ public final class ChanceCondition {
 
         private final int _mask;
 
-        private TriggerType(int mask) {
+        TriggerType(int mask) {
             this._mask = mask;
         }
 

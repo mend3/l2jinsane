@@ -18,14 +18,11 @@ public class TownZone extends SpawnZoneType {
     }
 
     public void setParameter(String name, String value) {
-        if (name.equals("townId")) {
-            this._townId = Integer.parseInt(value);
-        } else if (name.equals("castleId")) {
-            this._castleId = Integer.parseInt(value);
-        } else if (name.equals("isPeaceZone")) {
-            this._isPeaceZone = Boolean.parseBoolean(value);
-        } else {
-            super.setParameter(name, value);
+        switch (name) {
+            case "townId" -> this._townId = Integer.parseInt(value);
+            case "castleId" -> this._castleId = Integer.parseInt(value);
+            case "isPeaceZone" -> this._isPeaceZone = Boolean.parseBoolean(value);
+            default -> super.setParameter(name, value);
         }
     }
 

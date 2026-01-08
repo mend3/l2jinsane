@@ -11,9 +11,4 @@ public enum PetitionType {
     GAME_TIP,
     OPERATION_RELATED,
     OTHER;
-
-    // $FF: synthetic method
-    private static PetitionType[] $values() {
-        return new PetitionType[]{IMMOBILITY, RECOVERY_RELATED, BUG_REPORT, QUEST_RELATED, BAD_USER, SUGGESTIONS, GAME_TIP, OPERATION_RELATED, OTHER};
-    }
 }

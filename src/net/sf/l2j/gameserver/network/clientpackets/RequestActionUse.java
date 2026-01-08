@@ -125,7 +125,7 @@ public final class RequestActionUse extends L2GameClientPacket {
                 }
                 summon.getAI().setIntention(IntentionType.ACTIVE, null);
             case 19:
-                if (summon == null || !(summon instanceof Pet))
+                if (!(summon instanceof Pet))
                     return;
                 if (summon.isDead()) {
                     player.sendPacket(SystemMessageId.DEAD_PET_CANNOT_BE_RETURNED);
@@ -171,7 +171,7 @@ public final class RequestActionUse extends L2GameClientPacket {
             case 51:
                 player.tryOpenWorkshop(false);
             case 52:
-                if (summon == null || !(summon instanceof net.sf.l2j.gameserver.model.actor.instance.Servitor))
+                if (!(summon instanceof net.sf.l2j.gameserver.model.actor.instance.Servitor))
                     return;
                 if (summon.isDead()) {
                     player.sendPacket(SystemMessageId.DEAD_PET_CANNOT_BE_RETURNED);

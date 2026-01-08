@@ -22,7 +22,7 @@ public class AdminSearch implements IAdminCommandHandler {
         return Arrays.stream(search.toLowerCase().split(" ")).allMatch(result -> name.toLowerCase().contains(result));
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setFile("data/html/admin/search.htm");
         if (command.equals("admin_search")) {
@@ -40,11 +40,10 @@ public class AdminSearch implements IAdminCommandHandler {
             }
         }
         activeChar.sendPacket(html);
-        return true;
     }
 
     public StringBuilder getList(Player activeChar, int page, String search) {
-        List<Item> items = Arrays.asList(ItemTable.getInstance().getAllItems()).stream().filter(item -> (item != null && matches(item.getName(), search))).collect(Collectors.toList());
+        List<Item> items = Arrays.stream(ItemTable.getInstance().getAllItems()).filter(item -> (item != null && matches(item.getName(), search))).collect(Collectors.toList());
         if (items == null || items.isEmpty())
             return new StringBuilder("<center><br><br><br>There its no item : <font color=LEVEL>" + search + "</font></center>");
         int max = Math.min(100, MathUtil.countPagesNumber(items.size(), 6));
@@ -56,17 +55,16 @@ public class AdminSearch implements IAdminCommandHandler {
             if (name.length() >= 43)
                 name = name.substring(0, 40) + "...";
             sb.append("<table width=280 bgcolor=000000><tr>");
-            sb.append("<td width=44 height=41 align=center><table bgcolor=FFFFFF cellpadding=6 cellspacing=\"-5\"><tr><td><button width=32 height=32 back=" + IconsTable.getIcon(item.getItemId()) + " fore=" + IconsTable.getIcon(item.getItemId()) + "></td></tr></table></td>");
-            sb.append("<td width=236>" + name + "<br1><font color=B09878>Item ID : " + item.getItemId() + " " + (item.isQuestItem() ? "(Quest Item)" : "") + "</font></td>");
+            sb.append("<td width=44 height=41 align=center><table bgcolor=FFFFFF cellpadding=6 cellspacing=\"-5\"><tr><td><button width=32 height=32 back=").append(IconsTable.getIcon(item.getItemId())).append(" fore=").append(IconsTable.getIcon(item.getItemId())).append("></td></tr></table></td>");
+            sb.append("<td width=236>").append(name).append("<br1><font color=B09878>Item ID : ").append(item.getItemId()).append(" ").append(item.isQuestItem() ? "(Quest Item)" : "").append("</font></td>");
             sb.append("</tr></table><img src=L2UI.SquareGray width=280 height=1>");
             row++;
         }
-        for (int i = 6; i > row; i--)
-            sb.append("<img height=42>");
+        sb.append("<img height=42>".repeat(Math.max(0, 6 - row)));
         sb.append("<img height=2><img src=L2UI.SquareGray width=280 height=1><table width=280 bgcolor=000000><tr>");
-        sb.append("<td align=right width=70>" + ((page > 1) ? ("<button value=\"< PREV\" action=\"bypass admin_search " + (page - 1) + " " + search + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "") + "</td>");
-        sb.append("<td align=center width=100>Page " + page + "</td>");
-        sb.append("<td align=left width=70>" + ((page < max) ? ("<button value=\"NEXT >\" action=\"bypass admin_search " + page + 1 + " " + search + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "") + "</td>");
+        sb.append("<td align=right width=70>").append((page > 1) ? ("<button value=\"< PREV\" action=\"bypass admin_search " + (page - 1) + " " + search + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "").append("</td>");
+        sb.append("<td align=center width=100>Page ").append(page).append("</td>");
+        sb.append("<td align=left width=70>").append((page < max) ? ("<button value=\"NEXT >\" action=\"bypass admin_search " + page + 1 + " " + search + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>") : "").append("</td>");
         sb.append("</tr></table><img src=L2UI.SquareGray width=280 height=1>");
         return sb;
     }

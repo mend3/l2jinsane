@@ -8,7 +8,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q631_DeliciousTopChoiceMeat extends Quest {
@@ -51,8 +50,7 @@ public class Q631_DeliciousTopChoiceMeat extends Quest {
         setItemsIds(7546);
         addStartNpc(31537);
         addTalkId(31537);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : CHANCES.keySet()) {
             addKillId(npcId);
         }
     }

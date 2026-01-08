@@ -16,7 +16,6 @@ import net.sf.l2j.gameserver.network.serverpackets.ShortCutRegister;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
@@ -134,8 +133,7 @@ public class ShortcutList {
                     this._owner.sendPacket(new ExAutoSoulShot(item.getItemId(), 0));
         }
         this._owner.sendPacket(new ShortCutDelete(slot));
-        for (Iterator<Integer> iterator = this._owner.getAutoSoulShot().iterator(); iterator.hasNext(); ) {
-            int shotId = iterator.next();
+        for (int shotId : this._owner.getAutoSoulShot()) {
             this._owner.sendPacket(new ExAutoSoulShot(shotId, 1));
         }
     }

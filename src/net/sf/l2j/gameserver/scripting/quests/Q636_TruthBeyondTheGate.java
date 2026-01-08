@@ -52,14 +52,11 @@ public class Q636_TruthBeyondTheGate extends Quest {
                 htmltext = (player.getLevel() < 73) ? "31329-01.htm" : "31329-02.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 31329:
-                        htmltext = "31329-05.htm";
-                        break;
-                    case 32010:
-                        htmltext = st.hasQuestItems(8064) ? "32010-03.htm" : "32010-01.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 31329 -> "31329-05.htm";
+                    case 32010 -> st.hasQuestItems(8064) ? "32010-03.htm" : "32010-01.htm";
+                    default -> htmltext;
+                };
                 break;
             case 2:
                 htmltext = getAlreadyCompletedMsg();

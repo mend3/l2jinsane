@@ -51,9 +51,7 @@ public final class SoloBossManager {
 
     private static void anunciarEventoStart(String msgEvent) {
         World.announceToOnlinePlayers(msgEvent, true);
-        World.getInstance().getPlayers().stream().filter(Player::isOnline).forEach((player) -> {
-            player.sendPacket(new Earthquake(player.getX(), player.getY(), player.getZ(), 65, 10));
-        });
+        World.getInstance().getPlayers().stream().filter(Player::isOnline).forEach((player) -> player.sendPacket(new Earthquake(player.getX(), player.getY(), player.getZ(), 65, 10)));
     }
 
     private static boolean bossAlreadyExists() {
@@ -88,9 +86,7 @@ public final class SoloBossManager {
     }
 
     private static void rewardPlayersInZone(List<Player> players) {
-        players.forEach((player) -> {
-            player.addItem("solo boss", REWARD_ITEM_ID, 1, player, true);
-        });
+        players.forEach((player) -> player.addItem("solo boss", REWARD_ITEM_ID, 1, player, true));
     }
 
     private static void unSpawnNpc() {
@@ -168,9 +164,7 @@ public final class SoloBossManager {
     }
 
     private void scheduleNextBoss() {
-        ThreadPool.schedule(() -> {
-            spawnBoss(this.bosses.get(this.currentBossIndex));
-        }, 5000L);
+        ThreadPool.schedule(() -> spawnBoss(this.bosses.get(this.currentBossIndex)), 5000L);
     }
 
     private void finalizeBossSequence() {
@@ -209,9 +203,7 @@ public final class SoloBossManager {
         public void run() {
             String currentTime = LocalTime.now().format(SoloBossManager.TIME_FORMATTER);
             Set<String> eventHours = SoloBossData.getInstance().getEventHours();
-            eventHours.stream().filter((hour) -> {
-                return currentTime.equals(hour) && !SoloBossManager.eventActive;
-            }).findFirst().ifPresent(this::activateEvent);
+            eventHours.stream().filter((hour) -> currentTime.equals(hour) && !SoloBossManager.eventActive).findFirst().ifPresent(this::activateEvent);
         }
 
         private void activateEvent(String hour) {
@@ -241,9 +233,7 @@ public final class SoloBossManager {
         }
 
         private void sendCountdownMessage(String message) {
-            World.getInstance().getPlayers().stream().filter(Player::isOnline).forEach((player) -> {
-                player.sendPacket(new ExShowScreenMessage(message, 1000));
-            });
+            World.getInstance().getPlayers().stream().filter(Player::isOnline).forEach((player) -> player.sendPacket(new ExShowScreenMessage(message, 1000)));
             World.announceToOnlinePlayers(message, true);
         }
     }

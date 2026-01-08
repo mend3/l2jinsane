@@ -20,14 +20,13 @@ public class RandomBossSpawn extends AbstractMods {
         this.registerMod(ConfigData.ENABLE_RandomBossSpawn);
     }
 
-    public static RandomBossSpawn getInstance() {
-        return RandomBossSpawn.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
         switch (this.getState()) {
             case START ->
-                    this.startTimer("spawnRaids", ConfigData.RANDOM_BOSS_SPWNNED_TIME * 1000 * 60, null, null, true);
+                    this.startTimer("spawnRaids", (long) ConfigData.RANDOM_BOSS_SPWNNED_TIME * 1000 * 60, null, null, true);
             case END -> this.cancelTimers("spawnRaids");
         }
 
@@ -37,7 +36,7 @@ public class RandomBossSpawn extends AbstractMods {
         switch (timerName) {
             case "spawnRaids":
                 int random = Rnd.get(4);
-                _raid = this.addSpawn(ConfigData.RANDOM_BOSS_NPC_ID.get(Rnd.get(ConfigData.RANDOM_BOSS_NPC_ID.size())), SPAWNS[random], false, ConfigData.RANDOM_BOSS_SPWNNED_TIME * 1000 * 60);
+                _raid = this.addSpawn(ConfigData.RANDOM_BOSS_NPC_ID.get(Rnd.get(ConfigData.RANDOM_BOSS_NPC_ID.size())), SPAWNS[random], false, (long) ConfigData.RANDOM_BOSS_SPWNNED_TIME * 1000 * 60);
                 String var10000 = _raid.getName();
                 World.announceToOnlinePlayers("Raid " + var10000 + " spawn " + LOCATIONS[random]);
                 World.announceToOnlinePlayers("Have " + ConfigData.RANDOM_BOSS_SPWNNED_TIME + " minutes to kill");

@@ -65,7 +65,7 @@ public class DollsData extends XMLDocument {
 
     public static void refreshAllDollSkills(Player player) {
         Map<Integer, Integer> highestSkillLevels = new HashMap<>();
-        List<ItemInstance> collect = player.getInventory().getItems().stream().filter(x -> getInstance().isDollById(x.getItemId())).collect(Collectors.toList());
+        List<ItemInstance> collect = player.getInventory().getItems().stream().filter(x -> getInstance().isDollById(x.getItemId())).toList();
         for (ItemInstance dollItem : collect) {
             int skillId = getInstance().getDollById(dollItem.getItemId()).getSkillId();
             int skillLvl = getInstance().getDollById(dollItem.getItemId()).getSkillLvl();

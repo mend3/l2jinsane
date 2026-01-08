@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q087_SagaOfEvasSaint extends SagasSuperClass {
     public Q087_SagaOfEvasSaint() {
         super(87, "Saga of Eva's Saint");

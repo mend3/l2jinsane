@@ -15,11 +15,6 @@ public enum PunishmentType {
         this._name = name;
     }
 
-    // $FF: synthetic method
-    private static PunishmentType[] $values() {
-        return new PunishmentType[]{NONE, CHAT, JAIL, CHAR, ACC};
-    }
-
     public String getName() {
         return this._name;
     }

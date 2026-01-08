@@ -54,7 +54,7 @@ public final class RequestPreviewItem extends L2GameClientPacket {
         if (activeChar == null)
             return;
         WorldObject target = activeChar.getTarget();
-        if (!activeChar.isGM() && (target == null || !(target instanceof Merchant) || !activeChar.isInsideRadius(target, 150, false, false)))
+        if (!activeChar.isGM() && (!(target instanceof Merchant) || !activeChar.isInsideRadius(target, 150, false, false)))
             return;
         Merchant merchant = (target instanceof Merchant) ? (Merchant) target : null;
         if (merchant == null)

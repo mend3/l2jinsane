@@ -10,7 +10,7 @@ import net.sf.l2j.gameserver.network.SystemMessageId;
 public class AdminDoorControl implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_open", "admin_close", "admin_openall", "admin_closeall"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_open")) {
             if (command.equals("admin_openall")) {
                 for (Door door : DoorData.getInstance().getDoors())
@@ -54,7 +54,6 @@ public class AdminDoorControl implements IAdminCommandHandler {
                 }
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

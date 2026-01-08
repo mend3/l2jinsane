@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q088_SagaOfTheArchmage extends SagasSuperClass {
     public Q088_SagaOfTheArchmage() {
         super(88, "Saga of the Archmage");

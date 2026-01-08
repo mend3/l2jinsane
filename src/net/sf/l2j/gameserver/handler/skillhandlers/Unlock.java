@@ -18,17 +18,13 @@ public class Unlock implements ISkillHandler {
     private static boolean doorUnlock(L2Skill skill) {
         if (skill.getSkillType() == L2SkillType.UNLOCK_SPECIAL)
             return (Rnd.get(100) < skill.getPower());
-        switch (skill.getLevel()) {
-            case 0:
-                return false;
-            case 1:
-                return (Rnd.get(120) < 30);
-            case 2:
-                return (Rnd.get(120) < 50);
-            case 3:
-                return (Rnd.get(120) < 75);
-        }
-        return (Rnd.get(120) < 100);
+        return switch (skill.getLevel()) {
+            case 0 -> false;
+            case 1 -> (Rnd.get(120) < 30);
+            case 2 -> (Rnd.get(120) < 50);
+            case 3 -> (Rnd.get(120) < 75);
+            default -> (Rnd.get(120) < 100);
+        };
     }
 
     private static boolean chestUnlock(L2Skill skill, Creature chest) {

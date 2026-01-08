@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PartyMemberPosition extends L2GameServerPacket {
-    Map<Integer, Location> _locations = new HashMap<>();
+    final Map<Integer, Location> _locations = new HashMap<>();
 
     public PartyMemberPosition(Party party) {
         reuse(party);

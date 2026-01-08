@@ -47,7 +47,7 @@ public class FenceManager {
         return this._fences;
     }
 
-    public final Fence addFence(int x, int y, int z, int type, int sizeX, int sizeY, int height) {
+    public final void addFence(int x, int y, int z, int type, int sizeX, int sizeY, int height) {
         FenceManager.FenceSize fsx = getFenceSize(sizeX);
         FenceManager.FenceSize fsy = getFenceSize(sizeY);
         if (fsx != null && fsy != null) {
@@ -75,10 +75,8 @@ public class FenceManager {
             fence.spawnMe(x, y, z);
             GeoEngine.getInstance().addGeoObject(fence);
             this._fences.add(fence);
-            return fence;
         } else {
             LOGGER.warn("Unknown dimensions for fence, x={} y={}.", sizeX, sizeY);
-            return null;
         }
     }
 
@@ -106,11 +104,6 @@ public class FenceManager {
         FenceSize(int offset, int geoDataSize) {
             this._offset = offset;
             this._geoDataSize = geoDataSize;
-        }
-
-        // $FF: synthetic method
-        private static FenceManager.FenceSize[] $values() {
-            return new FenceManager.FenceSize[]{SIZE_100, SIZE_200, SIZE_300, SIZE_400, SIZE_500, SIZE_600, SIZE_700, SIZE_800, SIZE_900, SIZE_1000};
         }
     }
 

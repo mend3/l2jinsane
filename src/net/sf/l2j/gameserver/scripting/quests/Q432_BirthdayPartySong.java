@@ -47,14 +47,11 @@ public class Q432_BirthdayPartySong extends Quest {
         String htmltext = getNoQuestMsg();
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 31) ? "31043-00.htm" : "31043-01.htm";
-                break;
-            case 1:
-                htmltext = (st.getQuestItemsCount(7541) < 50) ? "31043-03.htm" : "31043-04.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 31) ? "31043-00.htm" : "31043-01.htm";
+            case 1 -> (st.getQuestItemsCount(7541) < 50) ? "31043-03.htm" : "31043-04.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

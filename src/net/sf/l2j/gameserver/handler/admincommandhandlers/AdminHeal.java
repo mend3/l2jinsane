@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
 public class AdminHeal implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_heal"};
 
-    public boolean useAdminCommand(String command, Player player) {
+    public void useAdminCommand(String command, Player player) {
         if (command.startsWith("admin_heal")) {
             Player player1 = null;
             WorldObject object = player.getTarget();
@@ -32,7 +32,7 @@ public class AdminHeal implements IAdminCommandHandler {
                             creature.setCurrentCp(creature.getMaxCp());
                     }
                     player.sendMessage("You instant healed all characters within " + radius + " unit radius.");
-                    return true;
+                    return;
                 }
             }
             if (player1 == null)
@@ -47,7 +47,6 @@ public class AdminHeal implements IAdminCommandHandler {
                 player.sendPacket(SystemMessageId.INCORRECT_TARGET);
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

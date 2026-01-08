@@ -75,45 +75,25 @@ public abstract class Inventory extends ItemContainer {
     }
 
     public static int getPaperdollIndex(int slot) {
-        switch (slot) {
-            case 1:
-                return 0;
-            case 2:
-                return 2;
-            case 4:
-                return 1;
-            case 8:
-                return 3;
-            case 16:
-                return 5;
-            case 32:
-                return 4;
-            case 64:
-                return 6;
-            case 128:
-            case 16384:
-                return 7;
-            case 256:
-                return 8;
-            case 512:
-                return 9;
-            case 1024:
-            case 32768:
-            case 131072:
-                return 10;
-            case 2048:
-                return 11;
-            case 4096:
-                return 12;
-            case 8192:
-                return 13;
-            case 65536:
-            case 524288:
-                return 14;
-            case 262144:
-                return 15;
-        }
-        return -1;
+        return switch (slot) {
+            case 1 -> 0;
+            case 2 -> 2;
+            case 4 -> 1;
+            case 8 -> 3;
+            case 16 -> 5;
+            case 32 -> 4;
+            case 64 -> 6;
+            case 128, 16384 -> 7;
+            case 256 -> 8;
+            case 512 -> 9;
+            case 1024, 32768, 131072 -> 10;
+            case 2048 -> 11;
+            case 4096 -> 12;
+            case 8192 -> 13;
+            case 65536, 524288 -> 14;
+            case 262144 -> 15;
+            default -> -1;
+        };
     }
 
     protected abstract ItemInstance.ItemLocation getEquipLocation();
@@ -274,56 +254,25 @@ public abstract class Inventory extends ItemContainer {
     public int getSlotFromItem(ItemInstance item) {
         int slot = -1;
         int location = item.getLocationSlot();
-        switch (location) {
-            case 0:
-                slot = 1;
-                break;
-            case 1:
-                slot = 4;
-                break;
-            case 2:
-                slot = 2;
-                break;
-            case 3:
-                slot = 8;
-                break;
-            case 5:
-                slot = 16;
-                break;
-            case 4:
-                slot = 32;
-                break;
-            case 15:
-                slot = 262144;
-                break;
-            case 14:
-                slot = 65536;
-                break;
-            case 6:
-                slot = 64;
-                break;
-            case 7:
-                slot = 128;
-                break;
-            case 8:
-                slot = 256;
-                break;
-            case 9:
-                slot = 512;
-                break;
-            case 10:
-                slot = item.getItem().getBodyPart();
-                break;
-            case 11:
-                slot = 2048;
-                break;
-            case 13:
-                slot = 8192;
-                break;
-            case 12:
-                slot = 4096;
-                break;
-        }
+        slot = switch (location) {
+            case 0 -> 1;
+            case 1 -> 4;
+            case 2 -> 2;
+            case 3 -> 8;
+            case 5 -> 16;
+            case 4 -> 32;
+            case 15 -> 262144;
+            case 14 -> 65536;
+            case 6 -> 64;
+            case 7 -> 128;
+            case 8 -> 256;
+            case 9 -> 512;
+            case 10 -> item.getItem().getBodyPart();
+            case 11 -> 2048;
+            case 13 -> 8192;
+            case 12 -> 4096;
+            default -> slot;
+        };
         return slot;
     }
 
@@ -347,8 +296,8 @@ public abstract class Inventory extends ItemContainer {
         return recorder.getChangedItems();
     }
 
-    public ItemInstance unEquipItemInSlot(int pdollSlot) {
-        return setPaperdollItem(pdollSlot, null);
+    public void unEquipItemInSlot(int pdollSlot) {
+        setPaperdollItem(pdollSlot, null);
     }
 
     public ItemInstance[] unEquipItemInSlotAndRecord(int slot) {
@@ -363,7 +312,7 @@ public abstract class Inventory extends ItemContainer {
         return recorder.getChangedItems();
     }
 
-    public ItemInstance unEquipItemInBodySlot(int slot) {
+    public void unEquipItemInBodySlot(int slot) {
         int pdollSlot = -1;
         switch (slot) {
             case 4:
@@ -430,9 +379,7 @@ public abstract class Inventory extends ItemContainer {
             if (old != null)
                 if (getOwner() instanceof Player)
                     ((Player) getOwner()).refreshExpertisePenalty();
-            return old;
         }
-        return null;
     }
 
     public ItemInstance[] equipItemAndRecord(ItemInstance item) {
@@ -698,7 +645,7 @@ public abstract class Inventory extends ItemContainer {
         }
     }
 
-    private static final class ChangeRecorder implements OnEquipListener {
+    public static final class ChangeRecorder implements OnEquipListener {
         private final Inventory _inventory;
 
         private final List<ItemInstance> _changed;
@@ -720,7 +667,7 @@ public abstract class Inventory extends ItemContainer {
         }
 
         public ItemInstance[] getChangedItems() {
-            return this._changed.toArray(new ItemInstance[this._changed.size()]);
+            return this._changed.toArray(new ItemInstance[0]);
         }
     }
 }

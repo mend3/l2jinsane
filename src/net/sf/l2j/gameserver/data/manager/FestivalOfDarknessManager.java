@@ -77,6 +77,11 @@ public class FestivalOfDarknessManager {
         FESTIVAL_DUSK_CHEST_SPAWNS = new int[][][]{{{-77016, 88726, -5183, -1, 18114}, {-77136, 88646, -5183, -1, 18114}, {-77247, 88646, -5183, -1, 18114}, {-77380, 88726, -5183, -1, 18114}, {-77512, 88883, -5183, -1, 18114}, {-77512, 89053, -5183, -1, 18114}, {-77378, 89287, -5183, -1, 18114}, {-77254, 89238, -5183, -1, 18114}, {-77095, 89238, -5183, -1, 18114}, {-76996, 89287, -5183, -1, 18114}, {-76901, 89025, -5183, -1, 18114}, {-76901, 88891, -5183, -1, 18114}}, {{-77128, 85553, -5183, -1, 18115}, {-77036, 85594, -5183, -1, 18115}, {-76919, 85594, -5183, -1, 18115}, {-76755, 85553, -5183, -1, 18115}, {-76635, 85392, -5183, -1, 18115}, {-76635, 85216, -5183, -1, 18115}, {-76761, 85025, -5183, -1, 18115}, {-76908, 85004, -5183, -1, 18115}, {-77041, 85004, -5183, -1, 18115}, {-77138, 85025, -5183, -1, 18115}, {-77268, 85219, -5183, -1, 18115}, {-77268, 85410, -5183, -1, 18115}}, {{-75150, 87303, -5183, -1, 18116}, {-75150, 87175, -5183, -1, 18116}, {-75150, 87175, -5183, -1, 18116}, {-75150, 87303, -5183, -1, 18116}, {-74943, 87433, -5183, -1, 18116}, {-74767, 87433, -5183, -1, 18116}, {-74556, 87306, -5183, -1, 18116}, {-74556, 87184, -5183, -1, 18116}, {-74556, 87184, -5183, -1, 18116}, {-74556, 87306, -5183, -1, 18116}, {-74757, 86830, -5183, -1, 18116}, {-74927, 86830, -5183, -1, 18116}}, {{-80010, 88128, -5183, -1, 18117}, {-80113, 88066, -5183, -1, 18117}, {-80220, 88066, -5183, -1, 18117}, {-80359, 88128, -5183, -1, 18117}, {-80467, 88267, -5183, -1, 18117}, {-80467, 88436, -5183, -1, 18117}, {-80381, 88639, -5183, -1, 18117}, {-80278, 88577, -5183, -1, 18117}, {-80142, 88577, -5183, -1, 18117}, {-80028, 88639, -5183, -1, 18117}, {-79915, 88466, -5183, -1, 18117}, {-79915, 88322, -5183, -1, 18117}}, {{-80153, 84947, -5183, -1, 18118}, {-80003, 84962, -5183, -1, 18118}, {-79848, 84962, -5183, -1, 18118}, {-79742, 84947, -5183, -1, 18118}, {-79668, 84772, -5183, -1, 18118}, {-79668, 84619, -5183, -1, 18118}, {-79772, 84471, -5183, -1, 18118}, {-79888, 84414, -5183, -1, 18118}, {-80023, 84414, -5183, -1, 18118}, {-80166, 84471, -5183, -1, 18118}, {-80253, 84600, -5183, -1, 18118}, {-80253, 84780, -5183, -1, 18118}}};
     }
 
+    protected final List<Integer> _accumulatedBonuses = new ArrayList<>();
+    protected final Map<Integer, List<Integer>> _dawnFestivalParticipants = new HashMap<>();
+    protected final Map<Integer, List<Integer>> _duskFestivalParticipants = new HashMap<>();
+    protected final Map<Integer, List<Integer>> _dawnPreviousParticipants = new HashMap<>();
+    protected final Map<Integer, List<Integer>> _duskPreviousParticipants = new HashMap<>();
     private final Map<Integer, Integer> _dawnFestivalScores = new HashMap<>();
     private final Map<Integer, Integer> _duskFestivalScores = new HashMap<>();
     private final Map<Integer, Map<Integer, StatSet>> _festivalData = new HashMap<>();
@@ -88,11 +93,6 @@ public class FestivalOfDarknessManager {
     protected long _nextFestivalStart;
     protected boolean _festivalInitialized;
     protected boolean _festivalInProgress;
-    protected List<Integer> _accumulatedBonuses = new ArrayList<>();
-    protected Map<Integer, List<Integer>> _dawnFestivalParticipants = new HashMap<>();
-    protected Map<Integer, List<Integer>> _duskFestivalParticipants = new HashMap<>();
-    protected Map<Integer, List<Integer>> _dawnPreviousParticipants = new HashMap<>();
-    protected Map<Integer, List<Integer>> _duskPreviousParticipants = new HashMap<>();
     boolean _noPartyRegister;
     private List<PeaceZone> _dawnPeace;
     private List<PeaceZone> _duskPeace;
@@ -256,7 +256,7 @@ public class FestivalOfDarknessManager {
                                 map = new HashMap<>();
                             }
 
-                            ((Map) map).put(festivalId, set);
+                            map.put(festivalId, set);
                             this._festivalData.put(i, map);
                         }
                     } catch (Throwable var16) {
@@ -451,8 +451,7 @@ public class FestivalOfDarknessManager {
                 String[] var3 = set.getString("members").split(",");
                 int var4 = var3.length;
 
-                for (int var5 = 0; var5 < var4; ++var5) {
-                    String playerName = var3[var5];
+                for (String playerName : var3) {
                     addReputationPointsForPartyMemberClan(playerName);
                 }
             }
@@ -667,7 +666,7 @@ public class FestivalOfDarknessManager {
             offsetId = festivalId + 5;
         }
 
-        return (StatSet) ((Map) this._festivalData.get(this._signsCycle)).get(offsetId);
+        return (StatSet) ((Map<?, ?>) this._festivalData.get(this._signsCycle)).get(offsetId);
     }
 
     public final StatSet getOverallHighestScoreData(int festivalId) {
@@ -744,17 +743,12 @@ public class FestivalOfDarknessManager {
     }
 
     public void addAccumulatedBonus(int festivalId, int stoneType, int stoneAmount) {
-        int eachStoneBonus = 0;
-        switch (stoneType) {
-            case 6360:
-                eachStoneBonus = 3;
-                break;
-            case 6361:
-                eachStoneBonus = 5;
-                break;
-            case 6362:
-                eachStoneBonus = 10;
-        }
+        int eachStoneBonus = switch (stoneType) {
+            case 6360 -> 3;
+            case 6361 -> 5;
+            case 6362 -> 10;
+            default -> 0;
+        };
 
         int newTotalBonus = this._accumulatedBonuses.get(festivalId) + stoneAmount * eachStoneBonus;
         this._accumulatedBonuses.set(festivalId, newTotalBonus);
@@ -773,7 +767,7 @@ public class FestivalOfDarknessManager {
 
                 for (StatSet set : map.values()) {
                     String members = set.getString("members");
-                    if (members.indexOf(playerName) > -1) {
+                    if (members.contains(playerName)) {
                         int festivalId = set.getInteger("festivalId");
                         int numPartyMembers = members.split(",").length;
                         int totalAccumBonus = this._accumulatedBonuses.get(festivalId);
@@ -870,8 +864,8 @@ public class FestivalOfDarknessManager {
         }
     }
 
-    private class FestivalManager implements Runnable {
-        protected Map<Integer, FestivalOfDarknessManager.L2DarknessFestival> _festivalInstances = new HashMap<>();
+    public class FestivalManager implements Runnable {
+        protected final Map<Integer, FestivalOfDarknessManager.L2DarknessFestival> _festivalInstances = new HashMap<>();
 
         public FestivalManager() {
             FestivalOfDarknessManager.this._managerInstance = this;
@@ -1049,7 +1043,7 @@ public class FestivalOfDarknessManager {
         }
     }
 
-    private class L2DarknessFestival {
+    public class L2DarknessFestival {
         protected final CabalType _cabal;
         protected final int _levelRange;
         protected final List<FestivalMonster> _npcInsts;
@@ -1169,18 +1163,15 @@ public class FestivalOfDarknessManager {
         }
 
         protected void spawnFestivalMonsters(int respawnDelay, int spawnType) {
-            int[][] _npcSpawns = null;
-            switch (spawnType) {
-                case 0:
-                case 1:
-                    _npcSpawns = this._cabal == CabalType.DAWN ? FestivalOfDarknessManager.FESTIVAL_DAWN_PRIMARY_SPAWNS[this._levelRange] : FestivalOfDarknessManager.FESTIVAL_DUSK_PRIMARY_SPAWNS[this._levelRange];
-                    break;
-                case 2:
-                    _npcSpawns = this._cabal == CabalType.DAWN ? FestivalOfDarknessManager.FESTIVAL_DAWN_SECONDARY_SPAWNS[this._levelRange] : FestivalOfDarknessManager.FESTIVAL_DUSK_SECONDARY_SPAWNS[this._levelRange];
-                    break;
-                case 3:
-                    _npcSpawns = this._cabal == CabalType.DAWN ? FestivalOfDarknessManager.FESTIVAL_DAWN_CHEST_SPAWNS[this._levelRange] : FestivalOfDarknessManager.FESTIVAL_DUSK_CHEST_SPAWNS[this._levelRange];
-            }
+            int[][] _npcSpawns = switch (spawnType) {
+                case 0, 1 ->
+                        this._cabal == CabalType.DAWN ? FestivalOfDarknessManager.FESTIVAL_DAWN_PRIMARY_SPAWNS[this._levelRange] : FestivalOfDarknessManager.FESTIVAL_DUSK_PRIMARY_SPAWNS[this._levelRange];
+                case 2 ->
+                        this._cabal == CabalType.DAWN ? FestivalOfDarknessManager.FESTIVAL_DAWN_SECONDARY_SPAWNS[this._levelRange] : FestivalOfDarknessManager.FESTIVAL_DUSK_SECONDARY_SPAWNS[this._levelRange];
+                case 3 ->
+                        this._cabal == CabalType.DAWN ? FestivalOfDarknessManager.FESTIVAL_DAWN_CHEST_SPAWNS[this._levelRange] : FestivalOfDarknessManager.FESTIVAL_DUSK_CHEST_SPAWNS[this._levelRange];
+                default -> null;
+            };
 
             if (_npcSpawns != null) {
                 int[][] var4 = _npcSpawns;

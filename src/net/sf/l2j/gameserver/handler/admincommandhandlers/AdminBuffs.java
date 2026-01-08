@@ -75,7 +75,7 @@ public class AdminBuffs implements IAdminCommandHandler {
         }
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_buff"))
             try {
                 Player player = null;
@@ -91,14 +91,14 @@ public class AdminBuffs implements IAdminCommandHandler {
                 L2Skill skill = SkillTable.getInstance().getInfo(skillId, skillLvl);
                 if (skill == null) {
                     activeChar.sendMessage("Usage: //buff <skillId> <skillLvl>");
-                    return false;
+                    return;
                 }
                 skill.getEffects(activeChar, player);
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT).addSkillName(skill));
-                return true;
+                return;
             } catch (Exception e) {
                 activeChar.sendMessage("Usage: //buff <skillId> <skillLvl>");
-                return false;
+                return;
             }
         if (command.startsWith("admin_getbuffs")) {
             StringTokenizer st = new StringTokenizer(command, " ");
@@ -108,20 +108,20 @@ public class AdminBuffs implements IAdminCommandHandler {
                 Player player = World.getInstance().getPlayer(playername);
                 if (player == null) {
                     activeChar.sendPacket(SystemMessageId.TARGET_IS_NOT_FOUND_IN_THE_GAME);
-                    return false;
+                    return;
                 }
                 int page = 1;
                 if (st.hasMoreTokens())
                     page = Integer.parseInt(st.nextToken());
                 showBuffs(activeChar, player, page);
-                return true;
+                return;
             }
             if (activeChar.getTarget() != null && activeChar.getTarget() instanceof Creature) {
                 showBuffs(activeChar, (Creature) activeChar.getTarget(), 1);
-                return true;
+                return;
             }
             activeChar.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-            return false;
+            return;
         }
         if (command.startsWith("admin_stopbuff"))
             try {
@@ -130,10 +130,10 @@ public class AdminBuffs implements IAdminCommandHandler {
                 int objectId = Integer.parseInt(st.nextToken());
                 int skillId = Integer.parseInt(st.nextToken());
                 removeBuff(activeChar, objectId, skillId);
-                return true;
+                return;
             } catch (Exception e) {
                 activeChar.sendMessage("Usage: //stopbuff <objectId> <skillId>");
-                return false;
+                return;
             }
         if (command.startsWith("admin_stopallbuffs"))
             try {
@@ -141,10 +141,10 @@ public class AdminBuffs implements IAdminCommandHandler {
                 st.nextToken();
                 int objectId = Integer.parseInt(st.nextToken());
                 removeAllBuffs(activeChar, objectId);
-                return true;
+                return;
             } catch (Exception e) {
                 activeChar.sendMessage("Usage: //stopallbuffs <objectId>");
-                return false;
+                return;
             }
         if (command.startsWith("admin_areacancel"))
             try {
@@ -155,10 +155,10 @@ public class AdminBuffs implements IAdminCommandHandler {
                 for (Player knownChar : activeChar.getKnownTypeInRadius(Player.class, radius))
                     knownChar.stopAllEffects();
                 activeChar.sendMessage("All effects canceled within radius " + radius + ".");
-                return true;
+                return;
             } catch (Exception e) {
                 activeChar.sendMessage("Usage: //areacancel <radius>");
-                return false;
+                return;
             }
         if (command.startsWith("admin_removereuse")) {
             StringTokenizer st = new StringTokenizer(command, " ");
@@ -169,22 +169,20 @@ public class AdminBuffs implements IAdminCommandHandler {
                 player = World.getInstance().getPlayer(name);
                 if (player == null) {
                     activeChar.sendMessage("The player " + name + " is not online.");
-                    return false;
+                    return;
                 }
             } else if (activeChar.getTarget() instanceof Player) {
                 player = (Player) activeChar.getTarget();
             }
             if (player == null) {
                 activeChar.sendPacket(SystemMessageId.TARGET_IS_INCORRECT);
-                return false;
+                return;
             }
             player.getReuseTimeStamp().clear();
             player.getDisabledSkills().clear();
             player.sendPacket(new SkillCoolTime(player));
             activeChar.sendMessage(player.getName() + "'s skills reuse time is now cleaned.");
-            return true;
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

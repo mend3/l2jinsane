@@ -18,11 +18,6 @@ public enum StatusType {
         this._name = name;
     }
 
-    // $FF: synthetic method
-    private static StatusType[] $values() {
-        return new StatusType[]{AUTO, GOOD, NORMAL, FULL, DOWN, GM_ONLY};
-    }
-
     public int getId() {
         return this._id;
     }

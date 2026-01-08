@@ -171,8 +171,7 @@ public class RaidPointManager {
 
     public final int calculateRanking(int objectId) {
         Map<Integer, Integer> playersData = new HashMap<>();
-        for (Iterator<Integer> iterator = this._entries.keySet().iterator(); iterator.hasNext(); ) {
-            int ownerId = iterator.next();
+        for (int ownerId : this._entries.keySet()) {
             int points = getPointsByOwnerId(ownerId);
             if (points > 0)
                 playersData.put(ownerId, points);
@@ -186,8 +185,7 @@ public class RaidPointManager {
 
     public Map<Integer, Integer> getWinners() {
         Map<Integer, Integer> playersData = new HashMap<>();
-        for (Iterator<Integer> iterator = this._entries.keySet().iterator(); iterator.hasNext(); ) {
-            int objectId = iterator.next();
+        for (int objectId : this._entries.keySet()) {
             int points = getPointsByOwnerId(objectId);
             if (points > 0)
                 playersData.put(objectId, points);

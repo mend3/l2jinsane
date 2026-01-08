@@ -17,8 +17,8 @@ public final class ConditionPlayerHasClanHall extends Condition {
             return false;
         Clan clan = env.getPlayer().getClan();
         if (clan == null)
-            return (this._clanHall.size() == 1 && this._clanHall.get(0) == 0);
-        if (this._clanHall.size() == 1 && this._clanHall.get(0) == -1)
+            return (this._clanHall.size() == 1 && this._clanHall.getFirst() == 0);
+        if (this._clanHall.size() == 1 && this._clanHall.getFirst() == -1)
             return clan.hasClanHall();
         return this._clanHall.contains(clan.getClanHallId());
     }

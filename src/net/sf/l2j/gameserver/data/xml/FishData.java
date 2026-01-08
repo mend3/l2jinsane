@@ -27,17 +27,11 @@ public class FishData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "fish", (fishNode) -> {
-                this._fish.add(new Fish(this.parseAttributes(fishNode)));
-            });
-        });
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "fish", (fishNode) -> this._fish.add(new Fish(this.parseAttributes(fishNode)))));
     }
 
     public Fish getFish(int lvl, int type, int group) {
-        return Rnd.get(this._fish.stream().filter((f) -> {
-            return f.getLevel() == lvl && f.getType() == type && f.getGroup() == group;
-        }).collect(Collectors.toList()));
+        return Rnd.get(this._fish.stream().filter((f) -> f.getLevel() == lvl && f.getType() == type && f.getGroup() == group).collect(Collectors.toList()));
     }
 
     private static class SingletonHolder {

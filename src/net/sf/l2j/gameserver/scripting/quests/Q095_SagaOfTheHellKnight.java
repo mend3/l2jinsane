@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q095_SagaOfTheHellKnight extends SagasSuperClass {
     public Q095_SagaOfTheHellKnight() {
         super(95, "Saga of the Hell Knight");

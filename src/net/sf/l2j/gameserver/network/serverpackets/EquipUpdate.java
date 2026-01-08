@@ -16,54 +16,24 @@ public class EquipUpdate extends L2GameServerPacket {
         writeC(75);
         writeD(this._change);
         writeD(this._item.getObjectId());
-        int bodypart = 0;
-        switch (this._item.getItem().getBodyPart()) {
-            case 4:
-                bodypart = 1;
-                break;
-            case 2:
-                bodypart = 2;
-                break;
-            case 8:
-                bodypart = 3;
-                break;
-            case 16:
-                bodypart = 4;
-                break;
-            case 32:
-                bodypart = 5;
-                break;
-            case 64:
-                bodypart = 6;
-                break;
-            case 128:
-                bodypart = 7;
-                break;
-            case 256:
-                bodypart = 8;
-                break;
-            case 512:
-                bodypart = 9;
-                break;
-            case 1024:
-                bodypart = 10;
-                break;
-            case 2048:
-                bodypart = 11;
-                break;
-            case 4096:
-                bodypart = 12;
-                break;
-            case 8192:
-                bodypart = 13;
-                break;
-            case 16384:
-                bodypart = 14;
-                break;
-            case 262144:
-                bodypart = 15;
-                break;
-        }
+        int bodypart = switch (this._item.getItem().getBodyPart()) {
+            case 4 -> 1;
+            case 2 -> 2;
+            case 8 -> 3;
+            case 16 -> 4;
+            case 32 -> 5;
+            case 64 -> 6;
+            case 128 -> 7;
+            case 256 -> 8;
+            case 512 -> 9;
+            case 1024 -> 10;
+            case 2048 -> 11;
+            case 4096 -> 12;
+            case 8192 -> 13;
+            case 16384 -> 14;
+            case 262144 -> 15;
+            default -> 0;
+        };
         writeD(bodypart);
     }
 }

@@ -15,8 +15,7 @@ public class AnnounceKillBoss extends AbstractMods {
         this.registerMod(ConfigData.ENABLE_AnnounceKillBoss);
     }
 
-    public static AnnounceKillBoss getInstance() {
-        return AnnounceKillBoss.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {

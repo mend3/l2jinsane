@@ -69,14 +69,11 @@ public class Q370_AnElderSowsSeeds extends Quest {
         QuestState st = player.getQuestState("Q370_AnElderSowsSeeds");
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 28) ? "30612-0a.htm" : "30612-0.htm";
-                break;
-            case 1:
-                htmltext = "30612-4.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 28) ? "30612-0a.htm" : "30612-0.htm";
+            case 1 -> "30612-4.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

@@ -16,9 +16,10 @@ public class AdminRes implements IAdminCommandHandler {
     }
 
     private static void handleRes(Player activeChar, String resParam) {
-        Player player = null;
-        WorldObject obj = activeChar.getTarget();
-        if (resParam != null) {
+        Player player = activeChar;
+        if(activeChar.getTarget() instanceof Player currentTarget){
+            player = currentTarget;
+        } else if (resParam != null) {
             Player plyr = World.getInstance().getPlayer(resParam);
             if (plyr != null) {
                 player = plyr;
@@ -35,8 +36,6 @@ public class AdminRes implements IAdminCommandHandler {
                 }
             }
         }
-        if (player == null)
-            player = activeChar;
         doResurrect(player);
     }
 
@@ -78,7 +77,7 @@ public class AdminRes implements IAdminCommandHandler {
         targetChar.doRevive();
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_res ")) {
             handleRes(activeChar, command.split(" ")[1]);
         } else if (command.equals("admin_res")) {
@@ -88,7 +87,6 @@ public class AdminRes implements IAdminCommandHandler {
         } else if (command.equals("admin_res_monster")) {
             handleNonPlayerRes(activeChar);
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

@@ -21,8 +21,8 @@ import java.util.*;
 public class Arena9x9 implements Runnable {
     public static List<Arena9x9.Pair> registered;
     int free;
-    Arena9x9.Arena[] arenas;
-    Map<Integer, String> fights;
+    final Arena9x9.Arena[] arenas;
+    final Map<Integer, String> fights;
 
     public Arena9x9() {
         this.free = Config.ARENA_EVENT_COUNT_9X9;
@@ -114,13 +114,13 @@ public class Arena9x9 implements Runnable {
         return this.fights;
     }
 
-    public boolean remove(Player player) {
+    public void remove(Player player) {
         Iterator<Pair> var2 = registered.iterator();
 
         Arena9x9.Pair p;
         do {
             if (!var2.hasNext()) {
-                return false;
+                return;
             }
 
             p = var2.next();
@@ -128,7 +128,6 @@ public class Arena9x9 implements Runnable {
 
         p.removeMessage();
         registered.remove(p);
-        return true;
     }
 
     public synchronized void run() {
@@ -175,7 +174,7 @@ public class Arena9x9 implements Runnable {
                 return null;
             }
 
-            opponents.add(0, pairOne);
+            opponents.addFirst(pairOne);
             registered.remove(first);
 
             second = Rnd.get(this.getRegisteredCount());
@@ -205,11 +204,11 @@ public class Arena9x9 implements Runnable {
     }
 
     private static class Arena {
-        protected int x;
-        protected int y;
-        protected int z;
+        protected final int x;
+        protected final int y;
+        protected final int z;
         protected boolean isFree = true;
-        int id;
+        final int id;
 
         public Arena(final Arena9x9 param1, int id, int x, int y, int z) {
             this.id = id;
@@ -223,7 +222,7 @@ public class Arena9x9 implements Runnable {
         }
     }
 
-    private class Pair {
+    public class Pair {
         private final Player leader;
         private final Player assist;
         private final Player assist2;
@@ -1609,8 +1608,7 @@ public class Arena9x9 implements Runnable {
             Arena9x9.Arena[] var1 = Arena9x9.this.arenas;
             int var2 = var1.length;
 
-            for (int var3 = 0; var3 < var2; ++var3) {
-                Arena9x9.Arena arena = var1[var3];
+            for (Arena arena : var1) {
                 if (arena.isFree) {
                     this.arena = arena;
                     arena.setFree(false);

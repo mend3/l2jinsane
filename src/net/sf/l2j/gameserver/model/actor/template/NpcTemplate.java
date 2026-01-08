@@ -384,7 +384,7 @@ public class NpcTemplate extends CreatureTemplate {
 
     }
 
-    public static enum SkillType {
+    public enum SkillType {
         BUFF,
         DEBUFF,
         HEAL,
@@ -392,18 +392,18 @@ public class NpcTemplate extends CreatureTemplate {
         LONG_RANGE,
         SHORT_RANGE,
         SUICIDE,
-        TELEPORT;
+        TELEPORT
     }
 
-    public static enum AIType {
+    public enum AIType {
         DEFAULT,
         ARCHER,
         MAGE,
         HEALER,
-        CORPSE;
+        CORPSE
     }
 
-    public static enum Race {
+    public enum Race {
         UNKNOWN,
         UNDEAD,
         MAGICCREATURE,

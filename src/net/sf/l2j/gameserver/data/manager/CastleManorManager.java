@@ -44,89 +44,19 @@ public class CastleManorManager implements IXmlReader {
     private Calendar _nextModeChange;
 
     protected CastleManorManager() {
-        this._mode = ManorStatus.APPROVED;
+        this._mode = Config.ALLOW_MANOR ? ManorStatus.APPROVED : ManorStatus.DISABLED;
         this._nextModeChange = null;
         this._seeds = new HashMap<>();
         this._procure = new HashMap<>();
         this._procureNext = new HashMap<>();
         this._production = new HashMap<>();
         this._productionNext = new HashMap<>();
-        if (!Config.ALLOW_MANOR) {
-            this._mode = ManorStatus.DISABLED;
-            LOGGER.info("Manor system is deactivated.");
-        } else {
-            this.load();
-
-            try (
-                    Connection con = ConnectionPool.getConnection();
-                    PreparedStatement stProduction = con.prepareStatement("SELECT * FROM castle_manor_production WHERE castle_id=?");
-                    PreparedStatement stProcure = con.prepareStatement("SELECT * FROM castle_manor_procure WHERE castle_id=?");
-            ) {
-                for (Castle castle : CastleManager.getInstance().getCastles()) {
-                    int castleId = castle.getCastleId();
-                    List<SeedProduction> pCurrent = new ArrayList<>();
-                    List<SeedProduction> pNext = new ArrayList<>();
-                    stProduction.clearParameters();
-                    stProduction.setInt(1, castleId);
-
-                    try (ResultSet rs = stProduction.executeQuery()) {
-                        while (rs.next()) {
-                            SeedProduction sp = new SeedProduction(rs.getInt("seed_id"), rs.getInt("amount"), rs.getInt("price"), rs.getInt("start_amount"));
-                            if (rs.getBoolean("next_period")) {
-                                pNext.add(sp);
-                            } else {
-                                pCurrent.add(sp);
-                            }
-                        }
-                    }
-
-                    this._production.put(castleId, pCurrent);
-                    this._productionNext.put(castleId, pNext);
-                    List<CropProcure> current = new ArrayList<>();
-                    List<CropProcure> next = new ArrayList<>();
-                    stProcure.clearParameters();
-                    stProcure.setInt(1, castleId);
-
-                    try (ResultSet rs = stProcure.executeQuery()) {
-                        while (rs.next()) {
-                            CropProcure cp = new CropProcure(rs.getInt("crop_id"), rs.getInt("amount"), rs.getInt("reward_type"), rs.getInt("start_amount"), rs.getInt("price"));
-                            if (rs.getBoolean("next_period")) {
-                                next.add(cp);
-                            } else {
-                                current.add(cp);
-                            }
-                        }
-                    }
-
-                    this._procure.put(castleId, current);
-                    this._procureNext.put(castleId, next);
-                }
-            } catch (Exception e) {
-                LOGGER.error("Error restoring manor data.", e);
-            }
-
-            Calendar currentTime = Calendar.getInstance();
-            int hour = currentTime.get(Calendar.HOUR_OF_DAY);
-            int min = currentTime.get(Calendar.MINUTE);
-            int maintenanceMin = Config.ALT_MANOR_REFRESH_MIN + Config.ALT_MANOR_MAINTENANCE_MIN;
-            if ((hour < Config.ALT_MANOR_REFRESH_TIME || min < maintenanceMin) && hour >= Config.ALT_MANOR_APPROVE_TIME && (hour != Config.ALT_MANOR_APPROVE_TIME || min > Config.ALT_MANOR_APPROVE_MIN)) {
-                if (hour == Config.ALT_MANOR_REFRESH_TIME && min >= Config.ALT_MANOR_REFRESH_MIN && min < maintenanceMin) {
-                    this._mode = ManorStatus.MAINTENANCE;
-                }
-            } else {
-                this._mode = ManorStatus.MODIFIABLE;
-            }
-
-            this.scheduleModeChange();
-            ThreadPool.scheduleAtFixedRate(this::storeMe, Config.ALT_MANOR_SAVE_PERIOD_RATE, Config.ALT_MANOR_SAVE_PERIOD_RATE);
-            LOGGER.debug("Current Manor mode is: {}.", new Object[]{this._mode.toString()});
-        }
     }
 
-    public static final void updateCurrentProduction(int castleId, Collection<SeedProduction> items) {
+    public static void updateCurrentProduction(int castleId, Collection<SeedProduction> items) {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("UPDATE castle_manor_production SET amount = ? WHERE castle_id = ? AND seed_id = ? AND next_period = 0");
+                PreparedStatement ps = con.prepareStatement("UPDATE castle_manor_production SET amount = ? WHERE castle_id = ? AND seed_id = ? AND next_period = 0")
         ) {
             for (SeedProduction sp : items) {
                 ps.setLong(1, (long) sp.getAmount());
@@ -142,10 +72,10 @@ public class CastleManorManager implements IXmlReader {
 
     }
 
-    public static final void updateCurrentProcure(int castleId, Collection<CropProcure> items) {
+    public static void updateCurrentProcure(int castleId, Collection<CropProcure> items) {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("UPDATE castle_manor_procure SET amount = ? WHERE castle_id = ? AND crop_id = ? AND next_period = 0");
+                PreparedStatement ps = con.prepareStatement("UPDATE castle_manor_procure SET amount = ? WHERE castle_id = ? AND crop_id = ? AND next_period = 0")
         ) {
             for (CropProcure sp : items) {
                 ps.setLong(1, (long) sp.getAmount());
@@ -161,13 +91,81 @@ public class CastleManorManager implements IXmlReader {
 
     }
 
-    public static final CastleManorManager getInstance() {
+    public static CastleManorManager getInstance() {
         return CastleManorManager.SingletonHolder.INSTANCE;
     }
 
     public void load() {
+        if (!Config.ALLOW_MANOR) {
+            LOGGER.info("Manor system is deactivated.");
+            return;
+        }
         this.parseFile("./data/xml/seeds.xml");
-        LOGGER.info("Loaded {} seeds.", new Object[]{this._seeds.size()});
+        LOGGER.info("Loaded {} seeds.", this._seeds.size());
+
+        try (
+                Connection con = ConnectionPool.getConnection();
+                PreparedStatement stProduction = con.prepareStatement("SELECT * FROM castle_manor_production WHERE castle_id=?");
+                PreparedStatement stProcure = con.prepareStatement("SELECT * FROM castle_manor_procure WHERE castle_id=?")
+        ) {
+            for (Castle castle : CastleManager.getInstance().getCastles()) {
+                int castleId = castle.getCastleId();
+                List<SeedProduction> pCurrent = new ArrayList<>();
+                List<SeedProduction> pNext = new ArrayList<>();
+                stProduction.clearParameters();
+                stProduction.setInt(1, castleId);
+
+                try (ResultSet rs = stProduction.executeQuery()) {
+                    while (rs.next()) {
+                        SeedProduction sp = new SeedProduction(rs.getInt("seed_id"), rs.getInt("amount"), rs.getInt("price"), rs.getInt("start_amount"));
+                        if (rs.getBoolean("next_period")) {
+                            pNext.add(sp);
+                        } else {
+                            pCurrent.add(sp);
+                        }
+                    }
+                }
+
+                this._production.put(castleId, pCurrent);
+                this._productionNext.put(castleId, pNext);
+                List<CropProcure> current = new ArrayList<>();
+                List<CropProcure> next = new ArrayList<>();
+                stProcure.clearParameters();
+                stProcure.setInt(1, castleId);
+
+                try (ResultSet rs = stProcure.executeQuery()) {
+                    while (rs.next()) {
+                        CropProcure cp = new CropProcure(rs.getInt("crop_id"), rs.getInt("amount"), rs.getInt("reward_type"), rs.getInt("start_amount"), rs.getInt("price"));
+                        if (rs.getBoolean("next_period")) {
+                            next.add(cp);
+                        } else {
+                            current.add(cp);
+                        }
+                    }
+                }
+
+                this._procure.put(castleId, current);
+                this._procureNext.put(castleId, next);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error restoring manor data.", e);
+        }
+
+        Calendar currentTime = Calendar.getInstance();
+        int hour = currentTime.get(Calendar.HOUR_OF_DAY);
+        int min = currentTime.get(Calendar.MINUTE);
+        int maintenanceMin = Config.ALT_MANOR_REFRESH_MIN + Config.ALT_MANOR_MAINTENANCE_MIN;
+        if ((hour < Config.ALT_MANOR_REFRESH_TIME || min < maintenanceMin) && hour >= Config.ALT_MANOR_APPROVE_TIME && (hour != Config.ALT_MANOR_APPROVE_TIME || min > Config.ALT_MANOR_APPROVE_MIN)) {
+            if (hour == Config.ALT_MANOR_REFRESH_TIME && min >= Config.ALT_MANOR_REFRESH_MIN && min < maintenanceMin) {
+                this._mode = ManorStatus.MAINTENANCE;
+            }
+        } else {
+            this._mode = ManorStatus.MODIFIABLE;
+        }
+
+        this.scheduleModeChange();
+        ThreadPool.scheduleAtFixedRate(this::storeMe, Config.ALT_MANOR_SAVE_PERIOD_RATE, Config.ALT_MANOR_SAVE_PERIOD_RATE);
+        LOGGER.debug("Current Manor mode is: {}.", this._mode.toString());
     }
 
     public void parseDocument(Document doc, Path path) {
@@ -177,7 +175,7 @@ public class CastleManorManager implements IXmlReader {
         }));
     }
 
-    private final void scheduleModeChange() {
+    private void scheduleModeChange() {
         this._nextModeChange = Calendar.getInstance();
         this._nextModeChange.set(Calendar.SECOND, 0);
         switch (this._mode) {
@@ -268,7 +266,7 @@ public class CastleManorManager implements IXmlReader {
                                 }
 
                                 if (crop.getAmount() > 0) {
-                                    castle.addToTreasuryNoTax(crop.getAmount() * crop.getPrice());
+                                    castle.addToTreasuryNoTax((long) crop.getAmount() * crop.getPrice());
                                 }
                             }
                         }
@@ -303,7 +301,7 @@ public class CastleManorManager implements IXmlReader {
         }
 
         this.scheduleModeChange();
-        LOGGER.debug("Manor mode changed to: {}.", new Object[]{this._mode.toString()});
+        LOGGER.debug("Manor mode changed to: {}.", this._mode.toString());
     }
 
     public final void setNextSeedProduction(List<SeedProduction> list, int castleId) {
@@ -349,17 +347,17 @@ public class CastleManorManager implements IXmlReader {
 
         for (SeedProduction seed : production) {
             Seed s = this.getSeed(seed.getId());
-            total += s == null ? 1L : (long) (s.getSeedReferencePrice() * seed.getStartAmount());
+            total += s == null ? 1L : ((long) s.getSeedReferencePrice() * seed.getStartAmount());
         }
 
         for (CropProcure crop : procure) {
-            total += crop.getPrice() * crop.getStartAmount();
+            total += (long) crop.getPrice() * crop.getStartAmount();
         }
 
         return total;
     }
 
-    public final boolean storeMe() {
+    public final void storeMe() {
         try {
             boolean var24;
             try (
@@ -367,7 +365,7 @@ public class CastleManorManager implements IXmlReader {
                     PreparedStatement ds = con.prepareStatement("DELETE FROM castle_manor_production");
                     PreparedStatement is = con.prepareStatement("INSERT INTO castle_manor_production VALUES (?, ?, ?, ?, ?, ?)");
                     PreparedStatement dp = con.prepareStatement("DELETE FROM castle_manor_procure");
-                    PreparedStatement ip = con.prepareStatement("INSERT INTO castle_manor_procure VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    PreparedStatement ip = con.prepareStatement("INSERT INTO castle_manor_procure VALUES (?, ?, ?, ?, ?, ?, ?)")
             ) {
                 ds.executeUpdate();
 
@@ -428,10 +426,8 @@ public class CastleManorManager implements IXmlReader {
                 var24 = true;
             }
 
-            return var24;
         } catch (Exception e) {
             LOGGER.error("Unable to store manor data.", e);
-            return false;
         }
     }
 

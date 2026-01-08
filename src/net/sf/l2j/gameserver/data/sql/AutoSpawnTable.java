@@ -19,7 +19,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -335,8 +334,8 @@ public class AutoSpawnTable {
                 }
 
                 if (npcInst != null && spawnInst.isBroadcasting()) {
-                    String var10000 = npcInst.getName();
-                    World.announceToOnlinePlayers("The " + var10000 + " has spawned near " + MapRegionData.getInstance().getClosestTownName(npcInst.getX(), npcInst.getY()) + "!");
+                    World.announceToOnlinePlayers("The " + npcInst.getName() + " has spawned near " + MapRegionData.getInstance().getClosestTownName(npcInst.getX(), npcInst.getY()) + "!");
+                    LOGGER.info(String.format("%s has spawned in %s,%s,%s", npcInst.getName(), npcInst.getX(), npcInst.getY(), npcInst.getZ()));
                 }
 
                 if (spawnInst.getDespawnDelay() > 0) {
@@ -367,8 +366,7 @@ public class AutoSpawnTable {
                 Npc[] var2 = spawnInst.getNPCInstanceList();
                 int var3 = var2.length;
 
-                for (int var4 = 0; var4 < var3; ++var4) {
-                    Npc npcInst = var2[var4];
+                for (Npc npcInst : var2) {
                     if (npcInst != null) {
                         SpawnTable.getInstance().deleteSpawn(npcInst.getSpawn(), false);
                         npcInst.deleteMe();

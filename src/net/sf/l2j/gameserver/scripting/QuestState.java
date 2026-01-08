@@ -467,7 +467,6 @@ public final class QuestState {
             }
             if (neededCount <= 0 || currentCount + amount < neededCount)
                 reached = false;
-            continue;
         }
         if (sendSound)
             playSound(reached ? "ItemSound.quest_middle" : "ItemSound.quest_itemget");

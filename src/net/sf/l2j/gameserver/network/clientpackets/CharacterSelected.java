@@ -47,7 +47,7 @@ public class CharacterSelected extends L2GameClientPacket {
                     if (!Hwid.checkPlayerWithHWID(client, cha.getObjectId(), cha.getName()))
                         return;
                     client.setState(GameClient.GameClientState.ENTERING);
-                    sendPacket(new CharSelected(cha, (client.getSessionId()).playOkID1));
+                    sendPacket(new CharSelected(cha, (client.getSessionId()).playOkID1()));
                 }
             } finally {
                 client.getActiveCharLock().unlock();

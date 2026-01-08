@@ -288,7 +288,7 @@ public class CastleChamberlain extends Merchant {
                     }
                 }
 
-                if (filename.length() != 0) {
+                if (!filename.isEmpty()) {
                     NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
                     html.setFile(filename);
                     html.replace("%objectId%", this.getObjectId());
@@ -356,7 +356,7 @@ public class CastleChamberlain extends Merchant {
                         this._preHour = Integer.parseInt(st.nextToken());
                     default:
                         if (this._preHour != 6) {
-                            this.getCastle().getSiegeDate().set(11, this._preHour + 12);
+                            this.getCastle().getSiegeDate().set(Calendar.HOUR_OF_DAY, this._preHour + 12);
                             this.getCastle().getSiege().endTimeRegistration(false);
                             this.sendFileMessage(player, "data/html/chamberlain/siegetime8.htm");
                             return;

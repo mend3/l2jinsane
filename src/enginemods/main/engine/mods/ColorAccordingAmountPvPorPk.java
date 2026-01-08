@@ -30,11 +30,11 @@ public class ColorAccordingAmountPvPorPk extends AbstractMods {
                 }
             }
 
-            if (!colorPvp.equals("")) {
+            if (!colorPvp.isEmpty()) {
                 activeChar.getAppearance().setNameColor(Integer.decode("0x" + colorPvp));
             }
 
-            if (!colorPk.equals("")) {
+            if (!colorPk.isEmpty()) {
                 activeChar.getAppearance().setTitleColor(Integer.decode("0x" + colorPk));
             }
 
@@ -42,8 +42,7 @@ public class ColorAccordingAmountPvPorPk extends AbstractMods {
         }
     }
 
-    public static ColorAccordingAmountPvPorPk getInstance() {
-        return ColorAccordingAmountPvPorPk.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {

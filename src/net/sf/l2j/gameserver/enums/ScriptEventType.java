@@ -24,11 +24,6 @@ public enum ScriptEventType {
         this._allowMultipleRegistration = allowMultipleRegistration;
     }
 
-    // $FF: synthetic method
-    private static ScriptEventType[] $values() {
-        return new ScriptEventType[]{ON_FIRST_TALK, QUEST_START, ON_TALK, ON_ATTACK, ON_ATTACK_ACT, ON_KILL, ON_SPAWN, ON_DECAY, ON_CREATURE_SEE, ON_SKILL_SEE, ON_FACTION_CALL, ON_AGGRO, ON_SPELL_FINISHED, ON_ENTER_ZONE, ON_EXIT_ZONE};
-    }
-
     public boolean isMultipleRegistrationAllowed() {
         return this._allowMultipleRegistration;
     }

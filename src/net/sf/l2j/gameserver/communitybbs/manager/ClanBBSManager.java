@@ -1,4 +1,4 @@
-package net.sf.l2j.gameserver.communitybbs.Manager;
+package net.sf.l2j.gameserver.communitybbs.manager;
 
 import net.sf.l2j.commons.lang.StringUtil;
 import net.sf.l2j.gameserver.data.cache.HtmCache;
@@ -189,7 +189,7 @@ public class ClanBBSManager extends BaseBBSManager {
                 return;
             StringBuilder members = new StringBuilder();
             for (ClanMember member : clan.getMembers()) {
-                if (members.length() > 0)
+                if (!members.isEmpty())
                     members.append(";");
                 members.append(member.getName());
             }

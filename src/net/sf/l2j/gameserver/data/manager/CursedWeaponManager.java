@@ -28,13 +28,13 @@ public class CursedWeaponManager implements IXmlReader {
         }
     }
 
-    public static final CursedWeaponManager getInstance() {
+    public static CursedWeaponManager getInstance() {
         return CursedWeaponManager.SingletonHolder.INSTANCE;
     }
 
     public void load() {
         this.parseFile("./data/xml/cursedWeapons.xml");
-        LOGGER.info("Loaded {} cursed weapons.", new Object[]{this._cursedWeapons.size()});
+        LOGGER.info("Loaded {} cursed weapons.", this._cursedWeapons.size());
     }
 
     public void parseDocument(Document doc, Path path) {

@@ -1,9 +1,9 @@
-package net.sf.l2j.gameserver.communitybbs.Custom;
+package net.sf.l2j.gameserver.communitybbs.custom;
 
 import mods.pvpZone.RandomZoneManager;
 import net.sf.l2j.Config;
 import net.sf.l2j.commons.random.Rnd;
-import net.sf.l2j.gameserver.communitybbs.Manager.BaseBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.BaseBBSManager;
 import net.sf.l2j.gameserver.data.cache.HtmCache;
 import net.sf.l2j.gameserver.data.manager.CastleManager;
 import net.sf.l2j.gameserver.data.xml.TeleportLocationData;

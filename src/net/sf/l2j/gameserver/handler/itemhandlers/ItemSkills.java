@@ -37,9 +37,10 @@ public class ItemSkills implements IItemHandler {
                         return;
                     if (!itemSkill.isPotion() && playable.isCastingNow())
                         return;
+                    int count = (itemSkill.getItemConsumeId() == 0 && itemSkill.getItemConsume() > 0) ? itemSkill.getItemConsume() : 1;
                     if (itemSkill.isPotion() || itemSkill.isSimultaneousCast()) {
                         if (!item.isHerb())
-                            if (!playable.destroyItem("Consume", item.getObjectId(), (itemSkill.getItemConsumeId() == 0 && itemSkill.getItemConsume() > 0) ? itemSkill.getItemConsume() : 1, null, false)) {
+                            if (!playable.destroyItem("Consume", item.getObjectId(), count, null, false)) {
                                 activeChar.sendPacket(SystemMessageId.NOT_ENOUGH_ITEMS);
                                 return;
                             }
@@ -47,7 +48,7 @@ public class ItemSkills implements IItemHandler {
                         if (!isPet && item.getItemType() == EtcItemType.HERB && activeChar.hasServitor())
                             activeChar.getSummon().doSimultaneousCast(itemSkill);
                     } else {
-                        if (!playable.destroyItem("Consume", item.getObjectId(), (itemSkill.getItemConsumeId() == 0 && itemSkill.getItemConsume() > 0) ? itemSkill.getItemConsume() : 1, null, false)) {
+                        if (!playable.destroyItem("Consume", item.getObjectId(), count, null, false)) {
                             activeChar.sendPacket(SystemMessageId.NOT_ENOUGH_ITEMS);
                             return;
                         }

@@ -42,7 +42,7 @@ public class AdminPForge implements IAdminCommandHandler {
         activeChar.sendPacket(html);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_forge")) {
             showMainPage(activeChar);
         } else if (command.startsWith("admin_forge2")) {
@@ -115,10 +115,8 @@ public class AdminPForge implements IAdminCommandHandler {
                 activeChar.sendPacket(SystemMessage.getSystemMessage(Integer.parseInt(command.substring(10).trim())));
             } catch (Exception e) {
                 activeChar.sendMessage("Command format: //msg <SYSTEM_MSG_ID>");
-                return false;
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

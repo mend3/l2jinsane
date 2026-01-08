@@ -7,7 +7,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q628_HuntOfTheGoldenRamMercenaryForce extends Quest {
@@ -40,8 +39,7 @@ public class Q628_HuntOfTheGoldenRamMercenaryForce extends Quest {
         setItemsIds(7248, 7249, 7246, 7247);
         addStartNpc(31554);
         addTalkId(31554);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : CHANCES.keySet()) {
             addKillId(npcId);
         }
     }

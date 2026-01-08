@@ -46,8 +46,8 @@ public class NpcRanking extends AbstractMods {
             hb.append("<table width=280>");
             hb.append("<tr>");
             hb.append("<td fixwidth=40><center><font color=F7D358>" + pos + "</font></td>");
-            hb.append(new Object[]{"<td fixwidth=120><center> ", rh.name, " </center></td>"});
-            hb.append(new Object[]{"<td fixwidth=120><center> ", rh.kills, " </center></td>"});
+            hb.append("<td fixwidth=120><center> ", rh.name, " </center></td>");
+            hb.append("<td fixwidth=120><center> ", rh.kills, " </center></td>");
             hb.append("</tr>");
             hb.append("</table>");
             ++pos;
@@ -59,8 +59,7 @@ public class NpcRanking extends AbstractMods {
         return hb;
     }
 
-    public static NpcRanking getInstance() {
-        return NpcRanking.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
@@ -88,7 +87,7 @@ public class NpcRanking extends AbstractMods {
                 try (
                         Connection con = ConnectionPool.getConnection();
                         PreparedStatement statement = con.prepareStatement("SELECT char_name,pvpkills FROM characters WHERE pvpkills>0 AND accesslevel=0 ORDER BY pvpkills DESC LIMIT 20");
-                        ResultSet rset = statement.executeQuery();
+                        ResultSet rset = statement.executeQuery()
                 ) {
                     while (rset.next()) {
                         RankingHolder rh = new RankingHolder();
@@ -106,7 +105,7 @@ public class NpcRanking extends AbstractMods {
                 try (
                         Connection con = ConnectionPool.getConnection();
                         PreparedStatement statement = con.prepareStatement("SELECT char_name,pkkills FROM characters WHERE pkkills>0 AND accesslevel=0 ORDER BY pkkills DESC LIMIT 20");
-                        ResultSet rset = statement.executeQuery();
+                        ResultSet rset = statement.executeQuery()
                 ) {
                     while (rset.next()) {
                         RankingHolder rh = new RankingHolder();
@@ -131,21 +130,21 @@ public class NpcRanking extends AbstractMods {
             hb.append("<html><body>");
             hb.append(Html.headHtml("RANKING"));
             hb.append("<br>");
-            hb.append(new Object[]{"Welcome my name is ", npc.getName(), " and take care to meet the most famous players in the world.<br>"});
+            hb.append("Welcome my name is ", npc.getName(), " and take care to meet the most famous players in the world.<br>");
             hb.append("You probably want to know who it is!<br>");
             hb.append("I actually have a list, I can show it to you if you want.<br>");
             hb.append("What would you like to see?<br>");
             hb.append("<center>");
             hb.append("<table width=280>");
             hb.append("<tr>");
-            hb.append(new Object[]{"<td>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
+            hb.append("<td>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
             hb.append("<td><button value=\"Top PvP\" action=\"bypass -h Engine NpcRanking pvp\" width=216 height=32 back=L2UI_CH3.refinegrade3_21 fore=L2UI_CH3.refinegrade3_21></td>");
-            hb.append(new Object[]{"<td>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
+            hb.append("<td>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
             hb.append("</tr>");
             hb.append("<tr>");
-            hb.append(new Object[]{"<td>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
+            hb.append("<td>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
             hb.append("<td><button value=\"Top PK\" action=\"bypass -h Engine NpcRanking pk\" width=216 height=32 back=L2UI_CH3.refinegrade3_21 fore=L2UI_CH3.refinegrade3_21></td>");
-            hb.append(new Object[]{"<td>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>"});
+            hb.append("<td>", Html.newImage("L2UI.bbs_folder", 32, 32), "</td>");
             hb.append("</tr>");
             hb.append("</table>");
             hb.append("</center>");
@@ -169,7 +168,7 @@ public class NpcRanking extends AbstractMods {
         protected static final NpcRanking INSTANCE = new NpcRanking();
     }
 
-    public class RankingHolder {
+    public static class RankingHolder {
         String name;
         int kills;
     }

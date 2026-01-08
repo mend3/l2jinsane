@@ -52,14 +52,11 @@ public class Q382_KailsMagicCoin extends Quest {
         QuestState st = player.getQuestState("Q382_KailsMagicCoin");
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 55 || !st.hasQuestItems(5898)) ? "30687-01.htm" : "30687-02.htm";
-                break;
-            case 1:
-                htmltext = "30687-04.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 55 || !st.hasQuestItems(5898)) ? "30687-01.htm" : "30687-02.htm";
+            case 1 -> "30687-04.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

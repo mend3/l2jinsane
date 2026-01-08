@@ -46,7 +46,7 @@ public class SignsPriest extends Folk {
                                 st.nextToken();
                                 cabal = CabalType.VALUES[Integer.parseInt(st.nextToken())];
                             } catch (Exception var52) {
-                                LOGGER.warn("Failed to retrieve cabal from bypass command. NpcId: {}, command: {}.", new Object[]{this.getNpcId(), command});
+                                LOGGER.warn("Failed to retrieve cabal from bypass command. NpcId: {}, command: {}.", this.getNpcId(), command);
                             }
                         }
                     }
@@ -232,10 +232,7 @@ public class SignsPriest extends Folk {
 
                         try {
                             ancientAdenaConvert = Integer.parseInt(command.substring(13).trim());
-                        } catch (NumberFormatException var55) {
-                            this.showChatWindow(player, "data/html/seven_signs/blkmrkt_3.htm");
-                            break;
-                        } catch (StringIndexOutOfBoundsException var56) {
+                        } catch (NumberFormatException | StringIndexOutOfBoundsException var55) {
                             this.showChatWindow(player, "data/html/seven_signs/blkmrkt_3.htm");
                             break;
                         }

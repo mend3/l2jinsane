@@ -18,7 +18,7 @@ public class PartyFarm {
     public static boolean _started = false;
     public static boolean _aborted = false;
     protected static boolean _finish = false;
-    protected static ArrayList<L2Spawn> monsters = new ArrayList<>();
+    protected static final ArrayList<L2Spawn> monsters = new ArrayList<>();
 
     public static void bossSpawnMonster() {
         spawnMonsters();

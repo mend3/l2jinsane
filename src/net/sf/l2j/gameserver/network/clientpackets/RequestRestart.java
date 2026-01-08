@@ -55,7 +55,7 @@ public final class RequestRestart extends L2GameClientPacket {
                         client.setPlayer(null);
                         client.setState(GameClient.GameClientState.AUTHED);
                         this.sendPacket(RestartResponse.valueOf(true));
-                        CharSelectInfo cl = new CharSelectInfo(client.getAccountName(), client.getSessionId().playOkID1);
+                        CharSelectInfo cl = new CharSelectInfo(client.getAccountName(), client.getSessionId().playOkID1());
                         this.sendPacket(cl);
                         client.setCharSelectSlot(cl.getCharacterSlots());
                     }

@@ -11,12 +11,15 @@ import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 
 import java.util.List;
 
+import static net.sf.l2j.gameserver.geoengine.geodata.GeoStructure.GEO_CELLS_Y;
+import static net.sf.l2j.gameserver.model.World.*;
+
 public class AdminGeoEngine implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_geo_bug", "admin_geo_pos", "admin_geo_see", "admin_geo_move", "admin_path_find", "admin_path_info"};
     private final String Y = "x ";
     private final String N = "   ";
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_geo_bug")) {
             int geoX = GeoEngine.getGeoX(activeChar.getX());
             int geoY = GeoEngine.getGeoY(activeChar.getY());
@@ -34,8 +37,8 @@ public class AdminGeoEngine implements IAdminCommandHandler {
         } else if (command.equals("admin_geo_pos")) {
             int geoX = GeoEngine.getGeoX(activeChar.getX());
             int geoY = GeoEngine.getGeoY(activeChar.getY());
-            int rx = (activeChar.getX() - -131072) / 32768 + 16;
-            int ry = (activeChar.getY() - -262144) / 32768 + 10;
+            int rx = (activeChar.getX() - WORLD_X_MIN) / GEO_CELLS_Y + TILE_X_MIN;
+            int ry = (activeChar.getY() - WORLD_Y_MIN) / GEO_CELLS_Y + TILE_Y_MIN;
             ABlock block = GeoEngine.getInstance().getBlock(geoX, geoY);
             activeChar.sendMessage("Region: " + rx + "_" + ry + "; Block: " + block.getClass().getSimpleName());
             if (block.hasGeoPos()) {
@@ -92,9 +95,7 @@ public class AdminGeoEngine implements IAdminCommandHandler {
                 }
             }
         } else {
-            return false;
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

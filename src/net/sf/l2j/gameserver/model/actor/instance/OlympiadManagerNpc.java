@@ -61,7 +61,7 @@ public class OlympiadManagerNpc extends Folk {
 
         NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile("data/html/olympiad/" + filename);
-        if (filename == "hero_main.htm") {
+        if (filename.equals("hero_main.htm")) {
             String hiddenText = "";
             if (HeroManager.getInstance().isInactiveHero(player.getObjectId())) {
                 hiddenText = "<a action=\"bypass -h npc_%objectId%_Olympiad 5\">\"I want to be a Hero.\"</a><br>";
@@ -183,19 +183,19 @@ public class OlympiadManagerNpc extends Folk {
                         StringUtil.append(sb, var22);
                         if (task.isGameStarted()) {
                             if (task.isInTimerTime()) {
-                                StringUtil.append(sb, new Object[]{"(&$907;)"});
+                                StringUtil.append(sb, "(&$907;)");
                             } else if (task.isBattleStarted()) {
-                                StringUtil.append(sb, new Object[]{"(&$829;)"});
+                                StringUtil.append(sb, "(&$829;)");
                             } else {
-                                StringUtil.append(sb, new Object[]{"(&$908;)"});
+                                StringUtil.append(sb, "(&$908;)");
                             }
 
-                            StringUtil.append(sb, new Object[]{"&nbsp;", task.getGame().getPlayerNames()[0], "&nbsp; : &nbsp;", task.getGame().getPlayerNames()[1]});
+                            StringUtil.append(sb, "&nbsp;", task.getGame().getPlayerNames()[0], "&nbsp; : &nbsp;", task.getGame().getPlayerNames()[1]);
                         } else {
-                            StringUtil.append(sb, new Object[]{"(&$906;)</td><td>&nbsp;"});
+                            StringUtil.append(sb, "(&$906;)</td><td>&nbsp;");
                         }
 
-                        StringUtil.append(sb, new Object[]{"</a><br>"});
+                        StringUtil.append(sb, "</a><br>");
                     }
 
                     html.replace("%list%", sb.toString());

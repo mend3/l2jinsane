@@ -9,7 +9,7 @@ import net.sf.l2j.gameserver.network.serverpackets.BuyList;
 public class AdminShop implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_buy", "admin_gmshop"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_buy")) {
             try {
                 int val = Integer.parseInt(command.substring(10));
@@ -25,7 +25,6 @@ public class AdminShop implements IAdminCommandHandler {
         } else if (command.equals("admin_gmshop")) {
             AdminHelpPage.showHelpPage(activeChar, "gmshops.htm");
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

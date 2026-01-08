@@ -37,7 +37,7 @@ public final class EtcItem extends Item {
         return this._type;
     }
 
-    public final boolean isConsumable() {
+    public boolean isConsumable() {
         return this.getItemType() == EtcItemType.SHOT || this.getItemType() == EtcItemType.POTION;
     }
 

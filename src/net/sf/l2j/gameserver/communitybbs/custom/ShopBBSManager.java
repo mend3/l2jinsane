@@ -1,6 +1,6 @@
-package net.sf.l2j.gameserver.communitybbs.Custom;
+package net.sf.l2j.gameserver.communitybbs.custom;
 
-import net.sf.l2j.gameserver.communitybbs.Manager.BaseBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.BaseBBSManager;
 import net.sf.l2j.gameserver.data.xml.MultisellData;
 import net.sf.l2j.gameserver.enums.ZoneId;
 import net.sf.l2j.gameserver.model.actor.Player;

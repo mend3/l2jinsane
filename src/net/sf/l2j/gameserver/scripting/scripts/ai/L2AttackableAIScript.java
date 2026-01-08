@@ -144,10 +144,6 @@ public class L2AttackableAIScript extends Quest {
         return null;
     }
 
-    public String onSpellFinished(Npc npc, Player player, L2Skill skill) {
-        return null;
-    }
-
     public String onSkillSee(Npc npc, Player caster, L2Skill skill, WorldObject[] targets, boolean isPet) {
         if (caster == null)
             return null;
@@ -189,10 +185,6 @@ public class L2AttackableAIScript extends Quest {
         if (player == null)
             return null;
         ((Attackable) npc).addDamageHate(isPet ? (Creature) player.getSummon() : (Creature) player, 0, 1);
-        return null;
-    }
-
-    public String onSpawn(Npc npc) {
         return null;
     }
 

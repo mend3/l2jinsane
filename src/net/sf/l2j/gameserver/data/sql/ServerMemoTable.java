@@ -20,7 +20,7 @@ public class ServerMemoTable extends AbstractMemo {
         this.restoreMe();
     }
 
-    public static final ServerMemoTable getInstance() {
+    public static ServerMemoTable getInstance() {
         return ServerMemoTable.SingletonHolder.INSTANCE;
     }
 
@@ -97,7 +97,7 @@ public class ServerMemoTable extends AbstractMemo {
             return result;
         }
 
-        LOGGER.info("Loaded {} server variables.", new Object[]{this.size()});
+        LOGGER.info("Loaded {} server variables.", this.size());
         return true;
     }
 
@@ -183,7 +183,7 @@ public class ServerMemoTable extends AbstractMemo {
                 return result;
             }
 
-            LOGGER.info("Stored {} server variables.", new Object[]{this.size()});
+            LOGGER.info("Stored {} server variables.", this.size());
             return true;
         }
     }

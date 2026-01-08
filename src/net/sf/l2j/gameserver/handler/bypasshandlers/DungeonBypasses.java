@@ -8,34 +8,23 @@ import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.memo.DungeonMemo;
 
 public class DungeonBypasses implements IBypassHandler {
-    public boolean handleBypass(String bypass, Player activeChar) {
+    public void handleBypass(String bypass, Player activeChar) {
         if (bypass.startsWith("bp_reward")) {
             int type = Integer.parseInt(bypass.substring(10));
             int itemId = 0;
             int count = 1;
-            switch (type) {
-                case 0:
-                    itemId = 3470;
-                    break;
-                case 1:
-                    itemId = 3470;
-                    break;
-                case 2:
-                    itemId = 3470;
-                    break;
-                case 3:
-                    itemId = 3470;
-                    break;
-                case 4:
-                    itemId = 3470;
-                    break;
-                case 5:
-                    itemId = 3470;
-                    break;
-            }
+            itemId = switch (type) {
+                case 0 -> 3470;
+                case 1 -> 3470;
+                case 2 -> 3470;
+                case 3 -> 3470;
+                case 4 -> 3470;
+                case 5 -> 3470;
+                default -> itemId;
+            };
             if (itemId == 0) {
                 System.out.println(activeChar.getName() + " tried to send custom id on dungeon solo rewards.");
-                return false;
+                return;
             }
             ItemInstance item = ItemTable.getInstance().createDummyItem(itemId);
             activeChar.addItem("dungeon reward", itemId, count, null, true);
@@ -46,16 +35,16 @@ public class DungeonBypasses implements IBypassHandler {
         } else if (bypass.startsWith("bp_party_reward")) {
             int type = Integer.parseInt(bypass.substring(16));
             int itemId = 0;
-            int count = 1;
-            switch (type) {
-                case 0:
+            int count = switch (type) {
+                case 0 -> {
                     itemId = 3470;
-                    count = 10;
-                    break;
-            }
+                    yield 10;
+                }
+                default -> 1;
+            };
             if (itemId == 0) {
                 System.out.println(activeChar.getName() + " tried to send custom id on dungeon party rewards.");
-                return false;
+                return;
             }
             ItemInstance item = ItemTable.getInstance().createDummyItem(itemId);
             activeChar.addItem("dungeon reward", itemId, count, null, true);
@@ -65,7 +54,6 @@ public class DungeonBypasses implements IBypassHandler {
             activeChar.setDungeon(null);
             activeChar.teleportTo(82635, 148798, -3464, 25);
         }
-        return true;
     }
 
     public String[] getBypassHandlersList() {

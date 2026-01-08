@@ -96,8 +96,7 @@ public class Npc extends Creature {
             if (npc.getDropData().isEmpty()) {
                 player.sendMessage("This target have not drop info.");
             } else {
-                List<DropCategory> list = new ArrayList<>();
-                npc.getDropData().forEach(list::add);
+                List<DropCategory> list = new ArrayList<>(npc.getDropData());
                 Collections.reverse(list);
                 int myPage = 1;
                 int i = 0;
@@ -113,7 +112,7 @@ public class Npc extends Creature {
 
                     for (DropData drop : cat.getAllDrops()) {
                         double chance = (drop.getItemId() == 57 ? (double) drop.getChance() * Config.RATE_DROP_ADENA : (double) drop.getChance() * Config.RATE_DROP_ITEMS) / (double) 10000.0F;
-                        chance = chance > (double) 100.0F ? (double) 100.0F : chance;
+                        chance = Math.min(chance, 100.0F);
                         String percent = null;
                         if (chance <= 0.001) {
                             DecimalFormat df = new DecimalFormat("#.####");
@@ -151,24 +150,24 @@ public class Npc extends Creature {
                             String check = player.ignoredDropContain(item.getItemId()) ? "L2UI.CheckBox" : "L2UI.CheckBox_checked";
                             sb.append("<table width=280 bgcolor=000000><tr>");
                             String var10001 = cat.isSweep() ? "FF00FF" : "FFFFFF";
-                            sb.append("<td width=44 height=41 align=center><table bgcolor=" + var10001 + " cellpadding=6 cellspacing=\"-5\"><tr><td><button width=32 height=32 back=" + IconsTable.getIcon(item.getItemId()) + " fore=" + IconsTable.getIcon(item.getItemId()) + "></td></tr></table></td>");
+                            sb.append("<td width=44 height=41 align=center><table bgcolor=").append(var10001).append(" cellpadding=6 cellspacing=\"-5\"><tr><td><button width=32 height=32 back=").append(IconsTable.getIcon(item.getItemId())).append(" fore=").append(IconsTable.getIcon(item.getItemId())).append("></td></tr></table></td>");
                             var10001 = cat.isSweep() ? "<font color=ff00ff>" + name + "</font>" : name;
-                            sb.append("<td width=240>" + var10001 + "<br1><font color=B09878>" + (cat.isSweep() ? "Spoil" : "Drop") + " Chance : " + percent + "%</font></td>");
-                            sb.append("<td width=20><button action=\"bypass droplist " + npcId + " " + page + " " + item.getItemId() + "\" width=12 height=12 back=\"" + check + "\" fore=\"" + check + "\"/></td>");
+                            sb.append("<td width=240>").append(var10001).append("<br1><font color=B09878>").append(cat.isSweep() ? "Spoil" : "Drop").append(" Chance : ").append(percent).append("%</font></td>");
+                            sb.append("<td width=20><button action=\"bypass droplist ").append(npcId).append(" ").append(page).append(" ").append(item.getItemId()).append("\" width=12 height=12 back=\"").append(check).append("\" fore=\"").append(check).append("\"/></td>");
                             sb.append("</tr></table><img src=L2UI.SquareGray width=280 height=1>");
                             ++shown;
                         }
                     }
                 }
 
-                sb.append("<img height=" + (294 - shown * 42) + ">");
+                sb.append("<img height=").append(294 - shown * 42).append(">");
                 sb.append("<img height=8><img src=L2UI.SquareGray width=280 height=1>");
                 sb.append("<table width=280 bgcolor=000000><tr>");
                 String var28 = page > 1 ? "<button value=\"< PREV\" action=\"bypass droplist " + npcId + " " + (page - 1) + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>" : "";
-                sb.append("<td align=center width=70>" + var28 + "</td>");
-                sb.append("<td align=center width=140>Page " + page + "</td>");
+                sb.append("<td align=center width=70>").append(var28).append("</td>");
+                sb.append("<td align=center width=140>Page ").append(page).append("</td>");
                 var28 = hasMore ? "<button value=\"NEXT >\" action=\"bypass droplist " + npcId + " " + (page + 1) + "\" width=65 height=19 back=L2UI_ch3.smallbutton2_over fore=L2UI_ch3.smallbutton2>" : "";
-                sb.append("<td align=center width=70>" + var28 + "</td>");
+                sb.append("<td align=center width=70>").append(var28).append("</td>");
                 sb.append("</tr></table><img src=L2UI.SquareGray width=280 height=1>");
                 NpcHtmlMessage html = new NpcHtmlMessage(200);
                 html.setFile("data/html/droplist.htm");
@@ -205,7 +204,7 @@ public class Npc extends Creature {
         if (quests.isEmpty()) {
             showQuestWindowSingle(player, npc, null);
         } else if (quests.size() == 1) {
-            showQuestWindowSingle(player, npc, quests.get(0));
+            showQuestWindowSingle(player, npc, quests.getFirst());
         } else {
             showQuestWindowChoose(player, npc, quests);
         }
@@ -248,7 +247,7 @@ public class Npc extends Creature {
         StringBuilder sb = new StringBuilder("<html><body>");
 
         for (Quest q : quests) {
-            StringUtil.append(sb, new Object[]{"<a action=\"bypass -h npc_%objectId%_Quest ", q.getName(), "\">[", q.getDescr()});
+            StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Quest ", q.getName(), "\">[", q.getDescr());
             QuestState qs = player.getQuestState(q.getName());
             if (qs != null && qs.isStarted()) {
                 sb.append(" (In Progress)]</a><br>");
@@ -347,7 +346,7 @@ public class Npc extends Creature {
 
             scripts = this.getTemplate().getEventQuests(ScriptEventType.ON_FIRST_TALK);
             if (scripts != null && scripts.size() == 1) {
-                scripts.get(0).notifyFirstTalk(this, player);
+                scripts.getFirst().notifyFirstTalk(this, player);
             } else if ((TvTEventManager.getInstance().getActiveEvent() == null || !TvTEventManager.getInstance().getActiveEvent().isEventNpc(this)) && (CtfEventManager.getInstance().getActiveEvent() == null || !CtfEventManager.getInstance().getActiveEvent().isEventNpc(this)) && (DmEventManager.getInstance().getActiveEvent() == null || !DmEventManager.getInstance().getActiveEvent().isEventNpc(this))) {
                 this.showChatWindow(player);
             } else {
@@ -386,7 +385,7 @@ public class Npc extends Creature {
 
             scripts = this.getTemplate().getEventQuests(ScriptEventType.ON_FIRST_TALK);
             if (scripts != null && scripts.size() == 1) {
-                scripts.get(0).notifyFirstTalk(this, player);
+                scripts.getFirst().notifyFirstTalk(this, player);
             } else {
                 this.showChatWindow(player);
             }
@@ -824,14 +823,13 @@ public class Npc extends Creature {
 
             try {
                 val = Integer.parseInt(command.substring(5));
-            } catch (IndexOutOfBoundsException ignored) {
-            } catch (NumberFormatException ignored) {
+            } catch (IndexOutOfBoundsException | NumberFormatException ignored) {
             }
 
             this.showChatWindow(player, val);
         } else if (command.startsWith("Link")) {
             String path = command.substring(5).trim();
-            if (path.indexOf("..") != -1) {
+            if (path.contains("..")) {
                 return;
             }
 
@@ -844,8 +842,7 @@ public class Npc extends Creature {
 
             try {
                 val = Integer.parseInt(command.substring(5));
-            } catch (IndexOutOfBoundsException ignored) {
-            } catch (NumberFormatException ignored) {
+            } catch (IndexOutOfBoundsException | NumberFormatException ignored) {
             }
 
             if (val == 0) {
@@ -930,7 +927,7 @@ public class Npc extends Creature {
             }
         } else if (command.startsWith("EnterRift")) {
             try {
-                Byte b1 = Byte.parseByte(command.substring(10));
+                byte b1 = Byte.parseByte(command.substring(10));
                 DimensionalRiftManager.getInstance().start(player, b1, this);
             } catch (Exception ignored) {
             }
@@ -1061,11 +1058,11 @@ public class Npc extends Creature {
 
             for (ItemInstance item : player.getInventory().getItems()) {
                 if (item != null && item.getItemId() == 4442 && item.getCustomType1() < lotoNumber) {
-                    StringUtil.append(sb, new Object[]{"<a action=\"bypass -h npc_%objectId%_Loto ", item.getObjectId(), "\">", item.getCustomType1(), " Event Number "});
+                    StringUtil.append(sb, "<a action=\"bypass -h npc_%objectId%_Loto ", item.getObjectId(), "\">", item.getCustomType1(), " Event Number ");
                     int[] numbers = LotteryManager.decodeNumbers(item.getEnchantLevel(), item.getCustomType2());
 
                     for (int i = 0; i < 5; ++i) {
-                        StringUtil.append(sb, new Object[]{numbers[i], " "});
+                        StringUtil.append(sb, numbers[i], " ");
                     }
 
                     int[] check = LotteryManager.checkTicket(item);
@@ -1077,14 +1074,14 @@ public class Npc extends Creature {
                             case 4 -> sb.append("- 4th Prize");
                         }
 
-                        StringUtil.append(sb, new Object[]{" ", check[1], "a."});
+                        StringUtil.append(sb, " ", check[1], "a.");
                     }
 
                     sb.append("</a><br>");
                 }
             }
 
-            if (sb.length() == 0) {
+            if (sb.isEmpty()) {
                 sb.append("There is no winning lottery ticket...<br>");
             }
 

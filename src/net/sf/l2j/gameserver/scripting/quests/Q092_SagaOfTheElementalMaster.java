@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q092_SagaOfTheElementalMaster extends SagasSuperClass {
     public Q092_SagaOfTheElementalMaster() {
         super(92, "Saga of the Elemental Master");

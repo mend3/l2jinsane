@@ -141,7 +141,7 @@ public final class CharacterCreate extends L2GameClientPacket {
         EngineModsManager.onCreateCharacter(player);
         player.setOnlineStatus(true, false);
         player.deleteMe();
-        CharSelectInfo csi = new CharSelectInfo(getClient().getAccountName(), (getClient().getSessionId()).playOkID1);
+        CharSelectInfo csi = new CharSelectInfo(getClient().getAccountName(), (getClient().getSessionId()).playOkID1());
         sendPacket(csi);
         getClient().setCharSelectSlot(csi.getCharacterSlots());
     }

@@ -10,7 +10,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q662_AGameOfCards extends Quest {
@@ -98,8 +97,7 @@ public class Q662_AGameOfCards extends Quest {
         setItemsIds(8765);
         addStartNpc(30845);
         addTalkId(30845);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int monster = iterator.next();
+        for (int monster : CHANCES.keySet()) {
             addKillId(monster);
         }
     }
@@ -202,21 +200,27 @@ public class Q662_AGameOfCards extends Quest {
             int i2 = i0 % 10000 / 100;
             int i3 = i0 % 1000000 / 10000;
             int i4 = i0 % 100000000 / 1000000;
-            if (event.equals("First")) {
-                if (i9 % 2 < 1)
-                    i9++;
-            } else if (event.equals("Second")) {
-                if (i9 % 4 < 2)
-                    i9 += 2;
-            } else if (event.equals("Third")) {
-                if (i9 % 8 < 4)
-                    i9 += 4;
-            } else if (event.equals("Fourth")) {
-                if (i9 % 16 < 8)
-                    i9 += 8;
-            } else if (event.equals("Fifth")) {
-                if (i9 % 32 < 16)
-                    i9 += 16;
+            switch (event) {
+                case "First" -> {
+                    if (i9 % 2 < 1)
+                        i9++;
+                }
+                case "Second" -> {
+                    if (i9 % 4 < 2)
+                        i9 += 2;
+                }
+                case "Third" -> {
+                    if (i9 % 8 < 4)
+                        i9 += 4;
+                }
+                case "Fourth" -> {
+                    if (i9 % 16 < 8)
+                        i9 += 8;
+                }
+                case "Fifth" -> {
+                    if (i9 % 32 < 16)
+                        i9 += 16;
+                }
             }
             if (i9 % 32 < 31) {
                 st.set("stateEx", String.valueOf(i9 * 100 + i5));

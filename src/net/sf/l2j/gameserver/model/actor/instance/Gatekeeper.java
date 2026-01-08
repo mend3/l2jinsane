@@ -82,7 +82,7 @@ public final class Gatekeeper extends Folk {
                     int price = list.getPrice();
                     if (!list.isNoble()) {
                         Calendar cal = Calendar.getInstance();
-                        if (cal.get(11) >= 20 && cal.get(11) <= 23 && (cal.get(7) == 1 || cal.get(7) == 7)) {
+                        if (cal.get(Calendar.HOUR_OF_DAY) >= 20 && cal.get(Calendar.HOUR_OF_DAY) <= 23 && (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
                             price /= 2;
                         }
                     }
@@ -102,13 +102,12 @@ public final class Gatekeeper extends Folk {
 
                     try {
                         val = Integer.parseInt(command.substring(5));
-                    } catch (IndexOutOfBoundsException ignored) {
-                    } catch (NumberFormatException ignored) {
+                    } catch (IndexOutOfBoundsException | NumberFormatException ignored) {
                     }
 
                     if (val == 1) {
                         Calendar cal = Calendar.getInstance();
-                        if (cal.get(11) >= 20 && cal.get(11) <= 23 && (cal.get(7) == 1 || cal.get(7) == 7)) {
+                        if (cal.get(Calendar.HOUR_OF_DAY) >= 20 && cal.get(Calendar.HOUR_OF_DAY) <= 23 && (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)) {
                             NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
                             String content = HtmCache.getInstance().getHtm("data/html/teleporter/half/" + this.getNpcId() + ".htm");
                             if (content == null) {

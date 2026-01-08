@@ -1,7 +1,7 @@
 package mods.balancer;
 
 import mods.balancer.holder.SkillBalanceHolder;
-import net.sf.l2j.gameserver.communitybbs.Manager.BaseBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.BaseBBSManager;
 import net.sf.l2j.gameserver.data.SkillTable;
 import net.sf.l2j.gameserver.data.cache.HtmCache;
 import net.sf.l2j.gameserver.data.manager.SkillBalanceManager;
@@ -16,13 +16,12 @@ public class SkillBalanceGui extends BaseBBSManager {
     private static String getSkillBalanceInfo(Collection<SkillBalanceHolder> collection, int pageId, boolean search, boolean isOly) {
         if (collection == null)
             return "";
-        String info = "";
+        StringBuilder info = new StringBuilder();
         int count = 1;
         int limitInPage = 6;
-        for (Iterator<SkillBalanceHolder> localIterator1 = collection.iterator(); localIterator1.hasNext(); ) {
-            SkillBalanceHolder balance = localIterator1.next();
+        for (SkillBalanceHolder balance : collection) {
             int targetClassId = balance.getTarget();
-            if (!ClassId.getClassById(targetClassId).name().equals("") || targetClassId <= -1) {
+            if (!ClassId.getClassById(targetClassId).name().isEmpty() || targetClassId <= -1) {
                 Set<Map.Entry<SkillChangeType, Double>> localCollection = isOly ? balance.getOlyBalance().entrySet() : balance.getNormalBalance().entrySet();
                 for (Map.Entry<SkillChangeType, Double> dt : localCollection) {
                     if (count > limitInPage * (pageId - 1) && count <= limitInPage * pageId) {
@@ -48,13 +47,13 @@ public class SkillBalanceGui extends BaseBBSManager {
                         content = content.replace("<?percentValue?>", String.valueOf(percents).substring(0, String.valueOf(percents).indexOf(".")));
                         content = content.replace("<?targetId?>", String.valueOf(targetClassId));
                         content = content.replace("<?skillIcon?>", balance.getSkillIcon());
-                        info = info + info;
+                        info.append(info);
                     }
                     count++;
                 }
             }
         }
-        return info;
+        return info.toString();
     }
 
     public static SkillBalanceGui getInstance() {
@@ -131,7 +130,7 @@ public class SkillBalanceGui extends BaseBBSManager {
                 return;
             }
             int targetClassId = -1;
-            if (!targetClassName.equals(""))
+            if (!targetClassName.isEmpty())
                 if (targetClassName.equals("All_Classes")) {
                     targetClassId = -3;
                 } else {
@@ -226,20 +225,20 @@ public class SkillBalanceGui extends BaseBBSManager {
 
     public void showAddHtml(Player activeChar, int pageId, int tRace, boolean isoly) {
         String html = HtmCache.getInstance().getHtm("data/html/mods/balancer/skillbalance/" + (isoly ? "olyadd.htm" : "add.htm"));
-        String tClasses = "";
+        StringBuilder tClasses = new StringBuilder();
         if (tRace < 6) {
-            tClasses = tClasses + "All_Classes;";
+            tClasses.append("All_Classes;");
             for (ClassId classId : ClassId.values()) {
                 if (classId.getRace() != null)
                     if (classId.level() == 3 && classId.getRace().ordinal() == tRace)
-                        tClasses = tClasses + tClasses + ";";
+                        tClasses.append(tClasses).append(";");
             }
         } else {
-            tClasses = "Monsters";
+            tClasses = new StringBuilder("Monsters");
         }
         html = html.replace("<?pageId?>", String.valueOf(pageId));
         html = html.replace("<?isoly?>", String.valueOf(isoly));
-        html = html.replace("<?tClasses?>", tClasses);
+        html = html.replace("<?tClasses?>", tClasses.toString());
         html = html.replace("<?trace0Checked?>", (tRace == 0) ? "_checked" : "");
         html = html.replace("<?trace1Checked?>", (tRace == 1) ? "_checked" : "");
         html = html.replace("<?trace2Checked?>", (tRace == 2) ? "_checked" : "");

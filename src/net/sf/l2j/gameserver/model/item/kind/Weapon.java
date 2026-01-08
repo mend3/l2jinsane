@@ -19,7 +19,6 @@ import net.sf.l2j.gameserver.skills.Formulas;
 import net.sf.l2j.gameserver.skills.conditions.Condition;
 import net.sf.l2j.gameserver.skills.conditions.ConditionGameChance;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,7 +68,7 @@ public final class Weapon extends Item {
                     id = Integer.parseInt(info[0]);
                     level = Integer.parseInt(info[1]);
                 } catch (Exception var13) {
-                    _log.info("> Couldnt parse " + skill + " in weapon enchant skills! item " + this.toString());
+                    _log.info("> Couldnt parse " + skill + " in weapon enchant skills! item " + this);
                 }
 
                 if (id > 0 && level > 0) {
@@ -94,7 +93,7 @@ public final class Weapon extends Item {
                         chance = Integer.parseInt(infochance);
                     }
                 } catch (Exception var12) {
-                    _log.info("> Couldnt parse " + skill + " in weapon oncast skills! item " + this.toString());
+                    _log.info("> Couldnt parse " + skill + " in weapon oncast skills! item " + this);
                 }
 
                 if (id > 0 && level > 0 && chance > 0) {
@@ -122,7 +121,7 @@ public final class Weapon extends Item {
                         chance = Integer.parseInt(infochance);
                     }
                 } catch (Exception var11) {
-                    _log.info("> Couldnt parse " + skill + " in weapon oncrit skills! item " + this.toString());
+                    _log.info("> Couldnt parse " + skill + " in weapon oncrit skills! item " + this);
                 }
 
                 if (id > 0 && level > 0 && chance > 0) {
@@ -168,7 +167,7 @@ public final class Weapon extends Item {
         return this._reuseDelay;
     }
 
-    public final boolean isMagical() {
+    public boolean isMagical() {
         return this._isMagical;
     }
 
@@ -180,35 +179,28 @@ public final class Weapon extends Item {
         return this._enchant4Skill == null ? null : this._enchant4Skill.getSkill();
     }
 
-    public List<L2Effect> getSkillEffects(Creature caster, Creature target, boolean crit) {
+    public void getSkillEffects(Creature caster, Creature target, boolean crit) {
         if (this._skillsOnCrit != null && crit) {
-            List<L2Effect> effects = new ArrayList<>();
             if (this._skillsOnCritCondition != null) {
                 Env env = new Env();
                 env.setCharacter(caster);
                 env.setTarget(target);
                 env.setSkill(this._skillsOnCrit.getSkill());
                 if (!this._skillsOnCritCondition.test(env)) {
-                    return Collections.emptyList();
+                    return;
                 }
             }
 
             byte shld = Formulas.calcShldUse(caster, target, this._skillsOnCrit.getSkill());
             if (!Formulas.calcSkillSuccess(caster, target, this._skillsOnCrit.getSkill(), shld, false)) {
-                return Collections.emptyList();
             } else {
                 if (target.getFirstEffect(this._skillsOnCrit.getSkill().getId()) != null) {
                     target.getFirstEffect(this._skillsOnCrit.getSkill().getId()).exit();
                 }
 
-                for (L2Effect e : this._skillsOnCrit.getSkill().getEffects(caster, target, new Env(shld, false, false, false))) {
-                    effects.add(e);
-                }
-
-                return effects;
+                this._skillsOnCrit.getSkill().getEffects(caster, target, new Env(shld, false, false, false));
             }
         } else {
-            return Collections.emptyList();
         }
     }
 

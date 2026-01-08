@@ -12,7 +12,7 @@ import net.sf.l2j.gameserver.network.serverpackets.CreatureSay;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class L2PartyFarmZone extends SpawnZoneType {
-    CopyOnWriteArrayList<String> _playerAllowed = new CopyOnWriteArrayList<>();
+    final CopyOnWriteArrayList<String> _playerAllowed = new CopyOnWriteArrayList<>();
 
     public L2PartyFarmZone(int id) {
         super(id);

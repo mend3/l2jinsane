@@ -165,18 +165,15 @@ public class Boat extends Creature {
 
     }
 
-    public boolean addPassenger(Player player) {
+    public void addPassenger(Player player) {
         if (player != null && !this._passengers.contains(player)) {
             if (player.getBoat() != null && player.getBoat() != this) {
-                return false;
             } else {
                 this._passengers.add(player);
                 player.setInsideZone(ZoneId.PEACE, true);
                 player.sendPacket(SystemMessageId.ENTER_PEACEFUL_ZONE);
-                return true;
             }
         } else {
-            return false;
         }
     }
 

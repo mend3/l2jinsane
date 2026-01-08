@@ -111,12 +111,10 @@ public class ClanMember {
                                 pledgeClass = 5;
                                 break;
                             }
-                            switch (clan.getLeaderSubPledge(player.getObjectId())) {
-                                case 100:
-                                case 200:
-                                    pledgeClass = 4;
-                                    break;
-                            }
+                            pledgeClass = switch (clan.getLeaderSubPledge(player.getObjectId())) {
+                                case 100, 200 -> 4;
+                                default -> pledgeClass;
+                            };
                             pledgeClass = 3;
                             break;
                     }
@@ -141,18 +139,11 @@ public class ClanMember {
                                 pledgeClass = 7;
                                 break;
                             }
-                            switch (clan.getLeaderSubPledge(player.getObjectId())) {
-                                case 100:
-                                case 200:
-                                    pledgeClass = 6;
-                                    break;
-                                case 1001:
-                                case 1002:
-                                case 2001:
-                                case 2002:
-                                    pledgeClass = 5;
-                                    break;
-                            }
+                            pledgeClass = switch (clan.getLeaderSubPledge(player.getObjectId())) {
+                                case 100, 200 -> 6;
+                                case 1001, 1002, 2001, 2002 -> 5;
+                                default -> pledgeClass;
+                            };
                             pledgeClass = 4;
                             break;
                     }
@@ -177,18 +168,11 @@ public class ClanMember {
                                 pledgeClass = 8;
                                 break;
                             }
-                            switch (clan.getLeaderSubPledge(player.getObjectId())) {
-                                case 100:
-                                case 200:
-                                    pledgeClass = 7;
-                                    break;
-                                case 1001:
-                                case 1002:
-                                case 2001:
-                                case 2002:
-                                    pledgeClass = 6;
-                                    break;
-                            }
+                            pledgeClass = switch (clan.getLeaderSubPledge(player.getObjectId())) {
+                                case 100, 200 -> 7;
+                                case 1001, 1002, 2001, 2002 -> 6;
+                                default -> pledgeClass;
+                            };
                             pledgeClass = 5;
                             break;
                     }

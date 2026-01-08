@@ -92,22 +92,14 @@ public final class ArmorSet {
     }
 
     public boolean containItem(int slot, int itemId) {
-        switch (slot) {
-            case 6:
-                return this._set[2] == itemId;
-            case 7:
-            case 8:
-            default:
-                return false;
-            case 9:
-                return this._set[3] == itemId;
-            case 10:
-                return this._set[0] == itemId;
-            case 11:
-                return this._set[1] == itemId;
-            case 12:
-                return this._set[4] == itemId;
-        }
+        return switch (slot) {
+            case 6 -> this._set[2] == itemId;
+            default -> false;
+            case 9 -> this._set[3] == itemId;
+            case 10 -> this._set[0] == itemId;
+            case 11 -> this._set[1] == itemId;
+            case 12 -> this._set[4] == itemId;
+        };
     }
 
     public boolean containShield(Player player) {

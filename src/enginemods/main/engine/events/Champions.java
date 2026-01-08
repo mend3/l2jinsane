@@ -57,17 +57,16 @@ public class Champions extends AbstractMods {
     }
 
     private static boolean checkNpcType(WorldObject obj) {
-        if (Util.areObjectType(RaidBoss.class, new WorldObject[]{obj})) {
+        if (Util.areObjectType(RaidBoss.class, obj)) {
             return false;
-        } else if (Util.areObjectType(GrandBoss.class, new WorldObject[]{obj})) {
+        } else if (Util.areObjectType(GrandBoss.class, obj)) {
             return false;
         } else {
-            return Util.areObjectType(Monster.class, new WorldObject[]{obj});
+            return Util.areObjectType(Monster.class, obj);
         }
     }
 
-    public static Champions getInstance() {
-        return Champions.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
@@ -154,20 +153,20 @@ public class Champions extends AbstractMods {
 
     }
 
-    private static enum ChampionType {
+    private enum ChampionType {
         WEAK_CHAMPION,
         SUPER_CHAMPION,
-        HARD_CHAMPION;
+        HARD_CHAMPION
     }
 
     private static class SingletonHolder {
         protected static final Champions INSTANCE = new Champions();
     }
 
-    private class ChampionInfoHolder {
+    private static class ChampionInfoHolder {
         public ChampionType type;
         public int chanceToSpawn;
-        public Map<Stats, Double> allStats = new HashMap<>();
-        public List<RewardHolder> rewards = new ArrayList<>();
+        public final Map<Stats, Double> allStats = new HashMap<>();
+        public final List<RewardHolder> rewards = new ArrayList<>();
     }
 }

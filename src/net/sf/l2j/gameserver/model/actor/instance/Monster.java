@@ -146,25 +146,16 @@ public class Monster extends Attackable {
                 long totalDamage = 0L;
 
                 for (AggroInfo info : this.getAggroList().values()) {
-                    if (info.getAttacker() instanceof Playable) {
-                        Playable attacker = (Playable) info.getAttacker();
+                    if (info.getAttacker() instanceof Playable attacker) {
                         int damage = info.getDamage();
                         if (damage > 1 && MathUtil.checkIfInRange(Config.PARTY_RANGE, this, attacker, true)) {
                             Player attackerPlayer = attacker.getActingPlayer();
                             totalDamage += damage;
-                            RewardInfo reward = rewards.get(attacker);
-                            if (reward == null) {
-                                reward = new RewardInfo(attacker);
-                                rewards.put(attacker, reward);
-                            }
+                            RewardInfo reward = rewards.computeIfAbsent(attacker, k -> new RewardInfo(attacker));
 
                             reward.addDamage(damage);
                             if (attacker instanceof Summon) {
-                                reward = rewards.get(attackerPlayer);
-                                if (reward == null) {
-                                    reward = new RewardInfo(attackerPlayer);
-                                    rewards.put(attackerPlayer, reward);
-                                }
+                                reward = rewards.computeIfAbsent(attackerPlayer, k -> new RewardInfo(attackerPlayer));
 
                                 reward.addDamage(damage);
                             }
@@ -579,7 +570,7 @@ public class Monster extends Attackable {
                 }
             }
 
-            dropChance = (drop.getChance() - drop.getChance() * levelModifier / 100) / deepBlueDrop;
+            dropChance = (drop.getChance() - (double) (drop.getChance() * levelModifier) / 100) / deepBlueDrop;
         }
 
         if (drop.getItemId() == 57) {
@@ -816,7 +807,7 @@ public class Monster extends Attackable {
 
     }
 
-    private static class CommandChannelTimer implements Runnable {
+    public static class CommandChannelTimer implements Runnable {
         private final Monster _monster;
 
         public CommandChannelTimer(Monster monster) {

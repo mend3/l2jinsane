@@ -62,7 +62,7 @@ public final class Rnd {
     }
 
     public static <T> T get(List<T> list) {
-        if (list == null || list.size() == 0)
+        if (list == null || list.isEmpty())
             return null;
         return list.get(get(list.size()));
     }

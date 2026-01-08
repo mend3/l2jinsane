@@ -120,9 +120,9 @@ public class ConfigData {
 
     public static boolean ENABLE_ColorAccordingAmountPvPorPk;
 
-    public static Map<Integer, String> PVP_COLOR_NAME = new LinkedHashMap<>();
+    public static final Map<Integer, String> PVP_COLOR_NAME = new LinkedHashMap<>();
 
-    public static Map<Integer, String> PK_COLOR_TITLE = new LinkedHashMap<>();
+    public static final Map<Integer, String> PK_COLOR_TITLE = new LinkedHashMap<>();
 
     public static boolean ENABLE_EnchantAbnormalEffectArmor;
 
@@ -136,7 +136,7 @@ public class ConfigData {
 
     public static boolean ENABLE_SpreeKills;
 
-    public static Map<Integer, String> ANNOUNCEMENTS_KILLS = new LinkedHashMap<>();
+    public static final Map<Integer, String> ANNOUNCEMENTS_KILLS = new LinkedHashMap<>();
 
     public static boolean ENABLE_KILL_EFFECT;
 
@@ -146,7 +146,7 @@ public class ConfigData {
 
     public static boolean ACUMULATIVE_PASIVE_SKILLS;
 
-    public static Set<Integer> DONT_ACUMULATIVE_SKILLS_ID = new HashSet<>();
+    public static final Set<Integer> DONT_ACUMULATIVE_SKILLS_ID = new HashSet<>();
 
     public static boolean ENABLE_AnnounceKillBoss;
 
@@ -210,7 +210,7 @@ public class ConfigData {
 
     public static int TIME_CHECK_VOTES;
 
-    public static Map<Integer, RewardHolder> VOTE_REWARDS = new LinkedHashMap<>();
+    public static final Map<Integer, RewardHolder> VOTE_REWARDS = new LinkedHashMap<>();
 
     public static boolean ENABLE_HOPZONE;
 
@@ -250,7 +250,7 @@ public class ConfigData {
 
     public static int RANDOM_BOSS_SPWNNED_TIME;
 
-    public static List<Integer> RANDOM_BOSS_NPC_ID = new ArrayList<>();
+    public static final List<Integer> RANDOM_BOSS_NPC_ID = new ArrayList<>();
 
     public static List<RewardHolder> RANDOM_BOSS_REWARDS = new ArrayList<>();
 
@@ -420,7 +420,7 @@ public class ConfigData {
         NEW_CHARACTER_CREATED_TITLE = config.getProperty("NewCharacterCreatedTitle", "L2DevsCustom");
         NEW_CHARACTER_CREATED_GIVE_BUFF = config.getProperty("NewCharacterCreatedBuff", false);
         NEW_CHARACTER_CREATED_BUFFS = parseBuff(config, "NewCharacterCreatedBuffsList");
-        NEW_CHARACTER_CREATED_SEND_SCREEN_MSG = config.getProperty("NewCharacterCreatedSendScreenMsg", "http://l2devsadmins.com/");
+        NEW_CHARACTER_CREATED_SEND_SCREEN_MSG = config.getProperty("NewCharacterCreatedSendScreenMsg", "https://l2devsadmins.com/");
     }
 
     private static void loadRandomBoss() {

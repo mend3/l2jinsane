@@ -68,18 +68,17 @@ public final class LoginClient extends MMOClient<MMOConnection<LoginClient>> {
         }
     }
 
-    public boolean encrypt(ByteBuffer buf, int size) {
+    public void encrypt(ByteBuffer buf, int size) {
         int offset = buf.position();
 
         try {
             size = this._loginCrypt.encrypt(buf.array(), offset, size);
         } catch (Exception var5) {
             LOGGER.error("Couldn't encrypt LoginClient packet.", var5);
-            return false;
+            return;
         }
 
         buf.position(offset + size);
-        return true;
     }
 
     public void onDisconnection() {
@@ -180,10 +179,5 @@ public final class LoginClient extends MMOClient<MMOConnection<LoginClient>> {
         CONNECTED,
         AUTHED_GG,
         AUTHED_LOGIN;
-
-        // $FF: synthetic method
-        private static LoginClient.LoginClientState[] $values() {
-            return new LoginClient.LoginClientState[]{CONNECTED, AUTHED_GG, AUTHED_LOGIN};
-        }
     }
 }

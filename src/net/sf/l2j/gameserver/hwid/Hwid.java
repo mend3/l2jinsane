@@ -20,8 +20,8 @@ import java.util.logging.Logger;
 
 public class Hwid {
     private static final byte[] _key = new byte[16];
-    protected static Logger _log = Logger.getLogger(Hwid.class.getName());
-    protected static ConcurrentHashMap<String, Manager.InfoSet> _objects = new ConcurrentHashMap<>();
+    protected static final Logger _log = Logger.getLogger(Hwid.class.getName());
+    protected static final ConcurrentHashMap<String, Manager.InfoSet> _objects = new ConcurrentHashMap<>();
     static byte version = 11;
 
     public static void Init() {
@@ -135,10 +135,10 @@ public class Hwid {
     }
 
     public static String fillHex(int data, int digits) {
-        String number = Integer.toHexString(data);
+        StringBuilder number = new StringBuilder(Integer.toHexString(data));
         for (int i = number.length(); i < digits; i++)
-            number = "0" + number;
-        return number;
+            number.insert(0, "0");
+        return number.toString();
     }
 
     public static String ExtractHWID(byte[] _data) {

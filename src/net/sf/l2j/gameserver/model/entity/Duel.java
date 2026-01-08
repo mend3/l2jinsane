@@ -36,7 +36,7 @@ public class Duel {
         this._playerB = playerB;
         this._isPartyDuel = isPartyDuel;
         this._duelEndTime = Calendar.getInstance();
-        this._duelEndTime.add(13, 120);
+        this._duelEndTime.add(Calendar.SECOND, 120);
         if (this._isPartyDuel) {
             this._countdown = 35;
             SystemMessage sm = SystemMessage.getSystemMessage(SystemMessageId.IN_A_MOMENT_YOU_WILL_BE_TRANSPORTED_TO_THE_SITE_WHERE_THE_DUEL_WILL_TAKE_PLACE);
@@ -519,23 +519,23 @@ public class Duel {
 
     }
 
-    public static enum DuelState {
+    public enum DuelState {
         NO_DUEL,
         ON_COUNTDOWN,
         DUELLING,
         DEAD,
         WINNER,
-        INTERRUPTED;
+        INTERRUPTED
     }
 
-    private static enum DuelResult {
+    public enum DuelResult {
         CONTINUE,
         TEAM_1_WIN,
         TEAM_2_WIN,
         TEAM_1_SURRENDER,
         TEAM_2_SURRENDER,
         CANCELED,
-        TIMEOUT;
+        TIMEOUT
     }
 
     private static class PlayerCondition {

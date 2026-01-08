@@ -87,7 +87,7 @@ public class MacroList {
         StringBuilder sb = new StringBuilder(300);
         for (Macro.MacroCmd cmd : macro.commands) {
             StringUtil.append(sb, cmd.type(), ",", cmd.d1(), ",", cmd.d2());
-            if (cmd.cmd() != null && cmd.cmd().length() > 0)
+            if (cmd.cmd() != null && !cmd.cmd().isEmpty())
                 StringUtil.append(sb, ",", cmd.cmd());
             sb.append(';');
         }
@@ -200,7 +200,7 @@ public class MacroList {
                                 Macro.MacroCmd mcmd = new Macro.MacroCmd(commands.size(), type, d1, d2, cmd);
                                 commands.add(mcmd);
                             }
-                            Macro macro = new Macro(id, icon, name, descr, acronym, commands.toArray(new Macro.MacroCmd[commands.size()]));
+                            Macro macro = new Macro(id, icon, name, descr, acronym, commands.toArray(new Macro.MacroCmd[0]));
                             this._macros.put(macro.id, macro);
                         }
                         if (rs != null)

@@ -1,7 +1,7 @@
 package mods.balancer;
 
 import mods.balancer.holder.ClassBalanceHolder;
-import net.sf.l2j.gameserver.communitybbs.Manager.BaseBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.BaseBBSManager;
 import net.sf.l2j.gameserver.data.cache.HtmCache;
 import net.sf.l2j.gameserver.data.manager.ClassBalanceManager;
 import net.sf.l2j.gameserver.enums.AttackType;
@@ -28,14 +28,14 @@ public class ClassBalanceGui extends BaseBBSManager {
     private static String getBalanceInfo(Collection<ClassBalanceHolder> collection, int pageId, boolean search, boolean isOly) {
         if (collection == null)
             return "";
-        String info = "";
+        StringBuilder info = new StringBuilder();
         int count = 1;
         int limitInPage = 7;
         for (ClassBalanceHolder balance : collection) {
             int classId = balance.getActiveClass();
             int targetClassId = balance.getTargetClass();
             String id = classId + ";" + classId;
-            if ((!ClassId.getClassById(classId).name().equals("") && !ClassId.getClassById(targetClassId).name().equals("")) || !ClassId.getClassById(classId).name().equals("") || targetClassId == -1) {
+            if ((!ClassId.getClassById(classId).name().isEmpty() && !ClassId.getClassById(targetClassId).name().isEmpty()) || !ClassId.getClassById(classId).name().isEmpty() || targetClassId == -1) {
                 Set<Map.Entry<AttackType, Double>> localCollection = isOly ? balance.getOlyBalance().entrySet() : balance.getNormalBalance().entrySet();
                 for (Map.Entry<AttackType, Double> dt : localCollection) {
                     if (count > limitInPage * (pageId - 1) && count <= limitInPage * pageId) {
@@ -66,13 +66,13 @@ public class ClassBalanceGui extends BaseBBSManager {
                         content = content.replace("<?value?>", String.valueOf(val));
                         content = content.replace("<?percents?>", (percents > 0.0D) ? "+" : "");
                         content = content.replace("<?percentValue?>", String.valueOf(percents).substring(0, String.valueOf(percents).indexOf(".")));
-                        info = info + info;
+                        info.append(info);
                     }
                     count++;
                 }
             }
         }
-        return info;
+        return info.toString();
     }
 
     public static ClassBalanceGui getInstance() {
@@ -147,22 +147,20 @@ public class ClassBalanceGui extends BaseBBSManager {
             String targetClassName = st.nextToken().trim();
             boolean isoly = Boolean.parseBoolean(st.nextToken());
             int classId = -1;
-            if (!className.equals("")) {
+            if (!className.isEmpty()) {
                 ClassId[] values = ClassId.values();
-                for (int i = 0; i < values.length; i++) {
-                    ClassId cId = values[i];
+                for (ClassId cId : values) {
                     if (cId.name().equalsIgnoreCase(className))
                         classId = cId.ordinal();
                 }
             }
             int targetClassId = -1;
-            if (!targetClassName.equals(""))
+            if (!targetClassName.isEmpty())
                 if (targetClassName.equals("All_Classes")) {
                     targetClassId = -3;
                 } else {
                     ClassId[] values = ClassId.values();
-                    for (int i = 0; i < values.length; i++) {
-                        ClassId cId = values[i];
+                    for (ClassId cId : values) {
                         if (cId.name().equalsIgnoreCase(targetClassName))
                             targetClassId = cId.ordinal();
                     }
@@ -225,34 +223,32 @@ public class ClassBalanceGui extends BaseBBSManager {
 
     public void showAddHtml(Player activeChar, int pageId, int race, int tRace, boolean isOly) {
         String html = HtmCache.getInstance().getHtm("data/html/mods/balancer/classbalance/" + (isOly ? "olyadd.htm" : "add.htm"));
-        String classes = "";
+        StringBuilder classes = new StringBuilder();
         ClassId[] array = ClassId.values();
-        for (int cId = 0; cId < array.length; cId++) {
-            ClassId classId = array[cId];
+        for (ClassId classId : array) {
             if (classId.getRace() != null)
                 if (isOly) {
                     if (classId.level() == 3 && classId.getRace().ordinal() == race)
-                        classes = classes + classes + ";";
+                        classes.append(classes).append(";");
                 } else if (classId.level() >= 2 && classId.getRace().ordinal() == race) {
-                    classes = classes + classes + ";";
+                    classes.append(classes).append(";");
                 }
         }
-        String tClasses = "";
+        StringBuilder tClasses = new StringBuilder();
         if (tRace != 6) {
-            tClasses = tClasses + "All_Classes;";
+            tClasses.append("All_Classes;");
             ClassId[] array2 = ClassId.values();
-            for (int i = 0; i < array2.length; i++) {
-                ClassId classId = array2[i];
+            for (ClassId classId : array2) {
                 if (classId.getRace() != null)
                     if (isOly) {
                         if (classId.level() == 3 && classId.getRace().ordinal() == tRace)
-                            tClasses = tClasses + tClasses + ";";
+                            tClasses.append(tClasses).append(";");
                     } else if (classId.level() >= 2 && classId.getRace().ordinal() == tRace) {
-                        tClasses = tClasses + tClasses + ";";
+                        tClasses.append(tClasses).append(";");
                     }
             }
         } else {
-            tClasses = "Monsters";
+            tClasses = new StringBuilder("Monsters");
         }
         html = html.replace("<?pageId?>", String.valueOf(pageId));
         html = html.replace("<?tRace?>", String.valueOf(tRace));
@@ -262,8 +258,8 @@ public class ClassBalanceGui extends BaseBBSManager {
         html = html.replace("<?race3Checked?>", (race == 3) ? "_checked" : "");
         html = html.replace("<?race4Checked?>", (race == 4) ? "_checked" : "");
         html = html.replace("<?race5Checked?>", (race == 5) ? "_checked" : "");
-        html = html.replace("<?classes?>", classes);
-        html = html.replace("<?tClasses?>", tClasses);
+        html = html.replace("<?classes?>", classes.toString());
+        html = html.replace("<?tClasses?>", tClasses.toString());
         html = html.replace("<?race?>", String.valueOf(race));
         html = html.replace("<?trace0Checked?>", (tRace == 0) ? "_checked" : "");
         html = html.replace("<?trace1Checked?>", (tRace == 1) ? "_checked" : "");

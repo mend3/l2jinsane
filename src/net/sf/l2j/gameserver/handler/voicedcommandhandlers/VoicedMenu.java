@@ -72,7 +72,7 @@ public class VoicedMenu implements IVoicedCommandHandler {
         activeChar.sendPacket(html);
     }
 
-    public boolean useVoicedCommand(String command, Player activeChar, String target) {
+    public void useVoicedCommand(String command, Player activeChar, String target) {
         if (command.equals("menu")) {
             showHtml(activeChar);
         } else if (command.equals("setPartyRefuse")) {
@@ -118,7 +118,6 @@ public class VoicedMenu implements IVoicedCommandHandler {
         } else if (command.startsWith("showInfoHtml")) {
             showInfoHtml(activeChar);
         }
-        return true;
     }
 
     public String[] getVoicedCommandList() {

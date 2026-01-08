@@ -13,7 +13,7 @@ public final class LambdaCalc extends Lambda {
 
         double var9;
         try {
-            env.setValue((double) 0.0F);
+            env.setValue(0.0F);
 
             for (Func f : this._funcs) {
                 f.calc(env);

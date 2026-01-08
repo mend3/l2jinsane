@@ -74,7 +74,7 @@ public class AdminCommandHandler {
 
     public IAdminCommandHandler getHandler(String adminCommand) {
         String command = adminCommand;
-        if (adminCommand.indexOf(" ") != -1)
+        if (adminCommand.contains(" "))
             command = adminCommand.substring(0, adminCommand.indexOf(" "));
         return this._entries.get(command.hashCode());
     }

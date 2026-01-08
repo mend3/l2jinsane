@@ -6,9 +6,4 @@ public enum GaugeColor {
     RED,
     CYAN,
     GREEN;
-
-    // $FF: synthetic method
-    private static GaugeColor[] $values() {
-        return new GaugeColor[]{BLUE, RED, CYAN, GREEN};
-    }
 }

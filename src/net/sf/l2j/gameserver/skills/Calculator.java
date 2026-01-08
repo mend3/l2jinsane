@@ -71,8 +71,7 @@ public final class Calculator {
         Func[] var3 = this._functions;
         int var4 = var3.length;
 
-        for (int var5 = 0; var5 < var4; ++var5) {
-            Func func = var3[var5];
+        for (Func func : var3) {
             if (func.funcOwner == owner) {
                 modifiedStats.add(func.stat);
                 this.removeFunc(func);
@@ -86,8 +85,7 @@ public final class Calculator {
         Func[] var2 = this._functions;
         int var3 = var2.length;
 
-        for (int var4 = 0; var4 < var3; ++var4) {
-            Func func = var2[var4];
+        for (Func func : var2) {
             func.calc(env);
         }
 

@@ -112,9 +112,7 @@ public class BookmarkTable {
     }
 
     public List<Bookmark> getBookmarks(int objId) {
-        return this._bks.stream().filter((bk) -> {
-            return bk.getId() == objId;
-        }).collect(Collectors.toList());
+        return this._bks.stream().filter((bk) -> bk.getId() == objId).collect(Collectors.toList());
     }
 
     public void saveBookmark(String name, Player player) {

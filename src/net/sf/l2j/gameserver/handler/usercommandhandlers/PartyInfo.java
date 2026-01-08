@@ -9,16 +9,15 @@ import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 public class PartyInfo implements IUserCommandHandler {
     private static final int[] COMMAND_IDS = new int[]{81};
 
-    public boolean useUserCommand(int id, Player player) {
+    public void useUserCommand(int id, Player player) {
         Party party = player.getParty();
         if (party == null)
-            return false;
+            return;
         player.sendPacket(SystemMessageId.PARTY_INFORMATION);
         player.sendPacket(party.getLootRule().getMessageId());
         player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.PARTY_LEADER_S1).addString(party.getLeader().getName()));
         player.sendMessage("Members: " + party.getMembersCount() + "/9");
         player.sendPacket(SystemMessageId.FRIEND_LIST_FOOTER);
-        return true;
     }
 
     public int[] getUserCommandList() {

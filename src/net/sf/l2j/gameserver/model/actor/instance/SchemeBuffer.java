@@ -170,7 +170,7 @@ public class SchemeBuffer extends Folk {
             try {
                 String schemeName = st.nextToken();
                 Map<String, ArrayList<Integer>> schemes = BufferManager.getInstance().getPlayerSchemes(player.getObjectId());
-                if (schemes != null && schemes.containsKey(schemeName)) {
+                if (schemes != null) {
                     schemes.remove(schemeName);
                 }
             } catch (Exception var10) {

@@ -1,8 +1,8 @@
-package net.sf.l2j.gameserver.communitybbs.Manager;
+package net.sf.l2j.gameserver.communitybbs.manager;
 
-import net.sf.l2j.gameserver.communitybbs.BB.Forum;
-import net.sf.l2j.gameserver.communitybbs.BB.Post;
-import net.sf.l2j.gameserver.communitybbs.BB.Topic;
+import net.sf.l2j.gameserver.communitybbs.bb.Forum;
+import net.sf.l2j.gameserver.communitybbs.bb.Post;
+import net.sf.l2j.gameserver.communitybbs.bb.Topic;
 import net.sf.l2j.gameserver.model.actor.Player;
 
 import java.text.DateFormat;
@@ -86,8 +86,7 @@ public class PostBBSManager extends BaseBBSManager {
     }
 
     public void addPostByTopic(Post post, Topic topic) {
-        if (this._postByTopic.get(topic) == null)
-            this._postByTopic.put(topic, post);
+        this._postByTopic.putIfAbsent(topic, post);
     }
 
     private void showEditPost(Topic topic, Forum forum, Player player, int pageNumber) {

@@ -86,10 +86,5 @@ public class ExShowScreenMessage extends L2GameServerPacket {
         MIDDLE_RIGHT,
         BOTTOM_CENTER,
         BOTTOM_RIGHT;
-
-        // $FF: synthetic method
-        private static ExShowScreenMessage.SMPOS[] $values() {
-            return new ExShowScreenMessage.SMPOS[]{DUMMY, TOP_LEFT, TOP_CENTER, TOP_RIGHT, MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT, BOTTOM_CENTER, BOTTOM_RIGHT};
-        }
     }
 }

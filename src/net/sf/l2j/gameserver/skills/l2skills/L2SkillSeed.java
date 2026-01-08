@@ -16,8 +16,7 @@ public class L2SkillSeed extends L2Skill {
     public void useSkill(Creature caster, WorldObject[] targets) {
         if (!caster.isAlikeDead()) {
             for (WorldObject obj : targets) {
-                if (obj instanceof Creature) {
-                    Creature target = (Creature) obj;
+                if (obj instanceof Creature target) {
                     if (!target.isAlikeDead() || this.getTargetType() == SkillTargetType.TARGET_CORPSE_MOB) {
                         EffectSeed oldEffect = (EffectSeed) target.getFirstEffect(this.getId());
                         if (oldEffect == null) {

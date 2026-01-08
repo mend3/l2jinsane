@@ -1,6 +1,6 @@
-package net.sf.l2j.gameserver.communitybbs.Manager;
+package net.sf.l2j.gameserver.communitybbs.manager;
 
-import net.sf.l2j.gameserver.communitybbs.Custom.OpenPagBBSManager;
+import net.sf.l2j.gameserver.communitybbs.custom.OpenPagBBSManager;
 import net.sf.l2j.gameserver.data.cache.HtmCache;
 import net.sf.l2j.gameserver.data.xml.MultisellData;
 import net.sf.l2j.gameserver.model.actor.Player;

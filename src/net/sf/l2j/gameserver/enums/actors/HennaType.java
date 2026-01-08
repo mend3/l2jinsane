@@ -17,11 +17,6 @@ public enum HennaType {
         this._stats = stats;
     }
 
-    // $FF: synthetic method
-    private static HennaType[] $values() {
-        return new HennaType[]{INT, STR, CON, MEN, DEX, WIT};
-    }
-
     public Stats getStats() {
         return this._stats;
     }

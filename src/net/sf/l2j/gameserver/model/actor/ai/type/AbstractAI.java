@@ -380,7 +380,7 @@ abstract class AbstractAI {
     }
 
     public String toString() {
-        return "Actor: " + String.valueOf(this._actor);
+        return "Actor: " + this._actor;
     }
 
     private class FollowTask implements Runnable {

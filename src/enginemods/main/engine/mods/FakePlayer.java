@@ -125,7 +125,7 @@ public class FakePlayer extends AbstractMods {
     private static void storeClan(Clan clan) {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement statement = con.prepareStatement("INSERT INTO clan_data (clan_id,clan_name,clan_level,hasCastle,ally_id,ally_name,leader_id,crest_id,crest_large_id,ally_crest_id) values (?,?,?,?,?,?,?,?,?,?)");
+                PreparedStatement statement = con.prepareStatement("INSERT INTO clan_data (clan_id,clan_name,clan_level,hasCastle,ally_id,ally_name,leader_id,crest_id,crest_large_id,ally_crest_id) values (?,?,?,?,?,?,?,?,?,?)")
         ) {
             statement.setInt(1, clan.getClanId());
             statement.setString(2, clan.getName());
@@ -144,8 +144,7 @@ public class FakePlayer extends AbstractMods {
 
     }
 
-    public static FakePlayer getInstance() {
-        return FakePlayer.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {

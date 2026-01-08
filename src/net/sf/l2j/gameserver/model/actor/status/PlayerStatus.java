@@ -83,7 +83,7 @@ public class PlayerStatus extends PlayableStatus {
                 int fullValue = (int) value;
                 int tDmg = 0;
                 Summon summon = this.getActiveChar().getSummon();
-                if (summon != null && summon instanceof Servitor && MathUtil.checkIfInRange(900, this.getActiveChar(), summon, true)) {
+                if (summon instanceof Servitor && MathUtil.checkIfInRange(900, this.getActiveChar(), summon, true)) {
                     tDmg = (int) value * (int) this.getActiveChar().getStat().calcStat(Stats.TRANSFER_DAMAGE_PERCENT, 0.0F, null, null) / 100;
                     tDmg = Math.min((int) summon.getCurrentHp() - 1, tDmg);
                     if (tDmg > 0) {

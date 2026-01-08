@@ -1,7 +1,6 @@
 /**/
 package net.sf.l2j.gameserver.geoengine.geodata;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 

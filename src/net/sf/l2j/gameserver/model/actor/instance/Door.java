@@ -329,7 +329,7 @@ public class Door extends Creature implements IGeoObject {
                 }
 
                 if (time > 0) {
-                    ThreadPool.schedule(() -> this.changeState(!open, false), time * 1000);
+                    ThreadPool.schedule(() -> this.changeState(!open, false), time * 1000L);
                 }
             }
 

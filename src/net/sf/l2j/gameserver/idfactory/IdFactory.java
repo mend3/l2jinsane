@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -299,8 +298,7 @@ public class IdFactory {
         } catch (Exception e) {
             LOGGER.error("Couldn't properly initialize objectIds.", e);
         }
-        for (Iterator<Integer> iterator = usedObjectIds.iterator(); iterator.hasNext(); ) {
-            int usedObjectId = iterator.next();
+        for (int usedObjectId : usedObjectIds) {
             int objectId = usedObjectId - 268435456;
             if (objectId < 0) {
                 LOGGER.warn("Found invalid objectId {}. It is less than minimum of {}.", usedObjectId, 268435456);

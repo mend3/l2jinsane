@@ -170,7 +170,7 @@ public class BlowfishEngine {
         return "Blowfish";
     }
 
-    public final int processBlock(byte[] in, int inOff, byte[] out, int outOff) throws IOException {
+    public final void processBlock(byte[] in, int inOff, byte[] out, int outOff) throws IOException {
         if (this.workingKey == null)
             throw new IllegalStateException("Blowfish not initialised");
         if (inOff + 8 > in.length)
@@ -182,7 +182,6 @@ public class BlowfishEngine {
         } else {
             decryptBlock(in, inOff, out, outOff);
         }
-        return 8;
     }
 
     public void reset() {

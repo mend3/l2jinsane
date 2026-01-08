@@ -19,12 +19,12 @@ public class SchedulingPattern {
     private static final SchedulingPattern.ValueParser DAY_OF_MONTH_VALUE_PARSER = new SchedulingPattern.DayOfMonthValueParser();
     private static final SchedulingPattern.ValueParser MONTH_VALUE_PARSER = new SchedulingPattern.MonthValueParser();
     private static final SchedulingPattern.ValueParser DAY_OF_WEEK_VALUE_PARSER = new SchedulingPattern.DayOfWeekValueParser();
+    protected final List<SchedulingPattern.ValueMatcher> minuteMatchers = new ArrayList<>();
+    protected final List<SchedulingPattern.ValueMatcher> hourMatchers = new ArrayList<>();
+    protected final List<SchedulingPattern.ValueMatcher> dayOfMonthMatchers = new ArrayList<>();
+    protected final List<SchedulingPattern.ValueMatcher> monthMatchers = new ArrayList<>();
+    protected final List<SchedulingPattern.ValueMatcher> dayOfWeekMatchers = new ArrayList<>();
     private final String asString;
-    protected List<SchedulingPattern.ValueMatcher> minuteMatchers = new ArrayList<>();
-    protected List<SchedulingPattern.ValueMatcher> hourMatchers = new ArrayList<>();
-    protected List<SchedulingPattern.ValueMatcher> dayOfMonthMatchers = new ArrayList<>();
-    protected List<SchedulingPattern.ValueMatcher> monthMatchers = new ArrayList<>();
-    protected List<SchedulingPattern.ValueMatcher> dayOfWeekMatchers = new ArrayList<>();
     protected int matcherSize = 0;
 
     public SchedulingPattern(String pattern) throws SchedulingPattern.InvalidPatternException {
@@ -84,7 +84,7 @@ public class SchedulingPattern {
     }
 
     private static SchedulingPattern.ValueMatcher buildValueMatcher(String str, SchedulingPattern.ValueParser parser) throws Exception {
-        if (str.length() == 1 && str.equals("*")) {
+        if (str.equals("*")) {
             return new SchedulingPattern.AlwaysTrueValueMatcher();
         } else {
             List<Integer> values = new ArrayList<>();
@@ -93,22 +93,21 @@ public class SchedulingPattern {
             while (st.hasMoreTokens()) {
                 String element = st.nextToken();
 
-                List local;
+                List<Integer> local;
                 try {
                     local = parseListElement(element, parser);
                 } catch (Exception var8) {
                     throw new Exception("invalid field \"" + str + "\", invalid element \"" + element + "\", " + var8.getMessage());
                 }
 
-                for (Object o : local) {
-                    Integer value = (Integer) o;
+                for (Integer value : local) {
                     if (!values.contains(value)) {
                         values.add(value);
                     }
                 }
             }
 
-            if (values.size() == 0) {
+            if (values.isEmpty()) {
                 throw new Exception("invalid field \"" + str + "\"");
             } else if (parser == DAY_OF_MONTH_VALUE_PARSER) {
                 return new SchedulingPattern.DayOfMonthValueMatcher(values);
@@ -122,7 +121,7 @@ public class SchedulingPattern {
         StringTokenizer st = new StringTokenizer(str, "/");
         int size = st.countTokens();
         if (size >= 1 && size <= 2) {
-            List values;
+            List<Integer> values;
             try {
                 values = parseRange(st.nextToken(), parser);
             } catch (Exception var10) {
@@ -147,7 +146,7 @@ public class SchedulingPattern {
                     List<Integer> values2 = new ArrayList<>();
 
                     for (int i = 0; i < values.size(); i += div) {
-                        values2.add((Integer) values.get(i));
+                        values2.add(values.get(i));
                     }
 
                     return values2;
@@ -387,7 +386,7 @@ public class SchedulingPattern {
         int getMaxValue();
     }
 
-    private interface ValueMatcher {
+    public interface ValueMatcher {
         boolean match(int var1);
     }
 
@@ -435,8 +434,8 @@ public class SchedulingPattern {
         }
 
         public boolean match(int value) {
-            for (int i = 0; i < this.values.length; ++i) {
-                if (this.values[i] == value) {
+            for (int j : this.values) {
+                if (j == value) {
                     return true;
                 }
             }
@@ -500,8 +499,8 @@ public class SchedulingPattern {
     }
 
     private static class SimpleValueParser implements SchedulingPattern.ValueParser {
-        protected int minValue;
-        protected int maxValue;
+        protected final int minValue;
+        protected final int maxValue;
 
         public SimpleValueParser(int minValue, int maxValue) {
             this.minValue = minValue;

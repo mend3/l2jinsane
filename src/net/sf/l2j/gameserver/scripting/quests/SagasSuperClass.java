@@ -1,4 +1,4 @@
-package net.sf.l2j.gameserver.scripting.quests.SagasScripts;
+package net.sf.l2j.gameserver.scripting.quests;
 
 import net.sf.l2j.Config;
 import net.sf.l2j.commons.random.Rnd;
@@ -545,7 +545,7 @@ public class SagasSuperClass extends Quest {
                     htmltext = "4-08.htm";
                 }
         }
-        if (htmltext == "")
+        if (htmltext.isEmpty())
             npc.showChatWindow(player);
         return htmltext;
     }
@@ -618,7 +618,7 @@ public class SagasSuperClass extends Quest {
                             if (st1.getInt("cond") == 15)
                                 PartyQuestMembers.add(st1);
                     }
-                    if (PartyQuestMembers.size() > 0) {
+                    if (!PartyQuestMembers.isEmpty()) {
                         QuestState st2 = Rnd.get(PartyQuestMembers);
                         giveHallishaMark(st2);
                     }

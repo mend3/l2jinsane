@@ -10,8 +10,6 @@ import net.sf.l2j.gameserver.enums.skills.AbnormalEffect;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.Summon;
 
-import java.util.Iterator;
-
 public class UserInfo extends L2GameServerPacket {
     private final Player _player;
 
@@ -248,8 +246,7 @@ public class UserInfo extends L2GameServerPacket {
         writeD(this._player.getPkKills());
         writeD(this._player.getPvpKills());
         writeH(this._player.getCubics().size());
-        for (Iterator<Integer> iterator = this._player.getCubics().keySet().iterator(); iterator.hasNext(); ) {
-            int id = iterator.next();
+        for (int id : this._player.getCubics().keySet()) {
             writeH(id);
         }
         writeC(this._player.isInPartyMatchRoom() ? 1 : 0);

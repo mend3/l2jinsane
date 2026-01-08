@@ -21,11 +21,6 @@ public enum CrystalType {
         this._crystalEnchantBonusWeapon = crystalEnchantBonusWeapon;
     }
 
-    // $FF: synthetic method
-    private static CrystalType[] $values() {
-        return new CrystalType[]{NONE, D, C, B, A, S};
-    }
-
     public int getId() {
         return this._id;
     }

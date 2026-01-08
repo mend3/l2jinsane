@@ -32,7 +32,7 @@ public final class CastleManager implements IXmlReader {
     private CastleManager() {
     }
 
-    public static final CastleManager getInstance() {
+    public static CastleManager getInstance() {
         return CastleManager.SingletonHolder.INSTANCE;
     }
 
@@ -40,7 +40,7 @@ public final class CastleManager implements IXmlReader {
         try (
                 Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("SELECT * FROM castle ORDER BY id");
-                ResultSet rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery()
         ) {
             while (rs.next()) {
                 int id = rs.getInt("id");
@@ -74,7 +74,7 @@ public final class CastleManager implements IXmlReader {
         }
 
         this.parseFile("./data/xml/castles.xml");
-        LOGGER.info("Loaded {} castles.", new Object[]{this._castles.size()});
+        LOGGER.info("Loaded {} castles.", this._castles.size());
 
         for (Castle castle : this._castles.values()) {
             castle.loadTrapUpgrade();
@@ -161,7 +161,7 @@ public final class CastleManager implements IXmlReader {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("UPDATE castle SET certificates=300");
+                PreparedStatement ps = con.prepareStatement("UPDATE castle SET certificates=300")
         ) {
             ps.executeUpdate();
         } catch (Exception e) {
@@ -171,6 +171,6 @@ public final class CastleManager implements IXmlReader {
     }
 
     private static final class SingletonHolder {
-        protected static final CastleManager INSTANCE = new CastleManager();
+        private static final CastleManager INSTANCE = new CastleManager();
     }
 }

@@ -71,8 +71,7 @@ public class Q004_LongliveThePaagrioLord extends Quest {
                     if (cond == 2) {
                         htmltext = "30578-06.htm";
                         st.giveItems(4, 1);
-                        for (Iterator<Integer> iterator1 = NPC_GIFTS.values().iterator(); iterator1.hasNext(); ) {
-                            int item = iterator1.next();
+                        for (int item : NPC_GIFTS.values()) {
                             st.takeItems(item, -1);
                         }
                         st.playSound("ItemSound.quest_finish");

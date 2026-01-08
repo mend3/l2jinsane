@@ -32,7 +32,7 @@ import java.util.*;
 import java.util.concurrent.Future;
 
 public class FakePlayerAI extends CreatureAI implements Runnable {
-    private static List<Npc> _lastTalk = new ArrayList<>(5);
+    private static final List<Npc> _lastTalk = new ArrayList<>(5);
     protected Future<?> _aiTask = null;
     private boolean _thinking = false;
     private Desire _nextIntention = null;
@@ -86,7 +86,7 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
                     this.getActor().getAI().setIntention(IntentionType.ACTIVE);
                 }
 
-            }, Rnd.get(10, 30) * 1000);
+            }, Rnd.get(10, 30) * 1000L);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -219,9 +219,6 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
     protected void onEvtCancel() {
         this._nextIntention = null;
         super.onEvtCancel();
-    }
-
-    protected void onEvtFinishCasting() {
     }
 
     protected void onIntentionRest() {
@@ -487,7 +484,7 @@ public class FakePlayerAI extends CreatureAI implements Runnable {
         return MapRegionData.getTown(this.getActor().getX(), this.getActor().getY(), this.getActor().getZ()) != null;
     }
 
-    public static enum CityTimeType {
-        SEARCH_NEXT_POS;
+    public enum CityTimeType {
+        SEARCH_NEXT_POS
     }
 }

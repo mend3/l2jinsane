@@ -153,7 +153,7 @@ public final class RandomZoneManager implements Runnable {
 
     public void selectNextZone() {
         if (_topPlayer != null &&
-                !_topPlayer.getName().equals("")) {
+                !_topPlayer.getName().isEmpty()) {
             announce("PvP Zone Most PvP Player was: " + _topPlayer.getName() + " With " + _topPlayer.getKills() + " PvPs");
             giveReward(_topPlayer.getObj());
         }

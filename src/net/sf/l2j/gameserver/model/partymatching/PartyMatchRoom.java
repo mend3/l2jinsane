@@ -60,7 +60,7 @@ public class PartyMatchRoom {
     }
 
     public void changeLeader(Player newLeader) {
-        Player oldLeader = this._members.get(0);
+        Player oldLeader = this._members.getFirst();
         this._members.remove(newLeader);
         this._members.set(0, newLeader);
         this._members.add(oldLeader);
@@ -76,7 +76,7 @@ public class PartyMatchRoom {
     }
 
     public Player getOwner() {
-        return this._members.get(0);
+        return this._members.getFirst();
     }
 
     public int getMembers() {

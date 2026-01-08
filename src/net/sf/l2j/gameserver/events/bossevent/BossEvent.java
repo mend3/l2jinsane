@@ -30,7 +30,7 @@ public class BossEvent {
     public List<Integer> bossList = new ArrayList<>();
     public int bossId;
     public int objectId;
-    public List<Player> eventPlayers = new ArrayList<>();
+    public final List<Player> eventPlayers = new ArrayList<>();
     public boolean started;
     public boolean aborted;
     public ScheduledFuture<?> despawnBoss;
@@ -339,8 +339,8 @@ public class BossEvent {
     }
 
     class Teleporting implements Runnable {
-        Location teleTo;
-        List<Player> toTeleport;
+        final Location teleTo;
+        final List<Player> toTeleport;
 
         public Teleporting(List<Player> toTeleport, Location teleTo) {
             this.teleTo = teleTo;
@@ -376,7 +376,7 @@ public class BossEvent {
     protected class Countdown implements Runnable {
         private final Player _player;
         private final int _time;
-        BossEvent.EventState evtState;
+        final BossEvent.EventState evtState;
         private String text = "";
 
         public Countdown(Player player, int time, BossEvent.EventState evtState) {
@@ -452,7 +452,7 @@ public class BossEvent {
     }
 
     class DespawnBossTask implements Runnable {
-        L2Spawn spawn;
+        final L2Spawn spawn;
 
         public DespawnBossTask(L2Spawn spawn) {
             this.spawn = spawn;
@@ -476,8 +476,8 @@ public class BossEvent {
     }
 
     class Fighting implements Runnable {
-        int bossId;
-        Location spawnLoc;
+        final int bossId;
+        final Location spawnLoc;
 
         public Fighting(int bossId, Location spawnLoc) {
             this.bossId = bossId;

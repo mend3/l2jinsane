@@ -1,10 +1,10 @@
 package net.sf.l2j.gameserver.model;
 
 public class ItemRequest {
-    int _objectId;
+    final int _objectId;
     int _itemId;
     int _count;
-    int _price;
+    final int _price;
 
     public ItemRequest(int objectId, int count, int price) {
         this._objectId = objectId;

@@ -104,7 +104,7 @@ public class WarehouseKeeper extends Folk {
                             player.sendPacket(SystemMessageId.CHARACTER_DOES_NOT_EXIST);
                         } else {
                             Map<Integer, String> chars = player.getAccountChars();
-                            if (chars.size() < 1) {
+                            if (chars.isEmpty()) {
                                 player.sendPacket(ActionFailed.STATIC_PACKET);
                                 return;
                             }

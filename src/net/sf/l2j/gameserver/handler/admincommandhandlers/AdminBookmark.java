@@ -51,7 +51,7 @@ public class AdminBookmark implements IAdminCommandHandler {
         activeChar.sendPacket(html);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_bkpage")) {
             StringTokenizer st = new StringTokenizer(command, " ");
             st.nextToken();
@@ -66,11 +66,11 @@ public class AdminBookmark implements IAdminCommandHandler {
                 String name = st.nextToken();
                 if (name.length() > 15) {
                     activeChar.sendMessage("The location name is too long.");
-                    return true;
+                    return;
                 }
                 if (BookmarkTable.getInstance().isExisting(name, activeChar.getObjectId())) {
                     activeChar.sendMessage("That location is already existing.");
-                    return true;
+                    return;
                 }
                 BookmarkTable.getInstance().saveBookmark(name, activeChar);
             }
@@ -83,7 +83,7 @@ public class AdminBookmark implements IAdminCommandHandler {
                 int objId = activeChar.getObjectId();
                 if (!BookmarkTable.getInstance().isExisting(name, objId)) {
                     activeChar.sendMessage("That location doesn't exist.");
-                    return true;
+                    return;
                 }
                 BookmarkTable.getInstance().deleteBookmark(name, objId);
             } else {
@@ -91,7 +91,6 @@ public class AdminBookmark implements IAdminCommandHandler {
             }
             showBookmarks(activeChar, 1);
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

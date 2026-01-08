@@ -32,14 +32,14 @@ public class ClanHallManager implements IXmlReader {
 
     public void load() {
         this.parseFile("./data/xml/clanHalls.xml");
-        LOGGER.info("Loaded {} clan halls.", new Object[]{this._clanHalls.size()});
+        LOGGER.info("Loaded {} clan halls.", this._clanHalls.size());
         Collection<ClanHallZone> zones = ZoneManager.getInstance().getAllZones(ClanHallZone.class);
 
         try (
                 Connection con = ConnectionPool.getConnection();
                 PreparedStatement ps = con.prepareStatement("SELECT * FROM clanhall");
                 PreparedStatement ps2 = con.prepareStatement("SELECT * FROM clanhall_functions WHERE hall_id = ?");
-                ResultSet rs = ps.executeQuery();
+                ResultSet rs = ps.executeQuery()
         ) {
             while (rs.next()) {
                 int id = rs.getInt("id");
@@ -47,7 +47,7 @@ public class ClanHallManager implements IXmlReader {
                 if (ch != null) {
                     ClanHallZone zone = zones.stream().filter((z) -> z.getClanHallId() == id).findFirst().orElse(null);
                     if (zone == null) {
-                        LOGGER.warn("No existing ClanHallZone for ClanHall {}.", new Object[]{id});
+                        LOGGER.warn("No existing ClanHallZone for ClanHall {}.", id);
                     }
 
                     ch.setZone(zone);

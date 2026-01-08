@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q085_SagaOfTheCardinal extends SagasSuperClass {
     public Q085_SagaOfTheCardinal() {
         super(85, "Saga of the Cardinal");

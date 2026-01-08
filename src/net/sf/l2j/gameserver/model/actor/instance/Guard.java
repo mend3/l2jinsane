@@ -75,7 +75,7 @@ public final class Guard extends Attackable {
 
             scripts = this.getTemplate().getEventQuests(ScriptEventType.ON_FIRST_TALK);
             if (scripts != null && scripts.size() == 1) {
-                scripts.get(0).notifyFirstTalk(this, player);
+                scripts.getFirst().notifyFirstTalk(this, player);
             } else {
                 this.showChatWindow(player);
             }

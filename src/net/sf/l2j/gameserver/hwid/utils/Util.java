@@ -17,7 +17,7 @@ public class Util {
     }
 
     public static String asHex(byte[] raw, int offset, int size) {
-        StringBuffer strbuf = new StringBuffer(raw.length * 2);
+        StringBuilder strbuf = new StringBuilder(raw.length * 2);
         for (int i = 0; i < size; i++) {
             if ((raw[offset + i] & 0xFF) < 16)
                 strbuf.append("0");

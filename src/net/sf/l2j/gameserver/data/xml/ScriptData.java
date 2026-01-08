@@ -10,7 +10,6 @@ import org.w3c.dom.NamedNodeMap;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,40 +32,38 @@ public final class ScriptData implements IXmlReader, Runnable {
     }
 
     public void parseDocument(Document doc, Path p) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "script", (scriptNode) -> {
-                NamedNodeMap params = scriptNode.getAttributes();
-                String path = this.parseString(params, "path");
-                if (path == null) {
-                    LOGGER.warn("One of the script path isn't defined.");
-                } else {
-                    try {
-                        Quest instance = (Quest) Class.forName("net.sf.l2j.gameserver.scripting." + path).getDeclaredConstructor().newInstance();
-                        this._quests.add(instance);
-                        if (instance instanceof ScheduledQuest) {
-                            String type = this.parseString(params, "schedule");
-                            if (type == null) {
-                                return;
-                            }
-
-                            String start = this.parseString(params, "start");
-                            if (start == null) {
-                                LOGGER.warn("Missing 'start' parameter for scheduled script '{}'.", path);
-                                return;
-                            }
-
-                            String end = this.parseString(params, "end");
-                            if (((ScheduledQuest) instance).setSchedule(type, start, end)) {
-                                this._scheduled.add((ScheduledQuest) instance);
-                            }
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "script", (scriptNode) -> {
+            NamedNodeMap params = scriptNode.getAttributes();
+            String path = this.parseString(params, "path");
+            if (path == null) {
+                LOGGER.warn("One of the script path isn't defined.");
+            } else {
+                try {
+                    Quest instance = (Quest) Class.forName("net.sf.l2j.gameserver.scripting." + path).getDeclaredConstructor().newInstance();
+                    this._quests.add(instance);
+                    if (instance instanceof ScheduledQuest) {
+                        String type = this.parseString(params, "schedule");
+                        if (type == null) {
+                            return;
                         }
-                    } catch (Exception var8) {
-                        LOGGER.error("Script '{}' is missing.", var8, path);
-                    }
 
+                        String start = this.parseString(params, "start");
+                        if (start == null) {
+                            LOGGER.warn("Missing 'start' parameter for scheduled script '{}'.", path);
+                            return;
+                        }
+
+                        String end = this.parseString(params, "end");
+                        if (((ScheduledQuest) instance).setSchedule(type, start, end)) {
+                            this._scheduled.add((ScheduledQuest) instance);
+                        }
+                    }
+                } catch (Exception var8) {
+                    LOGGER.error("Script '{}' is missing.", var8, path);
                 }
-            });
-        });
+
+            }
+        }));
     }
 
     public void run() {
@@ -82,15 +79,11 @@ public final class ScriptData implements IXmlReader, Runnable {
     }
 
     public Quest getQuest(String questName) {
-        return this._quests.stream().filter((q) -> {
-            return q.getName().equalsIgnoreCase(questName);
-        }).findFirst().orElse(null);
+        return this._quests.stream().filter((q) -> q.getName().equalsIgnoreCase(questName)).findFirst().orElse(null);
     }
 
     public Quest getQuest(int questId) {
-        return this._quests.stream().filter((q) -> {
-            return q.getQuestId() == questId;
-        }).findFirst().orElse(null);
+        return this._quests.stream().filter((q) -> q.getQuestId() == questId).findFirst().orElse(null);
     }
 
     public List<Quest> getQuests() {

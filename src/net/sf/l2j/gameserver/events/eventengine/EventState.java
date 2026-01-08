@@ -5,5 +5,5 @@ public enum EventState {
     INACTIVE,
     REGISTERING,
     TELEPORTING,
-    RUNNING;
+    RUNNING
 }

@@ -148,20 +148,12 @@ public class CommandChannel extends AbstractGroup {
     }
 
     public boolean meetRaidWarCondition(Attackable attackable) {
-        switch (attackable.getNpcId()) {
-            case 29001:
-            case 29006:
-            case 29014:
-            case 29022:
-                return this.getMembersCount() > 36;
-            case 29019:
-                return this.getMembersCount() > 225;
-            case 29020:
-                return this.getMembersCount() > 56;
-            case 29028:
-                return this.getMembersCount() > 99;
-            default:
-                return this.getMembersCount() > 18;
-        }
+        return switch (attackable.getNpcId()) {
+            case 29001, 29006, 29014, 29022 -> this.getMembersCount() > 36;
+            case 29019 -> this.getMembersCount() > 225;
+            case 29020 -> this.getMembersCount() > 56;
+            case 29028 -> this.getMembersCount() > 99;
+            default -> this.getMembersCount() > 18;
+        };
     }
 }

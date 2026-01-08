@@ -48,14 +48,11 @@ public class Q606_WarWithVarkaSilenos extends Quest {
         QuestState st = player.getQuestState("Q606_WarWithVarkaSilenos");
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() >= 74 && player.isAlliedWithKetra()) ? "31370-01.htm" : "31370-02.htm";
-                break;
-            case 1:
-                htmltext = st.hasQuestItems(7233) ? "31370-04.htm" : "31370-05.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() >= 74 && player.isAlliedWithKetra()) ? "31370-01.htm" : "31370-02.htm";
+            case 1 -> st.hasQuestItems(7233) ? "31370-04.htm" : "31370-05.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 }

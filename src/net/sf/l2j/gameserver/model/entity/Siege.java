@@ -68,7 +68,7 @@ public class Siege implements Siegable {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("SELECT clan_id,type FROM siege_clans WHERE castle_id=?");
+                PreparedStatement ps = con.prepareStatement("SELECT clan_id,type FROM siege_clans WHERE castle_id=?")
         ) {
             ps.setInt(1, this._castle.getCastleId());
 
@@ -356,7 +356,7 @@ public class Siege implements Siegable {
     public void clearAllClans() {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM siege_clans WHERE castle_id=?");
+                PreparedStatement ps = con.prepareStatement("DELETE FROM siege_clans WHERE castle_id=?")
         ) {
             ps.setInt(1, this.getCastle().getCastleId());
             ps.executeUpdate();
@@ -377,7 +377,7 @@ public class Siege implements Siegable {
     protected void clearPendingClans() {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM siege_clans WHERE castle_id=? AND type='PENDING'");
+                PreparedStatement ps = con.prepareStatement("DELETE FROM siege_clans WHERE castle_id=? AND type='PENDING'")
         ) {
             ps.setInt(1, this.getCastle().getCastleId());
             ps.executeUpdate();
@@ -444,7 +444,7 @@ public class Siege implements Siegable {
         if (clan != null && clan.getCastleId() != this.getCastle().getCastleId() && this._registeredClans.remove(clan) != null) {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("DELETE FROM siege_clans WHERE castle_id=? AND clan_id=?");
+                    PreparedStatement ps = con.prepareStatement("DELETE FROM siege_clans WHERE castle_id=? AND clan_id=?")
             ) {
                 ps.setInt(1, this.getCastle().getCastleId());
                 ps.setInt(2, clan.getClanId());
@@ -536,7 +536,7 @@ public class Siege implements Siegable {
             this.startAutoTask();
         }
 
-        LOGGER.info("New date for {} siege: {}.", new Object[]{this.getCastle().getName(), this.getCastle().getSiegeDate().getTime()});
+        LOGGER.info("New date for {} siege: {}.", this.getCastle().getName(), this.getCastle().getSiegeDate().getTime());
     }
 
     private void saveSiegeDate() {
@@ -547,7 +547,7 @@ public class Siege implements Siegable {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("UPDATE castle SET siegeDate=?, regTimeOver=? WHERE id=?");
+                PreparedStatement ps = con.prepareStatement("UPDATE castle SET siegeDate=?, regTimeOver=? WHERE id=?")
         ) {
             ps.setLong(1, this.getSiegeDate().getTimeInMillis());
             ps.setString(2, String.valueOf(this.isTimeRegistrationOver()));
@@ -577,7 +577,7 @@ public class Siege implements Siegable {
 
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("INSERT INTO siege_clans (clan_id,castle_id,type) VALUES (?,?,?) ON DUPLICATE KEY UPDATE type=VALUES(type)");
+                    PreparedStatement ps = con.prepareStatement("INSERT INTO siege_clans (clan_id,castle_id,type) VALUES (?,?,?) ON DUPLICATE KEY UPDATE type=VALUES(type)")
             ) {
                 ps.setInt(1, clan.getClanId());
                 ps.setInt(2, this.getCastle().getCastleId());

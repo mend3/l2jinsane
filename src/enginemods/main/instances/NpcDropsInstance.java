@@ -113,7 +113,7 @@ public class NpcDropsInstance {
                         deepBlueDrop = 1;
                 }
             }
-            dropChance = ((drop.getChance() - drop.getChance() * levelModifier / 100) / deepBlueDrop);
+            dropChance = ((drop.getChance() - (double) (drop.getChance() * levelModifier) / 100) / deepBlueDrop);
         }
         if (drop.getItemId() == 57) {
             dropChance *= Config.RATE_DROP_ADENA;
@@ -209,20 +209,12 @@ public class NpcDropsInstance {
         if (categoryDrops == null)
             return null;
         int categoryDropChance = categoryDrops.getCategoryChance();
-        switch (categoryDrops.getCategoryType()) {
-            case 1:
-                categoryDropChance = (int) (categoryDropChance * Config.RATE_DROP_HP_HERBS);
-                break;
-            case 2:
-                categoryDropChance = (int) (categoryDropChance * Config.RATE_DROP_MP_HERBS);
-                break;
-            case 3:
-                categoryDropChance = (int) (categoryDropChance * Config.RATE_DROP_SPECIAL_HERBS);
-                break;
-            default:
-                categoryDropChance = (int) (categoryDropChance * Config.RATE_DROP_COMMON_HERBS);
-                break;
-        }
+        categoryDropChance = switch (categoryDrops.getCategoryType()) {
+            case 1 -> (int) (categoryDropChance * Config.RATE_DROP_HP_HERBS);
+            case 2 -> (int) (categoryDropChance * Config.RATE_DROP_MP_HERBS);
+            case 3 -> (int) (categoryDropChance * Config.RATE_DROP_SPECIAL_HERBS);
+            default -> (int) (categoryDropChance * Config.RATE_DROP_COMMON_HERBS);
+        };
         categoryDropChance = (int) (categoryDropChance * this._dropsSettings.get(ItemDropType.HERB).getChanceBonus());
         if (Config.DEEPBLUE_DROP_RULES) {
             int deepBlueDrop = (levelModifier > 0) ? 3 : 1;

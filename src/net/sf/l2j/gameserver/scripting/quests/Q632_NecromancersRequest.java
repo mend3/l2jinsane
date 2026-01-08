@@ -60,14 +60,11 @@ public class Q632_NecromancersRequest extends Quest {
         QuestState st = player.getQuestState("Q632_NecromancersRequest");
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 63) ? "31522-01.htm" : "31522-02.htm";
-                break;
-            case 1:
-                htmltext = (st.getQuestItemsCount(7542) >= 200) ? "31522-05.htm" : "31522-04.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 63) ? "31522-01.htm" : "31522-02.htm";
+            case 1 -> (st.getQuestItemsCount(7542) >= 200) ? "31522-05.htm" : "31522-04.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

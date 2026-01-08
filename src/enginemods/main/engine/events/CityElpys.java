@@ -34,14 +34,13 @@ public class CityElpys extends AbstractMods {
         _mobs.clear();
     }
 
-    public static CityElpys getInstance() {
-        return CityElpys.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
         switch (this.getState()) {
             case START:
-                this.startTimer("spawnElpys", ConfigData.ELPY_EVENT_TIME * 60 * 1000, null, null, true);
+                this.startTimer("spawnElpys", (long) ConfigData.ELPY_EVENT_TIME * 60 * 1000, null, null, true);
                 break;
             case END:
                 unspawnElpys();

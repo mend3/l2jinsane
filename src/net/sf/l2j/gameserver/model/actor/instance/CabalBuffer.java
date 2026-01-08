@@ -105,14 +105,14 @@ public class CabalBuffer extends Folk {
                         text = Rnd.get(CabalBuffer.MESSAGES_WINNER);
                     }
 
-                    if (text.indexOf("%player_cabal_winner%") > -1) {
+                    if (text.contains("%player_cabal_winner%")) {
                         for (Player nearbyPlayer : playersList) {
                             if (SevenSignsManager.getInstance().getPlayerCabal(nearbyPlayer.getObjectId()) == winningCabal) {
                                 text = text.replaceAll("%player_cabal_winner%", nearbyPlayer.getName());
                                 break;
                             }
                         }
-                    } else if (text.indexOf("%player_cabal_loser%") > -1) {
+                    } else if (text.contains("%player_cabal_loser%")) {
                         for (Player nearbyPlayer : playersList) {
                             if (SevenSignsManager.getInstance().getPlayerCabal(nearbyPlayer.getObjectId()) == losingCabal) {
                                 text = text.replaceAll("%player_cabal_loser%", nearbyPlayer.getName());

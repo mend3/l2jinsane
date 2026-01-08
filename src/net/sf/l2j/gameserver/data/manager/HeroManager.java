@@ -519,7 +519,7 @@ public class HeroManager {
         if (this._heroes.isEmpty() || !this._heroes.containsKey(player.getObjectId()))
             return 0;
         int val = Integer.parseInt(this._heroes.get(player.getObjectId()).getString("count"));
-        return (val > 0) ? val : 0;
+        return Math.max(val, 0);
     }
 
     public int getHeroByClass(int classId) {
@@ -549,8 +549,7 @@ public class HeroManager {
         html.replace("%message%", this._heroMessages.get(objectId));
         html.disableValidation();
         if (!mainList.isEmpty()) {
-            List<StatSet> list = new ArrayList<>();
-            list.addAll(mainList);
+            List<StatSet> list = new ArrayList<>(mainList);
             Collections.reverse(list);
             boolean color = true;
             int counter = 0;
@@ -964,8 +963,7 @@ public class HeroManager {
     }
 
     public void shutdown() {
-        for (Iterator<Integer> iterator = this._heroMessages.keySet().iterator(); iterator.hasNext(); ) {
-            int charId = iterator.next();
+        for (int charId : this._heroMessages.keySet()) {
             saveHeroMessage(charId);
         }
     }

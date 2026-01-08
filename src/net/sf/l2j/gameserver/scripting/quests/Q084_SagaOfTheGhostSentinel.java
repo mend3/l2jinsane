@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q084_SagaOfTheGhostSentinel extends SagasSuperClass {
     public Q084_SagaOfTheGhostSentinel() {
         super(84, "Saga of the Ghost Sentinel");

@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q080_SagaOfTheWindRider extends SagasSuperClass {
     public Q080_SagaOfTheWindRider() {
         super(80, "Saga of the Wind Rider");

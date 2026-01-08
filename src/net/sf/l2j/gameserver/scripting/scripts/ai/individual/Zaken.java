@@ -22,7 +22,6 @@ import net.sf.l2j.gameserver.network.serverpackets.PlaySound;
 import net.sf.l2j.gameserver.scripting.scripts.ai.L2AttackableAIScript;
 import net.sf.l2j.gameserver.taskmanager.GameTimeTaskManager;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -459,9 +458,7 @@ public class Zaken extends L2AttackableAIScript {
         Location[] var3 = LOCS;
         int var4 = var3.length;
 
-        for (int var5 = 0; var5 < var4; ++var5) {
-            Location loc = var3[var5];
-
+        for (Location loc : var3) {
             for (int i = 0; i < roundsNumber; ++i) {
                 int x = loc.getX() + Rnd.get(650);
                 int y = loc.getY() + Rnd.get(650);

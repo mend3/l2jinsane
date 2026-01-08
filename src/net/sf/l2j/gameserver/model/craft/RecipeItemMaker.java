@@ -17,7 +17,7 @@ public class RecipeItemMaker implements Runnable {
     protected final int _skillId;
     protected final int _skillLevel;
     public boolean _isValid;
-    protected double _manaRequired;
+    protected final double _manaRequired;
 
     protected int _price;
 

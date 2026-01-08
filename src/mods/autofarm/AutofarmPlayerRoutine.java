@@ -58,7 +58,7 @@ public class AutofarmPlayerRoutine {
 
             for (WorldRegion reg : region.getSurroundingRegions()) {
                 for (WorldObject obj : reg.getObjects()) {
-                    if (obj instanceof Monster && MathUtil.checkIfInRange(radius, player, obj, true) && (Boolean) condition.apply((Monster) obj)) {
+                    if (obj instanceof Monster && MathUtil.checkIfInRange(radius, player, obj, true) && condition.apply((Monster) obj)) {
                         result.add((Monster) obj);
                     }
                 }
@@ -138,7 +138,7 @@ public class AutofarmPlayerRoutine {
     }
 
     private void attack() {
-        Boolean shortcutsContainAttack = this.shotcutsContainAttack();
+        boolean shortcutsContainAttack = this.shotcutsContainAttack();
         if (shortcutsContainAttack) {
             this.physicalAttack();
         }
@@ -225,7 +225,7 @@ public class AutofarmPlayerRoutine {
     }
 
     private List<Integer> getSpellsInSlots(List<Integer> attackSlots) {
-        return (List) Arrays.stream(this.player.getShortcutList().getShortcuts()).filter((shortcut) -> shortcut.getPage() == this.player.getPage() && shortcut.getType() == ShortcutType.SKILL && attackSlots.contains(shortcut.getSlot())).map(Shortcut::getId).collect(Collectors.toList());
+        return Arrays.stream(this.player.getShortcutList().getShortcuts()).filter((shortcut) -> shortcut.getPage() == this.player.getPage() && shortcut.getType() == ShortcutType.SKILL && attackSlots.contains(shortcut.getSlot())).map(Shortcut::getId).collect(Collectors.toList());
     }
 
     private List<Integer> getChanceSpells() {
@@ -260,8 +260,7 @@ public class AutofarmPlayerRoutine {
     }
 
     private void physicalAttack() {
-        if (this.player.getTarget() instanceof Monster) {
-            Monster target = (Monster) this.player.getTarget();
+        if (this.player.getTarget() instanceof Monster target) {
             if (!this.player.isMageClass()) {
                 if (target.isAutoAttackable(this.player) && GeoEngine.getInstance().canSeeTarget(this.player, target)) {
                     if (GeoEngine.getInstance().canSeeTarget(this.player, target)) {
@@ -323,13 +322,13 @@ public class AutofarmPlayerRoutine {
 
                 this.player.getAI().setIntention(IntentionType.FOLLOW, this.committedTarget);
                 this.committedTarget = null;
-                this.player.setTarget((WorldObject) null);
+                this.player.setTarget(null);
             }
 
             if (!(this.committedTarget instanceof Summon)) {
                 List<Monster> targets = getKnownMonstersInRadius(this.player, this.player.getRadius(), (creature) -> GeoEngine.getInstance().canMoveToTarget(this.player.getX(), this.player.getY(), this.player.getZ(), creature.getX(), creature.getY(), creature.getZ()) && !this.player.ignoredMonsterContain(creature.getNpcId()) && !creature.isMinion() && !creature.isRaidBoss() && !creature.isDead() && !(creature instanceof Chest) && (!this.player.isAntiKsProtected() || creature.getTarget() == null || creature.getTarget() == this.player || creature.getTarget() == this.player.getSummon()));
                 if (!targets.isEmpty()) {
-                    Monster closestTarget = (Monster) targets.stream().min((o1, o2) -> Integer.compare((int) Math.sqrt(this.player.getDistanceSq(o1)), (int) Math.sqrt(this.player.getDistanceSq(o2)))).get();
+                    Monster closestTarget = targets.stream().min((o1, o2) -> Integer.compare((int) Math.sqrt(this.player.getDistanceSq(o1)), (int) Math.sqrt(this.player.getDistanceSq(o2)))).get();
                     this.committedTarget = closestTarget;
                     this.player.setTarget(closestTarget);
                 }
@@ -340,7 +339,7 @@ public class AutofarmPlayerRoutine {
     private void selectNewTarget() {
         List<Monster> targets = getKnownMonstersInRadius(this.player, this.player.getRadius(), (creature) -> GeoEngine.getInstance().canMoveToTarget(this.player.getX(), this.player.getY(), this.player.getZ(), creature.getX(), creature.getY(), creature.getZ()) && !this.player.ignoredMonsterContain(creature.getNpcId()) && !creature.isMinion() && !creature.isRaidBoss() && !creature.isDead() && !(creature instanceof Chest) && (!this.player.isAntiKsProtected() || creature.getTarget() == null || creature.getTarget() == this.player || creature.getTarget() == this.player.getSummon()));
         if (!targets.isEmpty()) {
-            Monster closestTarget = (Monster) targets.stream().min((o1, o2) -> Integer.compare((int) Math.sqrt(this.player.getDistanceSq(o1)), (int) Math.sqrt(this.player.getDistanceSq(o2)))).get();
+            Monster closestTarget = targets.stream().min((o1, o2) -> Integer.compare((int) Math.sqrt(this.player.getDistanceSq(o1)), (int) Math.sqrt(this.player.getDistanceSq(o2)))).get();
             this.committedTarget = closestTarget;
             this.player.setTarget(closestTarget);
         }
@@ -367,30 +366,24 @@ public class AutofarmPlayerRoutine {
         }
     }
 
-    private boolean useMagicSkillBySummon(int skillId, WorldObject target) {
+    private void useMagicSkillBySummon(int skillId, WorldObject target) {
         if (this.player != null && !this.player.isInStoreMode()) {
             Summon activeSummon = this.player.getSummon();
             if (activeSummon == null) {
-                return false;
             } else if (activeSummon instanceof Pet && activeSummon.getLevel() - this.player.getLevel() > 20) {
                 this.player.sendPacket(SystemMessageId.PET_TOO_HIGH_TO_CONTROL);
-                return false;
             } else if (activeSummon.isOutOfControl()) {
                 this.player.sendPacket(SystemMessageId.PET_REFUSING_ORDER);
-                return false;
             } else {
                 L2Skill skill = activeSummon.getSkill(skillId);
                 if (skill == null) {
-                    return false;
                 } else if (skill.isOffensive() && this.player == target) {
-                    return false;
                 } else {
                     activeSummon.setTarget(target);
-                    return activeSummon.useMagic(skill, false, false);
+                    activeSummon.useMagic(skill, false, false);
                 }
             }
         } else {
-            return false;
         }
     }
 

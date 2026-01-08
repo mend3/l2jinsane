@@ -17,7 +17,6 @@ import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Base64;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -54,8 +53,7 @@ public class UtilPlayer {
                     long newExp = newChar.getStat().getExpForLevel(lvl);
                     newChar.getStat().addExp(newExp - oldExp);
                     newChar.setCurrentHpMp(newChar.getMaxHp(), newChar.getMaxMp());
-                    for (Iterator<Integer> iterator = items.iterator(); iterator.hasNext(); ) {
-                        int itemId = iterator.next();
+                    for (int itemId : items) {
                         if (itemId == 0)
                             continue;
                         ItemInstance item = newChar.getInventory().addItem("Init", itemId, 1, newChar, null);

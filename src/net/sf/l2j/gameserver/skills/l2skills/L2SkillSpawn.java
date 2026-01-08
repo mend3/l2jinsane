@@ -49,7 +49,7 @@ public class L2SkillSpawn extends L2Skill {
                         spawn.setRespawnState(false);
                         Npc npc = spawn.doSpawn(this._summonSpawn);
                         if (this._despawnDelay > 0) {
-                            npc.scheduleDespawn((long) this._despawnDelay);
+                            npc.scheduleDespawn(this._despawnDelay);
                         }
                     } catch (Exception e) {
                         int var10002 = this._npcId;

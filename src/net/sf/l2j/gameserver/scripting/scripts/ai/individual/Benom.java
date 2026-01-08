@@ -15,7 +15,6 @@ import net.sf.l2j.gameserver.network.serverpackets.NpcSay;
 import net.sf.l2j.gameserver.scripting.scripts.ai.L2AttackableAIScript;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Benom extends L2AttackableAIScript {

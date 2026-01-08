@@ -5,7 +5,6 @@ import net.sf.l2j.gameserver.enums.IntentionType;
 import net.sf.l2j.gameserver.enums.skills.L2EffectFlag;
 import net.sf.l2j.gameserver.enums.skills.L2EffectType;
 import net.sf.l2j.gameserver.model.L2Effect;
-import net.sf.l2j.gameserver.model.WorldObject;
 import net.sf.l2j.gameserver.model.actor.Attackable;
 import net.sf.l2j.gameserver.model.actor.Creature;
 import net.sf.l2j.gameserver.skills.Env;
@@ -40,11 +39,11 @@ public class EffectConfuseMob extends L2Effect {
         }
         if (targetList.isEmpty())
             return true;
-        WorldObject target = Rnd.get(targetList);
+        Creature target = Rnd.get(targetList);
         getEffected().setTarget(target);
         getEffected().getAI().setIntention(IntentionType.ATTACK, target);
         int aggro = (5 + Rnd.get(5)) * getEffector().getLevel();
-        ((Attackable) getEffected()).addDamageHate((Creature) target, 0, aggro);
+        ((Attackable) getEffected()).addDamageHate(target, 0, aggro);
         return true;
     }
 

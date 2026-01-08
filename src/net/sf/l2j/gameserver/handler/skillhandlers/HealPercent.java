@@ -81,7 +81,6 @@ public class HealPercent implements ISkillHandler {
                 }
                 target.sendPacket(su);
             }
-            continue;
         }
     }
 

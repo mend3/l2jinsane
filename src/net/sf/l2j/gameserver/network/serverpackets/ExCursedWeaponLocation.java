@@ -29,17 +29,6 @@ public class ExCursedWeaponLocation extends L2GameServerPacket {
         }
     }
 
-    public static class CursedWeaponInfo {
-        public Location pos;
-
-        public int id;
-
-        public int activated;
-
-        public CursedWeaponInfo(Location p, int ID, int status) {
-            this.pos = p;
-            this.id = ID;
-            this.activated = status;
-        }
+    public record CursedWeaponInfo(Location pos, int id, int activated) {
     }
 }

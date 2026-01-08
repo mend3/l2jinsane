@@ -49,16 +49,14 @@ public interface IXmlReader {
             final LinkedList<Path> pathsToParse = new LinkedList<>();
 
             try {
-                Files.walkFileTree(path, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
+                Files.walkFileTree(path, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, new SimpleFileVisitor<>() {
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         pathsToParse.add(file);
                         return FileVisitResult.CONTINUE;
                     }
 
                 });
-                pathsToParse.forEach((p) -> {
-                    this.parseFile(p, validate, ignoreComments, ignoreWhitespaces);
-                });
+                pathsToParse.forEach((p) -> this.parseFile(p, validate, ignoreComments, ignoreWhitespaces));
             } catch (IOException var9) {
                 LOGGER.warn("Could not parse directory: {} ", var9, path);
             }
@@ -330,9 +328,7 @@ public interface IXmlReader {
     }
 
     default void forEach(Node node, Consumer<Node> action) {
-        this.forEach(node, (a) -> {
-            return true;
-        }, action);
+        this.forEach(node, (a) -> true, action);
     }
 
     default void forEach(Node node, String nodeName, Consumer<Node> action) {

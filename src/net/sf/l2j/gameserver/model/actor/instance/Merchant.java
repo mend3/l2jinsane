@@ -111,7 +111,7 @@ public class Merchant extends Folk {
         }
     }
 
-    private final void showWearWindow(Player player, int val) {
+    private void showWearWindow(Player player, int val) {
         NpcBuyList buyList = BuyListManager.getInstance().getBuyList(val);
         if (buyList != null && buyList.isNpcAllowed(this.getNpcId())) {
             player.tempInventoryDisable();

@@ -125,7 +125,7 @@ public class SepulcherNpc extends Folk {
                 case 31485:
                 case 31486:
                 case 31487:
-                    if (Calendar.getInstance().get(12) >= 50) {
+                    if (Calendar.getInstance().get(Calendar.MINUTE) >= 50) {
                         this.broadcastNpcSay("You can start at the scheduled time.");
                         return;
                     }
@@ -141,7 +141,7 @@ public class SepulcherNpc extends Folk {
 
                     scripts = this.getTemplate().getEventQuests(ScriptEventType.ON_FIRST_TALK);
                     if (scripts != null && scripts.size() == 1) {
-                        scripts.get(0).notifyFirstTalk(this, player);
+                        scripts.getFirst().notifyFirstTalk(this, player);
                     } else {
                         this.showChatWindow(player);
                     }

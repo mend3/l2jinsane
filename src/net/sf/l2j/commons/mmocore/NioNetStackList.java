@@ -2,9 +2,9 @@
 package net.sf.l2j.commons.mmocore;
 
 public final class NioNetStackList<E> {
-    private final NioNetStackList<E>.NioNetStackNode _start = new NioNetStackList.NioNetStackNode(this);
-    private final NioNetStackList<E>.NioNetStackNodeBuf _buf = new NioNetStackList.NioNetStackNodeBuf();
-    private NioNetStackList<E>.NioNetStackNode _end = new NioNetStackList.NioNetStackNode(this);
+    private final NioNetStackList<E>.NioNetStackNode _start = new NioNetStackNode();
+    private final NioNetStackList<E>.NioNetStackNodeBuf _buf = new NioNetStackNodeBuf();
+    private NioNetStackList<E>.NioNetStackNode _end = new NioNetStackNode();
 
     public NioNetStackList() {
         this.clear();
@@ -37,13 +37,13 @@ public final class NioNetStackList<E> {
         private NioNetStackList<E>.NioNetStackNode _next;
         private E _value;
 
-        private NioNetStackNode(final NioNetStackList param1) {
+        private NioNetStackNode() {
         }
     }
 
     private final class NioNetStackNodeBuf {
-        private final NioNetStackList<E>.NioNetStackNode _start = NioNetStackList.this.new NioNetStackNode(NioNetStackList.this);
-        private NioNetStackList<E>.NioNetStackNode _end = NioNetStackList.this.new NioNetStackNode(NioNetStackList.this);
+        private final NioNetStackList<E>.NioNetStackNode _start = NioNetStackList.this.new NioNetStackNode();
+        private NioNetStackList<E>.NioNetStackNode _end = NioNetStackList.this.new NioNetStackNode();
 
         NioNetStackNodeBuf() {
             this._start._next = this._end;
@@ -58,7 +58,7 @@ public final class NioNetStackList<E> {
 
         NioNetStackList<E>.NioNetStackNode removeFirst() {
             if (this._start._next == this._end) {
-                return NioNetStackList.this.new NioNetStackNode(NioNetStackList.this);
+                return NioNetStackList.this.new NioNetStackNode();
             } else {
                 NioNetStackList<E>.NioNetStackNode old = this._start._next;
                 this._start._next = old._next;

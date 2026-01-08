@@ -1,9 +1,9 @@
-package net.sf.l2j.gameserver.communitybbs.Manager;
+package net.sf.l2j.gameserver.communitybbs.manager;
 
 import net.sf.l2j.commons.lang.StringUtil;
-import net.sf.l2j.gameserver.communitybbs.BB.Forum;
-import net.sf.l2j.gameserver.communitybbs.BB.Post;
-import net.sf.l2j.gameserver.communitybbs.BB.Topic;
+import net.sf.l2j.gameserver.communitybbs.bb.Forum;
+import net.sf.l2j.gameserver.communitybbs.bb.Post;
+import net.sf.l2j.gameserver.communitybbs.bb.Topic;
 import net.sf.l2j.gameserver.data.sql.ClanTable;
 import net.sf.l2j.gameserver.enums.TopicType;
 import net.sf.l2j.gameserver.model.actor.Player;

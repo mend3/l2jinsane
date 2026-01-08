@@ -64,12 +64,6 @@ public class BoatAI extends CreatureAI {
     protected void onIntentionPickUp(WorldObject item) {
     }
 
-    protected void onEvtAttacked(Creature attacker) {
-    }
-
-    protected void onEvtAggression(Creature target, int aggro) {
-    }
-
     protected void onEvtStunned(Creature attacker) {
     }
 
@@ -86,12 +80,6 @@ public class BoatAI extends CreatureAI {
     }
 
     protected void onEvtFakeDeath() {
-    }
-
-    protected void onEvtFinishCasting() {
-    }
-
-    protected void clientActionFailed() {
     }
 
     protected void moveToPawn(WorldObject pawn, int offset) {

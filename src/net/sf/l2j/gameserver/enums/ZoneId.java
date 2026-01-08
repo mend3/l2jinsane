@@ -37,11 +37,6 @@ public enum ZoneId {
         this._id = id;
     }
 
-    // $FF: synthetic method
-    private static ZoneId[] $values() {
-        return new ZoneId[]{PVP, PEACE, SIEGE, MOTHER_TREE, CLAN_HALL, NO_LANDING, WATER, JAIL, MONSTER_TRACK, CASTLE, SWAMP, NO_SUMMON_FRIEND, NO_STORE, TOWN, HQ, DANGER_AREA, CAST_ON_ARTIFACT, NO_RESTART, SCRIPT, BOSS, MULTI_FUNCTION, ARENA_EVENT, TORURNAMENT_ARENA, RANDOMZONE, PVPEVENT, AUTOFARMZONE, PARTYFARMZONE};
-    }
-
     public int getId() {
         return this._id;
     }

@@ -45,17 +45,12 @@ public class Q050_LanoscosSpecialBait extends Quest {
         String htmltext = getNoQuestMsg();
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 27) ? "31570-02.htm" : "31570-01.htm";
-                break;
-            case 1:
-                htmltext = (st.getQuestItemsCount(7621) == 100) ? "31570-04.htm" : "31570-05.htm";
-                break;
-            case 2:
-                htmltext = getAlreadyCompletedMsg();
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 27) ? "31570-02.htm" : "31570-01.htm";
+            case 1 -> (st.getQuestItemsCount(7621) == 100) ? "31570-04.htm" : "31570-05.htm";
+            case 2 -> getAlreadyCompletedMsg();
+            default -> htmltext;
+        };
         return htmltext;
     }
 

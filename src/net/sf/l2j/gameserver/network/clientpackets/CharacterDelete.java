@@ -28,7 +28,7 @@ public final class CharacterDelete extends L2GameClientPacket {
                 sendPacket(CharDeleteFail.REASON_CLAN_LEADERS_MAY_NOT_BE_DELETED);
                 break;
         }
-        CharSelectInfo csi = new CharSelectInfo(getClient().getAccountName(), (getClient().getSessionId()).playOkID1, 0);
+        CharSelectInfo csi = new CharSelectInfo(getClient().getAccountName(), (getClient().getSessionId()).playOkID1(), 0);
         sendPacket(csi);
         getClient().setCharSelectSlot(csi.getCharacterSlots());
     }

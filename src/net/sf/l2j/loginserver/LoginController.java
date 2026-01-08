@@ -39,8 +39,8 @@ public class LoginController {
     private static final int BLOWFISH_KEYS = 20;
     private final Map<InetAddress, Long> _bannedIps = new ConcurrentHashMap<>();
     private final Map<InetAddress, Integer> _failedAttempts = new ConcurrentHashMap<>();
-    protected Map<String, LoginClient> _clients = new ConcurrentHashMap<>();
-    protected ScrambledKeyPair[] _keyPairs = new ScrambledKeyPair[10];
+    protected final Map<String, LoginClient> _clients = new ConcurrentHashMap<>();
+    protected final ScrambledKeyPair[] _keyPairs = new ScrambledKeyPair[10];
     protected byte[][] _blowfishKeys;
 
     protected LoginController() {
@@ -558,11 +558,6 @@ public class LoginController {
         ALREADY_ON_LS,
         ALREADY_ON_GS,
         AUTH_SUCCESS;
-
-        // $FF: synthetic method
-        private static LoginController.AuthLoginResult[] $values() {
-            return new LoginController.AuthLoginResult[]{INVALID_PASSWORD, ACCOUNT_BANNED, ALREADY_ON_LS, ALREADY_ON_GS, AUTH_SUCCESS};
-        }
     }
 
     private static class SingletonHolder {

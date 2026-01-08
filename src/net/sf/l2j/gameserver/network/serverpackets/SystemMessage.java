@@ -113,8 +113,8 @@ public final class SystemMessage extends L2GameServerPacket {
         return this;
     }
 
-    public SystemMessage addSkillName(L2Effect effect) {
-        return addSkillName(effect.getSkill());
+    public void addSkillName(L2Effect effect) {
+        addSkillName(effect.getSkill());
     }
 
     public SystemMessage addSkillName(L2Skill skill) {

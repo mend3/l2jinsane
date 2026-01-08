@@ -111,8 +111,7 @@ public class Core extends L2AttackableAIScript {
             mob.setMinion(true);
             this._minions.add(mob);
         } else if (event.equalsIgnoreCase("despawn_minions")) {
-            for (int i = 0; i < this._minions.size(); ++i) {
-                Attackable mob = this._minions.get(i);
+            for (Attackable mob : this._minions) {
                 if (mob != null) {
                     mob.decayMe();
                 }

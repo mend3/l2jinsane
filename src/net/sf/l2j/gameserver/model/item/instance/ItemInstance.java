@@ -135,7 +135,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
             manaLeft = rs.getInt("mana_left");
             time = rs.getLong("time");
         } catch (Exception e) {
-            LOGGER.error("Couldn't restore an item owned by {}.", e, new Object[]{ownerId});
+            LOGGER.error("Couldn't restore an item owned by {}.", e, ownerId);
             return null;
         }
 
@@ -335,7 +335,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         return this._item instanceof Armor ? (Armor) this._item : null;
     }
 
-    public final int getCrystalCount() {
+    public int getCrystalCount() {
         return this._item.getCrystalCount(this._enchantLevel);
     }
 
@@ -458,13 +458,11 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         return this._augmentation;
     }
 
-    public boolean setAugmentation(L2Augmentation augmentation) {
+    public void setAugmentation(L2Augmentation augmentation) {
         if (this._augmentation != null) {
-            return false;
         } else {
             this._augmentation = augmentation;
             this.updateItemAttributes();
-            return true;
         }
     }
 
@@ -474,12 +472,12 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
 
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("DELETE FROM augmentations WHERE item_id = ?");
+                    PreparedStatement ps = con.prepareStatement("DELETE FROM augmentations WHERE item_id = ?")
             ) {
                 ps.setInt(1, this.getObjectId());
                 ps.executeUpdate();
             } catch (Exception e) {
-                LOGGER.error("Couldn't remove augmentation for {}.", e, new Object[]{this.toString()});
+                LOGGER.error("Couldn't remove augmentation for {}.", e, this.toString());
             }
 
         }
@@ -488,7 +486,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
     private void restoreAttributes() {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("SELECT attributes,skill_id,skill_level FROM augmentations WHERE item_id=?");
+                PreparedStatement ps = con.prepareStatement("SELECT attributes,skill_id,skill_level FROM augmentations WHERE item_id=?")
         ) {
             ps.setInt(1, this.getObjectId());
 
@@ -498,7 +496,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't restore augmentation for {}.", e, new Object[]{this.toString()});
+            LOGGER.error("Couldn't restore augmentation for {}.", e, this.toString());
         }
 
     }
@@ -506,7 +504,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
     private void updateItemAttributes() {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("REPLACE INTO augmentations VALUES(?,?,?,?)");
+                PreparedStatement ps = con.prepareStatement("REPLACE INTO augmentations VALUES(?,?,?,?)")
         ) {
             ps.setInt(1, this.getObjectId());
             if (this._augmentation == null) {
@@ -526,7 +524,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
 
             ps.executeUpdate();
         } catch (Exception e) {
-            LOGGER.error("Couldn't update attributes for {}.", e, new Object[]{this.toString()});
+            LOGGER.error("Couldn't update attributes for {}.", e, this.toString());
         }
 
     }
@@ -568,7 +566,6 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
 
             if (this._ownerId != 0 && this._loc != ItemInstance.ItemLocation.VOID && (this.getCount() != 0 || this._loc == ItemInstance.ItemLocation.LEASE)) {
                 this.insertIntoDb();
-                return;
             }
         } finally {
             this._dbLock.unlock();
@@ -576,11 +573,11 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
 
     }
 
-    public final void dropMe(Creature dropper, int x, int y, int z) {
+    public void dropMe(Creature dropper, int x, int y, int z) {
         ThreadPool.execute(new ItemDropTask(this, dropper, x, y, z));
     }
 
-    public final void pickupMe(Creature player) {
+    public void pickupMe(Creature player) {
         player.broadcastPacket(new GetItem(this, player.getObjectId()));
         Castle castle = CastleManager.getInstance().getCastle(player);
         if (castle != null && castle.getTicket(this._itemId) != null) {
@@ -606,7 +603,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         if (!this._storedInDb) {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("UPDATE items SET owner_id=?,count=?,loc=?,loc_data=?,enchant_level=?,custom_type1=?,custom_type2=?,mana_left=?,time=? WHERE object_id = ?");
+                    PreparedStatement ps = con.prepareStatement("UPDATE items SET owner_id=?,count=?,loc=?,loc_data=?,enchant_level=?,custom_type1=?,custom_type2=?,mana_left=?,time=? WHERE object_id = ?")
             ) {
                 ps.setInt(1, this._ownerId);
                 ps.setInt(2, this.getCount());
@@ -622,7 +619,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
                 this._existsInDb = true;
                 this._storedInDb = true;
             } catch (Exception e) {
-                LOGGER.error("Couldn't update {}. ", e, new Object[]{this.toString()});
+                LOGGER.error("Couldn't update {}. ", e, this.toString());
             }
 
         }
@@ -633,7 +630,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("INSERT INTO items (owner_id,item_id,count,loc,loc_data,enchant_level,object_id,custom_type1,custom_type2,mana_left,time) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+                PreparedStatement ps = con.prepareStatement("INSERT INTO items (owner_id,item_id,count,loc,loc_data,enchant_level,object_id,custom_type1,custom_type2,mana_left,time) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
         ) {
             ps.setInt(1, this._ownerId);
             ps.setInt(2, this._itemId);
@@ -653,7 +650,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
                 this.updateItemAttributes();
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't insert {}.", e, new Object[]{this.toString()});
+            LOGGER.error("Couldn't insert {}.", e, this.toString());
         }
 
     }
@@ -675,7 +672,7 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
             this._existsInDb = false;
             this._storedInDb = false;
         } catch (Exception e) {
-            LOGGER.error("Couldn't delete {}.", e, new Object[]{this.toString()});
+            LOGGER.error("Couldn't delete {}.", e, this.toString());
         }
 
     }
@@ -792,12 +789,12 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         if (this.getItemType() == EtcItemType.PET_COLLAR) {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("DELETE FROM pets WHERE item_obj_id=?");
+                    PreparedStatement ps = con.prepareStatement("DELETE FROM pets WHERE item_obj_id=?")
             ) {
                 ps.setInt(1, this.getObjectId());
                 ps.execute();
             } catch (Exception e) {
-                LOGGER.error("Couldn't delete {}.", e, new Object[]{this.toString()});
+                LOGGER.error("Couldn't delete {}.", e, this.toString());
             }
         }
 
@@ -842,14 +839,14 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         return time != 0 ? time : Integer.compare(item.getObjectId(), this.getObjectId());
     }
 
-    public static enum ItemState {
+    public enum ItemState {
         UNCHANGED,
         ADDED,
         MODIFIED,
-        REMOVED;
+        REMOVED
     }
 
-    public static enum ItemLocation {
+    public enum ItemLocation {
         VOID,
         INVENTORY,
         PAPERDOLL,
@@ -858,10 +855,10 @@ public final class ItemInstance extends WorldObject implements Runnable, Compara
         PET,
         PET_EQUIP,
         LEASE,
-        FREIGHT;
+        FREIGHT
     }
 
-    public class ItemDropTask implements Runnable {
+    public static class ItemDropTask implements Runnable {
         private final Creature _dropper;
         private final ItemInstance _itm;
         private int _x;

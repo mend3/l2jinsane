@@ -9,15 +9,14 @@ import net.sf.l2j.gameserver.network.serverpackets.ExMultiPartyCommandChannelInf
 public class ChannelListUpdate implements IUserCommandHandler {
     private static final int[] COMMAND_IDS = new int[]{97};
 
-    public boolean useUserCommand(int id, Player player) {
+    public void useUserCommand(int id, Player player) {
         Party party = player.getParty();
         if (party == null)
-            return false;
+            return;
         CommandChannel channel = party.getCommandChannel();
         if (channel == null)
-            return false;
+            return;
         player.sendPacket(new ExMultiPartyCommandChannelInfo(channel));
-        return true;
     }
 
     public int[] getUserCommandList() {

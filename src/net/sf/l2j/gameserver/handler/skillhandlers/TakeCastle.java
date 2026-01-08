@@ -13,7 +13,7 @@ public class TakeCastle implements ISkillHandler {
     private static final L2SkillType[] SKILL_IDS = new L2SkillType[]{L2SkillType.TAKECASTLE};
 
     public void useSkill(Creature activeChar, L2Skill skill, WorldObject[] targets) {
-        if (activeChar == null || !(activeChar instanceof Player player))
+        if (!(activeChar instanceof Player player))
             return;
         if (targets.length == 0)
             return;

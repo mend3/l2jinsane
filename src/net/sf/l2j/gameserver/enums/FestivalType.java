@@ -19,11 +19,6 @@ public enum FestivalType {
         this._maxLevel = maxLevel;
     }
 
-    // $FF: synthetic method
-    private static FestivalType[] $values() {
-        return new FestivalType[]{MAX_31, MAX_42, MAX_53, MAX_64, MAX_NONE};
-    }
-
     public int getMaxScore() {
         return this._maxScore;
     }

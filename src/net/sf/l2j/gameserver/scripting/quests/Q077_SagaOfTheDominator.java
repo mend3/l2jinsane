@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q077_SagaOfTheDominator extends SagasSuperClass {
     public Q077_SagaOfTheDominator() {
         super(77, "Saga of the Dominator");

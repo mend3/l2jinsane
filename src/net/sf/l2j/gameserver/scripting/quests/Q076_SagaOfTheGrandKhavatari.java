@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q076_SagaOfTheGrandKhavatari extends SagasSuperClass {
     public Q076_SagaOfTheGrandKhavatari() {
         super(76, "Saga of the Grand Khavatari");

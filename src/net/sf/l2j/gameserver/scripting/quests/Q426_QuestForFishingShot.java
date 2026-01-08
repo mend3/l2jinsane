@@ -329,14 +329,11 @@ public class Q426_QuestForFishingShot extends Quest {
         String htmltext = getNoQuestMsg();
         if (st == null)
             st = newQuestState(player);
-        switch (st.getState()) {
-            case 0:
-                htmltext = "01.htm";
-                break;
-            case 1:
-                htmltext = st.hasQuestItems(7586) ? "05.htm" : "04.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> "01.htm";
+            case 1 -> st.hasQuestItems(7586) ? "05.htm" : "04.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

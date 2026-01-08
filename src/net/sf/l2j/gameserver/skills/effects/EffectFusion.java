@@ -8,7 +8,7 @@ import net.sf.l2j.gameserver.skills.Env;
 public class EffectFusion extends L2Effect {
     public int _effect;
 
-    public int _maxEffect;
+    public final int _maxEffect;
 
     public EffectFusion(Env env, EffectTemplate template) {
         super(env, template);

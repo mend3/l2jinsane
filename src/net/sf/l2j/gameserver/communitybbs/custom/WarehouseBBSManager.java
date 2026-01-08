@@ -1,7 +1,7 @@
-package net.sf.l2j.gameserver.communitybbs.Custom;
+package net.sf.l2j.gameserver.communitybbs.custom;
 
 import net.sf.l2j.Config;
-import net.sf.l2j.gameserver.communitybbs.Manager.BaseBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.BaseBBSManager;
 import net.sf.l2j.gameserver.data.cache.HtmCache;
 import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.itemcontainer.PcFreight;
@@ -46,44 +46,46 @@ public class WarehouseBBSManager extends BaseBBSManager {
             ShowMainPage(player);
             return;
         }
-        if (command.equals("_bbsWHDepositP")) {
-            player.sendPacket(ActionFailed.STATIC_PACKET);
-            player.setCommunityWarehouse(true);
-            player.setActiveWarehouse(player.getWarehouse());
-            player.tempInventoryDisable();
-            player.sendPacket(new WarehouseDepositList(player, 1));
-            ShowMainPage(player);
-            return;
-        }
-        if (command.equals("_bbsWHWithdrawC")) {
-            player.sendPacket(ActionFailed.STATIC_PACKET);
-            player.setCommunityWarehouse(true);
-            if ((player.getClanPrivileges() & 0x8) != 8) {
-                player.sendPacket(SystemMessageId.YOU_DO_NOT_HAVE_THE_RIGHT_TO_USE_CLAN_WAREHOUSE);
+        switch (command) {
+            case "_bbsWHDepositP" -> {
+                player.sendPacket(ActionFailed.STATIC_PACKET);
+                player.setCommunityWarehouse(true);
+                player.setActiveWarehouse(player.getWarehouse());
+                player.tempInventoryDisable();
+                player.sendPacket(new WarehouseDepositList(player, 1));
+                ShowMainPage(player);
                 return;
             }
-            if (player.getClan().getLevel() == 0) {
-                player.sendPacket(SystemMessageId.ONLY_LEVEL_1_CLAN_OR_HIGHER_CAN_USE_WAREHOUSE);
-            } else {
-                player.setActiveWarehouse(player.getClan().getWarehouse());
-                player.sendPacket(new WarehouseWithdrawList(player, 2));
-            }
-            ShowMainPage(player);
-            return;
-        }
-        if (command.equals("_bbsWHDepositC")) {
-            player.sendPacket(ActionFailed.STATIC_PACKET);
-            player.setCommunityWarehouse(true);
-            if (player.getClan() != null)
+            case "_bbsWHWithdrawC" -> {
+                player.sendPacket(ActionFailed.STATIC_PACKET);
+                player.setCommunityWarehouse(true);
+                if ((player.getClanPrivileges() & 0x8) != 8) {
+                    player.sendPacket(SystemMessageId.YOU_DO_NOT_HAVE_THE_RIGHT_TO_USE_CLAN_WAREHOUSE);
+                    return;
+                }
                 if (player.getClan().getLevel() == 0) {
                     player.sendPacket(SystemMessageId.ONLY_LEVEL_1_CLAN_OR_HIGHER_CAN_USE_WAREHOUSE);
                 } else {
                     player.setActiveWarehouse(player.getClan().getWarehouse());
-                    player.tempInventoryDisable();
-                    player.sendPacket(new WarehouseDepositList(player, 2));
+                    player.sendPacket(new WarehouseWithdrawList(player, 2));
                 }
-            ShowMainPage(player);
-            return;
+                ShowMainPage(player);
+                return;
+            }
+            case "_bbsWHDepositC" -> {
+                player.sendPacket(ActionFailed.STATIC_PACKET);
+                player.setCommunityWarehouse(true);
+                if (player.getClan() != null)
+                    if (player.getClan().getLevel() == 0) {
+                        player.sendPacket(SystemMessageId.ONLY_LEVEL_1_CLAN_OR_HIGHER_CAN_USE_WAREHOUSE);
+                    } else {
+                        player.setActiveWarehouse(player.getClan().getWarehouse());
+                        player.tempInventoryDisable();
+                        player.sendPacket(new WarehouseDepositList(player, 2));
+                    }
+                ShowMainPage(player);
+                return;
+            }
         }
         if (command.startsWith("_bbsWHWithdrawF")) {
             player.setCommunityWarehouse(true);
@@ -109,7 +111,7 @@ public class WarehouseBBSManager extends BaseBBSManager {
                     player.sendPacket(SystemMessageId.CHARACTER_DOES_NOT_EXIST);
                 } else {
                     Map<Integer, String> chars = player.getAccountChars();
-                    if (chars.size() < 1) {
+                    if (chars.isEmpty()) {
                         player.sendPacket(ActionFailed.STATIC_PACKET);
                         return;
                     }

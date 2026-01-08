@@ -8,7 +8,6 @@ import net.sf.l2j.gameserver.scripting.Quest;
 import net.sf.l2j.gameserver.scripting.QuestState;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Q648_AnIceMerchantsDream extends Quest {
@@ -58,8 +57,7 @@ public class Q648_AnIceMerchantsDream extends Quest {
         setItemsIds(8057, 8077, 8078);
         addStartNpc(32020, 32023);
         addTalkId(32020, 32023);
-        for (Iterator<Integer> iterator = CHANCES.keySet().iterator(); iterator.hasNext(); ) {
-            int npcId = iterator.next();
+        for (int npcId : CHANCES.keySet()) {
             addKillId(npcId);
         }
     }

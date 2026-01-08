@@ -110,7 +110,7 @@ public class StatsPlayer extends AbstractMods {
 
     private static String buttonClassId(ClassId classId) {
         HtmlBuilder hb = new HtmlBuilder(HtmlType.HTML_TYPE);
-        hb.append(new Object[]{"<td><button value=", classId.toString().replace("_", " ").toLowerCase(), " action=\"bypass _bbshome,class,", classId.name(), "\" width=93 height=22 back=", "L2UI_CH3.bigbutton_down", " fore=", "L2UI_CH3.bigbutton", "></td>"});
+        hb.append("<td><button value=", classId.toString().replace("_", " ").toLowerCase(), " action=\"bypass _bbshome,class,", classId.name(), "\" width=93 height=22 back=", "L2UI_CH3.bigbutton_down", " fore=", "L2UI_CH3.bigbutton", "></td>");
         return hb.toString();
     }
 
@@ -119,7 +119,7 @@ public class StatsPlayer extends AbstractMods {
         hb.append("<html><body>");
         hb.append("<br>");
         hb.append("<center>");
-        hb.append(new Object[]{"<button value=INDEX action=\"bypass _bbshome,balance\" width=93 height=22 back=", "L2UI_CH3.bigbutton_down", " fore=", "L2UI_CH3.bigbutton", ">"});
+        hb.append("<button value=INDEX action=\"bypass _bbshome,balance\" width=93 height=22 back=", "L2UI_CH3.bigbutton_down", " fore=", "L2UI_CH3.bigbutton", ">");
         hb.append("<br>");
         hb.append(Html.htmlHeadCommunity(classId.name()));
         hb.append("<br>");
@@ -127,7 +127,7 @@ public class StatsPlayer extends AbstractMods {
         hb.append("<tr>");
 
         for (BonusType bt : StatsPlayer.BonusType.values()) {
-            hb.append(new Object[]{"<td><button value=", bt.name(), " action=\"bypass _bbshome,class,", classId.name(), ",", bt.name(), "\" width=93 height=22 back=", "L2UI_CH3.bigbutton_down", " fore=", "L2UI_CH3.bigbutton", "></td>"});
+            hb.append("<td><button value=", bt.name(), " action=\"bypass _bbshome,class,", classId.name(), ",", bt.name(), "\" width=93 height=22 back=", "L2UI_CH3.bigbutton_down", " fore=", "L2UI_CH3.bigbutton", "></td>");
         }
 
         hb.append("</tr>");
@@ -143,13 +143,13 @@ public class StatsPlayer extends AbstractMods {
                 ++count;
             } else if (count < searchPage + MAX_PER_PAGE) {
                 double value = _classStats.get(classId).getBonus(bonusType, stat);
-                hb.append(new Object[]{"<table width=460 height=22 ", color % 2 == 0 ? "bgcolor=000000 " : "", "cellspacing=0 cellpadding=0>"});
+                hb.append("<table width=460 height=22 ", color % 2 == 0 ? "bgcolor=000000 " : "", "cellspacing=0 cellpadding=0>");
                 hb.append("<tr>");
-                hb.append(new Object[]{"<td fixwidth=16 height=22 align=center>", Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16), "</td>"});
-                hb.append(new Object[]{"<td width=100 height=22 align=center>", Html.newFontColor("LEVEL", stat.toString().replace("_", " ").toLowerCase()), " </td>"});
-                hb.append(new Object[]{"<td width=62 align=center>", value, "%</td>"});
-                hb.append(new Object[]{"<td width=32><button action=\"bypass _bbshome,modified,", classId.name(), ",", bonusType.name(), ",", stat, ",add\" width=16 height=16 back=sek.cbui343 fore=sek.cbui343></td>"});
-                hb.append(new Object[]{"<td width=32><button action=\"bypass _bbshome,modified,", classId.name(), ",", bonusType.name(), ",", stat, ",sub\" width=16 height=16 back=sek.cbui347 fore=sek.cbui347></td>"});
+                hb.append("<td fixwidth=16 height=22 align=center>", Html.newImage("L2UI_CH3.ps_sizecontrol2_over", 16, 16), "</td>");
+                hb.append("<td width=100 height=22 align=center>", Html.newFontColor("LEVEL", stat.toString().replace("_", " ").toLowerCase()), " </td>");
+                hb.append("<td width=62 align=center>", value, "%</td>");
+                hb.append("<td width=32><button action=\"bypass _bbshome,modified,", classId.name(), ",", bonusType.name(), ",", stat, ",add\" width=16 height=16 back=sek.cbui343 fore=sek.cbui343></td>");
+                hb.append("<td width=32><button action=\"bypass _bbshome,modified,", classId.name(), ",", bonusType.name(), ",", stat, ",sub\" width=16 height=16 back=sek.cbui347 fore=sek.cbui347></td>");
                 hb.append("</tr>");
                 hb.append("</table>");
                 hb.append(Html.newImage("L2UI.SquareGray", 460, 1));
@@ -167,9 +167,9 @@ public class StatsPlayer extends AbstractMods {
         for (int i = 0; i < size; ++i) {
             if (i % MAX_PER_PAGE == 0) {
                 if (currentPage == page) {
-                    hb.append(new Object[]{"<td width=20>", Html.newFontColor("LEVEL", currentPage), "</td>"});
+                    hb.append("<td width=20>", Html.newFontColor("LEVEL", currentPage), "</td>");
                 } else {
-                    hb.append(new Object[]{"<td width=20><a action=\"bypass _bbshome,class,", classId.name(), ",", bonusType.name(), ",", currentPage, "\">", currentPage, "</a></td>"});
+                    hb.append("<td width=20><a action=\"bypass _bbshome,class,", classId.name(), ",", bonusType.name(), ",", currentPage, "\">", currentPage, "</a></td>");
                 }
 
                 ++currentPage;
@@ -249,13 +249,13 @@ public class StatsPlayer extends AbstractMods {
                     case "sub" -> _classStats.get(classId).decreaseBonus(bonusType, stat);
                 }
 
-                String parse = "";
+                StringBuilder parse = new StringBuilder();
 
                 for (Map.Entry<Stats, Integer> map : _classStats.get(classId).getAllBonus(bonusType).entrySet()) {
-                    parse = parse + map.getKey().name() + "," + String.valueOf(map.getValue()) + ";";
+                    parse.append(map.getKey().name()).append(",").append(map.getValue()).append(";");
                 }
 
-                this.setValueDB(classId.ordinal(), bonusType.name(), parse);
+                this.setValueDB(classId.ordinal(), bonusType.name(), parse.toString());
                 htmlIndex(player, classId, bonusType, page);
                 return true;
             }
@@ -288,19 +288,19 @@ public class StatsPlayer extends AbstractMods {
         }
     }
 
-    private static enum BonusType {
+    private enum BonusType {
         NORMAL,
         HERO,
         NOBLE,
-        OLY;
+        OLY
     }
 
     private static class SingletonHolder {
         protected static final StatsPlayer INSTANCE = new StatsPlayer();
     }
 
-    private class StatsHolder {
-        private Map<BonusType, LinkedHashMap<Stats, Integer>> _stats = new LinkedHashMap<>();
+    private static class StatsHolder {
+        private final Map<BonusType, LinkedHashMap<Stats, Integer>> _stats = new LinkedHashMap<>();
 
         public StatsHolder() {
             this.initBonus();
@@ -332,13 +332,11 @@ public class StatsPlayer extends AbstractMods {
         }
 
         public void increaseBonus(BonusType type, Stats stat) {
-            int oldBonus = (this._stats.get(type)).get(stat);
-            (this._stats.get(type)).put(stat, oldBonus + 1);
+            (this._stats.get(type)).compute(stat, (k, oldBonus) -> oldBonus + 1);
         }
 
         public void decreaseBonus(BonusType type, Stats stat) {
-            int oldBonus = (this._stats.get(type)).get(stat);
-            (this._stats.get(type)).put(stat, oldBonus - 1);
+            (this._stats.get(type)).compute(stat, (k, oldBonus) -> oldBonus - 1);
         }
     }
 }

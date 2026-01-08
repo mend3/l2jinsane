@@ -17,7 +17,6 @@ import net.sf.l2j.gameserver.model.actor.instance.Door;
 import net.sf.l2j.gameserver.model.item.instance.ItemInstance;
 import net.sf.l2j.gameserver.model.location.Location;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
@@ -27,6 +26,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static net.sf.l2j.gameserver.geoengine.geodata.GeoStructure.GEO_CELLS_X;
+import static net.sf.l2j.gameserver.geoengine.geodata.GeoStructure.GEO_CELLS_Y;
+import static net.sf.l2j.gameserver.model.World.*;
 
 public class GeoEngine {
     protected static final CLogger LOGGER = new CLogger(GeoEngine.class.getName());
@@ -63,17 +66,17 @@ public class GeoEngine {
             }
         }
 
-        LOGGER.info("Loaded {} L2D region files.", new Object[]{loaded});
+        LOGGER.info("Loaded {} L2D region files.", loaded);
         BlockMultilayer.release();
         if (failed > 0) {
-            LOGGER.warn("Failed to load {} L2D region files. Please consider to check your \"geodata.properties\" settings and location of your geodata files.", new Object[]{failed});
+            LOGGER.warn("Failed to load {} L2D region files. Please consider to check your \"geodata.properties\" settings and location of your geodata files.", failed);
             System.exit(1);
         }
 
         PrintWriter writer = null;
 
         try {
-            writer = new PrintWriter(new FileOutputStream(new File(Config.GEODATA_PATH + "geo_bugs.txt"), true), true);
+            writer = new PrintWriter(new FileOutputStream(Config.GEODATA_PATH + "geo_bugs.txt", true), true);
         } catch (Exception e) {
             LOGGER.error("Couldn't load \"geo_bugs.txt\" file.", e);
         }
@@ -92,11 +95,11 @@ public class GeoEngine {
                 count += size;
                 this._buffers[i] = new BufferHolder(Integer.parseInt(args[0]), size);
             } catch (Exception e) {
-                LOGGER.error("Couldn't load buffer setting: {}.", e, new Object[]{buf});
+                LOGGER.error("Couldn't load buffer setting: {}.", e, buf);
             }
         }
 
-        LOGGER.info("Loaded {} node buffers.", new Object[]{count});
+        LOGGER.info("Loaded {} node buffers.", count);
     }
 
     private static List<Location> constructPath(Node target) {
@@ -120,19 +123,19 @@ public class GeoEngine {
     }
 
     public static int getGeoX(int worldX) {
-        return MathUtil.limit(worldX, -131072, 229376) - -131072 >> 4;
+        return MathUtil.limit(worldX, WORLD_X_MIN, WORLD_X_MAX) - WORLD_X_MIN >> 4;
     }
 
     public static int getGeoY(int worldY) {
-        return MathUtil.limit(worldY, -262144, 262144) - -262144 >> 4;
+        return MathUtil.limit(worldY, WORLD_Y_MIN, WORLD_Y_MAX) - WORLD_Y_MIN >> 4;
     }
 
     public static int getWorldX(int geoX) {
-        return (MathUtil.limit(geoX, 0, 22528) << 4) + -131072 + 8;
+        return (MathUtil.limit(geoX, 0, GEO_CELLS_X) << 4) + WORLD_X_MIN + 8;
     }
 
     public static int getWorldY(int geoY) {
-        return (MathUtil.limit(geoY, 0, 32768) << 4) + -262144 + 8;
+        return (MathUtil.limit(geoY, 0, GEO_CELLS_Y) << 4) + WORLD_Y_MIN + 8;
     }
 
     public static byte[][] calculateGeoObject(boolean[][] inside) {
@@ -198,7 +201,7 @@ public class GeoEngine {
         return GeoEngine.SingletonHolder.INSTANCE;
     }
 
-    private final NodeBuffer getBuffer(int size, boolean playable) {
+    private NodeBuffer getBuffer(int size, boolean playable) {
         NodeBuffer current = null;
 
         for (BufferHolder holder : this._buffers) {
@@ -227,7 +230,7 @@ public class GeoEngine {
         return current;
     }
 
-    private final boolean loadGeoBlocks(int regionX, int regionY) {
+    private boolean loadGeoBlocks(int regionX, int regionY) {
         String filename = String.format(GeoType.L2D.getFilename(), regionX, regionY);
         String filepath = Config.GEODATA_PATH + filename;
 
@@ -235,7 +238,7 @@ public class GeoEngine {
             boolean var18;
             try (
                     RandomAccessFile raf = new RandomAccessFile(filepath, "r");
-                    FileChannel fc = raf.getChannel();
+                    FileChannel fc = raf.getChannel()
             ) {
                 MappedByteBuffer buffer = fc.map(MapMode.READ_ONLY, 0L, fc.size()).load();
                 buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -256,7 +259,7 @@ public class GeoEngine {
                 }
 
                 if (buffer.remaining() > 0) {
-                    LOGGER.warn("Region file {} can be corrupted, remaining {} bytes to read.", new Object[]{filename, buffer.remaining()});
+                    LOGGER.warn("Region file {} can be corrupted, remaining {} bytes to read.", filename, buffer.remaining());
                 }
 
                 var18 = true;
@@ -264,13 +267,13 @@ public class GeoEngine {
 
             return var18;
         } catch (Exception e) {
-            LOGGER.error("Error loading {} region file.", e, new Object[]{filename});
+            LOGGER.error("Error loading {} region file.", e, filename);
             this.loadNullBlocks(regionX, regionY);
             return false;
         }
     }
 
-    private final void loadNullBlocks(int regionX, int regionY) {
+    private void loadNullBlocks(int regionX, int regionY) {
         int blockX = (regionX - 16) * 256;
         int blockY = (regionY - 10) * 256;
 
@@ -282,11 +285,11 @@ public class GeoEngine {
 
     }
 
-    private final short getHeightNearestOriginal(int geoX, int geoY, int worldZ) {
+    private short getHeightNearestOriginal(int geoX, int geoY, int worldZ) {
         return this.getBlock(geoX, geoY).getHeightNearestOriginal(geoX, geoY, worldZ);
     }
 
-    private final byte getNsweNearestOriginal(int geoX, int geoY, int worldZ) {
+    private byte getNsweNearestOriginal(int geoX, int geoY, int worldZ) {
         return this.getBlock(geoX, geoY).getNsweNearestOriginal(geoX, geoY, worldZ);
     }
 
@@ -322,7 +325,7 @@ public class GeoEngine {
         this.toggleGeoObject(object, false);
     }
 
-    private final void toggleGeoObject(IGeoObject object, boolean add) {
+    private void toggleGeoObject(IGeoObject object, boolean add) {
         int minGX = object.getGeoX();
         int minGY = object.getGeoY();
         byte[][] geoData = object.getObjectGeoData();
@@ -864,7 +867,7 @@ public class GeoEngine {
     private static final class BufferHolder {
         final int _size;
         final int _count;
-        ArrayList<NodeBuffer> _buffer;
+        final ArrayList<NodeBuffer> _buffer;
         int _playableUses = 0;
         int _uses = 0;
         int _playableOverflows = 0;
@@ -884,12 +887,12 @@ public class GeoEngine {
 
         public String toString() {
             StringBuilder sb = new StringBuilder(100);
-            StringUtil.append(sb, new Object[]{"Buffer ", String.valueOf(this._size), "x", String.valueOf(this._size), ": count=", String.valueOf(this._count), " uses=", String.valueOf(this._playableUses), "/", String.valueOf(this._uses)});
+            StringUtil.append(sb, "Buffer ", String.valueOf(this._size), "x", String.valueOf(this._size), ": count=", String.valueOf(this._count), " uses=", String.valueOf(this._playableUses), "/", String.valueOf(this._uses));
             if (this._uses > 0) {
-                StringUtil.append(sb, new Object[]{" total/avg(ms)=", String.valueOf(this._elapsed), "/", String.format("%1.2f", (double) this._elapsed / (double) this._uses)});
+                StringUtil.append(sb, " total/avg(ms)=", String.valueOf(this._elapsed), "/", String.format("%1.2f", (double) this._elapsed / (double) this._uses));
             }
 
-            StringUtil.append(sb, new Object[]{" ovf=", String.valueOf(this._playableOverflows), "/", String.valueOf(this._overflows)});
+            StringUtil.append(sb, " ovf=", String.valueOf(this._playableOverflows), "/", String.valueOf(this._overflows));
             return sb.toString();
         }
     }

@@ -9,7 +9,7 @@ import net.sf.l2j.gameserver.model.actor.Player;
 import java.util.StringTokenizer;
 
 public class DailyRewardCBBypasses implements IBypassHandler {
-    public boolean handleBypass(String bypass, Player activeChar) {
+    public void handleBypass(String bypass, Player activeChar) {
         StringTokenizer st = new StringTokenizer(bypass, " ");
         st.nextToken();
         if (bypass.startsWith("bp_getDailyReward")) {
@@ -20,7 +20,6 @@ public class DailyRewardCBBypasses implements IBypassHandler {
         }
         if (bypass.startsWith("bp_showDailyRewardsBoard"))
             DailyRewardManager.getInstance().showBoard(activeChar, "index");
-        return false;
     }
 
     public String[] getBypassHandlersList() {

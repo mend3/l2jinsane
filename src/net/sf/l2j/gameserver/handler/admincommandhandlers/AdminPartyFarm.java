@@ -22,7 +22,7 @@ public class AdminPartyFarm implements IAdminCommandHandler {
         ThreadPool.schedule(PartyFarm::Finish_Event, 1L);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_ptfarm"))
             if (PartyFarm._started) {
                 _log.info("----------------------------------------------------------------------------");
@@ -39,7 +39,6 @@ public class AdminPartyFarm implements IAdminCommandHandler {
                 _bestfarm_manual = true;
                 activeChar.sendMessage("SYS: You have activated Party Farm Manually.");
             }
-        return true;
     }
 
     public String[] getAdminCommandList() {

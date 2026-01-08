@@ -14,8 +14,8 @@ import net.sf.l2j.gameserver.model.location.Location;
 import net.sf.l2j.gameserver.model.pledge.Clan;
 
 public final class RequestRestartPoint extends L2GameClientPacket {
-    protected static final Location JAIL_LOCATION = new Location(-114356, -249645, -2984);
-    protected int _requestType;
+    private static final Location JAIL_LOCATION = new Location(-114356, -249645, -2984);
+    private int _requestType;
 
     protected void readImpl() {
         this._requestType = this.readD();
@@ -49,7 +49,7 @@ public final class RequestRestartPoint extends L2GameClientPacket {
             this._requestType = 4;
         }
 
-        Object var6;
+        Location var6;
         if (this._requestType == 1) {
             if (clan == null || !clan.hasClanHall()) {
                 return;
@@ -106,6 +106,6 @@ public final class RequestRestartPoint extends L2GameClientPacket {
             player.doRevive();
         }
 
-        player.teleportTo((Location) var6, 20);
+        player.teleportTo(var6, 20);
     }
 }

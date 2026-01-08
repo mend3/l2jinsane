@@ -25,11 +25,6 @@ public final class AccountKicked extends L2LoginServerPacket {
             this._code = param3;
         }
 
-        // $FF: synthetic method
-        private static AccountKicked.AccountKickedReason[] $values() {
-            return new AccountKicked.AccountKickedReason[]{REASON_DATA_STEALER, REASON_GENERIC_VIOLATION, REASON_7_DAYS_SUSPENDED, REASON_PERMANENTLY_BANNED};
-        }
-
         public final int getCode() {
             return this._code;
         }

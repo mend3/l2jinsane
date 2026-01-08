@@ -21,7 +21,7 @@ public class DrainSoul implements ISkillHandler {
         if (st == null || !st.isStarted())
             return;
         WorldObject target = targets[0];
-        if (target == null || !(target instanceof Monster mob))
+        if (!(target instanceof Monster mob))
             return;
         if (mob.isDead())
             return;

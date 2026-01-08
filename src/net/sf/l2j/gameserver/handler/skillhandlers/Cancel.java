@@ -20,7 +20,7 @@ public class Cancel implements ISkillHandler {
     private static final L2SkillType[] SKILL_IDS = new L2SkillType[]{L2SkillType.CANCEL, L2SkillType.MAGE_BANE, L2SkillType.WARRIOR_BANE};
 
     private static boolean calcCancelSuccess(int effectPeriod, int diffLevel, double baseRate, double vuln, int minRate, int maxRate) {
-        double rate = ((2 * diffLevel) + baseRate + (effectPeriod / 120)) * vuln;
+        double rate = ((2 * diffLevel) + baseRate + ((double) effectPeriod / 120)) * vuln;
         if (Config.DEVELOPER)
             LOGGER.info("calcCancelSuccess(): diffLevel:{}, baseRate:{}, vuln:{}, total:{}.", diffLevel, baseRate, vuln, rate);
         if (rate < minRate) {
@@ -60,14 +60,13 @@ public class Cancel implements ISkillHandler {
                                         cancelledBuffs.add(effect.getSkill());
                                     effect.exit();
                                 }
-                                if (cancelledBuffs.size() > 0 && Config.CANCEL_RETURN)
+                                if (!cancelledBuffs.isEmpty() && Config.CANCEL_RETURN)
                                     ThreadPool.schedule(new CancelTaskManager((Player) target, cancelledBuffs), (Config.CANCEL_SECONDS * 1000L));
                                 count--;
                                 if (count == 0)
                                     break;
                                 break;
                         }
-                        continue;
                     }
                     Formulas.calcLethalHit(activeChar, target, skill);
                 }

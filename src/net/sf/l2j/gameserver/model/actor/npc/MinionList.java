@@ -117,7 +117,7 @@ public class MinionList {
 
     }
 
-    protected final Monster initializeNpcInstance(Monster master, Monster minion) {
+    protected final void initializeNpcInstance(Monster master, Monster minion) {
         this._minions.put(minion, true);
         minion.setIsNoRndWalk(true);
         minion.stopAllEffects();
@@ -142,6 +142,5 @@ public class MinionList {
         }
 
         minion.spawnMe(newX, newY, master.getZ(), master.getHeading());
-        return minion;
     }
 }

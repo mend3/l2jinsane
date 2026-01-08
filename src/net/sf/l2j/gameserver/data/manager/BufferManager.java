@@ -93,7 +93,7 @@ public class BufferManager implements IXmlReader {
                 for (Map.Entry<Integer, HashMap<String, ArrayList<Integer>>> player : this._schemesTable.entrySet()) {
                     for (Map.Entry<String, ArrayList<Integer>> scheme : (player.getValue()).entrySet()) {
                         for (int skillId : scheme.getValue()) {
-                            StringUtil.append(sb, new Object[]{skillId, ","});
+                            StringUtil.append(sb, skillId, ",");
                         }
 
                         if (!sb.isEmpty()) {

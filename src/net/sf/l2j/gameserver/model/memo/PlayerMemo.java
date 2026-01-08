@@ -83,7 +83,7 @@ public class PlayerMemo extends AbstractMemo {
 
             return true;
         } catch (Exception e) {
-            LOGGER.error("Couldn't restore variables for player id {}.", e, new Object[]{this._objectId});
+            LOGGER.error("Couldn't restore variables for player id {}.", e, this._objectId);
         } finally {
             this.compareAndSetChanges(true, false);
         }
@@ -165,7 +165,7 @@ public class PlayerMemo extends AbstractMemo {
 
                 return true;
             } catch (Exception e) {
-                LOGGER.error("Couldn't update variables for player id {}.", e, new Object[]{this._objectId});
+                LOGGER.error("Couldn't update variables for player id {}.", e, this._objectId);
             } finally {
                 this.compareAndSetChanges(true, false);
             }

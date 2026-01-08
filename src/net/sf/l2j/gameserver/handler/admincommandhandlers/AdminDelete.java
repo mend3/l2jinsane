@@ -14,7 +14,7 @@ public class AdminDelete implements IAdminCommandHandler {
 
     private static void handleDelete(Player activeChar) {
         WorldObject obj = activeChar.getTarget();
-        if (obj != null && obj instanceof Npc target) {
+        if (obj instanceof Npc target) {
             L2Spawn spawn = target.getSpawn();
             if (spawn != null) {
                 spawn.setRespawnState(false);
@@ -31,10 +31,9 @@ public class AdminDelete implements IAdminCommandHandler {
         }
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.equals("admin_delete"))
             handleDelete(activeChar);
-        return true;
     }
 
     public String[] getAdminCommandList() {

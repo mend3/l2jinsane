@@ -26,15 +26,13 @@ public class SummonItemData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "item", (itemNode) -> {
-                NamedNodeMap attrs = itemNode.getAttributes();
-                int itemId = this.parseInteger(attrs, "id");
-                int npcId = this.parseInteger(attrs, "npcId");
-                int summonType = this.parseInteger(attrs, "summonType");
-                this._items.put(itemId, new IntIntHolder(npcId, summonType));
-            });
-        });
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "item", (itemNode) -> {
+            NamedNodeMap attrs = itemNode.getAttributes();
+            int itemId = this.parseInteger(attrs, "id");
+            int npcId = this.parseInteger(attrs, "npcId");
+            int summonType = this.parseInteger(attrs, "summonType");
+            this._items.put(itemId, new IntIntHolder(npcId, summonType));
+        }));
     }
 
     public IntIntHolder getSummonItem(int itemId) {

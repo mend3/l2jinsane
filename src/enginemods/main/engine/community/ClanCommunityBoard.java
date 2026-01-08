@@ -22,7 +22,7 @@ import net.sf.l2j.gameserver.network.serverpackets.SystemMessage;
 import net.sf.l2j.gameserver.network.serverpackets.UserInfo;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -177,11 +177,9 @@ public class ClanCommunityBoard extends AbstractMods {
         int searchPage = MAX_PER_PAGE * (page - 1);
         int count = 0;
         int color = 0;
-        List<Clan> clansList = new ArrayList<>();
-        for (Clan clan : ClanTable.getInstance().getClans())
-            clansList.add(clan);
-        Collections.sort(clansList, (p1, p2) -> (Integer.valueOf(p1.getReputationScore())).compareTo(p2.getReputationScore()));
-        for (Clan clan : ClanTable.getInstance().getClans()) {
+        List<Clan> clansList = new ArrayList<>(ClanTable.getInstance().getClans());
+        clansList.sort(Comparator.comparingInt(Clan::getReputationScore));
+        for (Clan clan : clansList) {
             if (clan == null)
                 continue;
             if (count < searchPage) {
@@ -196,7 +194,7 @@ public class ClanCommunityBoard extends AbstractMods {
             count++;
         }
         int currentPage = 1;
-        int size = ClanTable.getInstance().getClans().size();
+        int size = clansList.size();
         hb.append("<br>");
         hb.append("<table>");
         hb.append("<tr>");
@@ -435,8 +433,7 @@ public class ClanCommunityBoard extends AbstractMods {
         return hb.toString();
     }
 
-    public static ClanCommunityBoard getInstance() {
-        return SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {

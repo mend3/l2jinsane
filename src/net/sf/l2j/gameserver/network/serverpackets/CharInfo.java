@@ -10,8 +10,6 @@ import net.sf.l2j.gameserver.model.actor.Player;
 import net.sf.l2j.gameserver.model.actor.Summon;
 import net.sf.l2j.gameserver.model.itemcontainer.Inventory;
 
-import java.util.Iterator;
-
 public class CharInfo extends L2GameServerPacket {
     private final Player _player;
 
@@ -157,8 +155,7 @@ public class CharInfo extends L2GameServerPacket {
         writeC(this._player.getMountType());
         writeC(this._player.getStoreType().getId());
         writeH(this._player.getCubics().size());
-        for (Iterator<Integer> iterator = this._player.getCubics().keySet().iterator(); iterator.hasNext(); ) {
-            int id = iterator.next();
+        for (int id : this._player.getCubics().keySet()) {
             writeH(id);
         }
         writeC(this._player.isInPartyMatchRoom() ? 1 : 0);

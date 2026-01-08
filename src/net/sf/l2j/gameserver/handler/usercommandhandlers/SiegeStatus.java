@@ -17,14 +17,14 @@ public class SiegeStatus implements IUserCommandHandler {
 
     private static final String OUTSIDE_ZONE = "Outside Castle Siege Zone";
 
-    public boolean useUserCommand(int id, Player activeChar) {
+    public void useUserCommand(int id, Player activeChar) {
         if (!activeChar.isClanLeader()) {
             activeChar.sendPacket(SystemMessageId.ONLY_CLAN_LEADER_CAN_ISSUE_COMMANDS);
-            return false;
+            return;
         }
         if (!activeChar.isNoble()) {
             activeChar.sendPacket(SystemMessageId.ONLY_NOBLESSE_LEADER_CAN_VIEW_SIEGE_STATUS_WINDOW);
-            return false;
+            return;
         }
         Clan clan = activeChar.getClan();
         StringBuilder sb = new StringBuilder();
@@ -40,10 +40,9 @@ public class SiegeStatus implements IUserCommandHandler {
             html.replace("%deaths%", clan.getSiegeDeaths());
             html.replace("%content%", sb.toString());
             activeChar.sendPacket(html);
-            return true;
+            return;
         }
         activeChar.sendPacket(SystemMessageId.ONLY_DURING_SIEGE);
-        return false;
     }
 
     public int[] getUserCommandList() {

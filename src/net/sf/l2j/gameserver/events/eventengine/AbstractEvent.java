@@ -31,8 +31,8 @@ public abstract class AbstractEvent implements Runnable {
     private final List<Location> teleportLocations;
     private final List<Npc> spawnedNpcs;
     private final int runningMinutes;
-    protected List<Player> players;
-    protected List<EventTeam> teams;
+    protected final List<Player> players;
+    protected final List<EventTeam> teams;
     protected EventResTask eventRes = null;
     protected EventInformation eventInfo = null;
     private EventState state;
@@ -74,8 +74,7 @@ public abstract class AbstractEvent implements Runnable {
                 topTeams.add(et);
         }
         for (EventTeam et : topTeams) {
-            for (Iterator<Integer> iterator = rewards.keySet().iterator(); iterator.hasNext(); ) {
-                int id = iterator.next();
+            for (int id : rewards.keySet()) {
                 et.reward(id, rewards.get(id));
             }
         }
@@ -132,7 +131,7 @@ public abstract class AbstractEvent implements Runnable {
     }
 
     public Location getRandomLocation() {
-        return (this.teleportLocations.size() > 1) ? this.teleportLocations.get(Rnd.get(this.teleportLocations.size())) : this.teleportLocations.get(0);
+        return (this.teleportLocations.size() > 1) ? this.teleportLocations.get(Rnd.get(this.teleportLocations.size())) : this.teleportLocations.getFirst();
     }
 
     protected void increaseScore(Player player, int count) {
@@ -162,8 +161,7 @@ public abstract class AbstractEvent implements Runnable {
     }
 
     protected void rewardTopTeams(int top, Map<Integer, Integer> rewards) {
-        List<EventTeam> temp = new ArrayList<>();
-        temp.addAll(this.teams);
+        List<EventTeam> temp = new ArrayList<>(this.teams);
         for (int i = 1; i <= top; i++) {
             EventTeam topTeam = null;
             int score = 0;
@@ -176,8 +174,7 @@ public abstract class AbstractEvent implements Runnable {
             if (topTeam == null)
                 break;
             temp.remove(topTeam);
-            for (Iterator<Integer> iterator = rewards.keySet().iterator(); iterator.hasNext(); ) {
-                int id = iterator.next();
+            for (int id : rewards.keySet()) {
                 topTeam.reward(id, rewards.get(id));
             }
             topTeam = null;
@@ -192,8 +189,7 @@ public abstract class AbstractEvent implements Runnable {
     }
 
     protected void announceTopTeams(int top) {
-        List<EventTeam> temp = new ArrayList<>();
-        temp.addAll(this.teams);
+        List<EventTeam> temp = new ArrayList<>(this.teams);
         announce("The top team(s) of the event:", true);
         for (int i = 1; i <= top; i++) {
             EventTeam topTeam = null;
@@ -214,8 +210,7 @@ public abstract class AbstractEvent implements Runnable {
     }
 
     protected void rewardTop(int top, Map<Integer, Integer> rewards) {
-        List<Player> temp = new ArrayList<>();
-        temp.addAll(this.players);
+        List<Player> temp = new ArrayList<>(this.players);
         for (int i = 1; i <= top; i++) {
             Player topPlayer = null;
             int score = 0;
@@ -230,8 +225,7 @@ public abstract class AbstractEvent implements Runnable {
             if (topPlayer == null)
                 break;
             temp.remove(topPlayer);
-            for (Iterator<Integer> iterator = rewards.keySet().iterator(); iterator.hasNext(); ) {
-                int id = iterator.next();
+            for (int id : rewards.keySet()) {
                 topPlayer.addItem("Event reward.", id, rewards.get(id), null, true);
             }
             topPlayer = null;
@@ -246,8 +240,7 @@ public abstract class AbstractEvent implements Runnable {
     }
 
     protected void announceTop(int top) {
-        List<Player> temp = new ArrayList<>();
-        temp.addAll(this.players);
+        List<Player> temp = new ArrayList<>(this.players);
         announce("The top player(s) of the event:", true);
         for (int i = 1; i <= top; i++) {
             Player topPlayer = null;
@@ -298,12 +291,12 @@ public abstract class AbstractEvent implements Runnable {
                 temp.put(key, 0);
             this.eventInfo.setReplacements(temp);
         }
-        if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.TvT) {
-            TvTEventManager.getInstance().onEventEnd(this);
-        } else if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.CTF) {
-            CtfEventManager.getInstance().onEventEnd(this);
-        } else if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.DM) {
-            DmEventManager.getInstance().onEventEnd(this);
+        switch (this) {
+            case TvT tvT -> TvTEventManager.getInstance().onEventEnd(this);
+            case CTF ctf -> CtfEventManager.getInstance().onEventEnd(this);
+            case DM dm -> DmEventManager.getInstance().onEventEnd(this);
+            default -> {
+            }
         }
     }
 
@@ -321,16 +314,17 @@ public abstract class AbstractEvent implements Runnable {
     protected void restorePlayers() {
         for (Player player : this.players) {
             if (player.isOnline()) {
-                if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.TvT) {
-                    TvTEventManager.getInstance().restorePlayer(player);
-                    continue;
+                switch (this) {
+                    case TvT tvT -> {
+                        TvTEventManager.getInstance().restorePlayer(player);
+                    }
+                    case CTF ctf -> {
+                        CtfEventManager.getInstance().restorePlayer(player);
+                    }
+                    case DM dm -> DmEventManager.getInstance().restorePlayer(player);
+                    default -> {
+                    }
                 }
-                if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.CTF) {
-                    CtfEventManager.getInstance().restorePlayer(player);
-                    continue;
-                }
-                if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.DM)
-                    DmEventManager.getInstance().restorePlayer(player);
             }
         }
         unparalizePlayers();
@@ -381,7 +375,7 @@ public abstract class AbstractEvent implements Runnable {
     }
 
     protected void begin() {
-        if (!getStartingMsg().equals("")) {
+        if (!getStartingMsg().isEmpty()) {
             for (Player player : this.players) {
                 player.sendPacket(new ExShowScreenMessage(getStartingMsg(), 3000, 2, false));
                 player.sendPacket(new CreatureSay(player.getObjectId(), 1, "Simon Event", getStartingMsg()));
@@ -438,12 +432,12 @@ public abstract class AbstractEvent implements Runnable {
     }
 
     protected void preparePlayers() {
-        if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.TvT) {
-            TvTEventManager.getInstance().storePlayersData(this.players);
-        } else if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.CTF) {
-            CtfEventManager.getInstance().storePlayersData(this.players);
-        } else if (this instanceof net.sf.l2j.gameserver.events.eventengine.event.DM) {
-            DmEventManager.getInstance().storePlayersData(this.players);
+        switch (this) {
+            case TvT tvT -> TvTEventManager.getInstance().storePlayersData(this.players);
+            case CTF ctf -> CtfEventManager.getInstance().storePlayersData(this.players);
+            case DM dm -> DmEventManager.getInstance().storePlayersData(this.players);
+            default -> {
+            }
         }
         if (!this.teams.isEmpty())
             splitToTeams();
@@ -495,8 +489,7 @@ public abstract class AbstractEvent implements Runnable {
         return true;
     }
 
-    public boolean onInterract(Player player, Npc npc) {
-        return false;
+    public void onInterract(Player player, Npc npc) {
     }
 
     public boolean canAttack(Player attacker, Player target) {
@@ -531,7 +524,7 @@ public abstract class AbstractEvent implements Runnable {
     }
 
     protected int getScore(Player player) {
-        return this.playerScores.containsKey(player) ? this.playerScores.get(player) : 0;
+        return this.playerScores.getOrDefault(player, 0);
     }
 
     public boolean isEventNpc(Npc npc) {

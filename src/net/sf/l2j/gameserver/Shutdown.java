@@ -86,14 +86,14 @@ public class Shutdown extends Thread {
                 DailyRewardManager.getInstance().saveRewardedPlayersObjId();
                 LOGGER.info("Daily Reward Manager saved all received players.");
             } catch (Throwable t) {
-                LOGGER.error("Error saving Daily Reward Manager: " + String.valueOf(t));
+                LOGGER.error("Error saving Daily Reward Manager: " + t);
             }
 
             try {
                 DungeonManager.getInstance().updateDatabase();
                 LOGGER.info("Dungeon Manager saved all information.");
             } catch (Throwable t) {
-                LOGGER.error("Error saving DungeonManager: " + String.valueOf(t));
+                LOGGER.error("Error saving DungeonManager: " + t);
             }
 
             if (!SevenSignsManager.getInstance().isSealValidationPeriod()) {
@@ -166,9 +166,9 @@ public class Shutdown extends Thread {
     public void startShutdown(Player player, String ghostEntity, int seconds, boolean restart) {
         this._shutdownMode = restart ? 2 : 1;
         if (player != null) {
-            LOGGER.info("GM: {} issued {} process in {} seconds.", new Object[]{player.toString(), MODE_TEXT[this._shutdownMode], seconds});
+            LOGGER.info("GM: {} issued {} process in {} seconds.", player.toString(), MODE_TEXT[this._shutdownMode], seconds);
         } else if (!ghostEntity.isEmpty()) {
-            LOGGER.info("Entity: {} issued {} process in {} seconds.", new Object[]{ghostEntity, MODE_TEXT[this._shutdownMode], seconds});
+            LOGGER.info("Entity: {} issued {} process in {} seconds.", ghostEntity, MODE_TEXT[this._shutdownMode], seconds);
         }
 
         if (this._shutdownMode > 0) {
@@ -205,7 +205,7 @@ public class Shutdown extends Thread {
 
     public void abort(Player player) {
         if (_counterInstance != null) {
-            LOGGER.info("GM: {} aborted {} process.", new Object[]{player.toString(), MODE_TEXT[this._shutdownMode]});
+            LOGGER.info("GM: {} aborted {} process.", player.toString(), MODE_TEXT[this._shutdownMode]);
             _counterInstance.setMode(3);
             String var10000 = MODE_TEXT[this._shutdownMode];
             World.announceToOnlinePlayers("Server aborted " + var10000 + " process and continues normal operation.");

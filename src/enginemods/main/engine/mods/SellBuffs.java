@@ -25,8 +25,7 @@ public class SellBuffs extends AbstractMods {
         this.registerMod(true);
     }
 
-    public static SellBuffs getInstance() {
-        return SellBuffs.SingletonHolder.INSTANCE;
+    public static void getInstance() {
     }
 
     public void onModState() {
@@ -56,7 +55,7 @@ public class SellBuffs extends AbstractMods {
                 HtmlBuilder hb = new HtmlBuilder(HtmlBuilder.HtmlType.HTML_TYPE);
                 hb.append("<html><body><center>");
                 hb.append(Html.headHtml("SELL BUFF"));
-                hb.append(new Object[]{"<font color=\"LEVEL\">Welcome </font><font color=\"00C3FF\">", player.getName(), "</font> system selling buffs.<br1>"});
+                hb.append("<font color=\"LEVEL\">Welcome </font><font color=\"00C3FF\">", player.getName(), "</font> system selling buffs.<br1>");
                 hb.append("You can only sell buffs if your class<br1>");
                 hb.append("is the type of support.<br1>");
                 hb.append("All your buffs will be sold at a single price.<br1>");
@@ -162,8 +161,8 @@ public class SellBuffs extends AbstractMods {
                 tb.append(Html.headHtml("SELL BUFF"));
                 tb.append("<center>");
                 tb.append("<br><br>");
-                tb.append(new Object[]{"Hello <font color=\"00C3FF\">", player.getName(), "</font>"});
-                tb.append(new Object[]{"<br><center>My Buff Cost: <font color=\"LEVEL\">", ph.getSellBuffPrice(), "</font> adena each!</center>"});
+                tb.append("Hello <font color=\"00C3FF\">", player.getName(), "</font>");
+                tb.append("<br><center>My Buff Cost: <font color=\"LEVEL\">", ph.getSellBuffPrice(), "</font> adena each!</center>");
                 tb.append("<br>");
                 tb.append("<center><button value=\"View my Buffs\" action=\"bypass -h Engine SellBuffs view\" width=\"80\" height=\"25\" back=\"L2UI_CH3.Btn1_normalOn\" fore=\"L2UI_CH3.btn1_normal\">");
                 tb.append("</center>");
@@ -184,8 +183,8 @@ public class SellBuffs extends AbstractMods {
             tb.append("<html><body>");
             tb.append("<br><br>");
             tb.append("<center>");
-            tb.append(new Object[]{"<font color=\"LEVEL\">Hello </font><font color=\"00C3FF\">", buyer.getName(), "</font><font color=\"LEVEL\"> want my Buff!</font>"});
-            tb.append(new Object[]{"<br>My Buff Cost: <font color=\"00C3FF\">", ph.getSellBuffPrice(), "</font><font color=\"LEVEL\"> adena each!</font><br>"});
+            tb.append("<font color=\"LEVEL\">Hello </font><font color=\"00C3FF\">", buyer.getName(), "</font><font color=\"LEVEL\"> want my Buff!</font>");
+            tb.append("<br>My Buff Cost: <font color=\"00C3FF\">", ph.getSellBuffPrice(), "</font><font color=\"LEVEL\"> adena each!</font><br>");
             int MAX_SKILL_PER_PAGE = 12;
             int searchPage = MAX_SKILL_PER_PAGE * (page - 1);
             int skillCount = 0;
@@ -199,9 +198,9 @@ public class SellBuffs extends AbstractMods {
                     } else if (skillCount < searchPage + MAX_SKILL_PER_PAGE) {
                         tb.append("<table>");
                         tb.append("<tr>");
-                        tb.append(new Object[]{"<td width=\"32\"><center><img src=\"", SkillData.getSkillIcon(sk.getId()), "\" width=\"32\" height=\"16\"></center></td>"});
-                        tb.append(new Object[]{"<td width=\"180\"><center><a action=\"bypass -h Engine SellBuffs buy ", sk.getId(), " ", sk.getLevel(), " ", sellerBuff.getName(), " ", page, "\">", sk.getName(), "</center></td>"});
-                        tb.append(new Object[]{"<td width=\"32\"><center><img src=\"", SkillData.getSkillIcon(sk.getId()), "\" width=\"32\" height=\"16\"></center></td>"});
+                        tb.append("<td width=\"32\"><center><img src=\"", SkillData.getSkillIcon(sk.getId()), "\" width=\"32\" height=\"16\"></center></td>");
+                        tb.append("<td width=\"180\"><center><a action=\"bypass -h Engine SellBuffs buy ", sk.getId(), " ", sk.getLevel(), " ", sellerBuff.getName(), " ", page, "\">", sk.getName(), "</center></td>");
+                        tb.append("<td width=\"32\"><center><img src=\"", SkillData.getSkillIcon(sk.getId()), "\" width=\"32\" height=\"16\"></center></td>");
                         tb.append("</tr>");
                         tb.append("</table>");
                         ++skillCount;

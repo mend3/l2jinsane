@@ -5,11 +5,11 @@ import net.sf.l2j.gameserver.handler.IVoicedCommandHandler;
 import net.sf.l2j.gameserver.model.actor.Player;
 
 public class VoicedBossEventCMD implements IVoicedCommandHandler {
-    public boolean useVoicedCommand(String command, Player activeChar, String params) {
+    public void useVoicedCommand(String command, Player activeChar, String params) {
         if (command.startsWith("bossevent")) {
             if (BossEvent.getInstance().getState() != BossEvent.EventState.REGISTRATION) {
                 activeChar.sendMessage("Boss Event is not running!");
-                return false;
+                return;
             }
             if (!BossEvent.getInstance().isRegistered(activeChar)) {
                 if (BossEvent.getInstance().addPlayer(activeChar))
@@ -18,7 +18,6 @@ public class VoicedBossEventCMD implements IVoicedCommandHandler {
                 activeChar.sendMessage("You have been successfully removed of Boss Event!");
             }
         }
-        return false;
     }
 
     public String[] getVoicedCommandList() {

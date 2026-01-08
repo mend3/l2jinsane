@@ -1,9 +1,9 @@
 /**/
-package net.sf.l2j.gameserver.communitybbs.BB;
+package net.sf.l2j.gameserver.communitybbs.bb;
 
 import net.sf.l2j.commons.logging.CLogger;
 import net.sf.l2j.commons.pool.ConnectionPool;
-import net.sf.l2j.gameserver.communitybbs.Manager.PostBBSManager;
+import net.sf.l2j.gameserver.communitybbs.manager.PostBBSManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -13,10 +13,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -176,8 +173,7 @@ public class DungeonManager {
                             long lastjoin = rset.getLong("lastjoin");
                             if (!this.dungeonPlayerData.containsKey(ipaddr)) {
                                 Long[] times = new Long[this.templates.size() + 1];
-                                for (int i = 0; i < times.length; i++)
-                                    times[i] = 0L;
+                                Arrays.fill(times, 0L);
                                 times[dungid] = lastjoin;
                                 this.dungeonPlayerData.put(ipaddr, times);
                                 continue;
@@ -264,8 +260,7 @@ public class DungeonManager {
                     continue;
                 }
                 Long[] times = new Long[this.templates.size() + 1];
-                for (int i = 0; i < times.length; i++)
-                    times[i] = 0L;
+                Arrays.fill(times, 0L);
                 times[template.id()] = System.currentTimeMillis();
                 this.dungeonPlayerData.put(pmip, times);
             }
@@ -281,8 +276,7 @@ public class DungeonManager {
                 this.dungeonPlayerData.get(pmip)[template.id()] = System.currentTimeMillis();
             } else {
                 Long[] times = new Long[this.templates.size() + 1];
-                for (int i = 0; i < times.length; i++)
-                    times[i] = 0L;
+                Arrays.fill(times, 0L);
                 times[template.id()] = System.currentTimeMillis();
                 this.dungeonPlayerData.put(pmip, times);
             }

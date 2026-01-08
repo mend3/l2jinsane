@@ -6,7 +6,6 @@ import net.sf.l2j.gameserver.model.actor.instance.Pet;
 import net.sf.l2j.gameserver.model.actor.instance.Servitor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class PartySpelled extends L2GameServerPacket {
@@ -38,9 +37,9 @@ public class PartySpelled extends L2GameServerPacket {
     }
 
     private static class Effect {
-        protected int _skillId;
-        protected int _dat;
-        protected int _duration;
+        protected final int _skillId;
+        protected final int _dat;
+        protected final int _duration;
 
         public Effect(final PartySpelled param1, int pSkillId, int pDat, int pDuration) {
             this._skillId = pSkillId;

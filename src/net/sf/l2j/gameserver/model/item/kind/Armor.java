@@ -28,7 +28,7 @@ public final class Armor extends Item {
         return this._type;
     }
 
-    public final int getItemMask() {
+    public int getItemMask() {
         return this.getItemType().mask();
     }
 }

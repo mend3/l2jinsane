@@ -25,7 +25,7 @@ public final class LambdaStats extends Lambda {
                 return env.getCharacter() == null ? (double)1.0F : (double)env.getCharacter().getMaxMp();
             }
             default -> {
-                return (double)0.0F;
+                return 0.0F;
             }
         }
     }

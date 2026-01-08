@@ -68,14 +68,11 @@ public class Q357_WarehouseKeepersAmbition extends Quest {
         String htmltext = getNoQuestMsg();
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 47) ? "30686-0a.htm" : "30686-0.htm";
-                break;
-            case 1:
-                htmltext = !st.hasQuestItems(5867) ? "30686-4.htm" : "30686-6.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 47) ? "30686-0a.htm" : "30686-0.htm";
+            case 1 -> !st.hasQuestItems(5867) ? "30686-4.htm" : "30686-6.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

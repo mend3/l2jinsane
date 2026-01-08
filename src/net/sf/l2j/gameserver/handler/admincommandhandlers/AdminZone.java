@@ -12,18 +12,21 @@ import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 
 import java.util.StringTokenizer;
 
+import static net.sf.l2j.gameserver.geoengine.geodata.GeoStructure.GEO_CELLS_Y;
+import static net.sf.l2j.gameserver.model.World.*;
+
 public class AdminZone implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_zone_check", "admin_zone_visual"};
 
     private static void showHtml(Player player) {
         int x = player.getX();
         int y = player.getY();
-        int rx = (x - -131072) / 32768 + 16;
-        int ry = (y - -262144) / 32768 + 10;
+        int rx = (x - WORLD_X_MIN) / GEO_CELLS_Y + TILE_X_MIN;
+        int ry = (y - WORLD_Y_MIN) / GEO_CELLS_Y + TILE_Y_MIN;
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setFile("data/html/admin/zone.htm");
         html.replace("%MAPREGION%", "[x:" + MapRegionData.getMapRegionX(x) + " y:" + MapRegionData.getMapRegionY(y) + "]");
-        html.replace("%GEOREGION%", rx + "_" + rx);
+        html.replace("%GEOREGION%", rx + "_" + ry);
         html.replace("%CLOSESTTOWN%", MapRegionData.getInstance().getClosestTownName(x, y));
         html.replace("%CURRENTLOC%", x + ", " + x + ", " + y);
         StringBuilder sb = new StringBuilder(100);
@@ -35,21 +38,20 @@ public class AdminZone implements IAdminCommandHandler {
         sb.setLength(0);
         for (ZoneType zone : World.getInstance().getRegion(x, y).getZones()) {
             if (zone.isCharacterInZone(player))
-                StringUtil.append(sb, zone.getId(), " ");
+                StringUtil.append(sb, zone.getId(), " (you are here)");
         }
         html.replace("%ZLIST%", sb.toString());
         player.sendPacket(html);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (activeChar == null)
-            return false;
-        StringTokenizer st = new StringTokenizer(command, " ");
-        String actualCommand = st.nextToken();
-        if (actualCommand.equalsIgnoreCase("admin_zone_check")) {
+            return;
+        if (command.startsWith("admin_zone_check")) {
             showHtml(activeChar);
-        } else if (actualCommand.equalsIgnoreCase("admin_zone_visual")) {
+        } else if (command.startsWith("admin_zone_visual")) {
             try {
+                StringTokenizer st = new StringTokenizer(command, " ");
                 String next = st.nextToken();
                 if (next.equalsIgnoreCase("all")) {
                     for (ZoneType zone : ZoneManager.getInstance().getZones(activeChar))
@@ -66,7 +68,6 @@ public class AdminZone implements IAdminCommandHandler {
                 activeChar.sendMessage("Invalid parameter for //zone_visual.");
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

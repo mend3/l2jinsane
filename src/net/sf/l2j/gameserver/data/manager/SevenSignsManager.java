@@ -341,7 +341,7 @@ public class SevenSignsManager {
         return this._activePeriod;
     }
 
-    private final int getDaysToPeriodChange() {
+    private int getDaysToPeriodChange() {
         int numDays = this._nextPeriodChange.get(Calendar.DAY_OF_WEEK) - 2;
         return numDays < 0 ? -numDays : 7 - numDays;
     }
@@ -394,36 +394,29 @@ public class SevenSignsManager {
 
     public final int getCurrentScore(CabalType cabal) {
         double totalStoneScore = this._dawnStoneScore + this._duskStoneScore;
-        switch (cabal) {
-            case DAWN:
-                return Math.round((float) (this._dawnStoneScore / ((float) totalStoneScore == 0.0F ? 1.0D : totalStoneScore)) * 500.0F) + this._dawnFestivalScore;
-            case DUSK:
-                return Math.round((float) (this._duskStoneScore / ((float) totalStoneScore == 0.0F ? 1.0D : totalStoneScore)) * 500.0F) + this._duskFestivalScore;
-            default:
-                return 0;
-        }
+        return switch (cabal) {
+            case DAWN ->
+                    Math.round((float) (this._dawnStoneScore / ((float) totalStoneScore == 0.0F ? 1.0D : totalStoneScore)) * 500.0F) + this._dawnFestivalScore;
+            case DUSK ->
+                    Math.round((float) (this._duskStoneScore / ((float) totalStoneScore == 0.0F ? 1.0D : totalStoneScore)) * 500.0F) + this._duskFestivalScore;
+            default -> 0;
+        };
     }
 
     public final double getCurrentStoneScore(CabalType cabal) {
-        switch (cabal) {
-            case DAWN:
-                return this._dawnStoneScore;
-            case DUSK:
-                return this._duskStoneScore;
-            default:
-                return 0.0D;
-        }
+        return switch (cabal) {
+            case DAWN -> this._dawnStoneScore;
+            case DUSK -> this._duskStoneScore;
+            default -> 0.0D;
+        };
     }
 
     public final int getCurrentFestivalScore(CabalType cabal) {
-        switch (cabal) {
-            case DAWN:
-                return this._dawnFestivalScore;
-            case DUSK:
-                return this._duskFestivalScore;
-            default:
-                return 0;
-        }
+        return switch (cabal) {
+            case DAWN -> this._dawnFestivalScore;
+            case DUSK -> this._duskFestivalScore;
+            default -> 0;
+        };
     }
 
     public final CabalType getCabalHighestScore() {
@@ -445,14 +438,11 @@ public class SevenSignsManager {
     }
 
     public final int getSealProportion(SealType seal, CabalType cabal) {
-        switch (cabal) {
-            case DAWN:
-                return this._dawnScores.get(seal);
-            case DUSK:
-                return this._duskScores.get(seal);
-            default:
-                return 0;
-        }
+        return switch (cabal) {
+            case DAWN -> this._dawnScores.get(seal);
+            case DUSK -> this._duskScores.get(seal);
+            default -> 0;
+        };
     }
 
     public final int getTotalMembers(CabalType cabal) {
@@ -761,7 +751,7 @@ public class SevenSignsManager {
 
     }
 
-    public CabalType setPlayerInfo(int objectId, CabalType cabal, SealType seal) {
+    public void setPlayerInfo(int objectId, CabalType cabal, SealType seal) {
         StatSet set = this._playersData.get(objectId);
         if (set != null) {
             set.set("cabal", cabal);
@@ -830,7 +820,6 @@ public class SevenSignsManager {
             this._duskScores.put(seal, this._duskScores.get(seal) + 1);
         }
 
-        return cabal;
     }
 
     public int getAncientAdenaReward(int objectId) {

@@ -15,7 +15,7 @@ public abstract class MMOClient<T extends MMOConnection<?>> {
 
     public abstract boolean decrypt(ByteBuffer paramByteBuffer, int paramInt);
 
-    public abstract boolean encrypt(ByteBuffer paramByteBuffer, int paramInt);
+    public abstract void encrypt(ByteBuffer paramByteBuffer, int paramInt);
 
     protected abstract void onDisconnection();
 

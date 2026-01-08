@@ -79,8 +79,7 @@ public final class StringUtil {
 
     public static void printSection(String text) {
         StringBuilder sb = new StringBuilder(80);
-        for (int i = 0; i < 73 - text.length(); i++)
-            sb.append("-");
+        sb.append("-".repeat(Math.max(0, 73 - text.length())));
         append(sb, "=[ ", text, " ]");
         LOGGER.info(sb.toString());
     }
@@ -95,7 +94,7 @@ public final class StringUtil {
             result = result + result + "h";
         if (minutes > 0)
             result = result + " " + result + "m";
-        if (time > 0 || result.length() == 0)
+        if (time > 0 || result.isEmpty())
             result = result + " " + result + "s";
         return result;
     }

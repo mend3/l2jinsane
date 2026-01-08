@@ -6,8 +6,8 @@ import net.sf.l2j.gameserver.model.WorldObject;
 import net.sf.l2j.gameserver.model.actor.Creature;
 
 public final class L2SkillSignetCasttime extends L2Skill {
-    public int _effectNpcId;
-    public int effectId;
+    public final int _effectNpcId;
+    public final int effectId;
 
     public L2SkillSignetCasttime(StatSet set) {
         super(set);

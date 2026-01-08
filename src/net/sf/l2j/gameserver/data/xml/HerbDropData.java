@@ -26,41 +26,37 @@ public class HerbDropData implements IXmlReader {
     }
 
     public void parseDocument(Document doc, Path path) {
-        this.forEach(doc, "list", (listNode) -> {
-            this.forEach(listNode, "group", (groupNode) -> {
-                int groupId = this.parseInteger(groupNode.getAttributes(), "id");
-                List<DropCategory> category = this._herbGroups.computeIfAbsent(groupId, (k) -> {
-                    return new ArrayList<>();
-                });
-                this.forEach(groupNode, "item", (itemNode) -> {
-                    NamedNodeMap attrs = itemNode.getAttributes();
-                    int id = this.parseInteger(attrs, "id");
-                    int categoryType = this.parseInteger(attrs, "category");
-                    int chance = this.parseInteger(attrs, "chance");
-                    DropData dropDat = new DropData();
-                    dropDat.setItemId(id);
-                    dropDat.setMinDrop(1);
-                    dropDat.setMaxDrop(1);
-                    dropDat.setChance(chance);
-                    boolean catExists = false;
+        this.forEach(doc, "list", (listNode) -> this.forEach(listNode, "group", (groupNode) -> {
+            int groupId = this.parseInteger(groupNode.getAttributes(), "id");
+            List<DropCategory> category = this._herbGroups.computeIfAbsent(groupId, (k) -> new ArrayList<>());
+            this.forEach(groupNode, "item", (itemNode) -> {
+                NamedNodeMap attrs = itemNode.getAttributes();
+                int id = this.parseInteger(attrs, "id");
+                int categoryType = this.parseInteger(attrs, "category");
+                int chance = this.parseInteger(attrs, "chance");
+                DropData dropDat = new DropData();
+                dropDat.setItemId(id);
+                dropDat.setMinDrop(1);
+                dropDat.setMaxDrop(1);
+                dropDat.setChance(chance);
+                boolean catExists = false;
 
-                    for (DropCategory catx : category) {
-                        if (catx.getCategoryType() == categoryType) {
-                            catx.addDropData(dropDat, false);
-                            catExists = true;
-                            break;
-                        }
+                for (DropCategory catx : category) {
+                    if (catx.getCategoryType() == categoryType) {
+                        catx.addDropData(dropDat, false);
+                        catExists = true;
+                        break;
                     }
+                }
 
-                    if (!catExists) {
-                        DropCategory cat = new DropCategory(categoryType);
-                        cat.addDropData(dropDat, false);
-                        category.add(cat);
-                    }
+                if (!catExists) {
+                    DropCategory cat = new DropCategory(categoryType);
+                    cat.addDropData(dropDat, false);
+                    category.add(cat);
+                }
 
-                });
             });
-        });
+        }));
     }
 
     public List<DropCategory> getHerbDroplist(int groupId) {

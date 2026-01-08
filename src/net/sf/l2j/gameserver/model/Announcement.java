@@ -6,7 +6,7 @@ import java.util.concurrent.ScheduledFuture;
 
 public class Announcement implements Runnable {
     protected final String _message;
-    protected boolean _critical;
+    protected final boolean _critical;
     protected boolean _auto;
     protected boolean _unlimited;
     protected int _initialDelay;

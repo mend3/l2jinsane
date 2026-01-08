@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q099_SagaOfTheFortuneSeeker extends SagasSuperClass {
     public Q099_SagaOfTheFortuneSeeker() {
         super(99, "Saga of the Fortune Seeker");

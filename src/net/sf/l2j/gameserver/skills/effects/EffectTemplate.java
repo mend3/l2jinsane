@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class EffectTemplate {
-    static Logger _log = Logger.getLogger(EffectTemplate.class.getName());
+    static final Logger _log = Logger.getLogger(EffectTemplate.class.getName());
     public final Condition attachCond;
     public final Condition applayCond;
     public final Lambda lambda;

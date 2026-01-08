@@ -80,18 +80,18 @@ public class TutorialQuest extends Quest {
             case 31:
             case 36:
             case 53:
-                weaponIds.addAll(List.of(6354));
+                weaponIds.add(6354);
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(6354));
                 break;
             case 44:
-                weaponIds.addAll(List.of(257));
+                weaponIds.add(257);
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(257));
                 break;
             case 10:
             case 25:
             case 38:
             case 49:
-                weaponIds.addAll(List.of(100));
+                weaponIds.add(100);
                 player.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.EARNED_S2_S1_S).addItemName(100));
                 break;
         }

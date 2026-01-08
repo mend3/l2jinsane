@@ -17,12 +17,12 @@ public class AdminPledge implements IAdminCommandHandler {
         AdminHelpPage.showHelpPage(activeChar, "game_menu.htm");
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         WorldObject target = activeChar.getTarget();
         if (!(target instanceof Player player)) {
             activeChar.sendPacket(SystemMessageId.INCORRECT_TARGET);
             showMainPage(activeChar);
-            return false;
+            return;
         }
         if (command.startsWith("admin_pledge")) {
             StringTokenizer st = new StringTokenizer(command, " ");
@@ -48,7 +48,7 @@ public class AdminPledge implements IAdminCommandHandler {
                     if (player.getClan() == null) {
                         activeChar.sendPacket(SystemMessageId.TARGET_MUST_BE_IN_CLAN);
                         showMainPage(activeChar);
-                        return false;
+                        return;
                     }
                     if (action.equals("dismiss")) {
                         ClanTable.getInstance().destroyClan(player.getClan());
@@ -78,7 +78,7 @@ public class AdminPledge implements IAdminCommandHandler {
                             if (clan.getLevel() < 5) {
                                 activeChar.sendMessage("Only clans of level 5 or above may receive reputation points.");
                                 showMainPage(activeChar);
-                                return false;
+                                return;
                             }
                             clan.addReputationScore(points);
                             activeChar.sendMessage("You " + ((points > 0) ? "added " : "removed ") + Math.abs(points) + " points " + ((points > 0) ? "to " : "from ") + clan.getName() + "'s reputation. Their current score is: " + clan.getReputationScore());
@@ -92,7 +92,6 @@ public class AdminPledge implements IAdminCommandHandler {
             }
         }
         showMainPage(activeChar);
-        return true;
     }
 
     public String[] getAdminCommandList() {

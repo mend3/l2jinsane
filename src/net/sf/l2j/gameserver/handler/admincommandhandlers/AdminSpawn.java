@@ -108,16 +108,16 @@ public class AdminSpawn implements IAdminCommandHandler {
     private static void listFences(Player activeChar) {
         List<Fence> fences = FenceManager.getInstance().getFences();
         StringBuilder sb = new StringBuilder();
-        sb.append("<html><body>Total Fences: " + fences.size() + "<br><br>");
+        sb.append("<html><body>Total Fences: ").append(fences.size()).append("<br><br>");
         for (Fence fence : fences)
-            sb.append("<a action=\"bypass -h admin_deletefence " + fence.getObjectId() + " 1\">Fence: " + fence.getObjectId() + " [" + fence.getX() + " " + fence.getY() + " " + fence.getZ() + "]</a><br>");
+            sb.append("<a action=\"bypass -h admin_deletefence ").append(fence.getObjectId()).append(" 1\">Fence: ").append(fence.getObjectId()).append(" [").append(fence.getX()).append(" ").append(fence.getY()).append(" ").append(fence.getZ()).append("]</a><br>");
         sb.append("</body></html>");
         NpcHtmlMessage html = new NpcHtmlMessage(0);
         html.setHtml(sb.toString());
         activeChar.sendPacket(html);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_list_spawns")) {
             int npcId = 0;
             try {
@@ -263,7 +263,6 @@ public class AdminSpawn implements IAdminCommandHandler {
                 AdminHelpPage.showHelpPage(activeChar, "spawns.htm");
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

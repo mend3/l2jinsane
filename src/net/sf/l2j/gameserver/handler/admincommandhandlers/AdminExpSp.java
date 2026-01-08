@@ -90,7 +90,7 @@ public class AdminExpSp implements IAdminCommandHandler {
         return true;
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_add_exp_sp")) {
             try {
                 String val = command.substring(16);
@@ -109,7 +109,6 @@ public class AdminExpSp implements IAdminCommandHandler {
             }
         }
         addExpSp(activeChar);
-        return true;
     }
 
     public String[] getAdminCommandList() {

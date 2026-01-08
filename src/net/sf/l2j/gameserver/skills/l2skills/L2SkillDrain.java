@@ -31,8 +31,7 @@ public class L2SkillDrain extends L2Skill {
             boolean isPlayable = activeChar instanceof Playable;
 
             for (WorldObject obj : targets) {
-                if (obj instanceof Creature) {
-                    Creature target = (Creature) obj;
+                if (obj instanceof Creature target) {
                     if ((!target.isAlikeDead() || this.getTargetType() == SkillTargetType.TARGET_CORPSE_MOB) && (activeChar == target || !target.isInvul())) {
                         boolean mcrit = Formulas.calcMCrit(activeChar.getMCriticalHit(target, this));
                         byte shld = Formulas.calcShldUse(activeChar, target, this);
@@ -47,15 +46,11 @@ public class L2SkillDrain extends L2Skill {
                                 } else {
                                     _drain = damage - _cp;
                                 }
-                            } else if (damage > _hp) {
-                                _drain = _hp;
-                            } else {
-                                _drain = damage;
-                            }
+                            } else _drain = Math.min(damage, _hp);
 
-                            double hpAdd = (double) ((float) this._absorbAbs + this._absorbPart * (float) _drain);
+                            double hpAdd = (float) this._absorbAbs + this._absorbPart * (float) _drain;
                             if (hpAdd > (double) 0.0F) {
-                                double hp = activeChar.getCurrentHp() + hpAdd > (double) activeChar.getMaxHp() ? (double) activeChar.getMaxHp() : activeChar.getCurrentHp() + hpAdd;
+                                double hp = Math.min(activeChar.getCurrentHp() + hpAdd, activeChar.getMaxHp());
                                 activeChar.setCurrentHp(hp);
                                 StatusUpdate suhp = new StatusUpdate(activeChar);
                                 suhp.addAttribute(9, (int) hp);
@@ -63,7 +58,7 @@ public class L2SkillDrain extends L2Skill {
                             }
 
                             if (!target.isDead() || this.getTargetType() != SkillTargetType.TARGET_CORPSE_MOB) {
-                                Formulas.calcCastBreak(target, (double) damage);
+                                Formulas.calcCastBreak(target, damage);
                                 activeChar.sendDamageMessage(target, damage, mcrit, false, false);
                                 if (this.hasEffects() && this.getTargetType() != SkillTargetType.TARGET_CORPSE_MOB) {
                                     if ((Formulas.calcSkillReflect(target, this) & 1) > 0) {
@@ -80,7 +75,7 @@ public class L2SkillDrain extends L2Skill {
                                     }
                                 }
 
-                                target.reduceCurrentHp((double) damage, activeChar, this);
+                                target.reduceCurrentHp(damage, activeChar, this);
                             }
                         }
                     }
@@ -109,9 +104,9 @@ public class L2SkillDrain extends L2Skill {
                     int damage = (int) Formulas.calcMagicDam(activeCubic, target, this, mcrit, shld);
                     if (damage > 0) {
                         Player owner = activeCubic.getOwner();
-                        double hpAdd = (double) ((float) this._absorbAbs + this._absorbPart * (float) damage);
+                        double hpAdd = (float) this._absorbAbs + this._absorbPart * (float) damage;
                         if (hpAdd > (double) 0.0F) {
-                            double hp = owner.getCurrentHp() + hpAdd > (double) owner.getMaxHp() ? (double) owner.getMaxHp() : owner.getCurrentHp() + hpAdd;
+                            double hp = Math.min(owner.getCurrentHp() + hpAdd, owner.getMaxHp());
                             owner.setCurrentHp(hp);
                             StatusUpdate suhp = new StatusUpdate(owner);
                             suhp.addAttribute(9, (int) hp);
@@ -119,8 +114,8 @@ public class L2SkillDrain extends L2Skill {
                         }
 
                         if (!target.isDead() || this.getTargetType() != SkillTargetType.TARGET_CORPSE_MOB) {
-                            target.reduceCurrentHp((double) damage, activeCubic.getOwner(), this);
-                            Formulas.calcCastBreak(target, (double) damage);
+                            target.reduceCurrentHp(damage, activeCubic.getOwner(), this);
+                            Formulas.calcCastBreak(target, damage);
                             owner.sendDamageMessage(target, damage, mcrit, false, false);
                         }
                     }

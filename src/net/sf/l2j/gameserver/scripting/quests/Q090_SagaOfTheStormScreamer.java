@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q090_SagaOfTheStormScreamer extends SagasSuperClass {
     public Q090_SagaOfTheStormScreamer() {
         super(90, "Saga of the Storm Screamer");

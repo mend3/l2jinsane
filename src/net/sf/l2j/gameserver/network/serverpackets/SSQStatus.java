@@ -96,8 +96,7 @@ public class SSQStatus extends L2GameServerPacket {
                 FestivalType[] var32 = FestivalType.VALUES;
                 int var33 = var32.length;
 
-                for (int var34 = 0; var34 < var33; ++var34) {
-                    FestivalType level = var32[var34];
+                for (FestivalType level : var32) {
                     dawnProportion = level.ordinal();
                     this.writeC(dawnProportion + 1);
                     this.writeD(level.getMaxScore());

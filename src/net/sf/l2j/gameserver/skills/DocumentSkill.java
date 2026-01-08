@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class DocumentSkill extends DocumentBase {
-    static Logger LOGGER = Logger.getLogger(DocumentSkill.class.getName());
+    static final Logger LOGGER = Logger.getLogger(DocumentSkill.class.getName());
     private final List<L2Skill> _skillsInFile = new ArrayList<>();
     private Skill _currentSkill;
 
@@ -75,7 +75,7 @@ public final class DocumentSkill extends DocumentBase {
 
     }
 
-    protected void parseSkill(Node n) {
+    private void parseSkill(Node n) {
         NamedNodeMap attrs = n.getAttributes();
         int enchantLevels1 = 0;
         int enchantLevels2 = 0;
@@ -325,14 +325,14 @@ public final class DocumentSkill extends DocumentBase {
 
     }
 
-    public class Skill {
+    public static class Skill {
         public int id;
         public String name;
         public StatSet[] sets;
         public StatSet[] enchsets1;
         public StatSet[] enchsets2;
         public int currentLevel;
-        public List<L2Skill> skills = new ArrayList<>();
+        public final List<L2Skill> skills = new ArrayList<>();
         public List<L2Skill> currentSkills = new ArrayList<>();
     }
 }

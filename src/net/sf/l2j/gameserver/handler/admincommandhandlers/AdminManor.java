@@ -11,7 +11,7 @@ import net.sf.l2j.gameserver.network.serverpackets.NpcHtmlMessage;
 public class AdminManor implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_manor"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         if (command.startsWith("admin_manor")) {
             CastleManorManager manor = CastleManorManager.getInstance();
             NpcHtmlMessage msg = new NpcHtmlMessage(0);
@@ -29,7 +29,6 @@ public class AdminManor implements IAdminCommandHandler {
             activeChar.sendPacket(msg);
             sb.setLength(0);
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

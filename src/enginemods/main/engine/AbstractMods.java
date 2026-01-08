@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 
 public abstract class AbstractMods {
     public static final Logger LOG = Logger.getLogger(AbstractMods.class.getName());
-    protected static List<Future<?>> _sheduledStateMod = new ArrayList<>();
+    protected static final List<Future<?>> _sheduledStateMod = new ArrayList<>();
     private final Map<Integer, List<ModTimerHolder>> _eventTimers;
     protected EngineStateType _state;
 
@@ -302,10 +302,7 @@ public abstract class AbstractMods {
                 if (timeStart.getTimeInMillis() >= timeEnd.getTimeInMillis()) {
                     LOG.warning("Event " + this.getClass().getSimpleName() + ": The start date of the event can not be greater than or equal to the end of the event");
                 } else {
-                    long time = 0L;
-                    if (timeStart.getTimeInMillis() - hoy > 0L) {
-                        time = timeStart.getTimeInMillis() - hoy;
-                    }
+                    long time = Math.max(timeStart.getTimeInMillis() - hoy, 0L);
 
                     _sheduledStateMod.add(ThreadPool.schedule(new ScheduleStart(), time));
                     _sheduledStateMod.add(ThreadPool.schedule(new ScheduleEnd(), timeEnd.getTimeInMillis() - hoy));
@@ -403,8 +400,7 @@ public abstract class AbstractMods {
     public void onUnequip(Creature player) {
     }
 
-    public boolean onRestoreSkills(Player player) {
-        return false;
+    public void onRestoreSkills(Player player) {
     }
 
     public double onStats(Stats stat, Creature character, double value) {

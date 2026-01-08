@@ -109,14 +109,11 @@ public class Q355_FamilyHonor extends Quest {
                 htmltext = (player.getLevel() < 36) ? "30181-0a.htm" : "30181-0.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 30181:
-                        htmltext = st.hasQuestItems(4252) ? "30181-3a.htm" : "30181-3.htm";
-                        break;
-                    case 30929:
-                        htmltext = "30929-0.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 30181 -> st.hasQuestItems(4252) ? "30181-3a.htm" : "30181-3.htm";
+                    case 30929 -> "30929-0.htm";
+                    default -> htmltext;
+                };
                 break;
         }
         return htmltext;

@@ -18,11 +18,6 @@ public enum PeriodType {
         this._smId = smId;
     }
 
-    // $FF: synthetic method
-    private static PeriodType[] $values() {
-        return new PeriodType[]{RECRUITING, COMPETITION, RESULTS, SEAL_VALIDATION};
-    }
-
     public String getName() {
         return this._name;
     }

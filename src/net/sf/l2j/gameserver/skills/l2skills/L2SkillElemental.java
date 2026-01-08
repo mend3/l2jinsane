@@ -32,8 +32,7 @@ public class L2SkillElemental extends L2Skill {
             boolean bsps = activeChar.isChargedShot(ShotType.BLESSED_SPIRITSHOT);
 
             for (WorldObject obj : targets) {
-                if (obj instanceof Creature) {
-                    Creature target = (Creature) obj;
+                if (obj instanceof Creature target) {
                     if (!target.isAlikeDead()) {
                         boolean charged = true;
                         if (!this._seedAny) {
@@ -67,8 +66,8 @@ public class L2SkillElemental extends L2Skill {
                             byte shld = Formulas.calcShldUse(activeChar, target, this);
                             int damage = (int) Formulas.calcMagicDam(activeChar, target, this, shld, sps, bsps, mcrit);
                             if (damage > 0) {
-                                target.reduceCurrentHp((double) damage, activeChar, this);
-                                Formulas.calcCastBreak(target, (double) damage);
+                                target.reduceCurrentHp(damage, activeChar, this);
+                                Formulas.calcCastBreak(target, damage);
                                 activeChar.sendDamageMessage(target, damage, false, false, false);
                             }
 

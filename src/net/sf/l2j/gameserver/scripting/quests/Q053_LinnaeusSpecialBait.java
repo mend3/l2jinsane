@@ -45,17 +45,12 @@ public class Q053_LinnaeusSpecialBait extends Quest {
         String htmltext = getNoQuestMsg();
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 60) ? "31577-02.htm" : "31577-01.htm";
-                break;
-            case 1:
-                htmltext = (st.getQuestItemsCount(7624) == 100) ? "31577-04.htm" : "31577-05.htm";
-                break;
-            case 2:
-                htmltext = getAlreadyCompletedMsg();
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 60) ? "31577-02.htm" : "31577-01.htm";
+            case 1 -> (st.getQuestItemsCount(7624) == 100) ? "31577-04.htm" : "31577-05.htm";
+            case 2 -> getAlreadyCompletedMsg();
+            default -> htmltext;
+        };
         return htmltext;
     }
 

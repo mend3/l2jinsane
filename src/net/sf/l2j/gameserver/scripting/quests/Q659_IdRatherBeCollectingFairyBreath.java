@@ -57,14 +57,11 @@ public class Q659_IdRatherBeCollectingFairyBreath extends Quest {
         String htmltext = getNoQuestMsg();
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 26) ? "30634-01.htm" : "30634-02.htm";
-                break;
-            case 1:
-                htmltext = !st.hasQuestItems(8286) ? "30634-04.htm" : "30634-05.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 26) ? "30634-01.htm" : "30634-02.htm";
+            case 1 -> !st.hasQuestItems(8286) ? "30634-04.htm" : "30634-05.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

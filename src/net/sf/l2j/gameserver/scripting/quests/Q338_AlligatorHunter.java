@@ -47,14 +47,11 @@ public class Q338_AlligatorHunter extends Quest {
         QuestState st = player.getQuestState("Q338_AlligatorHunter");
         if (st == null)
             return htmltext;
-        switch (st.getState()) {
-            case 0:
-                htmltext = (player.getLevel() < 40) ? "30892-00.htm" : "30892-01.htm";
-                break;
-            case 1:
-                htmltext = st.hasQuestItems(4337) ? "30892-03.htm" : "30892-04.htm";
-                break;
-        }
+        htmltext = switch (st.getState()) {
+            case 0 -> (player.getLevel() < 40) ? "30892-00.htm" : "30892-01.htm";
+            case 1 -> st.hasQuestItems(4337) ? "30892-03.htm" : "30892-04.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 

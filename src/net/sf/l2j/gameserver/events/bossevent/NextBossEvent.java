@@ -39,8 +39,7 @@ public class NextBossEvent {
             String[] var8 = Config.BOSS_EVENT_BY_TIME_OF_DAY;
             int var9 = var8.length;
 
-            for (int var10 = 0; var10 < var9; ++var10) {
-                String timeOfDay = var8[var10];
+            for (String timeOfDay : var8) {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
                 String[] splitTimeOfDay = timeOfDay.split(":");
@@ -82,8 +81,7 @@ public class NextBossEvent {
             String[] var4 = Config.BOSS_EVENT_BY_TIME_OF_DAY;
             int var5 = var4.length;
 
-            for (int var6 = 0; var6 < var5; ++var6) {
-                String timeOfDay = var4[var6];
+            for (String timeOfDay : var4) {
                 testStartTime = Calendar.getInstance();
                 testStartTime.setLenient(true);
                 String[] splitTimeOfDay = timeOfDay.split(":");

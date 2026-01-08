@@ -181,10 +181,10 @@ public final class Config {
     public static int REVIVE_DELAY;
     public static boolean REVIVE;
     public static boolean GIVE_NOBLES;
-    public static List<String> ITEMS = new ArrayList<>();
-    public static List<String> CLASSES = new ArrayList<>();
-    public static List<String> GRADES = new ArrayList<>();
-    public static Map<Integer, Integer> REWARDS = new HashMap<>();
+    public static final List<String> ITEMS = new ArrayList<>();
+    public static final List<String> CLASSES = new ArrayList<>();
+    public static final List<String> GRADES = new ArrayList<>();
+    public static final Map<Integer, Integer> REWARDS = new HashMap<>();
     public static int RADIUS;
     public static int ENCHANT;
     public static boolean REMOVE_BUFFS;
@@ -582,15 +582,15 @@ public final class Config {
     public static boolean ALLOW_DM_EVENT;
     public static String[] DM_EVENT_INTERVAL;
     public static int DM_MIN_PLAYERS;
-    public static Map<Integer, Integer> DM_ON_KILL_REWARDS = new HashMap<>();
-    public static Map<Integer, Integer> DM_WINNER_REWARDS = new HashMap<>();
+    public static final Map<Integer, Integer> DM_ON_KILL_REWARDS = new HashMap<>();
+    public static final Map<Integer, Integer> DM_WINNER_REWARDS = new HashMap<>();
     public static int DM_RUNNING_TIME;
-    public static List<Location> DM_RESPAWN_SPOTS = new ArrayList<>();
+    public static final List<Location> DM_RESPAWN_SPOTS = new ArrayList<>();
     public static boolean ALLOW_TVT_EVENT;
     public static String[] TVT_EVENT_INTERVAL;
     public static int TVT_MIN_PLAYERS;
-    public static Map<Integer, Integer> TVT_WINNER_REWARDS = new HashMap<>();
-    public static Map<Integer, Integer> TVT_DRAW_REWARDS = new HashMap<>();
+    public static final Map<Integer, Integer> TVT_WINNER_REWARDS = new HashMap<>();
+    public static final Map<Integer, Integer> TVT_DRAW_REWARDS = new HashMap<>();
     public static int TVT_RUNNING_TIME;
     public static String TVT_TEAM_1_NAME;
     public static int TVT_TEAM_1_COLOR;
@@ -601,8 +601,8 @@ public final class Config {
     public static boolean ALLOW_CTF_EVENT;
     public static String[] CTF_EVENT_INTERVAL;
     public static int CTF_MIN_PLAYERS;
-    public static Map<Integer, Integer> CTF_ON_SCORE_REWARDS = new HashMap<>();
-    public static Map<Integer, Integer> CTF_WINNER_REWARDS = new HashMap<>();
+    public static final Map<Integer, Integer> CTF_ON_SCORE_REWARDS = new HashMap<>();
+    public static final Map<Integer, Integer> CTF_WINNER_REWARDS = new HashMap<>();
     public static Map<Integer, Integer> CTF_DRAW_REWARDS;
     public static int CTF_RUNNING_TIME;
     public static String CTF_TEAM_1_NAME;
@@ -630,16 +630,16 @@ public final class Config {
     public static boolean BOSS_EVENT_TIME_ON_SCREEN;
     public static int BOSS_EVENT_TIME_TO_DESPAWN_BOSS;
     public static int BOSS_EVENT_REGISTRATION_NPC_ID;
-    public static Map<Integer, Integer> BOSS_EVENT_GENERAL_REWARDS = new HashMap<>();
-    public static Map<Integer, Integer> BOSS_EVENT_LAST_ATTACKER_REWARDS = new HashMap<>();
-    public static Map<Integer, Integer> BOSS_EVENT_MAIN_DAMAGE_DEALER_REWARDS = new HashMap<>();
+    public static final Map<Integer, Integer> BOSS_EVENT_GENERAL_REWARDS = new HashMap<>();
+    public static final Map<Integer, Integer> BOSS_EVENT_LAST_ATTACKER_REWARDS = new HashMap<>();
+    public static final Map<Integer, Integer> BOSS_EVENT_MAIN_DAMAGE_DEALER_REWARDS = new HashMap<>();
     public static boolean BOSS_EVENT_REWARD_MAIN_DAMAGE_DEALER;
     public static boolean BOSS_EVENT_REWARD_LAST_ATTACKER;
-    public static List<Location> BOSS_EVENT_LOCATION = new ArrayList<>();
+    public static final List<Location> BOSS_EVENT_LOCATION = new ArrayList<>();
     public static int BOSS_EVENT_REWARD_ID;
     public static int BOSS_EVENT_REWARD_COUNT;
     public static int BOSS_EVENT_MIN_DAMAGE_TO_OBTAIN_REWARD;
-    public static List<Integer> BOSS_EVENT_ID = new ArrayList<>();
+    public static final List<Integer> BOSS_EVENT_ID = new ArrayList<>();
     public static Location BOSS_EVENT_NPC_REGISTER_LOC;
     public static int BOSS_EVENT_TIME_TO_WAIT;
     public static int BOSS_EVENT_TIME_TO_TELEPORT_PLAYERS;
@@ -721,16 +721,16 @@ public final class Config {
     public static String TOURNAMENT_ID_RESTRICT;
     public static List<Integer> TOURNAMENT_LISTID_RESTRICT;
     public static boolean ARENA_SKILL_PROTECT;
-    public static List<Integer> ARENA_SKILL_LIST = new ArrayList<>();
-    public static List<Integer> ARENA_DISABLE_SKILL_LIST = new ArrayList<>();
-    public static List<Integer> ARENA_STOP_SKILL_LIST = new ArrayList<>();
-    public static List<Integer> ARENA_DISABLE_SKILL_LIST_PERM = new ArrayList<>();
+    public static final List<Integer> ARENA_SKILL_LIST = new ArrayList<>();
+    public static final List<Integer> ARENA_DISABLE_SKILL_LIST = new ArrayList<>();
+    public static final List<Integer> ARENA_STOP_SKILL_LIST = new ArrayList<>();
+    public static final List<Integer> ARENA_DISABLE_SKILL_LIST_PERM = new ArrayList<>();
     public static String NPC_LIST;
     public static Map<Integer, Integer> PARTY_DROP_REWARDS;
     public static int[] NPC_LIST_SET;
     public static String PARTY_FARM_TITLE;
     public static boolean ENABLE_DROP_PARTYFARM;
-    public static Map<Integer, List<Integer>> PARTY_DROP_LIST = new HashMap<>();
+    public static final Map<Integer, List<Integer>> PARTY_DROP_LIST = new HashMap<>();
     public static String PARTY_FARMANNONCER;
     public static boolean PARTY_MESSAGE_ENABLED;
     public static long NPC_SERVER_DELAY;
@@ -744,20 +744,20 @@ public final class Config {
     public static int monsterId;
     public static int MONSTER_LOCS_COUNT;
     public static int[][] MONSTER_LOCS;
-    public static boolean RESERVE_HOST_ON_LOGIN = false;
-    public static int MMO_SELECTOR_SLEEP_TIME = 20;
-    public static int MMO_MAX_SEND_PER_PASS = 80;
-    public static int MMO_MAX_READ_PER_PASS = 80;
-    public static int MMO_HELPER_BUFFER_COUNT = 20;
-    public static int CLIENT_PACKET_QUEUE_SIZE;
-    public static int CLIENT_PACKET_QUEUE_MAX_BURST_SIZE;
-    public static int CLIENT_PACKET_QUEUE_MAX_PACKETS_PER_SECOND;
-    public static int CLIENT_PACKET_QUEUE_MEASURE_INTERVAL;
-    public static int CLIENT_PACKET_QUEUE_MAX_AVERAGE_PACKETS_PER_SECOND;
-    public static int CLIENT_PACKET_QUEUE_MAX_FLOODS_PER_MIN;
-    public static int CLIENT_PACKET_QUEUE_MAX_OVERFLOWS_PER_MIN;
-    public static int CLIENT_PACKET_QUEUE_MAX_UNDERFLOWS_PER_MIN;
-    public static int CLIENT_PACKET_QUEUE_MAX_UNKNOWN_PER_MIN;
+    public static final boolean RESERVE_HOST_ON_LOGIN = false;
+    public static final int MMO_SELECTOR_SLEEP_TIME = 20;
+    public static final int MMO_MAX_SEND_PER_PASS = 80;
+    public static final int MMO_MAX_READ_PER_PASS = 80;
+    public static final int MMO_HELPER_BUFFER_COUNT = 20;
+    public static final int CLIENT_PACKET_QUEUE_SIZE;
+    public static final int CLIENT_PACKET_QUEUE_MAX_BURST_SIZE;
+    public static final int CLIENT_PACKET_QUEUE_MAX_PACKETS_PER_SECOND;
+    public static final int CLIENT_PACKET_QUEUE_MEASURE_INTERVAL;
+    public static final int CLIENT_PACKET_QUEUE_MAX_AVERAGE_PACKETS_PER_SECOND;
+    public static final int CLIENT_PACKET_QUEUE_MAX_FLOODS_PER_MIN;
+    public static final int CLIENT_PACKET_QUEUE_MAX_OVERFLOWS_PER_MIN;
+    public static final int CLIENT_PACKET_QUEUE_MAX_UNDERFLOWS_PER_MIN;
+    public static final int CLIENT_PACKET_QUEUE_MAX_UNKNOWN_PER_MIN;
 
     static {
         CLIENT_PACKET_QUEUE_SIZE = MMO_MAX_READ_PER_PASS + 2;
@@ -771,19 +771,19 @@ public final class Config {
         CLIENT_PACKET_QUEUE_MAX_UNKNOWN_PER_MIN = 5;
     }
 
-    public static final ExProperties initProperties(String filename) {
+    public static ExProperties initProperties(String filename) {
         ExProperties result = new ExProperties();
 
         try {
             result.load(new File(filename));
         } catch (Exception e) {
-            LOGGER.error("An error occured loading '{}' config.", e, new Object[]{filename});
+            LOGGER.error("An error occured loading '{}' config.", e, filename);
         }
 
         return result;
     }
 
-    private static final void loadClans() {
+    private static void loadClans() {
         ExProperties clans = initProperties("./config/clans.properties");
         ALT_CLAN_JOIN_DAYS = clans.getProperty("DaysBeforeJoinAClan", 5);
         ALT_CLAN_CREATE_DAYS = clans.getProperty("DaysBeforeCreateAClan", 10);
@@ -802,10 +802,10 @@ public final class Config {
         ALT_MANOR_APPROVE_MIN = clans.getProperty("AltManorApproveMin", 0);
         ALT_MANOR_MAINTENANCE_MIN = clans.getProperty("AltManorMaintenanceMin", 6);
         ALT_MANOR_SAVE_PERIOD_RATE = clans.getProperty("AltManorSavePeriodRate", 2) * 3600000;
-        CH_TELE_FEE_RATIO = (long) clans.getProperty("ClanHallTeleportFunctionFeeRatio", 86400000);
+        CH_TELE_FEE_RATIO = clans.getProperty("ClanHallTeleportFunctionFeeRatio", 86400000);
         CH_TELE1_FEE = clans.getProperty("ClanHallTeleportFunctionFeeLvl1", 7000);
         CH_TELE2_FEE = clans.getProperty("ClanHallTeleportFunctionFeeLvl2", 14000);
-        CH_SUPPORT_FEE_RATIO = (long) clans.getProperty("ClanHallSupportFunctionFeeRatio", 86400000);
+        CH_SUPPORT_FEE_RATIO = clans.getProperty("ClanHallSupportFunctionFeeRatio", 86400000);
         CH_SUPPORT1_FEE = clans.getProperty("ClanHallSupportFeeLvl1", 17500);
         CH_SUPPORT2_FEE = clans.getProperty("ClanHallSupportFeeLvl2", 35000);
         CH_SUPPORT3_FEE = clans.getProperty("ClanHallSupportFeeLvl3", 49000);
@@ -814,13 +814,13 @@ public final class Config {
         CH_SUPPORT6_FEE = clans.getProperty("ClanHallSupportFeeLvl6", 252000);
         CH_SUPPORT7_FEE = clans.getProperty("ClanHallSupportFeeLvl7", 259000);
         CH_SUPPORT8_FEE = clans.getProperty("ClanHallSupportFeeLvl8", 364000);
-        CH_MPREG_FEE_RATIO = (long) clans.getProperty("ClanHallMpRegenerationFunctionFeeRatio", 86400000);
+        CH_MPREG_FEE_RATIO = clans.getProperty("ClanHallMpRegenerationFunctionFeeRatio", 86400000);
         CH_MPREG1_FEE = clans.getProperty("ClanHallMpRegenerationFeeLvl1", 14000);
         CH_MPREG2_FEE = clans.getProperty("ClanHallMpRegenerationFeeLvl2", 26250);
         CH_MPREG3_FEE = clans.getProperty("ClanHallMpRegenerationFeeLvl3", 45500);
         CH_MPREG4_FEE = clans.getProperty("ClanHallMpRegenerationFeeLvl4", 96250);
         CH_MPREG5_FEE = clans.getProperty("ClanHallMpRegenerationFeeLvl5", 140000);
-        CH_HPREG_FEE_RATIO = (long) clans.getProperty("ClanHallHpRegenerationFunctionFeeRatio", 86400000);
+        CH_HPREG_FEE_RATIO = clans.getProperty("ClanHallHpRegenerationFunctionFeeRatio", 86400000);
         CH_HPREG1_FEE = clans.getProperty("ClanHallHpRegenerationFeeLvl1", 4900);
         CH_HPREG2_FEE = clans.getProperty("ClanHallHpRegenerationFeeLvl2", 5600);
         CH_HPREG3_FEE = clans.getProperty("ClanHallHpRegenerationFeeLvl3", 7000);
@@ -834,7 +834,7 @@ public final class Config {
         CH_HPREG11_FEE = clans.getProperty("ClanHallHpRegenerationFeeLvl11", 26250);
         CH_HPREG12_FEE = clans.getProperty("ClanHallHpRegenerationFeeLvl12", 29750);
         CH_HPREG13_FEE = clans.getProperty("ClanHallHpRegenerationFeeLvl13", 36166);
-        CH_EXPREG_FEE_RATIO = (long) clans.getProperty("ClanHallExpRegenerationFunctionFeeRatio", 86400000);
+        CH_EXPREG_FEE_RATIO = clans.getProperty("ClanHallExpRegenerationFunctionFeeRatio", 86400000);
         CH_EXPREG1_FEE = clans.getProperty("ClanHallExpRegenerationFeeLvl1", 21000);
         CH_EXPREG2_FEE = clans.getProperty("ClanHallExpRegenerationFeeLvl2", 42000);
         CH_EXPREG3_FEE = clans.getProperty("ClanHallExpRegenerationFeeLvl3", 63000);
@@ -842,19 +842,19 @@ public final class Config {
         CH_EXPREG5_FEE = clans.getProperty("ClanHallExpRegenerationFeeLvl5", 147000);
         CH_EXPREG6_FEE = clans.getProperty("ClanHallExpRegenerationFeeLvl6", 163331);
         CH_EXPREG7_FEE = clans.getProperty("ClanHallExpRegenerationFeeLvl7", 210000);
-        CH_ITEM_FEE_RATIO = (long) clans.getProperty("ClanHallItemCreationFunctionFeeRatio", 86400000);
+        CH_ITEM_FEE_RATIO = clans.getProperty("ClanHallItemCreationFunctionFeeRatio", 86400000);
         CH_ITEM1_FEE = clans.getProperty("ClanHallItemCreationFunctionFeeLvl1", 210000);
         CH_ITEM2_FEE = clans.getProperty("ClanHallItemCreationFunctionFeeLvl2", 490000);
         CH_ITEM3_FEE = clans.getProperty("ClanHallItemCreationFunctionFeeLvl3", 980000);
-        CH_CURTAIN_FEE_RATIO = (long) clans.getProperty("ClanHallCurtainFunctionFeeRatio", 86400000);
+        CH_CURTAIN_FEE_RATIO = clans.getProperty("ClanHallCurtainFunctionFeeRatio", 86400000);
         CH_CURTAIN1_FEE = clans.getProperty("ClanHallCurtainFunctionFeeLvl1", 2002);
         CH_CURTAIN2_FEE = clans.getProperty("ClanHallCurtainFunctionFeeLvl2", 2625);
-        CH_FRONT_FEE_RATIO = (long) clans.getProperty("ClanHallFrontPlatformFunctionFeeRatio", 86400000);
+        CH_FRONT_FEE_RATIO = clans.getProperty("ClanHallFrontPlatformFunctionFeeRatio", 86400000);
         CH_FRONT1_FEE = clans.getProperty("ClanHallFrontPlatformFunctionFeeLvl1", 3031);
         CH_FRONT2_FEE = clans.getProperty("ClanHallFrontPlatformFunctionFeeLvl2", 9331);
     }
 
-    private static final void loadcustomproperties() {
+    private static void loadcustomproperties() {
         ExProperties customfile = initProperties("./config/custom.properties");
         ENABLE_MODIFY_SKILL_DURATION = Boolean.parseBoolean(customfile.getProperty("EnableModifySkillDuration", "false"));
         if (ENABLE_MODIFY_SKILL_DURATION) {
@@ -873,7 +873,7 @@ public final class Config {
                             nfe.printStackTrace();
                         }
 
-                        if (!skill.equals("")) {
+                        if (!skill.isEmpty()) {
                             System.out.println("[SkillDurationList]: invalid config property -> SkillList \"" + skillSplit[0] + "\"" + skillSplit[1]);
                         }
                     }
@@ -1003,7 +1003,7 @@ public final class Config {
 
     }
 
-    private static final void loadMultiFunctionZone() {
+    private static void loadMultiFunctionZone() {
         ExProperties multifunctionzone = initProperties("./config/multiFunctionzone.properties");
         REVIVE = false;
         PVP_ENABLED = Boolean.parseBoolean(multifunctionzone.getProperty("EnablePvP", "false"));
@@ -1016,25 +1016,19 @@ public final class Config {
         GIVE_NOBLES = Boolean.parseBoolean(multifunctionzone.getProperty("GiveNoblesse", "False"));
         String[] propertySplit = multifunctionzone.getProperty("Items", "").split(",");
         if (propertySplit.length != 0) {
-            for (String i : propertySplit) {
-                ITEMS.add(i);
-            }
+            ITEMS.addAll(Arrays.asList(propertySplit));
         }
 
         propertySplit = multifunctionzone.getProperty("Grades", "").split(",");
-        if (propertySplit.length != 0) {
-            for (String i : propertySplit) {
-                if (i.equals("D") || i.equals("C") || i.equals("B") || i.equals("A") || i.equals("S")) {
-                    GRADES.add(i);
-                }
+        for (String i : propertySplit) {
+            if (i.equals("D") || i.equals("C") || i.equals("B") || i.equals("A") || i.equals("S")) {
+                GRADES.add(i);
             }
         }
 
         propertySplit = multifunctionzone.getProperty("Classes", "").split(",");
         if (propertySplit.length != 0) {
-            for (String i : propertySplit) {
-                CLASSES.add(i);
-            }
+            CLASSES.addAll(Arrays.asList(propertySplit));
         }
 
         RADIUS = Integer.parseInt(multifunctionzone.getProperty("RespawnRadius", "500"));
@@ -1055,14 +1049,14 @@ public final class Config {
 
     }
 
-    private static final void loadEvents() {
+    private static void loadEvents() {
         ExProperties events = initProperties("./config/events.properties");
         ALT_OLY_START_TIME = events.getProperty("AltOlyStartTime", 18);
         ALT_OLY_MIN = events.getProperty("AltOlyMin", 0);
-        ALT_OLY_CPERIOD = (long) events.getProperty("AltOlyCPeriod", 21600000);
-        ALT_OLY_BATTLE = (long) events.getProperty("AltOlyBattle", 180000);
-        ALT_OLY_WPERIOD = (long) events.getProperty("AltOlyWPeriod", 604800000);
-        ALT_OLY_VPERIOD = (long) events.getProperty("AltOlyVPeriod", 86400000);
+        ALT_OLY_CPERIOD = events.getProperty("AltOlyCPeriod", 21600000);
+        ALT_OLY_BATTLE = events.getProperty("AltOlyBattle", 180000);
+        ALT_OLY_WPERIOD = events.getProperty("AltOlyWPeriod", 604800000);
+        ALT_OLY_VPERIOD = events.getProperty("AltOlyVPeriod", 86400000);
         ALT_OLY_WAIT_TIME = events.getProperty("AltOlyWaitTime", 30);
         ALT_OLY_WAIT_BATTLE = events.getProperty("AltOlyWaitBattle", 60);
         ALT_OLY_WAIT_END = events.getProperty("AltOlyWaitEnd", 40);
@@ -1088,14 +1082,14 @@ public final class Config {
         ALT_GAME_CASTLE_DUSK = events.getProperty("AltCastleForDusk", true);
         ALT_FESTIVAL_MIN_PLAYER = MathUtil.limit(events.getProperty("AltFestivalMinPlayer", 5), 2, 9);
         ALT_MAXIMUM_PLAYER_CONTRIB = events.getProperty("AltMaxPlayerContrib", 1000000);
-        ALT_FESTIVAL_MANAGER_START = (long) events.getProperty("AltFestivalManagerStart", 120000);
-        ALT_FESTIVAL_LENGTH = (long) events.getProperty("AltFestivalLength", 1080000);
-        ALT_FESTIVAL_CYCLE_LENGTH = (long) events.getProperty("AltFestivalCycleLength", 2280000);
-        ALT_FESTIVAL_FIRST_SPAWN = (long) events.getProperty("AltFestivalFirstSpawn", 120000);
-        ALT_FESTIVAL_FIRST_SWARM = (long) events.getProperty("AltFestivalFirstSwarm", 300000);
-        ALT_FESTIVAL_SECOND_SPAWN = (long) events.getProperty("AltFestivalSecondSpawn", 540000);
-        ALT_FESTIVAL_SECOND_SWARM = (long) events.getProperty("AltFestivalSecondSwarm", 720000);
-        ALT_FESTIVAL_CHEST_SPAWN = (long) events.getProperty("AltFestivalChestSpawn", 900000);
+        ALT_FESTIVAL_MANAGER_START = events.getProperty("AltFestivalManagerStart", 120000);
+        ALT_FESTIVAL_LENGTH = events.getProperty("AltFestivalLength", 1080000);
+        ALT_FESTIVAL_CYCLE_LENGTH = events.getProperty("AltFestivalCycleLength", 2280000);
+        ALT_FESTIVAL_FIRST_SPAWN = events.getProperty("AltFestivalFirstSpawn", 120000);
+        ALT_FESTIVAL_FIRST_SWARM = events.getProperty("AltFestivalFirstSwarm", 300000);
+        ALT_FESTIVAL_SECOND_SPAWN = events.getProperty("AltFestivalSecondSpawn", 540000);
+        ALT_FESTIVAL_SECOND_SWARM = events.getProperty("AltFestivalSecondSwarm", 720000);
+        ALT_FESTIVAL_CHEST_SPAWN = events.getProperty("AltFestivalChestSpawn", 900000);
         FS_TIME_ENTRY = events.getProperty("EntryTime", 55);
         FS_TIME_END = events.getProperty("EndTime", 50);
         FS_PARTY_MEMBER_COUNT = MathUtil.limit(events.getProperty("NeededPartyMembers", 4), 2, 9);
@@ -1110,7 +1104,7 @@ public final class Config {
         RIFT_ENTER_COST_CAPTAIN = events.getProperty("CaptainCost", 27);
         RIFT_ENTER_COST_COMMANDER = events.getProperty("CommanderCost", 30);
         RIFT_ENTER_COST_HERO = events.getProperty("HeroCost", 33);
-        RIFT_BOSS_ROOM_TIME_MUTIPLY = events.getProperty("BossRoomTimeMultiply", (double) 1.0F);
+        RIFT_BOSS_ROOM_TIME_MUTIPLY = events.getProperty("BossRoomTimeMultiply", 1.0F);
         ALLOW_WEDDING = events.getProperty("AllowWedding", false);
         WEDDING_PRICE = events.getProperty("WeddingPrice", 1000000);
         WEDDING_SAMESEX = events.getProperty("WeddingAllowSameSex", false);
@@ -1130,7 +1124,7 @@ public final class Config {
         ALT_FISH_CHAMPIONSHIP_REWARD_5 = events.getProperty("AltFishChampionshipReward5", 100000);
     }
 
-    private static final void loadGeoengine() {
+    private static void loadGeoengine() {
         ExProperties geoengine = initProperties("./config/geoengine.properties");
         GEODATA_PATH = geoengine.getProperty("GeoDataPath", "./data/geodata/");
         PART_OF_CHARACTER_HEIGHT = geoengine.getProperty("PartOfCharacterHeight", 75);
@@ -1145,17 +1139,17 @@ public final class Config {
         DEBUG_GEO_NODE = geoengine.getProperty("DebugGeoNode", false);
     }
 
-    private static final void loadHexID() {
+    private static void loadHexID() {
         ExProperties hexid = initProperties("./config/hexid.txt");
         SERVER_ID = Integer.parseInt(hexid.getProperty("ServerID"));
         HEX_ID = (new BigInteger(hexid.getProperty("HexID"), 16)).toByteArray();
     }
 
-    public static final void saveHexid(int serverId, String hexId) {
+    public static void saveHexid(int serverId, String hexId) {
         saveHexid(serverId, hexId, "./config/hexid.txt");
     }
 
-    public static final void saveHexid(int serverId, String hexId, String filename) {
+    public static void saveHexid(int serverId, String hexId, String filename) {
         try {
             File file = new File(filename);
             file.createNewFile();
@@ -1167,22 +1161,22 @@ public final class Config {
                 hexSetting.store(out, "the hexID to auth into login");
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to save hex ID to '{}' file.", e, new Object[]{filename});
+            LOGGER.error("Failed to save hex ID to '{}' file.", e, filename);
         }
 
     }
 
-    private static final void loadNpcs() {
+    private static void loadNpcs() {
         ExProperties npcs = initProperties("./config/npcs.properties");
         CHAMPION_FREQUENCY = npcs.getProperty("ChampionFrequency", 0);
         CHAMP_MIN_LVL = npcs.getProperty("ChampionMinLevel", 20);
         CHAMP_MAX_LVL = npcs.getProperty("ChampionMaxLevel", 70);
         CHAMPION_HP = npcs.getProperty("ChampionHp", 8);
-        CHAMPION_HP_REGEN = npcs.getProperty("ChampionHpRegen", (double) 1.0F);
+        CHAMPION_HP_REGEN = npcs.getProperty("ChampionHpRegen", 1.0F);
         CHAMPION_REWARDS = npcs.getProperty("ChampionRewards", 8);
         CHAMPION_ADENAS_REWARDS = npcs.getProperty("ChampionAdenasRewards", 1);
-        CHAMPION_ATK = npcs.getProperty("ChampionAtk", (double) 1.0F);
-        CHAMPION_SPD_ATK = npcs.getProperty("ChampionSpdAtk", (double) 1.0F);
+        CHAMPION_ATK = npcs.getProperty("ChampionAtk", 1.0F);
+        CHAMPION_SPD_ATK = npcs.getProperty("ChampionSpdAtk", 1.0F);
         CHAMPION_REWARD = npcs.getProperty("ChampionRewardItem", 0);
         CHAMPION_REWARD_ID = npcs.getProperty("ChampionRewardItemID", 6393);
         CHAMPION_REWARD_QTY = npcs.getProperty("ChampionRewardItemQty", 1);
@@ -1204,9 +1198,9 @@ public final class Config {
         WYVERN_ALLOW_UPGRADER = npcs.getProperty("AllowWyvernUpgrader", true);
         WYVERN_REQUIRED_LEVEL = npcs.getProperty("RequiredStriderLevel", 55);
         WYVERN_REQUIRED_CRYSTALS = npcs.getProperty("RequiredCrystalsNumber", 10);
-        RAID_HP_REGEN_MULTIPLIER = npcs.getProperty("RaidHpRegenMultiplier", (double) 1.0F);
-        RAID_MP_REGEN_MULTIPLIER = npcs.getProperty("RaidMpRegenMultiplier", (double) 1.0F);
-        RAID_DEFENCE_MULTIPLIER = npcs.getProperty("RaidDefenceMultiplier", (double) 1.0F);
+        RAID_HP_REGEN_MULTIPLIER = npcs.getProperty("RaidHpRegenMultiplier", 1.0F);
+        RAID_MP_REGEN_MULTIPLIER = npcs.getProperty("RaidMpRegenMultiplier", 1.0F);
+        RAID_DEFENCE_MULTIPLIER = npcs.getProperty("RaidDefenceMultiplier", 1.0F);
         RAID_MINION_RESPAWN_TIMER = npcs.getProperty("RaidMinionRespawnTime", 300000);
         RAID_DISABLE_CURSE = npcs.getProperty("DisableRaidCurse", false);
         SPAWN_INTERVAL_AQ = npcs.getProperty("AntQueenSpawnInterval", 36);
@@ -1246,12 +1240,12 @@ public final class Config {
         MAX_MONSTER_ANIMATION = npcs.getProperty("MaxMonsterAnimation", 40);
     }
 
-    private static final void loadPlayers() {
+    private static void loadPlayers() {
         ExProperties players = initProperties("./config/players.properties");
         EFFECT_CANCELING = players.getProperty("CancelLesserEffect", true);
-        HP_REGEN_MULTIPLIER = players.getProperty("HpRegenMultiplier", (double) 1.0F);
-        MP_REGEN_MULTIPLIER = players.getProperty("MpRegenMultiplier", (double) 1.0F);
-        CP_REGEN_MULTIPLIER = players.getProperty("CpRegenMultiplier", (double) 1.0F);
+        HP_REGEN_MULTIPLIER = players.getProperty("HpRegenMultiplier", 1.0F);
+        MP_REGEN_MULTIPLIER = players.getProperty("MpRegenMultiplier", 1.0F);
+        CP_REGEN_MULTIPLIER = players.getProperty("CpRegenMultiplier", 1.0F);
         PLAYER_SPAWN_PROTECTION = players.getProperty("PlayerSpawnProtection", 0);
         PLAYER_FAKEDEATH_UP_PROTECTION = players.getProperty("PlayerFakeDeathUpProtection", 0);
         RESPAWN_RESTORE_HP = players.getProperty("RespawnRestoreHP", 0.7);
@@ -1265,7 +1259,7 @@ public final class Config {
         INVENTORY_MAXIMUM_QUEST_ITEMS = players.getProperty("MaximumSlotsForQuestItems", 100);
         INVENTORY_MAXIMUM_PET = players.getProperty("MaximumSlotsForPet", 12);
         MAX_ITEM_IN_PACKET = Math.max(INVENTORY_MAXIMUM_NO_DWARF, INVENTORY_MAXIMUM_DWARF);
-        ALT_WEIGHT_LIMIT = (double) players.getProperty("AltWeightLimit", 1);
+        ALT_WEIGHT_LIMIT = players.getProperty("AltWeightLimit", 1);
         WAREHOUSE_SLOTS_NO_DWARF = players.getProperty("MaximumWarehouseSlotsForNoDwarf", 100);
         WAREHOUSE_SLOTS_DWARF = players.getProperty("MaximumWarehouseSlotsForDwarf", 120);
         WAREHOUSE_SLOTS_CLAN = players.getProperty("MaximumWarehouseSlotsForClan", 150);
@@ -1311,7 +1305,7 @@ public final class Config {
         PVP_NORMAL_TIME = players.getProperty("PvPVsNormalTime", 15000);
         PVP_PVP_TIME = players.getProperty("PvPVsPvPTime", 30000);
         PARTY_XP_CUTOFF_METHOD = players.getProperty("PartyXpCutoffMethod", "level");
-        PARTY_XP_CUTOFF_PERCENT = players.getProperty("PartyXpCutoffPercent", (double) 3.0F);
+        PARTY_XP_CUTOFF_PERCENT = players.getProperty("PartyXpCutoffPercent", 3.0F);
         PARTY_XP_CUTOFF_LEVEL = players.getProperty("PartyXpCutoffLevel", 20);
         PARTY_RANGE = players.getProperty("PartyRange", 1500);
         DEFAULT_ACCESS_LEVEL = players.getProperty("DefaultAccessLevel", 0);
@@ -1343,7 +1337,7 @@ public final class Config {
         STORE_SKILL_COOLTIME = players.getProperty("StoreSkillCooltime", true);
     }
 
-    private static final void loadSieges() {
+    private static void loadSieges() {
         ExProperties sieges = initProperties("./config/siege.properties");
         SIEGE_LENGTH = sieges.getProperty("SiegeLength", 120);
         MINIMUM_CLAN_LEVEL = sieges.getProperty("SiegeClanMinLevel", 4);
@@ -1380,7 +1374,7 @@ public final class Config {
         SIEGE_SCHUT = sieges.getProperty("Siege_Schuttgart", false);
     }
 
-    private static final void loadServer() {
+    private static void loadServer() {
         ExProperties server = initProperties("./config/server.properties");
         GAMESERVER_HOSTNAME = server.getProperty("GameserverHostname");
         PORT_GAME = server.getProperty("GameserverPort", 7777);
@@ -1419,34 +1413,34 @@ public final class Config {
         }
 
         PLAYER_DROPPED_ITEM_MULTIPLIER = server.getProperty("PlayerDroppedItemMultiplier", 1);
-        RATE_XP = server.getProperty("RateXp", (double) 1.0F);
-        RATE_SP = server.getProperty("RateSp", (double) 1.0F);
-        RATE_PARTY_XP = server.getProperty("RatePartyXp", (double) 1.0F);
-        RATE_PARTY_SP = server.getProperty("RatePartySp", (double) 1.0F);
-        RATE_DROP_ADENA = server.getProperty("RateDropAdena", (double) 1.0F);
-        RATE_DROP_ITEMS = server.getProperty("RateDropItems", (double) 1.0F);
-        RATE_DROP_ITEMS_BY_RAID = server.getProperty("RateRaidDropItems", (double) 1.0F);
-        RATE_DROP_SPOIL = server.getProperty("RateDropSpoil", (double) 1.0F);
+        RATE_XP = server.getProperty("RateXp", 1.0F);
+        RATE_SP = server.getProperty("RateSp", 1.0F);
+        RATE_PARTY_XP = server.getProperty("RatePartyXp", 1.0F);
+        RATE_PARTY_SP = server.getProperty("RatePartySp", 1.0F);
+        RATE_DROP_ADENA = server.getProperty("RateDropAdena", 1.0F);
+        RATE_DROP_ITEMS = server.getProperty("RateDropItems", 1.0F);
+        RATE_DROP_ITEMS_BY_RAID = server.getProperty("RateRaidDropItems", 1.0F);
+        RATE_DROP_SPOIL = server.getProperty("RateDropSpoil", 1.0F);
         RATE_DROP_MANOR = server.getProperty("RateDropManor", 1);
-        RATE_QUEST_DROP = server.getProperty("RateQuestDrop", (double) 1.0F);
-        RATE_QUEST_REWARD = server.getProperty("RateQuestReward", (double) 1.0F);
-        RATE_QUEST_REWARD_XP = server.getProperty("RateQuestRewardXP", (double) 1.0F);
-        RATE_QUEST_REWARD_SP = server.getProperty("RateQuestRewardSP", (double) 1.0F);
-        RATE_QUEST_REWARD_ADENA = server.getProperty("RateQuestRewardAdena", (double) 1.0F);
-        RATE_KARMA_EXP_LOST = server.getProperty("RateKarmaExpLost", (double) 1.0F);
-        RATE_SIEGE_GUARDS_PRICE = server.getProperty("RateSiegeGuardsPrice", (double) 1.0F);
-        RATE_DROP_COMMON_HERBS = server.getProperty("RateCommonHerbs", (double) 1.0F);
-        RATE_DROP_HP_HERBS = server.getProperty("RateHpHerbs", (double) 1.0F);
-        RATE_DROP_MP_HERBS = server.getProperty("RateMpHerbs", (double) 1.0F);
-        RATE_DROP_SPECIAL_HERBS = server.getProperty("RateSpecialHerbs", (double) 1.0F);
+        RATE_QUEST_DROP = server.getProperty("RateQuestDrop", 1.0F);
+        RATE_QUEST_REWARD = server.getProperty("RateQuestReward", 1.0F);
+        RATE_QUEST_REWARD_XP = server.getProperty("RateQuestRewardXP", 1.0F);
+        RATE_QUEST_REWARD_SP = server.getProperty("RateQuestRewardSP", 1.0F);
+        RATE_QUEST_REWARD_ADENA = server.getProperty("RateQuestRewardAdena", 1.0F);
+        RATE_KARMA_EXP_LOST = server.getProperty("RateKarmaExpLost", 1.0F);
+        RATE_SIEGE_GUARDS_PRICE = server.getProperty("RateSiegeGuardsPrice", 1.0F);
+        RATE_DROP_COMMON_HERBS = server.getProperty("RateCommonHerbs", 1.0F);
+        RATE_DROP_HP_HERBS = server.getProperty("RateHpHerbs", 1.0F);
+        RATE_DROP_MP_HERBS = server.getProperty("RateMpHerbs", 1.0F);
+        RATE_DROP_SPECIAL_HERBS = server.getProperty("RateSpecialHerbs", 1.0F);
         PLAYER_DROP_LIMIT = server.getProperty("PlayerDropLimit", 3);
         PLAYER_RATE_DROP = server.getProperty("PlayerRateDrop", 5);
         PLAYER_RATE_DROP_ITEM = server.getProperty("PlayerRateDropItem", 70);
         PLAYER_RATE_DROP_EQUIP = server.getProperty("PlayerRateDropEquip", 25);
         PLAYER_RATE_DROP_EQUIP_WEAPON = server.getProperty("PlayerRateDropEquipWeapon", 5);
-        PET_XP_RATE = server.getProperty("PetXpRate", (double) 1.0F);
+        PET_XP_RATE = server.getProperty("PetXpRate", 1.0F);
         PET_FOOD_RATE = server.getProperty("PetFoodRate", 1);
-        SINEATER_XP_RATE = server.getProperty("SinEaterXpRate", (double) 1.0F);
+        SINEATER_XP_RATE = server.getProperty("SinEaterXpRate", 1.0F);
         KARMA_DROP_LIMIT = server.getProperty("KarmaDropLimit", 10);
         KARMA_RATE_DROP = server.getProperty("KarmaRateDrop", 70);
         KARMA_RATE_DROP_ITEM = server.getProperty("KarmaRateDropItem", 50);
@@ -1498,7 +1492,7 @@ public final class Config {
         DISABLE_TUTORIAL = server.getProperty("DisableTutorial", false);
     }
 
-    private static final void loadEventEngine() {
+    private static void loadEventEngine() {
         ExProperties eventengine = initProperties("./config/events/eventengine.properties");
         ENABLE_EVENT_ENGINE = eventengine.getProperty("EnableEventEngine", false);
         EVENT_REGISTRATION_TIME = eventengine.getProperty("EventRegistrationTime", 10);
@@ -1603,7 +1597,7 @@ public final class Config {
         CTF_TEAM_2_FLAG_LOCATION = new Location(Integer.parseInt(ctf_team_2_flag_loc_split[0]), Integer.parseInt(ctf_team_2_flag_loc_split[1]), Integer.parseInt(ctf_team_2_flag_loc_split[2]));
     }
 
-    private static final void loadPcBangConfig() {
+    private static void loadPcBangConfig() {
         ExProperties PcBanG = initProperties("./config/events/pcBangEvent.properties");
         PCB_ENABLE = Boolean.parseBoolean(PcBanG.getProperty("PcBangPointEnable", "true"));
         PCB_MIN_LEVEL = Integer.parseInt(PcBanG.getProperty("PcBangPointMinLevel", "20"));
@@ -1618,7 +1612,7 @@ public final class Config {
         PCB_INTERVAL = Integer.parseInt(PcBanG.getProperty("PcBangPointTimeStamp", "900"));
     }
 
-    private static final void loadPvpEvent() {
+    private static void loadPvpEvent() {
         ExProperties pvpevent = initProperties("./config/events/pvpEvent.properties");
         PVP_EVENT_ENABLED = pvpevent.getProperty("PvPEventEnabled", false);
         PVP_EVENT_INTERVAL = pvpevent.getProperty("PvPZEventInterval", "20:00").split(",");
@@ -1645,7 +1639,7 @@ public final class Config {
 
     }
 
-    private static final void loadBossEvent() {
+    private static void loadBossEvent() {
         ExProperties bossEvent = initProperties("./config/events/killTheBossEvent.properties");
         BOSS_EVENT_BY_TIME_OF_DAY = bossEvent.getProperty("EventTime", "20:00").split(",");
 
@@ -1693,7 +1687,7 @@ public final class Config {
         BOSS_EVENT_TIME_ON_SCREEN = bossEvent.getProperty("EventTimeOnScreen", true);
     }
 
-    private static final void loadTour() {
+    private static void loadTour() {
         ExProperties tournament = initProperties("./config/events/tournament.properties");
         TOURNAMENT_EVENT_START = tournament.getProperty("TournamentStartOn", false);
         TOURNAMENT_EVENT_TIME = tournament.getProperty("TournamentAutoEvent", false);
@@ -1827,7 +1821,7 @@ public final class Config {
 
     }
 
-    private static final void loadPartyFarm() {
+    private static void loadPartyFarm() {
         ExProperties DungeonPartyFarm = initProperties("./config/events/partyfarm.properties");
         NPC_LIST = DungeonPartyFarm.getProperty("NpcListPartyDrop", "10506,10507");
         ENABLE_DROP_PARTYFARM = DungeonPartyFarm.getProperty("EnableDrop", false);
@@ -1845,7 +1839,7 @@ public final class Config {
         PARTY_FARM_MONSTER_DALAY = Integer.parseInt(DungeonPartyFarm.getProperty("MonsterDelay", "10"));
         PARTY_FARM_BY_TIME_OF_DAY = Boolean.parseBoolean(DungeonPartyFarm.getProperty("PartyFarmEventEnabled", "false"));
         START_PARTY = Boolean.parseBoolean(DungeonPartyFarm.getProperty("StartSpawnPartyFarm", "false"));
-        NPC_SERVER_DELAY = (long) DungeonPartyFarm.getProperty("npcServerDelay", 70);
+        NPC_SERVER_DELAY = DungeonPartyFarm.getProperty("npcServerDelay", 70);
         EVENT_BEST_FARM_TIME = Integer.parseInt(DungeonPartyFarm.getProperty("EventBestFarmTime", "1"));
         EVENT_BEST_FARM_INTERVAL_BY_TIME_OF_DAY = DungeonPartyFarm.getProperty("BestFarmStartTime", "20:00").split(",");
         PARTY_MESSAGE_ENABLED = Boolean.parseBoolean(DungeonPartyFarm.getProperty("ScreenPartyMessageEnable", "false"));
@@ -1868,7 +1862,7 @@ public final class Config {
 
     }
 
-    private static final void loadLogin() {
+    private static void loadLogin() {
         ExProperties server = initProperties("./config/loginserver.properties");
         HOSTNAME = server.getProperty("Hostname", "localhost");
         LOGIN_BIND_ADDRESS = server.getProperty("LoginserverHostname", "*");
@@ -1892,7 +1886,7 @@ public final class Config {
         MAX_CONNECTION_PER_IP = server.getProperty("MaxConnectionPerIP", 50);
     }
 
-    public static final void loadGameServer() {
+    public static void loadGameServer() {
         LOGGER.info("Loading gameserver configuration files.");
         loadClans();
         loadcustomproperties();
@@ -1912,27 +1906,27 @@ public final class Config {
         loadPartyFarm();
     }
 
-    public static final void loadLoginServer() {
+    public static void loadLoginServer() {
         LOGGER.info("Loading loginserver configuration files.");
         loadLogin();
     }
 
-    public static final void loadAccountManager() {
+    public static void loadAccountManager() {
         LOGGER.info("Loading account manager configuration files.");
         loadLogin();
     }
 
-    public static final void loadGameServerRegistration() {
+    public static void loadGameServerRegistration() {
         LOGGER.info("Loading gameserver registration configuration files.");
         loadLogin();
     }
 
-    public static final void loadGeodataConverter() {
+    public static void loadGeodataConverter() {
         LOGGER.info("Loading geodata converter configuration files.");
         loadGeoengine();
     }
 
-    private static final int[][] parseItemsList(String line) {
+    private static int[][] parseItemsList(String line) {
         String[] propertySplit = line.split(";");
         if (propertySplit.length == 0) {
             return null;
@@ -2018,9 +2012,9 @@ public final class Config {
         for (String randomReward : aux.split(";")) {
             String[] infos = randomReward.split(",");
             if (infos.length > 2) {
-                auxReturn.add(new RewardHolder(Integer.valueOf(infos[0]), Integer.valueOf(infos[1]), Integer.valueOf(infos[2]), Integer.valueOf(infos[3])));
+                auxReturn.add(new RewardHolder(Integer.parseInt(infos[0]), Integer.parseInt(infos[1]), Integer.parseInt(infos[2]), Integer.parseInt(infos[3])));
             } else {
-                auxReturn.add(new RewardHolder(Integer.valueOf(infos[0]), Integer.valueOf(infos[1]), Integer.valueOf(infos[2])));
+                auxReturn.add(new RewardHolder(Integer.parseInt(infos[0]), Integer.parseInt(infos[1]), Integer.parseInt(infos[2])));
             }
         }
 
@@ -2073,16 +2067,16 @@ public final class Config {
             if (this._allowedClassChange == null) {
                 return false;
             } else {
-                return this._allowedClassChange.containsKey(job) ? (Boolean) this._allowedClassChange.get(job) : false;
+                return this._allowedClassChange.getOrDefault(job, false);
             }
         }
 
         public List<IntIntHolder> getRewardItems(int job) {
-            return (List) this._rewardItems.get(job);
+            return this._rewardItems.get(job);
         }
 
         public List<IntIntHolder> getRequiredItems(int job) {
-            return (List) this._claimItems.get(job);
+            return this._claimItems.get(job);
         }
     }
 }

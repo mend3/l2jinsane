@@ -33,7 +33,7 @@ public class BossZone extends ZoneType {
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("SELECT * FROM grandboss_list WHERE zone = ?");
+                PreparedStatement ps = con.prepareStatement("SELECT * FROM grandboss_list WHERE zone = ?")
         ) {
             ps.setInt(1, id);
 
@@ -43,26 +43,20 @@ public class BossZone extends ZoneType {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Couldn't load players for {}.", e, new Object[]{this.toString()});
+            LOGGER.error("Couldn't load players for {}.", e, this.toString());
         }
 
     }
 
     public void setParameter(String name, String value) {
-        if (name.equals("InvadeTime")) {
-            this._invadeTime = Integer.parseInt(value);
-        } else if (name.equals("oustX")) {
-            this._oustLoc[0] = Integer.parseInt(value);
-        } else if (name.equals("oustY")) {
-            this._oustLoc[1] = Integer.parseInt(value);
-        } else if (name.equals("oustZ")) {
-            this._oustLoc[2] = Integer.parseInt(value);
-        } else if (name.equals("MaxClanMembers")) {
-            this._maxClanMembers = Integer.parseInt(value);
-        } else if (name.equals("MaxNOClanMembers")) {
-            this._maxNOClanMembers = Integer.parseInt(value);
-        } else {
-            super.setParameter(name, value);
+        switch (name) {
+            case "InvadeTime" -> this._invadeTime = Integer.parseInt(value);
+            case "oustX" -> this._oustLoc[0] = Integer.parseInt(value);
+            case "oustY" -> this._oustLoc[1] = Integer.parseInt(value);
+            case "oustZ" -> this._oustLoc[2] = Integer.parseInt(value);
+            case "MaxClanMembers" -> this._maxClanMembers = Integer.parseInt(value);
+            case "MaxNOClanMembers" -> this._maxNOClanMembers = Integer.parseInt(value);
+            default -> super.setParameter(name, value);
         }
 
     }

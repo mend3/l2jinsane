@@ -397,9 +397,7 @@ public class Olympiad {
 
                 long regEnd = this.getMillisToCompEnd() - 600000L;
                 if (regEnd > 0L) {
-                    ThreadPool.schedule(() -> {
-                        World.toAllOnlinePlayers(SystemMessage.getSystemMessage(SystemMessageId.OLYMPIAD_REGISTRATION_PERIOD_ENDED));
-                    }, regEnd);
+                    ThreadPool.schedule(() -> World.toAllOnlinePlayers(SystemMessage.getSystemMessage(SystemMessageId.OLYMPIAD_REGISTRATION_PERIOD_ENDED)), regEnd);
                 }
 
                 this._scheduledCompEnd = ThreadPool.schedule(() -> {

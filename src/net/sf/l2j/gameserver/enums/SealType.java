@@ -16,11 +16,6 @@ public enum SealType {
         this._fullName = param4;
     }
 
-    // $FF: synthetic method
-    private static SealType[] $values() {
-        return new SealType[]{NONE, AVARICE, GNOSIS, STRIFE};
-    }
-
     public String getShortName() {
         return this._shortName;
     }

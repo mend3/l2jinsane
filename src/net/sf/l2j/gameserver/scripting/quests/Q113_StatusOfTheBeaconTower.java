@@ -50,14 +50,11 @@ public class Q113_StatusOfTheBeaconTower extends Quest {
                 htmltext = (player.getLevel() < 40) ? "31979-00.htm" : "31979-01.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 31979:
-                        htmltext = "31979-03.htm";
-                        break;
-                    case 32016:
-                        htmltext = "32016-01.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 31979 -> "31979-03.htm";
+                    case 32016 -> "32016-01.htm";
+                    default -> htmltext;
+                };
                 break;
             case 2:
                 htmltext = getAlreadyCompletedMsg();

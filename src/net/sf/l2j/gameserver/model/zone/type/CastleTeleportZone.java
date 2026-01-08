@@ -15,20 +15,14 @@ public class CastleTeleportZone extends ZoneType {
     }
 
     public void setParameter(String name, String value) {
-        if (name.equals("castleId")) {
-            this._castleId = Integer.parseInt(value);
-        } else if (name.equals("spawnMinX")) {
-            this._spawnLoc[0] = Integer.parseInt(value);
-        } else if (name.equals("spawnMaxX")) {
-            this._spawnLoc[1] = Integer.parseInt(value);
-        } else if (name.equals("spawnMinY")) {
-            this._spawnLoc[2] = Integer.parseInt(value);
-        } else if (name.equals("spawnMaxY")) {
-            this._spawnLoc[3] = Integer.parseInt(value);
-        } else if (name.equals("spawnZ")) {
-            this._spawnLoc[4] = Integer.parseInt(value);
-        } else {
-            super.setParameter(name, value);
+        switch (name) {
+            case "castleId" -> this._castleId = Integer.parseInt(value);
+            case "spawnMinX" -> this._spawnLoc[0] = Integer.parseInt(value);
+            case "spawnMaxX" -> this._spawnLoc[1] = Integer.parseInt(value);
+            case "spawnMinY" -> this._spawnLoc[2] = Integer.parseInt(value);
+            case "spawnMaxY" -> this._spawnLoc[3] = Integer.parseInt(value);
+            case "spawnZ" -> this._spawnLoc[4] = Integer.parseInt(value);
+            default -> super.setParameter(name, value);
         }
 
     }

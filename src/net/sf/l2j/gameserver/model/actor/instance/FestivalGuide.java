@@ -22,11 +22,11 @@ import java.util.Calendar;
 import java.util.List;
 
 public final class FestivalGuide extends Folk {
-    protected FestivalType _festivalType;
-    protected CabalType _festivalOracle;
-    protected int _blueStonesNeeded;
-    protected int _greenStonesNeeded;
-    protected int _redStonesNeeded;
+    private FestivalType _festivalType;
+    private CabalType _festivalOracle;
+    private int _blueStonesNeeded;
+    private int _greenStonesNeeded;
+    private int _redStonesNeeded;
 
     public FestivalGuide(int objectId, NpcTemplate template) {
         super(objectId, template);
@@ -127,7 +127,7 @@ public final class FestivalGuide extends Folk {
                 winningCabal = "None";
             }
 
-            sb.append("<tr><td width=\"100\" align=\"center\">" + FestivalType.VALUES[i].getName() + "</td><td align=\"center\" width=\"35\">" + duskScore + "</td><td align=\"center\" width=\"35\">" + dawnScore + "</td><td align=\"center\" width=\"130\">" + winningCabal + "</td></tr>");
+            sb.append("<tr><td width=\"100\" align=\"center\">").append(FestivalType.VALUES[i].getName()).append("</td><td align=\"center\" width=\"35\">").append(duskScore).append("</td><td align=\"center\" width=\"35\">").append(dawnScore).append("</td><td align=\"center\" width=\"130\">").append(winningCabal).append("</td></tr>");
         }
 
         return sb.toString();
@@ -138,18 +138,18 @@ public final class FestivalGuide extends Folk {
 
         for (int i = 0; i < 5; ++i) {
             String var10001 = FestivalType.VALUES[i].getName();
-            sb.append("<tr><td align=\"center\" width=\"150\">" + var10001 + "</td><td align=\"center\" width=\"150\">" + FestivalOfDarknessManager.getInstance().getAccumulatedBonus(i) + "</td></tr>");
+            sb.append("<tr><td align=\"center\" width=\"150\">").append(var10001).append("</td><td align=\"center\" width=\"150\">").append(FestivalOfDarknessManager.getInstance().getAccumulatedBonus(i)).append("</td></tr>");
         }
 
         return sb.toString();
     }
 
     private static String calculateDate(String milliFromEpoch) {
-        long numMillis = Long.valueOf(milliFromEpoch);
+        long numMillis = Long.parseLong(milliFromEpoch);
         Calendar calCalc = Calendar.getInstance();
         calCalc.setTimeInMillis(numMillis);
-        int var10000 = calCalc.get(1);
-        return var10000 + "/" + calCalc.get(2) + "/" + calCalc.get(5);
+        int var10000 = calCalc.get(Calendar.YEAR);
+        return var10000 + "/" + calCalc.get(Calendar.MONTH) + "/" + calCalc.get(Calendar.DATE);
     }
 
     public void onBypassFeedback(Player player, String command) {
@@ -251,7 +251,7 @@ public final class FestivalGuide extends Folk {
                         return;
                     }
 
-                    if (player.getObjectId() != prevParticipants.get(0)) {
+                    if (player.getObjectId() != prevParticipants.getFirst()) {
                         this.showChatWindow(player, 3, "b", false);
                         return;
                     }
@@ -282,15 +282,15 @@ public final class FestivalGuide extends Folk {
                     StatSet overallData = FestivalOfDarknessManager.getInstance().getOverallHighestScoreData(festivalIndex);
                     int dawnScore = dawnData.getInteger("score");
                     int duskScore = duskData.getInteger("score");
-                    sb.append(this._festivalType.getName() + " festival.<br>");
+                    sb.append(this._festivalType.getName()).append(" festival.<br>");
                     if (dawnScore > 0) {
-                        sb.append("Dawn: " + calculateDate(dawnData.getString("date")) + ". Score " + dawnScore + "<br>" + dawnData.getString("members") + "<br>");
+                        sb.append("Dawn: ").append(calculateDate(dawnData.getString("date"))).append(". Score ").append(dawnScore).append("<br>").append(dawnData.getString("members")).append("<br>");
                     } else {
                         sb.append("Dawn: No record exists. Score 0<br>");
                     }
 
                     if (duskScore > 0) {
-                        sb.append("Dusk: " + calculateDate(duskData.getString("date")) + ". Score " + duskScore + "<br>" + duskData.getString("members") + "<br>");
+                        sb.append("Dusk: ").append(calculateDate(duskData.getString("date"))).append(". Score ").append(duskScore).append("<br>").append(duskData.getString("members")).append("<br>");
                     } else {
                         sb.append("Dusk: No record exists. Score 0<br>");
                     }
@@ -302,12 +302,12 @@ public final class FestivalGuide extends Folk {
                         }
 
                         String var10001 = calculateDate(overallData.getString("date"));
-                        sb.append("Consecutive top scores: " + var10001 + ". Score " + overallData.getInteger("score") + "<br>Affilated side: " + cabalStr + "<br>" + overallData.getString("members") + "<br>");
+                        sb.append("Consecutive top scores: ").append(var10001).append(". Score ").append(overallData.getInteger("score")).append("<br>Affilated side: ").append(cabalStr).append("<br>").append(overallData.getString("members")).append("<br>");
                     } else {
                         sb.append("Consecutive top scores: No record exists. Score 0<br>");
                     }
 
-                    sb.append("<a action=\"bypass -h npc_" + this.getObjectId() + "_Chat 0\">Go back.</a></body></html>");
+                    sb.append("<a action=\"bypass -h npc_").append(this.getObjectId()).append("_Chat 0\">Go back.</a></body></html>");
                     NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
                     html.setHtml(sb.toString());
                     player.sendPacket(html);
@@ -356,33 +356,13 @@ public final class FestivalGuide extends Folk {
 
     public void showChatWindow(Player player, int val) {
         String filename = "data/html/seven_signs/";
-        switch (this.getTemplate().getNpcId()) {
-            case 31127:
-            case 31128:
-            case 31129:
-            case 31130:
-            case 31131:
-                filename = filename + "festival/dawn_guide.htm";
-                break;
-            case 31132:
-            case 31133:
-            case 31134:
-            case 31135:
-            case 31136:
-            case 31142:
-            case 31143:
-            case 31144:
-            case 31145:
-            case 31146:
-                filename = filename + "festival/festival_witch.htm";
-                break;
-            case 31137:
-            case 31138:
-            case 31139:
-            case 31140:
-            case 31141:
-                filename = filename + "festival/dusk_guide.htm";
-        }
+        filename = switch (this.getTemplate().getNpcId()) {
+            case 31127, 31128, 31129, 31130, 31131 -> filename + "festival/dawn_guide.htm";
+            case 31132, 31133, 31134, 31135, 31136, 31142, 31143, 31144, 31145, 31146 ->
+                    filename + "festival/festival_witch.htm";
+            case 31137, 31138, 31139, 31140, 31141 -> filename + "festival/dusk_guide.htm";
+            default -> "data/html/seven_signs/";
+        };
 
         NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
         html.setFile(filename);
@@ -394,7 +374,7 @@ public final class FestivalGuide extends Folk {
 
     private void showChatWindow(Player player, int val, String suffix, boolean isDescription) {
         NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());
-        html.setFile("data/html/seven_signs/festival/" + (isDescription ? "desc_" : "festival_") + String.valueOf(suffix != null ? val + suffix : val) + ".htm");
+        html.setFile("data/html/seven_signs/festival/" + (isDescription ? "desc_" : "festival_") + (suffix != null ? val + suffix : val) + ".htm");
         html.replace("%objectId%", this.getObjectId());
         html.replace("%festivalType%", this._festivalType.getName());
         html.replace("%cycleMins%", FestivalOfDarknessManager.getInstance().getMinsToNextCycle());

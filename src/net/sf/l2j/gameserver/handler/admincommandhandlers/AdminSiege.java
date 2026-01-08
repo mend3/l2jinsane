@@ -38,7 +38,7 @@ public class AdminSiege implements IAdminCommandHandler {
         player.sendPacket(html);
     }
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         try {
             StringTokenizer st = new StringTokenizer(command, " ");
             command = st.nextToken();
@@ -47,7 +47,7 @@ public class AdminSiege implements IAdminCommandHandler {
                 castle = CastleManager.getInstance().getCastleByName(st.nextToken());
             if (castle == null) {
                 showCastleSelectPage(activeChar);
-                return true;
+                return;
             }
             WorldObject target = activeChar.getTarget();
             Player targetPlayer = null;
@@ -72,7 +72,7 @@ public class AdminSiege implements IAdminCommandHandler {
             } else {
                 if (command.equalsIgnoreCase("admin_list_siege_clans")) {
                     activeChar.sendPacket(new SiegeInfo(castle));
-                    return true;
+                    return;
                 }
                 if (command.equalsIgnoreCase("admin_move_defenders")) {
                     activeChar.sendPacket(SystemMessage.sendString("Not implemented yet."));
@@ -122,7 +122,6 @@ public class AdminSiege implements IAdminCommandHandler {
             activeChar.sendPacket(html);
         } catch (Exception ignored) {
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

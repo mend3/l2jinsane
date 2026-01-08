@@ -67,7 +67,7 @@ public class CastleGatekeeper extends Folk {
         player.sendPacket(html);
     }
 
-    private final int getDelayInSeconds() {
+    private int getDelayInSeconds() {
         return this._delay > 0 ? this._delay / 1000 : 0;
     }
 

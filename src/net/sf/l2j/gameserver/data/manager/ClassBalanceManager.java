@@ -186,7 +186,7 @@ public class ClassBalanceManager implements IXmlReader {
             try {
                 File file = new File("./data/xml/balancer/classbalance/ClassBalance.xml");
                 if (file.exists()) {
-                    SimpleDateFormat var10003 = new SimpleDateFormat("YYYY-MM-dd_HH-mm-ss");
+                    SimpleDateFormat var10003 = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
                     if (!file.renameTo(new File("./data/xml/balancer/classbalance/ClassBalance_Backup_[" + var10003.format(Calendar.getInstance().getTimeInMillis()) + "].xml")) && player != null) {
                         player.sendMessage("ClassBalanceManager: can't save backup file!");
                     }
@@ -285,14 +285,7 @@ public class ClassBalanceManager implements IXmlReader {
                 return 1;
             } else if (left < right) {
                 return -1;
-            } else if (Integer.parseInt(l.split(";")[1]) > Integer.parseInt(r.split(";")[1])) {
-                return 1;
-            } else if (Integer.parseInt(r.split(";")[1]) > Integer.parseInt(l.split(";")[1])) {
-                return -1;
-            } else {
-                Random x = new Random();
-                return 1;
-            }
+            } else return Integer.compare(Integer.parseInt(l.split(";")[1]), Integer.parseInt(r.split(";")[1]));
         }
 
     }

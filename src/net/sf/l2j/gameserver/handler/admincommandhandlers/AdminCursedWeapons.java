@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
 public class AdminCursedWeapons implements IAdminCommandHandler {
     private static final String[] ADMIN_COMMANDS = new String[]{"admin_cw_info", "admin_cw_remove", "admin_cw_goto", "admin_cw_add", "admin_cw_info_menu"};
 
-    public boolean useAdminCommand(String command, Player activeChar) {
+    public void useAdminCommand(String command, Player activeChar) {
         StringTokenizer st = new StringTokenizer(command);
         st.nextToken();
         if (command.startsWith("admin_cw_info")) {
@@ -24,8 +24,8 @@ public class AdminCursedWeapons implements IAdminCommandHandler {
                     activeChar.sendMessage(cw.getName() + " (" + cw.getName() + ")");
                     if (cw.isActive()) {
                         long milliToStart = cw.getTimeLeft();
-                        double numSecs = (milliToStart / 1000L % 60L);
-                        double countDown = ((milliToStart / 1000L) - numSecs) / 60.0D;
+                        double numSecs = ((double) milliToStart / 1000L % 60L);
+                        double countDown = (((double) milliToStart / 1000L) - numSecs) / 60.0D;
                         int numMins = (int) Math.floor(countDown % 60.0D);
                         countDown = (countDown - numMins) / 60.0D;
                         int numHours = (int) Math.floor(countDown % 24.0D);
@@ -53,8 +53,8 @@ public class AdminCursedWeapons implements IAdminCommandHandler {
                     StringUtil.append(sb, "<table width=280><tr><td>Name:</td><td>", cw.getName(), "</td></tr>");
                     if (cw.isActive()) {
                         long milliToStart = cw.getTimeLeft();
-                        double numSecs = (milliToStart / 1000L % 60L);
-                        double countDown = ((milliToStart / 1000L) - numSecs) / 60.0D;
+                        double numSecs = ((double) milliToStart / 1000L % 60L);
+                        double countDown = (((double) milliToStart / 1000L) - numSecs) / 60.0D;
                         int numMins = (int) Math.floor(countDown % 60.0D);
                         countDown = (countDown - numMins) / 60.0D;
                         int numHours = (int) Math.floor(countDown % 24.0D);
@@ -96,7 +96,7 @@ public class AdminCursedWeapons implements IAdminCommandHandler {
                 CursedWeapon cw = CursedWeaponManager.getInstance().getCursedWeapon(id);
                 if (cw == null) {
                     activeChar.sendMessage("Unknown cursed weapon ID.");
-                    return false;
+                    return;
                 }
                 if (command.startsWith("admin_cw_remove ")) {
                     cw.endOfLife();
@@ -121,7 +121,6 @@ public class AdminCursedWeapons implements IAdminCommandHandler {
                 activeChar.sendMessage("Usage: //cw_remove|//cw_goto|//cw_add <itemid|name>");
             }
         }
-        return true;
     }
 
     public String[] getAdminCommandList() {

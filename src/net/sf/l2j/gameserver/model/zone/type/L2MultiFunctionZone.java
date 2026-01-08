@@ -16,11 +16,9 @@ import net.sf.l2j.gameserver.model.zone.SpawnZoneType;
 import net.sf.l2j.gameserver.network.SystemMessageId;
 import net.sf.l2j.gameserver.taskmanager.PvpFlagTaskManager;
 
-import java.util.Iterator;
-
 public class L2MultiFunctionZone extends SpawnZoneType {
-    static String[] gradeNames = new String[]{"", "D", "C", "B", "A", "S"};
-    L2Skill noblesse = SkillTable.getInstance().getInfo(1323, 1);
+    static final String[] gradeNames = new String[]{"", "D", "C", "B", "A", "S"};
+    final L2Skill noblesse = SkillTable.getInstance().getInfo(1323, 1);
 
     public L2MultiFunctionZone(int id) {
         super(id);

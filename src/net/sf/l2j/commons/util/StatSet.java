@@ -583,15 +583,20 @@ public class StatSet extends HashMap<String, Object> {
 
     public double[] getDoubleArray(String key) {
         Object val = this.get(key);
-        if (val instanceof double[]) {
-            return (double[]) val;
-        } else if (val instanceof Number) {
-            return new double[]{((Number) val).doubleValue()};
-        } else if (val instanceof String) {
-            return Stream.of(((String) val).split(";")).mapToDouble(Double::parseDouble).toArray();
-        } else {
-            String var10002 = String.valueOf(val);
-            throw new IllegalArgumentException("StatSet : Double array required, but found: " + var10002 + " for key: " + key + ".");
+        switch (val) {
+            case double[] doubles -> {
+                return doubles;
+            }
+            case Number number -> {
+                return new double[]{number.doubleValue()};
+            }
+            case String s -> {
+                return Stream.of(s.split(";")).mapToDouble(Double::parseDouble).toArray();
+            }
+            case null, default -> {
+                String var10002 = String.valueOf(val);
+                throw new IllegalArgumentException("StatSet : Double array required, but found: " + var10002 + " for key: " + key + ".");
+            }
         }
     }
 
@@ -602,12 +607,12 @@ public class StatSet extends HashMap<String, Object> {
 
     public <T, U> Map<T, U> getMap(String key) {
         Object val = this.get(key);
-        return val == null ? Collections.emptyMap() : (Map) val;
+        return val == null ? Collections.emptyMap() : (Map<T, U>) val;
     }
 
     public <T> List<T> getList(String key) {
         Object val = this.get(key);
-        return val == null ? Collections.emptyList() : (List) val;
+        return val == null ? Collections.emptyList() : (List<T>) val;
     }
 
     public List<IntIntHolder> getIntIntHolderList(String key, List<IntIntHolder> defaultHolder) {

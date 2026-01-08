@@ -89,8 +89,7 @@ public class HwidPlayer {
 
     public int startSession(int WindowsCount) {
         synchronized (_list) {
-            if (_sessions.get(WindowsCount) == null)
-                _sessions.put(WindowsCount, 0);
+            _sessions.putIfAbsent(WindowsCount, 0);
             _sessions.put(WindowsCount, _sessions.get(WindowsCount) + 1);
         }
         return _sessions.get(WindowsCount);
@@ -179,7 +178,7 @@ public class HwidPlayer {
     }
 
     public int getAllowedWindowsCount(GameClient client) {
-        if (_list.size() == 0)
+        if (_list.isEmpty())
             return -1;
         int i = 0;
         while (i < _list.size()) {
@@ -187,7 +186,7 @@ public class HwidPlayer {
                 i++;
                 continue;
             }
-            if (_list.get(i).getHWID().equals(""))
+            if (_list.get(i).getHWID().isEmpty())
                 return -1;
             return _list.get(i).getCount();
         }

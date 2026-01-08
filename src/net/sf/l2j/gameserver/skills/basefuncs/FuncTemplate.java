@@ -10,14 +10,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class FuncTemplate {
-    protected static final Logger _log = Logger.getLogger(FuncTemplate.class.getName());
+    private static final Logger _log = Logger.getLogger(FuncTemplate.class.getName());
     public final Class<?> func;
     public final Constructor<?> constructor;
     public final Stats stat;
     public final int order;
     public final Lambda lambda;
-    public Condition attachCond;
-    public Condition applayCond;
+    public final Condition attachCond;
+    public final Condition applayCond;
 
     public FuncTemplate(Condition pAttachCond, Condition pApplayCond, String pFunc, Stats pStat, int pOrder, Lambda pLambda) {
         this.attachCond = pAttachCond;
@@ -50,13 +50,7 @@ public final class FuncTemplate {
                 }
 
                 return f;
-            } catch (IllegalAccessException e) {
-                _log.log(Level.WARNING, "", e);
-                return null;
-            } catch (InstantiationException e) {
-                _log.log(Level.WARNING, "", e);
-                return null;
-            } catch (InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
                 _log.log(Level.WARNING, "", e);
                 return null;
             }

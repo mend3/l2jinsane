@@ -132,8 +132,7 @@ public enum ClassId {
         ClassId[] var0 = VALUES;
         int var1 = var0.length;
 
-        for (int var2 = 0; var2 < var1; ++var2) {
-            ClassId classId = var0[var2];
+        for (ClassId classId : var0) {
             classId.createSubclasses();
         }
 
@@ -173,8 +172,7 @@ public enum ClassId {
             ClassId[] var1 = values();
             int var2 = var1.length;
 
-            for (int var3 = 0; var3 < var2; ++var3) {
-                ClassId id = var1[var3];
+            for (ClassId id : var1) {
                 if (id.getRace() != null && id.ordinal() == classId) {
                     return id;
                 }
@@ -184,11 +182,6 @@ public enum ClassId {
         }
 
         return values()[0];
-    }
-
-    // $FF: synthetic method
-    private static ClassId[] $values() {
-        return new ClassId[]{HUMAN_FIGHTER, WARRIOR, GLADIATOR, WARLORD, KNIGHT, PALADIN, DARK_AVENGER, ROGUE, TREASURE_HUNTER, HAWKEYE, HUMAN_MYSTIC, HUMAN_WIZARD, SORCERER, NECROMANCER, WARLOCK, CLERIC, BISHOP, PROPHET, ELVEN_FIGHTER, ELVEN_KNIGHT, TEMPLE_KNIGHT, SWORD_SINGER, ELVEN_SCOUT, PLAINS_WALKER, SILVER_RANGER, ELVEN_MYSTIC, ELVEN_WIZARD, SPELLSINGER, ELEMENTAL_SUMMONER, ELVEN_ORACLE, ELVEN_ELDER, DARK_FIGHTER, PALUS_KNIGHT, SHILLIEN_KNIGHT, BLADEDANCER, ASSASSIN, ABYSS_WALKER, PHANTOM_RANGER, DARK_MYSTIC, DARK_WIZARD, SPELLHOWLER, PHANTOM_SUMMONER, SHILLIEN_ORACLE, SHILLIEN_ELDER, ORC_FIGHTER, ORC_RAIDER, DESTROYER, MONK, TYRANT, ORC_MYSTIC, ORC_SHAMAN, OVERLORD, WARCRYER, DWARVEN_FIGHTER, SCAVENGER, BOUNTY_HUNTER, ARTISAN, WARSMITH, DUMMY_1, DUMMY_2, DUMMY_3, DUMMY_4, DUMMY_5, DUMMY_6, DUMMY_7, DUMMY_8, DUMMY_9, DUMMY_10, DUMMY_11, DUMMY_12, DUMMY_13, DUMMY_14, DUMMY_15, DUMMY_16, DUMMY_17, DUMMY_18, DUMMY_19, DUMMY_20, DUMMY_21, DUMMY_22, DUMMY_23, DUMMY_24, DUMMY_25, DUMMY_26, DUMMY_27, DUMMY_28, DUMMY_29, DUMMY_30, DUELIST, DREADNOUGHT, PHOENIX_KNIGHT, HELL_KNIGHT, SAGGITARIUS, ADVENTURER, ARCHMAGE, SOULTAKER, ARCANA_LORD, CARDINAL, HIEROPHANT, EVAS_TEMPLAR, SWORD_MUSE, WIND_RIDER, MOONLIGHT_SENTINEL, MYSTIC_MUSE, ELEMENTAL_MASTER, EVAS_SAINT, SHILLIEN_TEMPLAR, SPECTRAL_DANCER, GHOST_HUNTER, GHOST_SENTINEL, STORM_SCREAMER, SPECTRAL_MASTER, SHILLIEN_SAINT, TITAN, GRAND_KHAVATARI, DOMINATOR, DOOMCRYER, FORTUNE_SEEKER, MAESTRO};
     }
 
     public final int getId() {
@@ -227,7 +220,7 @@ public enum ClassId {
         return this == classId || this.childOf(classId);
     }
 
-    private final void createSubclasses() {
+    private void createSubclasses() {
         if (this._level != 2) {
             this._subclasses = null;
         } else {
@@ -235,8 +228,7 @@ public enum ClassId {
             ClassId[] var1 = VALUES;
             int var2 = var1.length;
 
-            for (int var3 = 0; var3 < var2; ++var3) {
-                ClassId classId = var1[var3];
+            for (ClassId classId : var1) {
                 if (classId._level == 2 && classId != OVERLORD && classId != WARSMITH && classId != this && (this._race != ClassRace.ELF || classId._race != ClassRace.DARK_ELF) && (this._race != ClassRace.DARK_ELF || classId._race != ClassRace.ELF)) {
                     this._subclasses.add(classId);
                 }

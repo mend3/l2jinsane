@@ -9,7 +9,7 @@ public final class VillageMasterOrc extends VillageMaster {
         super(objectId, template);
     }
 
-    protected final boolean checkVillageMasterRace(ClassId pclass) {
+    protected boolean checkVillageMasterRace(ClassId pclass) {
         if (pclass == null) {
             return false;
         } else {

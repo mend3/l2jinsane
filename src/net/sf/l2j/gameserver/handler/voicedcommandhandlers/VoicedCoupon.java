@@ -12,11 +12,10 @@ public class VoicedCoupon implements IVoicedCommandHandler {
         activeChar.showPcBangWindow();
     }
 
-    public boolean useVoicedCommand(String command, Player activeChar, String target) {
+    public void useVoicedCommand(String command, Player activeChar, String target) {
         if (command.equals("redeem")) {
             showHtml(activeChar);
         }
-        return true;
     }
 
     public String[] getVoicedCommandList() {

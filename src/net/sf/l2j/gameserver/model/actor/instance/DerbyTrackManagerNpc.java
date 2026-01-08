@@ -166,7 +166,7 @@ public class DerbyTrackManagerNpc extends Folk {
 
             for (ItemInstance ticket : player.getInventory().getAllItemsByItemId(4443)) {
                 if (ticket.getEnchantLevel() != DerbyTrackManager.getInstance().getRaceNumber()) {
-                    StringUtil.append(sb, new Object[]{"<tr><td><a action=\"bypass -h npc_%objectId%_ShowTicket ", ticket.getObjectId(), "\">", ticket.getEnchantLevel(), " Race Number</a></td><td align=right><font color=\"LEVEL\">", ticket.getCustomType1(), "</font> Number</td><td align=right><font color=\"LEVEL\">", ticket.getCustomType2() * 100, "</font> Adena</td></tr>"});
+                    StringUtil.append(sb, "<tr><td><a action=\"bypass -h npc_%objectId%_ShowTicket ", ticket.getObjectId(), "\">", ticket.getEnchantLevel(), " Race Number</a></td><td align=right><font color=\"LEVEL\">", ticket.getCustomType1(), "</font> Number</td><td align=right><font color=\"LEVEL\">", ticket.getCustomType2() * 100, "</font> Adena</td></tr>");
                 }
             }
 
@@ -245,7 +245,7 @@ public class DerbyTrackManagerNpc extends Folk {
                 int raceNumber = DerbyTrackManager.getInstance().getRaceNumber();
 
                 for (HistoryInfo info : DerbyTrackManager.getInstance().getLastHistoryEntries()) {
-                    StringUtil.append(sb, new Object[]{"<tr><td><font color=\"LEVEL\">", info.getRaceId(), "</font> th</td><td><font color=\"LEVEL\">", raceNumber == info.getRaceId() ? 0 : info.getFirst() + 1, "</font> Lane </td><td><font color=\"LEVEL\">", raceNumber == info.getRaceId() ? 0 : info.getSecond() + 1, "</font> Lane</td><td align=right><font color=00ffff>", String.format(Locale.ENGLISH, "%.2f", info.getOddRate()), "</font> Times</td></tr>"});
+                    StringUtil.append(sb, "<tr><td><font color=\"LEVEL\">", info.getRaceId(), "</font> th</td><td><font color=\"LEVEL\">", raceNumber == info.getRaceId() ? 0 : info.getFirst() + 1, "</font> Lane </td><td><font color=\"LEVEL\">", raceNumber == info.getRaceId() ? 0 : info.getSecond() + 1, "</font> Lane</td><td align=right><font color=00ffff>", String.format(Locale.ENGLISH, "%.2f", info.getOddRate()), "</font> Times</td></tr>");
                 }
 
                 NpcHtmlMessage html = new NpcHtmlMessage(this.getObjectId());

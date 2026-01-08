@@ -34,13 +34,13 @@ public class Auction {
     public Auction(ClanHall ch, int sellerBid, String sellerName, String sellerClanName, long endDate) {
         this._ch = ch;
         this._endDate = endDate;
-        if (!StringUtil.isEmpty(new String[]{sellerName, sellerClanName})) {
+        if (!StringUtil.isEmpty(sellerName, sellerClanName)) {
             this._seller = new Seller(sellerName, sellerClanName, sellerBid);
         }
 
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("SELECT bidderId, bidderName, maxBid, clan_name, time_bid FROM auction_bid WHERE auctionId = ? ORDER BY maxBid DESC");
+                PreparedStatement ps = con.prepareStatement("SELECT bidderId, bidderName, maxBid, clan_name, time_bid FROM auction_bid WHERE auctionId = ? ORDER BY maxBid DESC")
         ) {
             ps.setInt(1, ch.getId());
 
@@ -106,7 +106,7 @@ public class Auction {
 
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("UPDATE clanhall SET endDate=? WHERE id=?");
+                    PreparedStatement ps = con.prepareStatement("UPDATE clanhall SET endDate=? WHERE id=?")
             ) {
                 ps.setLong(1, this._endDate);
                 ps.setInt(2, this._ch.getId());
@@ -154,7 +154,7 @@ public class Auction {
 
                     try (
                             Connection con = ConnectionPool.getConnection();
-                            PreparedStatement ps = con.prepareStatement("INSERT INTO auction_bid (id, auctionId, bidderId, bidderName, maxBid, clan_name, time_bid) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE bidderId=VALUES(bidderId), bidderName=VALUES(bidderName), maxBid=VALUES(maxBid), time_bid=VALUES(time_bid)");
+                            PreparedStatement ps = con.prepareStatement("INSERT INTO auction_bid (id, auctionId, bidderId, bidderName, maxBid, clan_name, time_bid) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE bidderId=VALUES(bidderId), bidderName=VALUES(bidderName), maxBid=VALUES(maxBid), time_bid=VALUES(time_bid)")
                     ) {
                         ps.setInt(1, player.getClanId());
                         ps.setInt(2, this._ch.getId());
@@ -189,7 +189,7 @@ public class Auction {
     public void removeBids(Clan newOwner) {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM auction_bid WHERE auctionId=?");
+                PreparedStatement ps = con.prepareStatement("DELETE FROM auction_bid WHERE auctionId=?")
         ) {
             ps.setInt(1, this._ch.getId());
             ps.execute();
@@ -246,7 +246,7 @@ public class Auction {
     public synchronized void cancelBid(int objectId) {
         try (
                 Connection con = ConnectionPool.getConnection();
-                PreparedStatement ps = con.prepareStatement("DELETE FROM auction_bid WHERE auctionId=? AND bidderId=?");
+                PreparedStatement ps = con.prepareStatement("DELETE FROM auction_bid WHERE auctionId=? AND bidderId=?")
         ) {
             ps.setInt(1, this._ch.getId());
             ps.setInt(2, objectId);
@@ -282,7 +282,7 @@ public class Auction {
         if (this._seller != null) {
             try (
                     Connection con = ConnectionPool.getConnection();
-                    PreparedStatement ps = con.prepareStatement("UPDATE clanhall SET sellerBid=?, sellerName=?, sellerClanName=?, endDate=? WHERE id=?");
+                    PreparedStatement ps = con.prepareStatement("UPDATE clanhall SET sellerBid=?, sellerName=?, sellerClanName=?, endDate=? WHERE id=?")
             ) {
                 ps.setInt(1, this._seller.getBid());
                 ps.setString(2, this._seller.getName());

@@ -20,11 +20,11 @@ public class ClanWarsList implements IUserCommandHandler {
 
     private static final int[] COMMAND_IDS = new int[]{88, 89, 90};
 
-    public boolean useUserCommand(int id, Player player) {
+    public void useUserCommand(int id, Player player) {
         Clan clan = player.getClan();
         if (clan == null) {
             player.sendPacket(SystemMessageId.YOU_ARE_NOT_AUTHORIZED_TO_DO_THAT);
-            return false;
+            return;
         }
         try {
             Connection con = ConnectionPool.getConnection();
@@ -96,7 +96,6 @@ public class ClanWarsList implements IUserCommandHandler {
             }
         } catch (Exception ignored) {
         }
-        return true;
     }
 
     public int[] getUserCommandList() {

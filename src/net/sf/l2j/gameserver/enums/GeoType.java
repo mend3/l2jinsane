@@ -12,11 +12,6 @@ public enum GeoType {
         this._filename = filename;
     }
 
-    // $FF: synthetic method
-    private static GeoType[] $values() {
-        return new GeoType[]{L2J, L2OFF, L2D};
-    }
-
     public String getFilename() {
         return this._filename;
     }

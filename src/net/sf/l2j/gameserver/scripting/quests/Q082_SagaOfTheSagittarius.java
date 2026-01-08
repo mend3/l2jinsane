@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q082_SagaOfTheSagittarius extends SagasSuperClass {
     public Q082_SagaOfTheSagittarius() {
         super(82, "Saga of the Sagittarius");

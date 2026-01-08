@@ -30,12 +30,12 @@ public final class RadarList {
     public void loadMarkers() {
         this._player.sendPacket(new RadarControl(2, 2, this._player.getX(), this._player.getY(), this._player.getZ()));
         for (RadarMarker marker : this._markers)
-            this._player.sendPacket(new RadarControl(0, 1, marker._x, marker._y, marker._z));
+            this._player.sendPacket(new RadarControl(0, 1, marker._x(), marker._y(), marker._z()));
     }
 
     public void removeAllMarkers() {
         for (RadarMarker marker : this._markers)
-            this._player.sendPacket(new RadarControl(2, 2, marker._x, marker._y, marker._z));
+            this._player.sendPacket(new RadarControl(2, 2, marker._x(), marker._y(), marker._z()));
         this._markers.clear();
     }
 }

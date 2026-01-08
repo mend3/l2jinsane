@@ -118,9 +118,7 @@ public final class PlayerInfoTable {
     }
 
     public int getPlayerObjectId(String playerName) {
-        return playerName != null && !playerName.isEmpty() ? this._infos.entrySet().stream().filter((m) -> {
-            return m.getValue().getPlayerName().equalsIgnoreCase(playerName);
-        }).map(Entry::getKey).findFirst().orElse(-1) : -1;
+        return playerName != null && !playerName.isEmpty() ? this._infos.entrySet().stream().filter((m) -> m.getValue().getPlayerName().equalsIgnoreCase(playerName)).map(Entry::getKey).findFirst().orElse(-1) : -1;
     }
 
     public String getPlayerName(int objId) {
@@ -134,9 +132,7 @@ public final class PlayerInfoTable {
     }
 
     public int getCharactersInAcc(String accountName) {
-        return (int) this._infos.entrySet().stream().filter((m) -> {
-            return m.getValue().getAccountName().equalsIgnoreCase(accountName);
-        }).count();
+        return (int) this._infos.entrySet().stream().filter((m) -> m.getValue().getAccountName().equalsIgnoreCase(accountName)).count();
     }
 
     private static final class SingletonHolder {

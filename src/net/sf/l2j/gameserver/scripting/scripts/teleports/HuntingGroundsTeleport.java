@@ -30,52 +30,20 @@ public class HuntingGroundsTeleport extends Quest {
             return ArraysUtil.contains(DAWN_NPCS, npc.getNpcId()) ? "dawn_tele-no.htm" : "dusk_tele-no.htm";
         String htmltext = "";
         boolean check = (SevenSignsManager.getInstance().isSealValidationPeriod() && playerCabal == SevenSignsManager.getInstance().getSealOwner(SealType.GNOSIS) && SevenSignsManager.getInstance().getPlayerSeal(player.getObjectId()) == SealType.GNOSIS);
-        switch (npc.getNpcId()) {
-            case 31078:
-            case 31085:
-                htmltext = check ? "low_gludin.htm" : "hg_gludin.htm";
-                break;
-            case 31079:
-            case 31086:
-                htmltext = check ? "low_gludio.htm" : "hg_gludio.htm";
-                break;
-            case 31080:
-            case 31087:
-                htmltext = check ? "low_dion.htm" : "hg_dion.htm";
-                break;
-            case 31081:
-            case 31088:
-                htmltext = check ? "low_giran.htm" : "hg_giran.htm";
-                break;
-            case 31082:
-            case 31089:
-                htmltext = check ? "low_heine.htm" : "hg_heine.htm";
-                break;
-            case 31083:
-            case 31090:
-                htmltext = check ? "low_oren.htm" : "hg_oren.htm";
-                break;
-            case 31084:
-            case 31091:
-                htmltext = check ? "low_aden.htm" : "hg_aden.htm";
-                break;
-            case 31168:
-            case 31169:
-                htmltext = check ? "low_hw.htm" : "hg_hw.htm";
-                break;
-            case 31692:
-            case 31693:
-                htmltext = check ? "low_goddard.htm" : "hg_goddard.htm";
-                break;
-            case 31694:
-            case 31695:
-                htmltext = check ? "low_rune.htm" : "hg_rune.htm";
-                break;
-            case 31997:
-            case 31998:
-                htmltext = check ? "low_schuttgart.htm" : "hg_schuttgart.htm";
-                break;
-        }
+        htmltext = switch (npc.getNpcId()) {
+            case 31078, 31085 -> check ? "low_gludin.htm" : "hg_gludin.htm";
+            case 31079, 31086 -> check ? "low_gludio.htm" : "hg_gludio.htm";
+            case 31080, 31087 -> check ? "low_dion.htm" : "hg_dion.htm";
+            case 31081, 31088 -> check ? "low_giran.htm" : "hg_giran.htm";
+            case 31082, 31089 -> check ? "low_heine.htm" : "hg_heine.htm";
+            case 31083, 31090 -> check ? "low_oren.htm" : "hg_oren.htm";
+            case 31084, 31091 -> check ? "low_aden.htm" : "hg_aden.htm";
+            case 31168, 31169 -> check ? "low_hw.htm" : "hg_hw.htm";
+            case 31692, 31693 -> check ? "low_goddard.htm" : "hg_goddard.htm";
+            case 31694, 31695 -> check ? "low_rune.htm" : "hg_rune.htm";
+            case 31997, 31998 -> check ? "low_schuttgart.htm" : "hg_schuttgart.htm";
+            default -> htmltext;
+        };
         return htmltext;
     }
 }

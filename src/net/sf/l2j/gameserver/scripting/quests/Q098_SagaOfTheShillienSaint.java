@@ -1,7 +1,5 @@
 package net.sf.l2j.gameserver.scripting.quests;
 
-import net.sf.l2j.gameserver.scripting.quests.SagasScripts.SagasSuperClass;
-
 public class Q098_SagaOfTheShillienSaint extends SagasSuperClass {
     public Q098_SagaOfTheShillienSaint() {
         super(98, "Saga of the Shillien Saint");

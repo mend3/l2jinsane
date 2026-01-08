@@ -2,7 +2,6 @@
 package net.sf.l2j.gameserver.network.serverpackets;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class ExEnchantSkillInfo extends L2GameServerPacket {
     private final ArrayList<ExEnchantSkillInfo.Req> _reqs = new ArrayList<>();
@@ -44,10 +43,10 @@ public class ExEnchantSkillInfo extends L2GameServerPacket {
     }
 
     static class Req {
-        public int id;
-        public int count;
-        public int type;
-        public int unk;
+        public final int id;
+        public final int count;
+        public final int type;
+        public final int unk;
 
         Req(final ExEnchantSkillInfo param1, int pId, int pType, int pCount, int pUnk) {
             this.id = pId;

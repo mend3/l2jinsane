@@ -25,7 +25,6 @@ import net.sf.l2j.gameserver.network.serverpackets.SocialAction;
 import net.sf.l2j.gameserver.network.serverpackets.SpecialCamera;
 import net.sf.l2j.gameserver.scripting.scripts.ai.L2AttackableAIScript;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -225,19 +224,10 @@ public class Antharas extends L2AttackableAIScript {
                 }
             }
         } else if (event.equalsIgnoreCase("self_destruct")) {
-            L2Skill skill;
-            switch (npc.getNpcId()) {
-                case 29070:
-                case 29071:
-                case 29072:
-                case 29073:
-                case 29074:
-                case 29075:
-                    skill = SkillTable.getInstance().getInfo(5097, 1);
-                    break;
-                default:
-                    skill = SkillTable.getInstance().getInfo(5094, 1);
-            }
+            L2Skill skill = switch (npc.getNpcId()) {
+                case 29070, 29071, 29072, 29073, 29074, 29075 -> SkillTable.getInstance().getInfo(5097, 1);
+                default -> SkillTable.getInstance().getInfo(5094, 1);
+            };
 
             npc.doCast(skill);
         } else if (event.equalsIgnoreCase("beginning")) {
@@ -340,7 +330,7 @@ public class Antharas extends L2AttackableAIScript {
 
             } else {
                 L2Skill skill = getRandomSkill(npc);
-                if (MathUtil.checkIfInRange(skill.getCastRange() < 600 ? 600 : skill.getCastRange(), npc, this._actualVictim, true)) {
+                if (MathUtil.checkIfInRange(Math.max(skill.getCastRange(), 600), npc, this._actualVictim, true)) {
                     npc.getAI().setIntention(IntentionType.IDLE);
                     npc.setTarget(this._actualVictim);
                     npc.doCast(skill);

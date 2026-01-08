@@ -50,14 +50,11 @@ public class Q110_ToThePrimevalIsle extends Quest {
                 htmltext = (player.getLevel() < 75) ? "31338-00.htm" : "31338-01.htm";
                 break;
             case 1:
-                switch (npc.getNpcId()) {
-                    case 31338:
-                        htmltext = "31338-01c.htm";
-                        break;
-                    case 32113:
-                        htmltext = "32113-01.htm";
-                        break;
-                }
+                htmltext = switch (npc.getNpcId()) {
+                    case 31338 -> "31338-01c.htm";
+                    case 32113 -> "32113-01.htm";
+                    default -> htmltext;
+                };
                 break;
             case 2:
                 htmltext = getAlreadyCompletedMsg();

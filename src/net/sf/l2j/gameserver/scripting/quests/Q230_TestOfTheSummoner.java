@@ -141,96 +141,111 @@ public class Q230_TestOfTheSummoner extends Quest {
                 }
             } else {
                 int random;
-                if (event.equals("30063-02.htm")) {
-                    st.set("cond", "2");
-                    st.playSound("ItemSound.quest_middle");
-                    st.takeItems(3352, 1);
-                    random = Rnd.get(5);
-                    st.giveItems(LARA_LISTS[random][0], 1);
-                    st.set("Lara", String.valueOf(random + 1));
-                } else if (event.equals("30063-04.htm")) {
-                    random = Rnd.get(5);
-                    st.playSound("ItemSound.quest_itemget");
-                    st.giveItems(LARA_LISTS[random][0], 1);
-                    st.set("Lara", String.valueOf(random + 1));
-                } else if (event.equals("30635-02.htm")) {
-                    if (st.hasQuestItems(3353)) {
-                        htmltext = "30635-03.htm";
+                switch (event) {
+                    case "30063-02.htm" -> {
+                        st.set("cond", "2");
+                        st.playSound("ItemSound.quest_middle");
+                        st.takeItems(3352, 1);
+                        random = Rnd.get(5);
+                        st.giveItems(LARA_LISTS[random][0], 1);
+                        st.set("Lara", String.valueOf(random + 1));
                     }
-                } else if (event.equals("30635-04.htm")) {
-                    st.set("Almors", "2");
-                    st.playSound("ItemSound.quest_itemget");
-                    st.takeItems(3362, -1);
-                    st.takeItems(3363, -1);
-                    st.takeItems(3353, 1);
-                    st.giveItems(3360, 1);
-                    npc.setTarget(player);
-                    npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
-                } else if (event.equals("30636-02.htm")) {
-                    if (st.hasQuestItems(3353)) {
-                        htmltext = "30636-03.htm";
+                    case "30063-04.htm" -> {
+                        random = Rnd.get(5);
+                        st.playSound("ItemSound.quest_itemget");
+                        st.giveItems(LARA_LISTS[random][0], 1);
+                        st.set("Lara", String.valueOf(random + 1));
                     }
-                } else if (event.equals("30636-04.htm")) {
-                    st.set("Camoniell", "2");
-                    st.playSound("ItemSound.quest_itemget");
-                    st.takeItems(3367, -1);
-                    st.takeItems(3368, -1);
-                    st.takeItems(3353, 1);
-                    st.giveItems(3365, 1);
-                    npc.setTarget(player);
-                    npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
-                } else if (event.equals("30637-02.htm")) {
-                    if (st.hasQuestItems(3353)) {
-                        htmltext = "30637-03.htm";
+                    case "30635-02.htm" -> {
+                        if (st.hasQuestItems(3353)) {
+                            htmltext = "30635-03.htm";
+                        }
                     }
-                } else if (event.equals("30637-04.htm")) {
-                    st.set("Belthus", "2");
-                    st.playSound("ItemSound.quest_itemget");
-                    st.takeItems(3372, -1);
-                    st.takeItems(3373, -1);
-                    st.takeItems(3353, 1);
-                    st.giveItems(3370, 1);
-                    npc.setTarget(player);
-                    npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
-                } else if (event.equals("30638-02.htm")) {
-                    if (st.hasQuestItems(3353)) {
-                        htmltext = "30638-03.htm";
+                    case "30635-04.htm" -> {
+                        st.set("Almors", "2");
+                        st.playSound("ItemSound.quest_itemget");
+                        st.takeItems(3362, -1);
+                        st.takeItems(3363, -1);
+                        st.takeItems(3353, 1);
+                        st.giveItems(3360, 1);
+                        npc.setTarget(player);
+                        npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
                     }
-                } else if (event.equals("30638-04.htm")) {
-                    st.set("Basilla", "2");
-                    st.playSound("ItemSound.quest_itemget");
-                    st.takeItems(3377, -1);
-                    st.takeItems(3378, -1);
-                    st.takeItems(3353, 1);
-                    st.giveItems(3375, 1);
-                    npc.setTarget(player);
-                    npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
-                } else if (event.equals("30639-02.htm")) {
-                    if (st.hasQuestItems(3353)) {
-                        htmltext = "30639-03.htm";
+                    case "30636-02.htm" -> {
+                        if (st.hasQuestItems(3353)) {
+                            htmltext = "30636-03.htm";
+                        }
                     }
-                } else if (event.equals("30639-04.htm")) {
-                    st.set("Celestiel", "2");
-                    st.playSound("ItemSound.quest_itemget");
-                    st.takeItems(3382, -1);
-                    st.takeItems(3383, -1);
-                    st.takeItems(3353, 1);
-                    st.giveItems(3380, 1);
-                    npc.setTarget(player);
-                    npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
-                } else if (event.equals("30640-02.htm")) {
-                    if (st.hasQuestItems(3353)) {
-                        htmltext = "30640-03.htm";
+                    case "30636-04.htm" -> {
+                        st.set("Camoniell", "2");
+                        st.playSound("ItemSound.quest_itemget");
+                        st.takeItems(3367, -1);
+                        st.takeItems(3368, -1);
+                        st.takeItems(3353, 1);
+                        st.giveItems(3365, 1);
+                        npc.setTarget(player);
+                        npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
                     }
-                } else if (event.equals("30640-04.htm")) {
-                    st.set("Brynthea", "2");
-                    st.playSound("ItemSound.quest_itemget");
-                    st.takeItems(3387, -1);
-                    st.takeItems(3388, -1);
-                    st.takeItems(3353, 1);
-                    st.giveItems(3385, 1);
-                    npc.setTarget(player);
-                    npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
+                    case "30637-02.htm" -> {
+                        if (st.hasQuestItems(3353)) {
+                            htmltext = "30637-03.htm";
+                        }
+                    }
+                    case "30637-04.htm" -> {
+                        st.set("Belthus", "2");
+                        st.playSound("ItemSound.quest_itemget");
+                        st.takeItems(3372, -1);
+                        st.takeItems(3373, -1);
+                        st.takeItems(3353, 1);
+                        st.giveItems(3370, 1);
+                        npc.setTarget(player);
+                        npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
+                    }
+                    case "30638-02.htm" -> {
+                        if (st.hasQuestItems(3353)) {
+                            htmltext = "30638-03.htm";
+                        }
+                    }
+                    case "30638-04.htm" -> {
+                        st.set("Basilla", "2");
+                        st.playSound("ItemSound.quest_itemget");
+                        st.takeItems(3377, -1);
+                        st.takeItems(3378, -1);
+                        st.takeItems(3353, 1);
+                        st.giveItems(3375, 1);
+                        npc.setTarget(player);
+                        npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
+                    }
+                    case "30639-02.htm" -> {
+                        if (st.hasQuestItems(3353)) {
+                            htmltext = "30639-03.htm";
+                        }
+                    }
+                    case "30639-04.htm" -> {
+                        st.set("Celestiel", "2");
+                        st.playSound("ItemSound.quest_itemget");
+                        st.takeItems(3382, -1);
+                        st.takeItems(3383, -1);
+                        st.takeItems(3353, 1);
+                        st.giveItems(3380, 1);
+                        npc.setTarget(player);
+                        npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
+                    }
+                    case "30640-02.htm" -> {
+                        if (st.hasQuestItems(3353)) {
+                            htmltext = "30640-03.htm";
+                        }
+                    }
+                    case "30640-04.htm" -> {
+                        st.set("Brynthea", "2");
+                        st.playSound("ItemSound.quest_itemget");
+                        st.takeItems(3387, -1);
+                        st.takeItems(3388, -1);
+                        st.takeItems(3353, 1);
+                        st.giveItems(3385, 1);
+                        npc.setTarget(player);
+                        npc.doCast(SkillTable.getInstance().getInfo(4126, 1));
+                    }
                 }
             }
 
